@@ -1,0 +1,45 @@
+/* Light (default) */
+:root {
+    /* Page */
+    --bg-page: #f1f5f9;
+
+    /* Texto */
+    --text-primary: var(--gray-900);
+    --text-secondary: var(--gray-700);
+
+    /* Border */
+    --border-color: var(--gray-300);
+
+    /* Header */
+    --bg-header: var(--white);
+
+    /* Sidebar */
+    --bg-sidebar: var(--white);
+    --text-sidebar: var(--gray-900);
+    --text-sidebar-active: var(--white);
+    --bg-sidebar-hover: var(--gray-100);
+    --bg-sidebar-active: var(--green-700);
+}
+
+/* Dark */
+[data-theme="dark"] {
+    /* Page */
+    --bg-page: #020617;
+
+    /* Texto */
+    --text-primary: #e5e7eb;
+    --text-secondary: #94a3b8;
+
+    /* Border */
+    --border-color: #1e293b;
+
+    /* Header */
+    --bg-header: #0f172a;
+
+    /* Sidebar */
+    --bg-sidebar: #0f172a;
+    --text-sidebar: #cbd5e1;
+    --text-sidebar-active: #ffffff;
+    --bg-sidebar-hover: #1e293b;
+    --bg-sidebar-active: var(--green-700);
+}

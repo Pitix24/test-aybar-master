@@ -1,10 +1,19 @@
-@import "../generales/reset.css";
-@import "../generales/variables.css";
-@import "../generales/rejilla.css";
-@import "../generales/globales.css";
-@import "../generales/panel.css";
-@import "../generales/botones.css";
+/* ================================
+   CORE DESIGN SYSTEM
+================================ */
+@import "../core/reset.css";
 
+@import "../core/tokens/typography.css";
+@import "../core/tokens/colors.css";
+@import "../core/tokens/spacing.css";
+@import "../core/tokens/shadows.css";
+
+@import "../core/themes.css";
+@import "../core/base.css";
+
+/* ================================
+   ERP LAYOUT & COMPONENTS
+================================ */
 @import "./layout.css";
 
 @import "./components/menu-principal.css";

@@ -1,17 +1,85 @@
 /* 1. Quita márgenes, paddings y bordes predeterminados */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
     margin: 0;
     padding: 0;
     border: 0;
@@ -21,22 +89,36 @@ time, mark, audio, video {
 }
 
 /* 2. Corrige el display de los nuevos elementos HTML5 */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
     display: block;
 }
 
 /* 3. Quita el estilo de lista */
-ol, ul {
+ol,
+ul {
     list-style: none;
 }
 
 /* 4. Quita las comillas automáticas de blockquote y q */
-blockquote, q {
+blockquote,
+q {
     quotes: none;
 }
-blockquote::before, blockquote::after,
-q::before, q::after {
+
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
     content: '';
     content: none;
 }
@@ -59,14 +141,18 @@ a {
 }
 
 /* 8. Imágenes y videos fluidos */
-img, video {
+img,
+video {
     max-width: 100%;
     height: auto;
     display: block;
 }
 
 /* 9. Formularios limpios */
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
     font: inherit;
     color: inherit;
     background: none;
@@ -75,12 +161,17 @@ input, button, textarea, select {
 }
 
 /* 10. Quita el sombreado azul de inputs en mobile */
-input:focus, button:focus, textarea:focus, select:focus {
+input:focus,
+button:focus,
+textarea:focus,
+select:focus {
     outline: none;
 }
 
 /* 11. Evita saltos raros en texto largo */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
