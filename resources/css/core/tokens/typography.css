@@ -2,4 +2,36 @@
 
 :root {
     --font-sans: "Instrument Sans", sans-serif;
+
+
+    /* Font sizes (rem) */
+
+    /* 6px */
+    --fs-2xs: 0.375rem;
+    /* 8px */
+    --fs-xs: 0.5rem;
+    /* 12px */
+    --fs-sm: 0.875rem;
+    /* 14px */
+    --fs-md: 1rem;
+    /* 16px */
+    --fs-lg: 1.125rem;
+    /* 18px */
+    --fs-xl: 1.25rem;
+    /* 20px */
+    --fs-2xl: 1.5rem;
+    /* 24px */
+    --fs-3xl: 1.875rem;
+    /* 30px */
+
+    /* Font weights */
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+
+    /* Line heights */
+    --lh-tight: 1.2;
+    --lh-normal: 1.5;
+    --lh-relaxed: 1.75;
 }

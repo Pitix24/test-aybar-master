@@ -1,79 +1,3 @@
-/*CONTENEDOR ASIDE*/
-.contenedor_aside {
-    background: var(--bg-sidebar);
-    position: fixed;
-    left: calc(-1 * (var(--ancho-sidebar-admin-item) + var(--ancho-sidebar-admin-menu)));
-    width: var(--ancho-sidebar-admin-item);
-    height: 100%;
-    top: 0;
-    z-index: 99;
-    border-right: 1px solid var(--border-color);
-}
-
-.contenedor_aside a {
-    cursor: pointer;
-}
-
-/*CONTENEDOR NAV ICONOS*/
-.contenedor_nav_iconos {
-    height: 100vh;
-    z-index: 99;
-    position: relative;
-    background: var(--bg-sidebar);
-}
-
-.contenedor_nav_iconos .contenedor_menu_hamburguesa {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    height: var(--alto-header-admin);
-}
-
-.contenedor_nav_iconos .contenedor_menu_hamburguesa i {
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.contenedor_nav_iconos ul {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    color: var(--text-sidebar);
-    scrollbar-width: none;
-    overflow: hidden scroll;
-    padding: 10px 20px;
-    height: calc(100% - var(--alto-header-admin));
-}
-
-.contenedor_nav_iconos ul .nav_icono_seleccionado {
-    background-color: var(--bg-sidebar-active);
-    color: var(--text-sidebar-active);
-}
-
-.contenedor_nav_iconos .nav_icono_seleccionado.no-hover {
-    pointer-events: none;
-}
-
-.contenedor_nav_iconos ul li {
-    padding: 12px;
-    border-radius: 12px;
-}
-
-.contenedor_nav_iconos ul li:hover {
-    background-color: var(--bg-sidebar-hover);
-}
-
-.contenedor_nav_iconos ul i {
-    font-size: 18px;
-    cursor: pointer;
-}
-
-/*FIN CONTENEDOR NAV ICONOS*/
-
-/*CONTENEDOR NAV LINKS*/
 .contenedor_nav_links {
     position: absolute;
     width: var(--ancho-sidebar-admin-menu);
@@ -113,7 +37,7 @@
     transition: left 0.4s ease-in-out;
     z-index: 98;
     width: 100%;
-    font-size: 15px;
+    font-size: var(--fs-sm);
     color: var(--text-sidebar);
 }
 
@@ -191,23 +115,5 @@
 }
 
 .contenedor_nav_links .punto_item {
-    font-size: 6px;
-}
-
-@media (min-width: 768px) {
-    .contenedor_aside {
-        left: 0;
-    }
-}
-
-@media (max-width: 768px) {
-
-    /*CONTENEDOR ASIDE*/
-    .contenedor_aside {
-        left: calc(-1 * (var(--ancho-sidebar-admin-item) + var(--ancho-sidebar-admin-menu)));
-    }
-
-    .contenedor_aside.estilo_abierto_contenedor_aside {
-        left: 0;
-    }
+    font-size: var(--fs-2xs);
 }

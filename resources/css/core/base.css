@@ -1,5 +1,53 @@
+html {
+    font-size: 16px;
+}
+
 body {
     font-family: var(--font-sans);
+    font-size: var(--fs-md);
+    line-height: var(--lh-normal);
     color: var(--text-primary);
-    background-color: var(--bg-page);
+    background: var(--bg-page);
+}
+
+/* Headings */
+h1 {
+    font-size: var(--fs-3xl);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-tight);
+}
+
+h2 {
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-semibold);
+}
+
+h3 {
+    font-size: var(--fs-xl);
+    font-weight: var(--fw-semibold);
+}
+
+/* Text roles */
+.text-xs {
+    font-size: var(--fs-xs);
+}
+
+.text-sm {
+    font-size: var(--fs-sm);
+}
+
+.text-md {
+    font-size: var(--fs-md);
+}
+
+.text-lg {
+    font-size: var(--fs-lg);
+}
+
+.text-xl {
+    font-size: var(--fs-xl);
+}
+
+.text-muted {
+    color: var(--text-secondary);
 }

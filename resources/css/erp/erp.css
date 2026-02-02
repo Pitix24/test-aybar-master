@@ -16,7 +16,8 @@
 ================================ */
 @import "./layout.css";
 
-@import "./components/menu-principal.css";
 @import "./components/header.css";
+@import "./components/menu.css";
+@import "./components/sub-menu.css";
 
 @import "./components/pagina-cabecera.css";
