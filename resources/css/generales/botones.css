@@ -1,0 +1,275 @@
+.g_boton {
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    width: max-content;
+}
+
+.g_boton:hover {
+    filter: brightness(1.1);
+}
+
+.g_boton_empresa_primario {
+    background-color: #02424e;
+    color: white;
+}
+
+.g_boton_empresa_secundario {
+    background-color: #ffa726;
+    color: #02424e;
+}
+
+.g_boton_pdf {
+    background-color: #ff6692;
+    color: white;
+}
+
+.g_boton_excel {
+    background-color: #36c76c;
+    color: white;
+}
+
+.g_boton_primary {
+    background-color: #635bff;
+    color: white;
+}
+
+.g_boton_secondary {
+    background-color: #16cdc7;
+    color: white;
+}
+
+.g_boton_success {
+    background-color: #36c76c;
+    color: white;
+}
+
+.g_boton_info {
+    background-color: #46caeb;
+    color: white;
+}
+
+.g_boton_warning {
+    background-color: #f8c20a;
+    color: white;
+}
+
+.g_boton_danger {
+    background-color: #ff6692;
+    color: white;
+}
+
+.g_boton_light {
+    background-color: #eff4fa;
+    color: black;
+}
+
+.g_boton_darkt {
+    background-color: #0a2540;
+    color: white;
+}
+
+.g_activo {
+    color: #36c76c;
+}
+
+.g_desactivado {
+    color: #ff6692;
+}
+
+.g_accion_ver {
+    color: #f8c20a;
+}
+
+.g_accion_editar {
+    color: #46caeb;
+}
+
+.g_resaltar {
+    color: #29343d;
+}
+
+.g_inventario {
+    color: #fa417f;
+}
+
+.g_inferior {
+    color: #98a4ae;
+}
+
+.g_negrita {
+    font-weight: 700;
+}
+
+.g_resumir {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.g_mayuscula {
+    text-transform: uppercase;
+}
+
+.g_vacio {
+    width: 100%;
+    display: flex;
+    color: #29343d;
+    font-size: 12px;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.g_badge {
+    background: #e5e7eb;
+    padding: 3px 8px;
+    border-radius: 5px;
+    margin-right: 3px;
+    font-size: 12px;
+}
+
+.g_badge.activo {
+    background: #4caf50 !important;
+    color: white;
+}
+
+.g_estado {
+    font-size: 8px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.g_celda_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.g_centrar_iconos {
+    display: grid;
+    gap: 10px;
+}
+
+.g_centrar_iconos a,
+.g_centrar_iconos button {
+    cursor: pointer;
+}
+
+.g_boton_personalizado {
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 25px;
+    justify-content: center;
+}
+
+.g_boton_personalizado.verde {
+    background: var(--color-verde);
+    border: 1px solid var(--color-verde);
+    color: var(--color-blanco);
+}
+
+.g_boton_personalizado.amarillo {
+    background: var(--color-amarillo);
+    border: 1px solid var(--color-amarillo);
+    color: var(--color-verde);
+}
+
+.g_boton_personalizado.negro {
+    background: var(--color-oscuro);
+    border: 1px solid var(--color-oscuro);
+    color: var(--color-blanco);
+}
+
+.g_boton_personalizado:hover {
+    filter: brightness(1.1);
+}
+
+.g_boton_cerrar {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: var(--color-error);
+    color: white;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.g_boton_cerrar:hover {
+    filter: brightness(1.1);
+}
+
+.g_menu_badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: #fff;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+.g_menu_badge.info {
+    background-color: #2196f3;
+}
+
+.g_menu_badge.success {
+    background-color: #4caf50;
+}
+
+.g_menu_badge.warning {
+    background-color: #ff9800;
+}
+
+.g_menu_badge.danger {
+    background-color: #f44336;
+}
+
+.g_tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.g_tooltip i {
+    font-size: 14px;
+    color: #6b7280; /* gris */
+}
+
+.g_tooltip_content {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 6px;
+
+    max-width: 220px;
+    padding: 8px 10px;
+
+    font-size: 12px;
+    line-height: 1.4;
+    color: #ffffff;
+    background-color: #000000;
+
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+    z-index: 999;
+    white-space: normal;
+}

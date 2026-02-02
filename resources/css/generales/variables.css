@@ -1,0 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap");
+
+/*Fuentes: MONTSERRAT, PROXIMA NOVA */
+:root {
+    --font-sans: "Instrument Sans", sans-serif;
+    --color-fondo-pagina: #fafafa;
+    --ancho-centrar-pagina: 1280px;
+    --padding-costados: 20px;
+    --padding-arriba-abajo: 20px;
+    --gap-computadora: 40px;
+    --gap-movil: 30px;
+
+    --alto-header-web-banner: 0px;/*cuando hay banner es 60px, sin banner 0px*/
+    --alto-header-web: 100px;/*con banner 80px, sin banner 100px*/
+    --alto-header-admin: 60px;
+    --ancho-sidebar-admin-item: 80px;
+    --ancho-sidebar-admin-menu: 240px;
+
+    --color-verde: #02424E;
+    --color-amarillo: #FFA726;
+    --color-blanco: #fff;
+    --color-negro: #333333;
+    --color-oscuro: #000000;
+    --color-whatsapp: #25d366;
+    --color-plomo: #f0f0f0;
+    --color-gris: #e3e3e3;
+    --color-celeste: #009bdb;
+    --color-placeholder: #888787;
+    --color-error: #b81010;
+    --color-success: #3bb54a;
+    --color-info: #ff8902;
+    --color-overlay: rgba(0, 0, 0, 0.6);
+
+    --sombra: 0 6px 20px rgba(0, 0, 0, 0.15);
+    --sombra-secundario-izquierda: 2px 0 5px -2px rgba(0, 0, 0, 0.2);
+    --sombra-secundario-derecha: -2px 0 5px -2px rgba(0, 0, 0, 0.2);
+
+    --borde-card: 1px solid var(--color-gris);
+    --borde-radius: 14px;
+
+    --view-computadora: 1024px;
+    --view-tablet: 768px;
+    --view-movil: 500px;
+}
+
+body {
+    font-family: var(--font-sans);
+    color: var(--color-negro);
+    background-color: var(--color-fondo-pagina);
+}

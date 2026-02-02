@@ -1,0 +1,13 @@
+@import "../generales/reset.css";
+@import "../generales/variables.css";
+@import "../generales/rejilla.css";
+@import "../generales/globales.css";
+@import "../generales/panel.css";
+@import "../generales/botones.css";
+
+@import "./layout.css";
+
+@import "./components/menu-principal.css";
+@import "./components/header.css";
+
+@import "./components/pagina-cabecera.css";

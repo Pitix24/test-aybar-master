@@ -1,0 +1,51 @@
+.g_panel {
+    padding: 20px;
+    background-color: var(--color-blanco);
+    background-clip: border-box;
+    border: var(--borde-card);
+    border-radius: var(--borde-radius);
+}
+
+.g_panel_titulo {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--color-negro);
+    font-weight: 600;
+}
+
+.g_panel_titulo.centrar {
+    text-align: center;
+}
+
+.g_panel_parrafo {
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: var(--color-negro);
+    font-weight: 600;
+}
+
+.g_panel_4_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.g_panel_dashboard {
+    display: flex;
+    justify-content: space-between;
+}
+
+.g_panel_dashboard_1 {
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .g_panel {
+        padding: 10px;
+    }
+
+    .g_panel_4_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
