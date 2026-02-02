@@ -1,7 +1,7 @@
 .g_boton {
     border-radius: 6px;
     padding: 5px 10px;
-    font-size: 12px;
+    font-size: var(--fs-xs);
     cursor: pointer;
     width: max-content;
 }
@@ -249,7 +249,8 @@
 
 .g_tooltip i {
     font-size: 14px;
-    color: #6b7280; /* gris */
+    color: #6b7280;
+    /* gris */
 }
 
 .g_tooltip_content {

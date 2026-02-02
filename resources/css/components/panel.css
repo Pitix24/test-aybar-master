@@ -1,16 +1,16 @@
 .g_panel {
     padding: 20px;
-    background-color: var(--color-fondo-panel);
+    background-color: var(--color-light-contraste);
     background-clip: border-box;
-    border: 1px solid var(--border-color);
+    border: var(--borde-card);
     border-radius: var(--borde-radius);
 }
 
 .g_panel_titulo {
-    font-size: 18px;
+    font-size: var(--fs-lg);
     margin-bottom: 8px;
-    color: var(--color-negro);
-    font-weight: 600;
+    color: var(--color-dark-contraste);
+    font-weight: var(--fw-semibold);
 }
 
 .g_panel_titulo.centrar {
@@ -18,10 +18,10 @@
 }
 
 .g_panel_parrafo {
-    font-size: 13px;
+    font-size: var(--fs-2xs);
     margin-bottom: 8px;
-    color: var(--color-negro);
-    font-weight: 600;
+    color: var(--color-dark-contraste);
+    font-weight: var(--fw-semibold);
 }
 
 .g_panel_4_grid {

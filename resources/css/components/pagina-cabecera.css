@@ -7,18 +7,18 @@
 
 /*TITULO*/
 .cabecera_titulo_pagina h2 {
-    font-size: 18px;
-    color: var(--color-negro);
-    font-weight: 600;
+    font-size: var(--fs-lg);
+    color: var(--color-dark-contraste);
+    font-weight: var(--fw-semibold);
     display: flex;
     align-items: flex-end;
     gap: 5px;
 }
 
 .cabecera_titulo_pagina h2 span {
-    font-size: 12px;
+    font-size: var(--fs-2xs);
     color: var(--color-gris);
-    font-weight: normal;
+    font-weight: var(--fw-regular);
     padding-bottom: 2px;
 }
 
@@ -32,6 +32,7 @@
 }
 
 @media (max-width: 768px) {
+
     /*CABECERA TITULO PAGINA*/
     .cabecera_titulo_pagina {
         align-items: flex-start;

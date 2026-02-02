@@ -27,6 +27,7 @@
     justify-content: center;
     gap: 10px;
     height: var(--alto-header-admin);
+    color: var(--color-texto-sidebar);
 }
 
 .contenedor_nav_iconos .contenedor_menu_hamburguesa i {
