@@ -1,6 +1,6 @@
 .header_layout_pagina {
-    background: var(--bg-header);
-    color: var(--text-primary);
+    background: var(--color-fondo-header);
+    color: var(--color-texto-primario);
     position: fixed;
     top: 0;
     width: -webkit-fill-available;

@@ -1,8 +1,8 @@
 .g_panel {
     padding: 20px;
-    background-color: var(--bg-panel);
+    background-color: var(--color-fondo-panel);
     background-clip: border-box;
-    border: var(--borde-card);
+    border: 1px solid var(--border-color);
     border-radius: var(--borde-radius);
 }
 

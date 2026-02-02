@@ -1,5 +1,5 @@
 .contenedor_aside {
-    background: var(--bg-sidebar);
+    background: var(--color-fondo-sidebar);
     position: fixed;
     left: calc(-1 * (var(--ancho-sidebar-admin-item) + var(--ancho-sidebar-admin-menu)));
     width: var(--ancho-sidebar-admin-item);
@@ -17,7 +17,7 @@
     height: 100vh;
     z-index: 99;
     position: relative;
-    background: var(--bg-sidebar);
+    background: var(--color-fondo-sidebar);
 }
 
 .contenedor_nav_iconos .contenedor_menu_hamburguesa {
@@ -39,7 +39,7 @@
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    color: var(--text-sidebar);
+    color: var(--color-texto-sidebar);
     scrollbar-width: none;
     overflow: hidden scroll;
     padding: 10px 20px;
@@ -47,8 +47,8 @@
 }
 
 .contenedor_nav_iconos ul .nav_icono_seleccionado {
-    background-color: var(--bg-sidebar-active);
-    color: var(--text-sidebar-active);
+    background-color: var(--color-fondo-sidebar-active);
+    color: var(--color-texto-sidebar-active);
 }
 
 .contenedor_nav_iconos .nav_icono_seleccionado.no-hover {
@@ -61,7 +61,7 @@
 }
 
 .contenedor_nav_iconos ul li:hover {
-    background-color: var(--bg-sidebar-hover);
+    background-color: var(--color-fondo-sidebar-hover);
 }
 
 .contenedor_nav_iconos ul i {

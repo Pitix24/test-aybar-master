@@ -1,15 +1,17 @@
 :root {
     /* Brand */
-    --green-700: #02424E;
-    --yellow-500: #FFA726;
+    --color-primario: #02424E;
+    --color-secundario: #FFA726;
 
     /* Neutrals */
-    --white: #ffffff;
-    --black: #000000;
-    --gray-900: #334155;
-    --gray-700: #475569;
-    --gray-500: #888787;
-    --gray-300: #e2e8f0;
-    --gray-100: #f0f0f0;
-    --gray-200: #1e293b;
+    --color-light: #f1f5f9;
+    --color-light-texto: #334155;
+    --color-light-border: #e2e8f0;
+    --color-light-contraste: #ffffff;
+
+
+    --color-dark: #020617;
+    --color-dark-texto: #e5e7eb;
+    --color-dark-border: #1e293b;
+    --color-dark-contraste: #0f172a;
 }
