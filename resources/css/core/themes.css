@@ -19,6 +19,9 @@
     --text-sidebar-active: var(--white);
     --bg-sidebar-hover: var(--gray-100);
     --bg-sidebar-active: var(--green-700);
+
+    /* Panel */
+    --bg-panel: var(--white);
 }
 
 /* Dark */
@@ -42,4 +45,7 @@
     --text-sidebar-active: #ffffff;
     --bg-sidebar-hover: #1e293b;
     --bg-sidebar-active: var(--green-700);
+
+    /* Panel */
+    --bg-panel: #0f172a;
 }

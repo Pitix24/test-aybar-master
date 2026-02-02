@@ -1,5 +1,5 @@
 /* ================================
-   CORE DESIGN SYSTEM
+   CORE
 ================================ */
 @import "../core/reset.css";
 
@@ -7,17 +7,27 @@
 @import "../core/tokens/colors.css";
 @import "../core/tokens/spacing.css";
 @import "../core/tokens/shadows.css";
+@import "../core/tokens/spacing.css";
 
 @import "../core/themes.css";
 @import "../core/base.css";
+@import "../core/variables.css";
+@import "../core/globales.css";
 
 /* ================================
-   ERP LAYOUT & COMPONENTS
+   LAYOUT
 ================================ */
 @import "./layout.css";
 
+/* ================================
+   COMPONENTS GLOBALES
+================================ */
+@import "../components/panel.css";
+@import "../components/pagina-cabecera.css";
+
+/* ================================
+   COMPONENTS ERP
+================================ */
 @import "./components/header.css";
 @import "./components/menu.css";
 @import "./components/sub-menu.css";
-
-@import "./components/pagina-cabecera.css";

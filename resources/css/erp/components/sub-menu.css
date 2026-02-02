@@ -75,7 +75,7 @@
 .contenedor_nav_links .sidebar_nav li .contenedor_a {
     width: 100%;
     display: flex;
-    padding: 8px 15px;
+    padding: 5px 15px;
     gap: 5px;
     align-items: flex-start;
     justify-content: space-between;

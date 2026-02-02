@@ -1,22 +1,18 @@
 :root {
-    --ancho-centrar-pagina: 1280px;
+    --space-xs: 0.5rem;
+    /* 8px */
+    --space-sm: 0.75rem;
+    /* 12px */
+    --space-md: 1.25rem;
+    /* 20px */
+    --space-lg: 2.5rem;
+    /* 40px */
+    --space-xl: 4.375rem;
+    /* 70px */
 
-    --padding-costados: 20px;
-    --padding-arriba-abajo: 20px;
+    --padding-x: var(--space-md);
+    --padding-y: var(--space-md);
 
-    --gap-computadora: 40px;
-    --gap-movil: 30px;
-
-    --alto-header-web-banner: 0px;
-    --alto-header-web: 100px;
-    --alto-header-admin: 60px;
-
-    --ancho-sidebar-admin-item: 80px;
-    --ancho-sidebar-admin-menu: 240px;
-
-    --view-computadora: 1024px;
-    --view-tablet: 768px;
-    --view-movil: 500px;
-
-    --borde-radius: 14px;
+    --gap-desktop: var(--space-lg);
+    --gap-mobile: var(--space-md);
 }

@@ -1,0 +1,16 @@
+:root {
+    --ancho-centrar-pagina: 1280px;
+
+    --alto-header-web-banner: 0px;
+    --alto-header-web: 100px;
+    --alto-header-admin: 60px;
+
+    --ancho-sidebar-admin-item: 80px;
+    --ancho-sidebar-admin-menu: 240px;
+
+    --view-desktop: 1024px;
+    --view-tablet: 768px;
+    --view-mobile: 500px;
+
+    --radius-md: 14px;
+}
