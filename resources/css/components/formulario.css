@@ -98,6 +98,15 @@
     font-style: italic;
 }
 
+.formulario .input-error {
+    border-color: #ff6692 !important;
+}
+
+.formulario .input-error:focus {
+    border-color: #ff6692 !important;
+    box-shadow: 0 0 0 1px #ff6692 !important;
+}
+
 /*FORMULARIO BOTONES*/
 .formulario_botones {
     display: flex;

@@ -3,43 +3,53 @@
 namespace App\Livewire\Erp\UnidadNegocio;
 
 use App\Models\UnidadNegocio;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 #[Layout('layouts.erp.layout-erp')]
 class UnidadNegocioCrear extends Component
 {
-    public $nombre;
-    public $razon_social;
+    #[Validate('required|string|max:255|unique:unidad_negocios,nombre')]
+    public $nombre = '';
 
-    protected function rules()
+    #[Validate('required|string|max:255')]
+    public $razon_social = '';
+
+    public function updated($propertyName)
     {
-        return [
-            'nombre' => 'required|unique:unidad_negocios,nombre',
-            'razon_social' => 'required|string|max:255',
-        ];
+        $this->validateOnly($propertyName);
     }
 
     public function store()
     {
+        $validated = $this->validate();
+
         try {
-            $this->validate();
-        } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
-            throw $e;
+            DB::beginTransaction();
+
+            $unidadNegocio = UnidadNegocio::create($validated);
+
+            DB::commit();
+
+            session()->flash('success', 'Unidad de negocio creada exitosamente.');
+
+            return $this->redirect(route('erp.unidad-negocio.vista.todo'), navigate: true);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            session()->flash('error', 'Ocurrió un error al crear la unidad de negocio.');
+
+            $this->dispatch('alertaLivewire', [
+                'title' => 'Error',
+                'text' => 'No se pudo guardar. Intente nuevamente.'
+            ]);
+
+            return;
         }
-
-        UnidadNegocio::create([
-            'nombre' => $this->nombre,
-            'razon_social' => $this->razon_social,
-        ]);
-
-        $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardó correctamente.']);
-
-        return redirect()->route('erp.unidad-negocio.vista.todo');
     }
-
 
     public function render()
     {

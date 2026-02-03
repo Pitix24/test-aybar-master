@@ -10,12 +10,12 @@
     filter: brightness(1.1);
 }
 
-.g_boton_empresa_primario {
+.g_boton_guardar {
     background-color: #02424e;
     color: white;
 }
 
-.g_boton_empresa_secundario {
+.g_boton_cancelar {
     background-color: #ffa726;
     color: #02424e;
 }
