@@ -54,7 +54,7 @@ class UnidadNegocioEditar extends Component
 
             session()->flash('success', 'Unidad de negocio actualizada exitosamente.');
 
-            return $this->redirect(route('erp.unidad-negocio.vista.todo'), navigate: true);
+            //return $this->redirect(route('erp.unidad-negocio.vista.todo'), navigate: true);
 
         } catch (\Exception $e) {
             DB::rollBack();

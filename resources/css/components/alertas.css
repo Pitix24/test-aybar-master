@@ -1,0 +1,40 @@
+/* ALERTAS GENERALES */
+.g_alerta_succes,
+.g_alerta_info,
+.g_alerta_error {
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-subtitulo);
+
+}
+
+/* ÉXITO */
+.g_alerta_succes {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #14532d;
+}
+
+/* ERROR */
+.g_alerta_error {
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-error);
+    color: var(--color-error);
+}
+
+.g_alerta_info {
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-info);
+    color: var(--color-info);
+}
+
+/* ÍCONO OPCIONAL (si usas fontawesome) */
+.g_alerta_succes i,
+.g_alerta_error i {
+    font-size: var(--fs-subtitulo);
+}

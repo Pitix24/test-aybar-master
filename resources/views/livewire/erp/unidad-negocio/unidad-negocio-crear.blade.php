@@ -16,13 +16,15 @@
     </div>
 
     @if (session()->has('success'))
-        <div class="alert alert-success">
+        <div class="g_alerta_succes">
+            <i class="fa-solid fa-circle-check"></i>
             {{ session('success') }}
         </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="alert alert-danger">
+        <div class="g_alerta_error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
             {{ session('error') }}
         </div>
     @endif
