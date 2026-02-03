@@ -1,5 +1,5 @@
 .g_panel {
-    padding: 20px;
+    padding: 10px;
     background-color: var(--color-light-contraste);
     background-clip: border-box;
     border: var(--borde-card);
