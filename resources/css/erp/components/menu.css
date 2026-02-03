@@ -28,11 +28,8 @@
     gap: 10px;
     height: var(--alto-header-admin);
     color: var(--color-texto-sidebar);
-}
-
-.contenedor_nav_iconos .contenedor_menu_hamburguesa i {
-    font-size: var(--fs-md);
     cursor: pointer;
+    font-size: var(--fs-md);
 }
 
 .contenedor_nav_iconos ul {
@@ -56,15 +53,12 @@
 .contenedor_nav_iconos ul li {
     padding: 10px;
     border-radius: 12px;
+    font-size: var(--fs-md);
+    cursor: pointer;
 }
 
 .contenedor_nav_iconos ul li:not(.nav_icono_seleccionado):hover {
     background-color: var(--color-fondo-sidebar-hover);
-}
-
-.contenedor_nav_iconos ul i {
-    font-size: var(--fs-md);
-    cursor: pointer;
 }
 
 @media (min-width: 768px) {
