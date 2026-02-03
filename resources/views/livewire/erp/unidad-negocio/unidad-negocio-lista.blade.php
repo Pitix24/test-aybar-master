@@ -12,6 +12,10 @@
 
             <a href="{{ route('erp.unidad-negocio.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
+
+            <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
+            </button>
         </div>
     </div>
 
@@ -19,8 +23,8 @@
         <div class="tabla_cabecera">
             <div class="tabla_cabecera_buscar">
                 <form action="" class="formulario">
-                    <label for="buscar">Nombre</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" id="buscar" name="buscar">
+                    <label for="buscar">Empresa</label>
+                    <input type="text" wire:model.live.debounce.500ms="buscar" id="buscar" name="buscar">
                 </form>
             </div>
 
@@ -37,19 +41,27 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre</th>
+                            <th>Empresa</th>
                             <th>Razón Social</th>
+                            <th>RUC</th>
+                            <th>SLIN ID</th>
+                            <th>Cavali Girador</th>
+                            <th>Girador email</th>
                             <th></th>
                         </tr>
                     </thead>
 
-                    @if ($items->count())
+                    @if ($items->isNotEmpty())
                         <tbody>
-                            @foreach ($items as $index => $item)
+                            @foreach ($items as $item)
                                 <tr>
-                                    <td> {{ $item->id }} </td>
+                                    <td>{{ $item->id }}</td>
                                     <td class="g_resaltar">{{ $item->nombre }}</td>
-                                    <td class="g_inferior g_resumir">{{ $item->razon_social }}</td>
+                                    <td class="g_inferior g_resumir">{{ $item->razon_social ?? '-' }}</td>
+                                    <td>{{ $item->ruc ?? '-' }}</td>
+                                    <td>{{ $item->slin_id ?? '-' }}</td>
+                                    <td class="g_inferior">{{ $item->cavali_girador_nombre ?? '-' }}</td>
+                                    <td class="g_inferior">{{ $item->cavali_girador_email ?? '-' }}</td>
 
                                     <td class="centrar_iconos">
                                         <a href="{{ route('erp.unidad-negocio.vista.editar', $item->id) }}"
@@ -71,9 +83,9 @@
             </div>
         @endif
 
-        @if ($items->count() == 0)
+        @if ($items->isEmpty())
             <div class="g_vacio">
-                <p>No hay items disponibles.</p>
+                <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay items disponibles.' }}</p>
                 <i class="fa-regular fa-face-grin-wink"></i>
             </div>
         @endif

@@ -20,6 +20,11 @@
     color: #02424e;
 }
 
+.g_boton_agregar {
+    background-color: #dddbff;
+    color: #02424E;
+}
+
 .g_boton_pdf {
     background-color: #ff6692;
     color: white;

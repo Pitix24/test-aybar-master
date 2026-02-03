@@ -52,7 +52,7 @@
 
 .contenedor_nav_iconos ul li {
     padding: 10px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: var(--fs-md);
     cursor: pointer;
 }

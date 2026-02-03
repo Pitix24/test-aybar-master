@@ -27,7 +27,8 @@
     --fs-button: 0.685rem;
     --fs-inputs: 0.785rem;
     --fs-tabla: 0.685rem;
-    --fs-titulo: 1.125rem;
+    --fs-titulo: 1rem;
+    --fs-subtitulo: 0.855rem;
 
     /* Font weights */
     --fw-regular: 400;

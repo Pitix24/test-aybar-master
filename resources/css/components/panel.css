@@ -7,10 +7,10 @@
 }
 
 .g_panel_titulo {
-    font-size: var(--fs-titulo);
+    font-size: var(--fs-subtitulo);
     margin-bottom: 8px;
-    color: var(--color-dark-contraste);
-    font-weight: var(--fw-semibold);
+    color: var(--color-light-texto);
+    font-weight: var(--fw-bold);
 }
 
 .g_panel_titulo.centrar {
