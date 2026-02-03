@@ -98,7 +98,7 @@
     border-radius: 12px;
 }
 
-.contenedor_nav_links .sidebar_nav ul .contenedor_a:hover {
+.contenedor_nav_links .sidebar_nav ul .contenedor_a:not(.sidebar_nav_seleccionado):hover {
     background-color: var(--color-fondo-sidebar-hover);
     border-radius: 12px;
 }
@@ -106,10 +106,6 @@
 .contenedor_nav_links .sidebar_nav ul .sidebar_item_seleccionado {
     color: var(--color-fondo-sidebar-active);
 }
-
-/*.contenedor_nav_links .sidebar_nav_seleccionado.no-hover {
-    pointer-events: none;
-}*/
 
 .contenedor_nav_links .ocultar_nivel {
     display: none !important;

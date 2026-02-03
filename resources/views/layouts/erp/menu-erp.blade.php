@@ -11,13 +11,10 @@
 
         <ul>
             @foreach ($menuPrincipal as $n1)
-                <li data-id="{{ $n1['id'] }}" :class="{
-                                            'nav_icono_seleccionado': seleccionadoNivel_1 == Number($el.dataset.id),
-                                            'no-hover': seleccionadoNivel_1 == Number($el.dataset.id)
-                                        }">
+                <li data-id="{{ $n1['id'] }}" @click="toogleNivel_1($event, {{ $n1['id'] }})"
+                    :class="{'nav_icono_seleccionado': seleccionadoNivel_1 == Number($el.dataset.id)}">
 
-                    <a @click="toogleNivel_1($event, {{ $n1['id'] }})" @if (!count($n1['submenus']))
-                    href="{{ $n1['ruta'] !== '#' ? route($n1['ruta']) : '#' }}" @endif>
+                    <a @if (!count($n1['submenus'])) href="{{ $n1['ruta'] !== '#' ? route($n1['ruta']) : '#' }}" @endif>
                         <i class="{{ $n1['icono'] }}"></i>
                     </a>
                 </li>
@@ -47,10 +44,11 @@
 
                                 @foreach ($n1['submenus'] as $n2)
                                     <li>
-                                        <span class="contenedor_a" data-id="{{ $n2['id'] }}" :class="{
-                                                                                                            'sidebar_nav_seleccionado': seleccionadoNivel_2 === Number($el.dataset.id),
-                                                                                                            'no-hover': seleccionadoNivel_2 == Number($el.dataset.id)
-                                                                                                        }">
+                                        <span class="contenedor_a" data-id="{{ $n2['id'] }}"
+                                            :class="{
+                                                                                                                                                                                    'sidebar_nav_seleccionado': seleccionadoNivel_2 === Number($el.dataset.id),
+                                                                                                                                                                                    'no-hover': seleccionadoNivel_2 == Number($el.dataset.id)
+                                                                                                                                                                                }">
 
                                             <a @click.stop="toogleNivel_2($event, {{ $n2['id'] }})" @if (!count($n2['submenus']))
                                             href="{{ $n2['ruta'] !== '#' ? route($n2['ruta']) : '#' }}" @endif>
@@ -96,8 +94,8 @@
                                                                     <li>
                                                                         <span class="contenedor_a" data-id="{{ $n4['id'] }}"
                                                                             :class="{
-                                                                                                                                                                                                                            'sidebar_item_seleccionado': seleccionadoNivel_4 === Number($el.dataset.id)
-                                                                                                                                                                                                                        }">
+                                                                                                                                                                                                                                                                                                                                                                                                    'sidebar_item_seleccionado': seleccionadoNivel_4 === Number($el.dataset.id)
+                                                                                                                                                                                                                                                                                                                                                                                                }">
 
                                                                             <a @click.stop="toogleNivel_4($event, {{ $n4['id'] }})"
                                                                                 href="{{ count($n4['submenus']) ? 'javascript:void(0)' : route($n4['ruta']) }}">

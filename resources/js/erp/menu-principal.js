@@ -72,7 +72,9 @@ window.xDataLayout = function () {
                 this.seleccionadoNivel_2 =
                     this.seleccionadoNivel_3 =
                     this.seleccionadoNivel_4 =
-                        null;
+                    null;
+            } else {
+                this.toggleContenedorNavLinks();
             }
         },
 
@@ -98,7 +100,7 @@ window.xDataLayout = function () {
                 this.seleccionadoNivel_2 =
                 this.seleccionadoNivel_3 =
                 this.seleccionadoNivel_4 =
-                    null;
+                null;
         },
     };
 };

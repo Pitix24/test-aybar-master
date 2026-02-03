@@ -53,16 +53,12 @@
     color: var(--color-texto-sidebar-active);
 }
 
-.contenedor_nav_iconos .nav_icono_seleccionado.no-hover {
-    pointer-events: none;
-}
-
 .contenedor_nav_iconos ul li {
     padding: 10px;
     border-radius: 12px;
 }
 
-.contenedor_nav_iconos ul li:hover {
+.contenedor_nav_iconos ul li:not(.nav_icono_seleccionado):hover {
     background-color: var(--color-fondo-sidebar-hover);
 }
 
