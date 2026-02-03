@@ -25,6 +25,10 @@
 @import "../components/panel.css";
 @import "../components/botones.css";
 @import "../components/pagina-cabecera.css";
+@import "../components/tabla-cabecera.css";
+@import "../components/tabla.css";
+@import "../components/paginacion.css";
+@import "../components/formulario.css";
 
 /* ================================
    COMPONENTS ERP

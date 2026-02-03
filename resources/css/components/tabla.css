@@ -1,0 +1,127 @@
+/*TABLA CONTENIDO*/
+.tabla_contenido {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: var(--fs-tabla);
+    overflow-x: auto;
+}
+
+.contenedor_tabla {
+    overflow: hidden;
+    min-width: 100%;
+    display: inline-block;
+    border-collapse: collapse;
+}
+
+.contenedor_tabla.borde {
+    border: 1px solid #e0e6eb;
+    border-radius: 12px;
+}
+
+/*TABLA*/
+.tabla {
+    min-width: 100%;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla th,
+.tabla tfoot td {
+    font-weight: 600;
+}
+
+.tabla a {
+    cursor: pointer;
+}
+
+.tabla tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.tabla tr:hover {
+    background-color: #eff4fa;
+}
+
+.tabla th,
+.tabla td {
+    padding: 7px 5px;
+    text-align: left;
+}
+
+.tabla tr:not(:last-child) td,
+.tabla th {
+    border-bottom: 1px solid #e0e6eb;
+}
+
+.tabla td img {
+    height: 30px;
+}
+
+/*TABLA PARA ELIMINAR*/
+.tabla_eliminar {
+    width: 100%;
+    font-size: 13px;
+}
+
+.tabla_eliminar th,
+.tabla_eliminar td {
+    padding: 5px 5px;
+    text-align: left;
+}
+
+.tabla_eliminar .boton_eliminar {
+    cursor: pointer;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    background-color: #ffccdb;
+    color: #ff6692;
+}
+
+.tabla_eliminar .boton_activo {
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    background-color: #7ff5c0;
+    color: #19c678;
+}
+
+.tabla_eliminar .boton_guardar {
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    background-color: #0b44ee;
+    color: #ffffff;
+}
+
+.tabla_eliminar .boton_eliminar:hover,
+.tabla_eliminar .boton_guardar:hover,
+.tabla_eliminar .boton_activo:hover {
+    filter: brightness(1.1);
+}
+
+.tabla_eliminar select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    background-image: none;
+    padding-right: 0;
+}
+
+.tabla_caja .cabecera {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tabla_caja .boton_eliminar {
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    background-color: #ffccdb;
+    color: #ff6692;
+}

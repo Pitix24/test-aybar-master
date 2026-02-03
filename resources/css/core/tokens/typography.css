@@ -9,7 +9,7 @@
     /* 6px */
     --fs-2xs: 0.375rem;
     /* 10px */
-    --fs-xs: 0.625rem;
+    --fs-xs: 0.685rem;
     /* 12px */
     --fs-sm: 0.855rem;
     /* 14px */
@@ -23,6 +23,11 @@
     /* 24px */
     --fs-3xl: 1.875rem;
     /* 30px */
+
+    --fs-button: 0.685rem;
+    --fs-inputs: 0.785rem;
+    --fs-tabla: 0.685rem;
+    --fs-titulo: 1.125rem;
 
     /* Font weights */
     --fw-regular: 400;

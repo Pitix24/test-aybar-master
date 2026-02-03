@@ -19,5 +19,45 @@
                 "submenus": []
             }
         ]
+    },
+    {
+        "id": 49,
+        "nombre": "49",
+        "ruta": "#",
+        "url": "#",
+        "icono": "fa-solid fa-city",
+        "nivel": 1,
+        "roles": [],
+        "submenus": [
+            {
+                "id": 39,
+                "nombre": "Unidad Negocio",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-archway",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.unidad-negocio.vista.todo",
+                        "url": "/erp/unidad-negocio",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.unidad-negocio.vista.crear",
+                        "url": "/erp/unidad-negocio/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
     }
 ]

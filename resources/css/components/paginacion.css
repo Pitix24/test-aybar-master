@@ -1,0 +1,44 @@
+.g_paginacion {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    gap: 6px;
+    margin: 20px 0;
+    font-family: sans-serif;
+}
+
+.g_paginacion li {
+    display: inline-block;
+}
+
+.g_paginacion a,
+.g_paginacion button,
+.g_paginacion span {
+    cursor: pointer;
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 6px;
+    background-color: var(--color-negro);
+    color: var(--color-blanco);
+    text-decoration: none;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+}
+
+.g_paginacion a:hover,
+.g_paginacion button:hover {
+    background-color: var(--color-verde);
+}
+
+.g_paginacion .active span {
+    background-color: var(--color-verde);
+    font-weight: bold;
+    cursor: default;
+}
+
+.g_paginacion .disabled span {
+    background-color: var(--color-placeholder);
+    color: var(--color-blanco);
+    cursor: not-allowed;
+}

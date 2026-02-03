@@ -7,7 +7,7 @@
 }
 
 .g_panel_titulo {
-    font-size: var(--fs-lg);
+    font-size: var(--fs-titulo);
     margin-bottom: 8px;
     color: var(--color-dark-contraste);
     font-weight: var(--fw-semibold);

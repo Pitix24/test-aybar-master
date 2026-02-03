@@ -1,7 +1,7 @@
 .g_boton {
     border-radius: 6px;
-    padding: 5px 10px;
-    font-size: var(--fs-xs);
+    padding: 3px 8px;
+    font-size: var(--fs-button);
     cursor: pointer;
     width: max-content;
 }
