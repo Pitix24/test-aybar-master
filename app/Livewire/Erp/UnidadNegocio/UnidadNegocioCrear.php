@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Illuminate\Validation\ValidationException;
 
 #[Layout('layouts.erp.layout-erp')]
 class UnidadNegocioCrear extends Component
@@ -24,16 +25,25 @@ class UnidadNegocioCrear extends Component
 
     public function store()
     {
-        $validated = $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
 
-            $unidadNegocio = UnidadNegocio::create($validated);
+            UnidadNegocio::create([
+                'nombre' => $this->nombre,
+                'razon_social' => $this->razon_social,
+            ]);
 
             DB::commit();
 
             session()->flash('success', 'Unidad de negocio creada exitosamente.');
+            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardo correctamente.']);
 
             //return $this->redirect(route('erp.unidad-negocio.vista.todo'), navigate: true);
 
@@ -42,10 +52,7 @@ class UnidadNegocioCrear extends Component
 
             session()->flash('error', 'Ocurrió un error al crear la unidad de negocio.');
 
-            $this->dispatch('alertaLivewire', [
-                'title' => 'Error',
-                'text' => 'No se pudo guardar. Intente nuevamente.'
-            ]);
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
 
             return;
         }

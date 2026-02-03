@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Illuminate\Validation\ValidationException;
 
 #[Layout('layouts.erp.layout-erp')]
 class UnidadNegocioEditar extends Component
@@ -40,7 +41,12 @@ class UnidadNegocioEditar extends Component
 
     public function update()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
@@ -53,6 +59,7 @@ class UnidadNegocioEditar extends Component
             DB::commit();
 
             session()->flash('success', 'Unidad de negocio actualizada exitosamente.');
+            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizo correctamente.']);
 
             //return $this->redirect(route('erp.unidad-negocio.vista.todo'), navigate: true);
 
@@ -61,10 +68,7 @@ class UnidadNegocioEditar extends Component
 
             session()->flash('error', 'Ocurrió un error al actualizar la unidad de negocio.');
 
-            $this->dispatch('alertaLivewire', [
-                'title' => 'Error',
-                'text' => 'No se pudo actualizar. Intente nuevamente.'
-            ]);
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
 
             return;
         }
