@@ -55,7 +55,7 @@
 }
 
 .contenedor_nav_links .sidebar_nav .nivel_1 {
-    padding: 0px 20px;
+    padding: 0px 10px;
 }
 
 .contenedor_nav_links .sidebar_nav li {
@@ -75,10 +75,11 @@
 .contenedor_nav_links .sidebar_nav li .contenedor_a {
     width: 100%;
     display: flex;
-    padding: 5px 15px;
+    padding: 4px 10px;
     gap: 5px;
     align-items: flex-start;
     justify-content: space-between;
+    align-items: center;
 }
 
 .contenedor_nav_links .sidebar_nav li .contenedor_a a {
@@ -106,9 +107,9 @@
     color: var(--color-fondo-sidebar-active);
 }
 
-.contenedor_nav_links .sidebar_nav_seleccionado.no-hover {
+/*.contenedor_nav_links .sidebar_nav_seleccionado.no-hover {
     pointer-events: none;
-}
+}*/
 
 .contenedor_nav_links .ocultar_nivel {
     display: none !important;

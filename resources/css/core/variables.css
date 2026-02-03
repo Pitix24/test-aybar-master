@@ -3,10 +3,10 @@
 
     --alto-header-web-banner: 0px;
     --alto-header-web: 100px;
-    --alto-header-admin: 60px;
+    --alto-header-admin: 50px;
 
-    --ancho-sidebar-admin-item: 80px;
-    --ancho-sidebar-admin-menu: 240px;
+    --ancho-sidebar-admin-item: 70px;
+    --ancho-sidebar-admin-menu: 220px;
 
     --view-desktop: 1024px;
     --view-tablet: 768px;

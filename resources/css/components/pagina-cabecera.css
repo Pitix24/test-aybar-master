@@ -7,8 +7,8 @@
 
 /*TITULO*/
 .cabecera_titulo_pagina h2 {
-    font-size: var(--fs-lg);
-    color: var(--color-dark-contraste);
+    font-size: var(--fs-md);
+    color: var(--color-light-texto);
     font-weight: var(--fw-semibold);
     display: flex;
     align-items: flex-end;

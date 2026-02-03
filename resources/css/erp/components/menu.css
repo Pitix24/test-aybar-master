@@ -43,8 +43,9 @@
     color: var(--color-texto-sidebar);
     scrollbar-width: none;
     overflow: hidden scroll;
-    padding: 10px 20px;
+    padding: 10px 10px;
     height: calc(100% - var(--alto-header-admin));
+    font-size: var(--fs-md);
 }
 
 .contenedor_nav_iconos ul .nav_icono_seleccionado {
@@ -57,7 +58,7 @@
 }
 
 .contenedor_nav_iconos ul li {
-    padding: 12px;
+    padding: 10px;
     border-radius: 12px;
 }
 
