@@ -80,6 +80,7 @@
     align-items: flex-start;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
 }
 
 .contenedor_nav_links .sidebar_nav li .contenedor_a a {
@@ -98,7 +99,7 @@
     border-radius: 12px;
 }
 
-.contenedor_nav_links .sidebar_nav ul .contenedor_a:not(.sidebar_nav_seleccionado):hover {
+.contenedor_nav_links .sidebar_nav ul .contenedor_a:not(.sidebar_nav_seleccionado):not(.sidebar_item_seleccionado):hover {
     background-color: var(--color-fondo-sidebar-hover);
     border-radius: 12px;
 }
