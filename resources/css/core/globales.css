@@ -19,7 +19,7 @@
 .g_gap_pagina {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 
 .g_margin_top_40 {

@@ -5,7 +5,6 @@ namespace App\Livewire\Erp\UnidadNegocio;
 use App\Models\UnidadNegocio;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
@@ -72,7 +71,8 @@ class UnidadNegocioCrear extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardo correctamente.']);
+            $this->dispatch('alerstaLivewire', ['title' => 'Creado', 'text' => 'Se guardo correctamente.']);
+            $this->reset();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al crear unidad de negocio: ' . $e->getMessage());
