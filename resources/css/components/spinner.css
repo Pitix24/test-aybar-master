@@ -1,0 +1,41 @@
+.contenedor_spiner_load {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    background-color: rgba(0, 0, 0, 0.55);
+}
+
+.contenedor_spiner_load .spinner_box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.contenedor_spiner_load .spinner_icon {
+    width: 48px;
+    height: 48px;
+
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+
+    animation: spinner-rotate 0.9s linear infinite;
+}
+
+.contenedor_spiner_load .spinner_text {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+@keyframes spinner-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}

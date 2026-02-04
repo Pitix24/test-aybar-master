@@ -1,10 +1,10 @@
-@section('tituloPagina', 'Proyectos')
+@section('tituloPagina', 'Lista de proyectos')
 
 @section('anchoPantalla', '100%')
 
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Proyectos</h2>
+        <h2>Lista de proyectos</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.proyecto.vista.todo') }}" class="g_boton g_boton_light">
@@ -13,13 +13,21 @@
             <a href="{{ route('erp.proyecto.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
 
-            <button wire:click="exportExcel" class="g_boton g_boton_excel">
-                Excel <i class="fa-regular fa-file-excel"></i>
+            <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                wire:target="exportExcel">
+                <span wire:loading.remove wire:target="exportExcel">Excel <i
+                        class="fa-regular fa-file-excel"></i></span>
+                <span wire:loading wire:target="exportExcel">Exportando... <i
+                        class="fa-solid fa-spinner fa-spin"></i></span>
             </button>
 
             <button wire:click="resetFiltros" class="g_boton g_boton_danger">
                 Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
             </button>
+
+            <x-loading-overlay wire:loading
+                wire:target="buscar, unidad_negocio_id, grupo_proyecto_id, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
+                message="Cargando..." />
         </div>
     </div>
 
@@ -34,7 +42,7 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Unidad de negocio </label>
                     <select wire:model.live="unidad_negocio_id">
-                        <option value="">TODOS</option>
+                        <option value="">Todos</option>
                         @foreach ($unidades_negocios as $unidad_negocio)
                             <option value="{{ $unidad_negocio->id }}">{{ $unidad_negocio->nombre }}</option>
                         @endforeach
@@ -44,7 +52,7 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Grupo proyecto </label>
                     <select wire:model.live="grupo_proyecto_id">
-                        <option value="">TODOS</option>
+                        <option value="">Todos</option>
                         @foreach ($grupo_proyectos as $grupo_proyecto)
                             <option value="{{ $grupo_proyecto->id }}">{{ $grupo_proyecto->nombre }}</option>
                         @endforeach
@@ -61,7 +69,9 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="g_panel">
         <div>
             <label>Items</label>
             <select wire:model.live="perPage">
@@ -76,10 +86,11 @@
                 <table class="tabla">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Nº</th>
                             <th>Unidad de negocio</th>
                             <th>Grupo proyecto</th>
                             <th>Proyecto</th>
+                            <th>ID Slin</th>
                             <th>Estado</th>
                             <th></th>
                         </tr>
@@ -87,12 +98,13 @@
 
                     @if ($items->isNotEmpty())
                         <tbody>
-                            @foreach ($items as $item)
+                            @foreach ($items as $index => $item)
                                 <tr>
-                                    <td>{{ $item->id }}</td>
+                                    <td>{{ $items->firstItem() + $index }}</td>
                                     <td class="g_resaltar">{{ $item->unidadNegocio->nombre }}</td>
                                     <td class="g_resaltar">{{ $item->grupoProyecto->nombre }}</td>
                                     <td class="g_resaltar">{{ $item->nombre }}</td>
+                                    <td class="g_resaltar">{{ $item->slin_id }}</td>
                                     <td>
                                         <span class="estado {{ $item->activo ? 'g_activo' : 'g_desactivado' }}"><i
                                                 class="fa-solid fa-circle"></i></span>
