@@ -2,6 +2,9 @@
     /* Brand */
     --color-primario: #02424E;
     --color-secundario: #FFA726;
+    --color-terciario: #fff;
+    --color-placeholder: #888787;
+    --color-negro: #333333;
 
     /* Neutrals */
     --color-light: #fafafa;

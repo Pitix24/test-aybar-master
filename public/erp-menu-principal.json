@@ -86,6 +86,35 @@
                         "submenus": []
                     }
                 ]
+            },
+            {
+                "id": 43,
+                "nombre": "Proyecto",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-diagram-project",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.proyecto.vista.todo",
+                        "url": "/erp/proyecto",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.proyecto.vista.crear",
+                        "url": "/erp/proyecto/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
             }
         ]
     }

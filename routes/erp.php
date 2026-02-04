@@ -4,6 +4,9 @@ use App\Livewire\Erp\GrupoProyecto\GrupoProyectoCrear;
 use App\Livewire\Erp\GrupoProyecto\GrupoProyectoEditar;
 use App\Livewire\Erp\GrupoProyecto\GrupoProyectoLista;
 use App\Livewire\Erp\Inicio\InicioLivewire;
+use App\Livewire\Erp\Proyecto\ProyectoCrear;
+use App\Livewire\Erp\Proyecto\ProyectoEditar;
+use App\Livewire\Erp\Proyecto\ProyectoLista;
 use App\Livewire\Erp\UnidadNegocio\UnidadNegocioCrear;
 use App\Livewire\Erp\UnidadNegocio\UnidadNegocioEditar;
 use App\Livewire\Erp\UnidadNegocio\UnidadNegocioLista;
@@ -21,4 +24,10 @@ Route::prefix('grupo-proyecto')->name('grupo-proyecto.vista.')->group(function (
     Route::get('/', GrupoProyectoLista::class)->name('todo');
     Route::get('/crear', GrupoProyectoCrear::class)->name('crear');
     Route::get('/editar/{id}', GrupoProyectoEditar::class)->name('editar');
+});
+
+Route::prefix('proyecto')->name('proyecto.vista.')->group(function () {
+    Route::get('/', ProyectoLista::class)->name('todo');
+    Route::get('/crear', ProyectoCrear::class)->name('crear');
+    Route::get('/editar/{id}', ProyectoEditar::class)->name('editar');
 });
