@@ -16,10 +16,6 @@
 
             <a href="{{ route('erp.proyecto.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
-
-            <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
-            </button>
         </div>
     </div>
 
@@ -61,16 +57,10 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="g_panel">
         <div class="tabla_cabecera">
-            <div class="tabla_cabecera_buscar formulario">
-                <select wire:model.live="perPage">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-            </div>
-
             <div class="tabla_cabecera_botones">
                 <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
                     wire:target="exportExcel">
@@ -79,6 +69,18 @@
                     <span wire:loading wire:target="exportExcel">Exportando... <i
                             class="fa-solid fa-spinner fa-spin"></i></span>
                 </button>
+
+                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
+            <div class="tabla_cabecera_buscar formulario">
+                <select wire:model.live="perPage">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
             </div>
         </div>
 
