@@ -15,58 +15,166 @@
         </div>
     </div>
 
-    @if (session()->has('success'))
-        <div class="g_alerta_succes">
-            <i class="fa-solid fa-circle-check"></i>
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session()->has('error'))
-        <div class="g_alerta_error">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            {{ session('error') }}
-        </div>
-    @endif
-
     <form wire:submit="store" class="formulario">
         <div class="g_fila">
             <div class="g_columna_12">
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Información General</h4>
+                <div class="g_panel" x-data="{ activeTab: 'general' }">
 
-                    <div class="g_fila">
-                        <div class="g_margin_bottom_10 g_columna_6">
-                            <label for="nombre">
-                                Nombre <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                            </label>
-                            <input type="text" id="nombre" wire:model.blur="nombre"
-                                class="@error('nombre') input-error @enderror" autocomplete="off">
-                            @error('nombre')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="g_margin_bottom_10 g_columna_6">
-                            <label for="razon_social">
-                                Razón social <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                            </label>
-                            <input type="text" id="razon_social" wire:model.blur="razon_social"
-                                class="@error('razon_social') input-error @enderror" autocomplete="off">
-                            @error('razon_social')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
+                    <div class="tab-navigation">
+                        <div class="tab-buttons">
+                            <button type="button" @click="activeTab = 'general'"
+                                :class="activeTab === 'general' ? 'tab-active' : 'tab-inactive'" class="tab-button">
+                                <i class="fa-solid fa-building"></i> Información General
+                            </button>
+                            <button type="button" @click="activeTab = 'cavali'"
+                                :class="activeTab === 'cavali' ? 'tab-active' : 'tab-inactive'" class="tab-button">
+                                <i class="fa-solid fa-user-tie"></i> Representante Legal CAVALI
+                            </button>
                         </div>
                     </div>
 
-                    <div class="formulario_botones">
+                    <div x-show="activeTab === 'general'" x-transition class="tab-content">
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="nombre">
+                                    Nombre <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                                </label>
+                                <input type="text" id="nombre" wire:model.blur="nombre"
+                                    class="@error('nombre') input-error @enderror" autocomplete="off">
+                                @error('nombre')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="razon_social">
+                                    Razón social <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                                </label>
+                                <input type="text" id="razon_social" wire:model.blur="razon_social"
+                                    class="@error('razon_social') input-error @enderror" autocomplete="off">
+                                @error('razon_social')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="ruc">
+                                    RUC
+                                </label>
+                                <input type="text" id="ruc" wire:model.blur="ruc"
+                                    class="@error('ruc') input-error @enderror" autocomplete="off">
+                                @error('ruc')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="slin_id">
+                                    SLIN ID
+                                </label>
+                                <input type="text" id="slin_id" wire:model.blur="slin_id"
+                                    class="@error('slin_id') input-error @enderror" autocomplete="off">
+                                @error('slin_id')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-show="activeTab === 'cavali'" x-transition class="tab-content">
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="cavali_girador_tipo_documento">
+                                    Tipo de Documento
+                                </label>
+                                <select id="cavali_girador_tipo_documento"
+                                    wire:model.blur="cavali_girador_tipo_documento"
+                                    class="@error('cavali_girador_tipo_documento') input-error @enderror">
+                                    <option value="">Seleccione...</option>
+                                    <option value="DNI">DNI</option>
+                                    <option value="CE">Carnet de Extranjería</option>
+                                    <option value="PASAPORTE">Pasaporte</option>
+                                    <option value="RUC">RUC</option>
+                                </select>
+                                @error('cavali_girador_tipo_documento')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="cavali_girador_documento">
+                                    Número de Documento
+                                </label>
+                                <input type="text" id="cavali_girador_documento"
+                                    wire:model.blur="cavali_girador_documento"
+                                    class="@error('cavali_girador_documento') input-error @enderror" autocomplete="off">
+                                @error('cavali_girador_documento')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="cavali_girador_nombre">
+                                    Nombres
+                                </label>
+                                <input type="text" id="cavali_girador_nombre" wire:model.blur="cavali_girador_nombre"
+                                    class="@error('cavali_girador_nombre') input-error @enderror" autocomplete="off">
+                                @error('cavali_girador_nombre')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="cavali_girador_apellido">
+                                    Apellidos
+                                </label>
+                                <input type="text" id="cavali_girador_apellido"
+                                    wire:model.blur="cavali_girador_apellido"
+                                    class="@error('cavali_girador_apellido') input-error @enderror" autocomplete="off">
+                                @error('cavali_girador_apellido')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="cavali_girador_email">
+                                    Email
+                                </label>
+                                <input type="email" id="cavali_girador_email" wire:model.blur="cavali_girador_email"
+                                    class="@error('cavali_girador_email') input-error @enderror" autocomplete="off">
+                                @error('cavali_girador_email')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="cavali_girador_telefono">
+                                    Teléfono
+                                </label>
+                                <input type="text" id="cavali_girador_telefono"
+                                    wire:model.blur="cavali_girador_telefono"
+                                    class="@error('cavali_girador_telefono') input-error @enderror" autocomplete="off">
+                                @error('cavali_girador_telefono')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="formulario_botones tab-form-buttons">
                         <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
                             wire:target="store">
                             <span wire:loading.remove wire:target="store">
-                                <i class="fa-solid fa-save"></i> Crear
+                                <i class="fa-solid fa-save"></i> Guardar
                             </span>
                             <span wire:loading wire:target="store">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                                <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
                             </span>
                         </button>
 
