@@ -8,6 +8,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 
 #[Layout('layouts.erp.layout-erp')]
 class UnidadNegocioEditar extends Component
@@ -93,6 +94,25 @@ class UnidadNegocioEditar extends Component
             DB::rollBack();
             Log::error('Error al actualizar unidad de negocio: ' . $e->getMessage());
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
+            return;
+        }
+    }
+
+    #[On('eliminarUnidadNegocioOn')]
+    public function eliminarUnidadNegocioOn()
+    {
+        try {
+            DB::beginTransaction();
+
+            $this->unidadNegocio->delete();
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se elimino correctamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al eliminar unidad de negocio: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
             return;
         }
     }

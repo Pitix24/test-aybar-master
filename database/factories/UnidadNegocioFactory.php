@@ -17,7 +17,8 @@ class UnidadNegocioFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nombre' => $this->faker->unique()->company(),
+            'razon_social' => $this->faker->unique()->companySuffix(),
         ];
     }
 }

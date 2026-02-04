@@ -68,10 +68,19 @@ class GrupoProyectoEditar extends Component
     #[On('eliminarGrupoProyectoOn')]
     public function eliminarGrupoProyectoOn()
     {
-        if ($this->grupoProyecto) {
+        try {
+            DB::beginTransaction();
+
             $this->grupoProyecto->delete();
 
-            return redirect()->route('erp.grupo-proyecto.vista.todo');
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se elimino correctamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al eliminar grupo de proyecto: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
+            return;
         }
     }
 
