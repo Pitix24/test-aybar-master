@@ -5,7 +5,6 @@ namespace App\Livewire\Erp\UnidadNegocio;
 use App\Models\UnidadNegocio;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
@@ -29,16 +28,16 @@ class UnidadNegocioEditar extends Component
     protected function rules()
     {
         return [
-            'nombre' => 'required|string|max:255|unique:unidad_negocios,nombre,' . $this->unidadNegocio->id,
-            'razon_social' => 'required|string|max:255',
-            'ruc' => 'nullable|string|unique:unidad_negocios,ruc,' . $this->unidadNegocio->id,
-            'slin_id' => 'nullable|string|max:255|unique:unidad_negocios,slin_id,' . $this->unidadNegocio->id,
-            'cavali_girador_tipo_documento' => 'nullable|string|max:255',
-            'cavali_girador_documento' => 'nullable|string|max:255',
-            'cavali_girador_nombre' => 'nullable|string|max:255',
-            'cavali_girador_apellido' => 'nullable|string|max:255',
-            'cavali_girador_email' => 'nullable|email|max:255',
-            'cavali_girador_telefono' => 'nullable|string|max:20',
+            'nombre' => 'required|unique:unidad_negocios,nombre,' . $this->unidadNegocio->id,
+            'razon_social' => 'required',
+            'ruc' => 'nullable|unique:unidad_negocios,ruc,' . $this->unidadNegocio->id,
+            'slin_id' => 'nullable|unique:unidad_negocios,slin_id,' . $this->unidadNegocio->id,
+            'cavali_girador_tipo_documento' => 'nullable',
+            'cavali_girador_documento' => 'nullable',
+            'cavali_girador_nombre' => 'nullable',
+            'cavali_girador_apellido' => 'nullable',
+            'cavali_girador_email' => 'nullable|email',
+            'cavali_girador_telefono' => 'nullable',
         ];
     }
 

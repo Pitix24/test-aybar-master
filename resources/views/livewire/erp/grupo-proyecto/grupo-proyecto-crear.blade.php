@@ -8,12 +8,9 @@
             <a href="{{ route('erp.grupo-proyecto.vista.todo') }}" class="g_boton g_boton_light">
                 Inicio <i class="fa-solid fa-house"></i></a>
 
-            <a href="{{ route('erp.grupo-proyecto.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
-
-            <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
-            </button>
+            <a href="{{ route('erp.grupo-proyecto.vista.todo') }}" class="g_boton g_boton_dark">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </a>
         </div>
     </div>
 
