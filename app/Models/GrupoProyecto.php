@@ -15,8 +15,7 @@ class GrupoProyecto extends Model
 
     protected $fillable = [
         'nombre',
-        'activo',
-        'slug',
+        'activo'
     ];
 
     public function scopeSearch($query, $search)

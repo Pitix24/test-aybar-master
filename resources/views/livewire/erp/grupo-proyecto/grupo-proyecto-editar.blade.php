@@ -75,28 +75,30 @@
         </div>
     </form>
 
-    <script>
-        function alertaEliminarGrupoProyecto() {
-            Swal.fire({
-                title: '¿Quieres eliminar?',
-                text: "No podrás recuperarlo.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '¡Sí, eliminar!',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Livewire.dispatch('eliminarGrupoProyectoOn');
+    @push('scripts')
+        <script>
+            function alertaEliminarGrupoProyecto() {
+                Swal.fire({
+                    title: '¿Quieres eliminar?',
+                    text: "No podrás recuperarlo.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '¡Sí, eliminar!',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Livewire.dispatch('eliminarGrupoProyectoOn');
 
-                    Swal.fire(
-                        '¡Eliminado!',
-                        'Eliminaste correctamente.',
-                        'success'
-                    )
-                }
-            });
-        }
-    </script>
+                        Swal.fire(
+                            '¡Eliminado!',
+                            'Eliminaste correctamente.',
+                            'success'
+                        )
+                    }
+                });
+            }
+        </script>
+    @endpush
 </div>

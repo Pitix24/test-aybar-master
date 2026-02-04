@@ -9,6 +9,9 @@
                 Inicio <i class="fa-solid fa-house"></i>
             </a>
 
+            <a href="{{ route('erp.unidad-negocio.vista.crear') }}" class="g_boton g_boton_primary">
+                Crear <i class="fa-solid fa-square-plus"></i></a>
+
             <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_dark">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </a>

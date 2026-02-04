@@ -43,7 +43,6 @@ class GrupoProyectoCrear extends Component
             GrupoProyecto::create([
                 'nombre' => $this->nombre,
                 'activo' => $this->activo,
-                'slug' => \Illuminate\Support\Str::slug($this->nombre),
             ]);
 
             DB::commit();
