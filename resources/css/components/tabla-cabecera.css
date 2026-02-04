@@ -4,6 +4,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+    gap: 5px;
 }
 
 .tabla_cabecera_botones {
@@ -12,7 +13,6 @@
     overflow-y: auto;
     white-space: nowrap;
     justify-content: flex-end;
-    margin: 10px 0px;
 }
 
 

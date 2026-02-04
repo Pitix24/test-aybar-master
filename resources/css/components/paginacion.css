@@ -4,8 +4,8 @@
     list-style: none;
     padding: 0;
     gap: 6px;
-    margin: 20px 0;
-    font-family: sans-serif;
+    margin: 10px 0;
+    font-size: var(--fs-button);
 }
 
 .g_paginacion li {
@@ -17,12 +17,11 @@
 .g_paginacion span {
     cursor: pointer;
     display: inline-block;
-    padding: 8px 14px;
+    padding: 4px 14px;
     border-radius: 6px;
     background-color: var(--color-negro);
     color: var(--color-terciario);
     text-decoration: none;
-    font-size: 15px;
     transition: background-color 0.2s ease;
 }
 

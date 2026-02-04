@@ -3,6 +3,10 @@
 @section('anchoPantalla', '100%')
 
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading
+        wire:target="buscar, unidad_negocio_id, grupo_proyecto_id, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
+        message="Cargando..." />
+
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Lista de proyectos</h2>
 
@@ -13,21 +17,9 @@
             <a href="{{ route('erp.proyecto.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
 
-            <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
-                wire:target="exportExcel">
-                <span wire:loading.remove wire:target="exportExcel">Excel <i
-                        class="fa-regular fa-file-excel"></i></span>
-                <span wire:loading wire:target="exportExcel">Exportando... <i
-                        class="fa-solid fa-spinner fa-spin"></i></span>
-            </button>
-
             <button wire:click="resetFiltros" class="g_boton g_boton_danger">
                 Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
             </button>
-
-            <x-loading-overlay wire:loading
-                wire:target="buscar, unidad_negocio_id, grupo_proyecto_id, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
-                message="Cargando..." />
         </div>
     </div>
 
@@ -69,16 +61,25 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="g_panel">
-        <div>
-            <label>Items</label>
-            <select wire:model.live="perPage">
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
+        <div class="tabla_cabecera">
+            <div class="tabla_cabecera_buscar formulario">
+                <select wire:model.live="perPage">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+
+            <div class="tabla_cabecera_botones">
+                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                    wire:target="exportExcel">
+                    <span wire:loading.remove wire:target="exportExcel">Excel <i
+                            class="fa-regular fa-file-excel"></i></span>
+                    <span wire:loading wire:target="exportExcel">Exportando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+            </div>
         </div>
 
         <div class="tabla_contenido">
