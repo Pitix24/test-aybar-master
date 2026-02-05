@@ -68,6 +68,7 @@ class AdminLista extends Component
     public function render()
     {
         $items = User::query()
+            ->where('rol', 'admin')
             ->when($this->buscar !== '', function ($q) {
                 $q->where(function ($query) {
                     $query->where('name', 'like', "%{$this->buscar}%")

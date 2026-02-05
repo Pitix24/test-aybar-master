@@ -10,12 +10,12 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 class AdminsExport implements FromCollection, WithHeadings, ShouldAutoSize
 {
     protected $buscar;
-    protected ?int $role_id;
+    protected $role_id;
     protected $activo;
     protected $perPage;
     protected $page;
 
-    public function __construct($buscar, ?int $role_id, $activo, $perPage, $page)
+    public function __construct($buscar, $role_id, $activo, $perPage, $page)
     {
         $this->buscar = $buscar;
         $this->role_id = $role_id;
@@ -27,6 +27,7 @@ class AdminsExport implements FromCollection, WithHeadings, ShouldAutoSize
     public function collection()
     {
         return User::query()
+            ->where('rol', 'admin')
             ->when($this->buscar !== '', function ($q) {
                 $q->where(function ($query) {
                     $query->where('name', 'like', "%{$this->buscar}%")
