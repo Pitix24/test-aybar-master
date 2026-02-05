@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             RegionSeeder::class,
             ProvinciaSeeder::class,
             DistritoSeeder::class,
+            RolesYPermisosSeeder::class,
 
             UnidadNegocioSeeder::class,
             GrupoProyectoSeeder::class,
