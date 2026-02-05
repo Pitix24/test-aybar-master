@@ -23,6 +23,18 @@ php artisan make:livewire erp.cliente.cliente-lista --class
 php artisan make:livewire erp.cliente.cliente-crear --class
 php artisan make:livewire erp.cliente.cliente-editar --class
 
+php artisan make:livewire erp.admin.admin-lista --class
+php artisan make:livewire erp.admin.admin-crear --class
+php artisan make:livewire erp.admin.admin-editar --class
+
+php artisan make:livewire erp.rol.rol-lista --class
+php artisan make:livewire erp.rol.rol-crear --class
+php artisan make:livewire erp.rol.rol-editar --class
+
+php artisan make:livewire erp.permiso.permiso-lista --class
+php artisan make:livewire erp.permiso.permiso-crear --class
+php artisan make:livewire erp.permiso.permiso-editar --class
+
 php artisan make:model Direccion -mfsc
 php artisan make:livewire erp.direccion.direccion-lista --class
 php artisan make:livewire erp.direccion.direccion-crear --class
