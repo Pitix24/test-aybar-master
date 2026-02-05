@@ -80,14 +80,14 @@ class UnidadNegocioEditar extends Component
             $this->unidadNegocio->update([
                 'nombre' => $this->nombre,
                 'razon_social' => $this->razon_social,
-                'ruc' => $this->ruc,
-                'slin_id' => $this->slin_id,
-                'cavali_girador_tipo_documento' => $this->cavali_girador_tipo_documento,
-                'cavali_girador_documento' => $this->cavali_girador_documento,
-                'cavali_girador_nombre' => $this->cavali_girador_nombre,
-                'cavali_girador_apellido' => $this->cavali_girador_apellido,
-                'cavali_girador_email' => $this->cavali_girador_email,
-                'cavali_girador_telefono' => $this->cavali_girador_telefono,
+                'ruc' => $this->ruc ?: null,
+                'slin_id' => $this->slin_id ?: null,
+                'cavali_girador_tipo_documento' => $this->cavali_girador_tipo_documento ?: null,
+                'cavali_girador_documento' => $this->cavali_girador_documento ?: null,
+                'cavali_girador_nombre' => $this->cavali_girador_nombre ?: null,
+                'cavali_girador_apellido' => $this->cavali_girador_apellido ?: null,
+                'cavali_girador_email' => $this->cavali_girador_email ?: null,
+                'cavali_girador_telefono' => $this->cavali_girador_telefono ?: null,
                 'activo' => $this->activo,
             ]);
 

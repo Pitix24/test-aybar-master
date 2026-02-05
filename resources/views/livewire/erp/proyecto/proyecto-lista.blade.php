@@ -107,7 +107,7 @@
                                     <td class="g_resaltar">{{ $item->unidadNegocio->nombre }}</td>
                                     <td class="g_resaltar">{{ $item->grupoProyecto->nombre }}</td>
                                     <td class="g_resaltar">{{ $item->nombre }}</td>
-                                    <td class="g_resaltar">{{ $item->slin_id }}</td>
+                                    <td class="g_resaltar">{{ $item->slin_id ?? '-' }}</td>
                                     <td>
                                         <span class="estado {{ $item->activo ? 'g_activo' : 'g_desactivado' }}"><i
                                                 class="fa-solid fa-circle"></i></span>

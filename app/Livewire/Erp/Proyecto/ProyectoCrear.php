@@ -17,8 +17,8 @@ class ProyectoCrear extends Component
     public $unidad_negocios, $unidad_negocio_id = "";
     public $grupo_proyectos, $grupo_proyecto_id = "";
 
-    public $nombre;
-    public $slin_id;
+    public $nombre = '';
+    public $slin_id = '';
     public $activo = false;
 
     protected function rules()
@@ -27,7 +27,7 @@ class ProyectoCrear extends Component
             'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
             'grupo_proyecto_id' => 'required|exists:grupo_proyectos,id',
             'nombre' => 'required|unique:proyectos,nombre',
-            'slin_id' => 'nullable|string|max:255',
+            'slin_id' => 'nullable',
             'activo' => 'required|boolean',
         ];
     }
@@ -59,7 +59,7 @@ class ProyectoCrear extends Component
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'grupo_proyecto_id' => $this->grupo_proyecto_id,
                 'nombre' => $this->nombre,
-                'slin_id' => $this->slin_id,
+                'slin_id' => $this->slin_id ?: null,
                 'activo' => $this->activo,
             ]);
 

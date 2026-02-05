@@ -58,6 +58,7 @@ class ProyectosExport implements FromCollection, WithHeadings, ShouldAutoSize
                     $item->unidadNegocio?->nombre ?? '-',
                     $item->grupoProyecto?->nombre ?? '-',
                     $item->nombre,
+                    $item->slin_id ?? '-',
                     $item->activo ? 'Activo' : 'Inactivo',
                     $item->created_at->format('Y-m-d H:i'),
                 ];
@@ -72,6 +73,7 @@ class ProyectosExport implements FromCollection, WithHeadings, ShouldAutoSize
             'Unidad de Negocio',
             'Grupo Proyecto',
             'Nombre',
+            'Slin ID',
             'Estado',
             'Fecha Creación',
         ];
