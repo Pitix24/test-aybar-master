@@ -9,7 +9,9 @@ use Livewire\Component;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 class GrupoProyectoEditar extends Component
 {
@@ -88,5 +90,12 @@ class GrupoProyectoEditar extends Component
     public function render()
     {
         return view('livewire.erp.grupo-proyecto.grupo-proyecto-editar');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-erp.placeholder />
+        HTML;
     }
 }

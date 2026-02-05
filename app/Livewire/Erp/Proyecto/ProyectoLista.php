@@ -112,12 +112,7 @@ class ProyectoLista extends Component
     public function placeholder()
     {
         return <<<'HTML'
-        <div class="g_panel">
-            <div class="g_vacio">
-                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-                <p>Cargando ...</p>
-            </div>
-        </div>
+        <x-erp.placeholder />
         HTML;
     }
 }

@@ -9,7 +9,9 @@ use Livewire\Component;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 class UnidadNegocioEditar extends Component
 {
@@ -125,5 +127,12 @@ class UnidadNegocioEditar extends Component
     public function render()
     {
         return view('livewire.erp.unidad-negocio.unidad-negocio-editar');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-erp.placeholder />
+        HTML;
     }
 }

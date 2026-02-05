@@ -9,7 +9,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UnidadNegocioExport;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 class UnidadNegocioLista extends Component
 {
@@ -24,19 +26,17 @@ class UnidadNegocioLista extends Component
     #[Url]
     public $activo = '';
 
-    public function updatedBuscar()
+    public function updated($property)
     {
-        $this->resetPage();
-    }
-
-    public function updatedPerPage()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingActivo()
-    {
-        $this->resetPage();
+        if (
+            in_array($property, [
+                'buscar',
+                'activo',
+                'perPage'
+            ])
+        ) {
+            $this->resetPage();
+        }
     }
 
     public function resetFiltros()
@@ -78,5 +78,12 @@ class UnidadNegocioLista extends Component
             ->paginate($this->perPage);
 
         return view('livewire.erp.unidad-negocio.unidad-negocio-lista', compact('items'));
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-erp.placeholder />
+        HTML;
     }
 }

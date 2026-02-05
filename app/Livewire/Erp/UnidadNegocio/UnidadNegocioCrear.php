@@ -8,7 +8,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 class UnidadNegocioCrear extends Component
 {
@@ -88,5 +90,12 @@ class UnidadNegocioCrear extends Component
     public function render()
     {
         return view('livewire.erp.unidad-negocio.unidad-negocio-crear');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-erp.placeholder />
+        HTML;
     }
 }

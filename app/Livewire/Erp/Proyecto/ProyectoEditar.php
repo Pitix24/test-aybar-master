@@ -11,7 +11,9 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 class ProyectoEditar extends Component
 {
@@ -107,5 +109,12 @@ class ProyectoEditar extends Component
     public function render()
     {
         return view('livewire.erp.proyecto.proyecto-editar');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-erp.placeholder />
+        HTML;
     }
 }
