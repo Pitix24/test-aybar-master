@@ -39,3 +39,5 @@ php artisan make:model Direccion -mfsc
 php artisan make:livewire erp.direccion.direccion-lista --class
 php artisan make:livewire erp.direccion.direccion-crear --class
 php artisan make:livewire erp.direccion.direccion-editar --class
+
+php artisan make:migration add_module_to_permissions_table --table=permissions

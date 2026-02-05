@@ -67,9 +67,7 @@ class RolCrear extends Component
 
     public function render()
     {
-        $allPermissions = Permission::orderBy('name')->get()->groupBy(function ($item) {
-            return explode('.', $item->name)[0];
-        });
+        $allPermissions = Permission::orderBy('name')->get()->groupBy('module');
 
         return view('livewire.erp.rol.rol-crear', compact('allPermissions'));
     }

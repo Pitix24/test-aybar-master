@@ -57,21 +57,43 @@
                                 Los usuarios con el rol <strong>super-admin</strong> tienen acceso total al sistema de forma implícita (vía Gate::before). No es necesario asignar permisos individuales aquí.
                             </div>
                         @else
-                            <div class="g_cajas_input">
-                                <div class="g_grid_permisos">
-                                    @foreach($allPermissions as $group => $items)
-                                        <div class="grupo_permiso_card">
-                                            <h5>{{ $group }}</h5>
-                                            <div class="permisos_lista">
-                                                @foreach($items as $permission)
-                                                    <div class="permiso_item">
-                                                        <input type="checkbox" id="perm_{{ $permission->id }}"
-                                                            value="{{ $permission->name }}" wire:model="permissions">
-                                                        <label for="perm_{{ $permission->id }}">
-                                                            {{ str_replace('.', ' (', $permission->name) . ')' }}
-                                                        </label>
-                                                    </div>
-                                                @endforeach
+                            <div class="g_cajas_input" x-data="{ moduloAbierto: null }">
+                                <div class="g_grid_modulos">
+                                    @foreach($allPermissions as $module => $permissions)
+                                        <div class="modulo_acordeon" :class="{ 'abierto': moduloAbierto === '{{ $module }}' }">
+                                            <div class="modulo_cabecera" @click="moduloAbierto = (moduloAbierto === '{{ $module }}' ? null : '{{ $module }}')">
+                                                <h5>
+                                                    <i class="fa-solid fa-folder-open"></i> {{ $module }}
+                                                    <small class="g_badge info">
+                                                        {{ $permissions->count() }} permisos
+                                                    </small>
+                                                </h5>
+                                                <i class="fa-solid fa-chevron-down chevron"></i>
+                                            </div>
+
+                                            <div class="modulo_contenido">
+                                                <div class="recursos_grid">
+                                                    @php
+                                                        $recursos = $permissions->groupBy(fn($p) => explode('.', $p->name)[0]);
+                                                    @endphp
+
+                                                    @foreach($recursos as $recurso => $items)
+                                                        <div class="recurso_grupo">
+                                                            <div class="recurso_titulo">{{ str_replace('-', ' ', $recurso) }}</div>
+                                                            <div class="permisos_lista">
+                                                                @foreach($items as $permission)
+                                                                    <div class="permiso_item">
+                                                                        <input type="checkbox" id="perm_{{ $permission->id }}"
+                                                                            value="{{ $permission->name }}" wire:model="permissions">
+                                                                        <label for="perm_{{ $permission->id }}">
+                                                                            {{ explode('.', $permission->name)[1] ?? $permission->name }}
+                                                                        </label>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
                                             </div>
                                         </div>
                                     @endforeach
