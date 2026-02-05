@@ -21,6 +21,133 @@
         ]
     },
     {
+        "id": 48,
+        "nombre": "48",
+        "ruta": "#",
+        "url": "#",
+        "icono": "fa-solid fa-users-cog",
+        "nivel": 1,
+        "roles": [],
+        "submenus": [
+            {
+                "id": 50,
+                "nombre": "Roles",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-user-shield",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.rol.vista.todo",
+                        "url": "/erp/rol",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.rol.vista.crear",
+                        "url": "/erp/rol/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 51,
+                "nombre": "Permisos",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-user-cog",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.permiso.vista.todo",
+                        "url": "/erp/permiso",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.permiso.vista.crear",
+                        "url": "/erp/permiso/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 41,
+                "nombre": "Admins",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-user-tie",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.admin.vista.todo",
+                        "url": "/erp/admin",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.admin.vista.crear",
+                        "url": "/erp/admin/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 42,
+                "nombre": "Clientes(Portal)",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-users",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.cliente.vista.todo",
+                        "url": "/erp/cliente",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.cliente.vista.crear",
+                        "url": "/erp/cliente/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "id": 49,
         "nombre": "49",
         "ruta": "#",

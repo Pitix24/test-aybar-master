@@ -141,6 +141,21 @@
     color: white;
 }
 
+.g_badge.info {
+    background: #58a3ff !important;
+    color: rgb(3, 64, 114);
+}
+
+.g_badge.warning {
+    background: #f8c20a !important;
+    color: rgb(0, 0, 0);
+}
+
+.g_badge.danger {
+    background: #ff6692 !important;
+    color: white;
+}
+
 .g_estado {
     font-size: 8px;
     display: inline-block;

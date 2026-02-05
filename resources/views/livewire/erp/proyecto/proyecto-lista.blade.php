@@ -1,4 +1,4 @@
-@section('tituloPagina', 'Lista de proyectos')
+@section('tituloPagina', 'Lista de Proyectos')
 
 @section('anchoPantalla', '100%')
 
@@ -8,7 +8,7 @@
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Lista de proyectos</h2>
+        <h2>Lista de Proyectos</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.proyecto.vista.todo') }}" class="g_boton g_boton_light">

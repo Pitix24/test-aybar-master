@@ -1,8 +1,8 @@
-@section('tituloPagina', 'Crear grupo proyecto')
+@section('tituloPagina', 'Crear Grupo Proyecto')
 
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Crear grupo proyecto</h2>
+        <h2>Crear Grupo Proyecto</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.grupo-proyecto.vista.todo') }}" class="g_boton g_boton_light">

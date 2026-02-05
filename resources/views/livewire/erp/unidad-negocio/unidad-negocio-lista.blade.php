@@ -1,4 +1,4 @@
-@section('tituloPagina', 'Lista unidad de negocio')
+@section('tituloPagina', 'Lista de Unidades de Negocio')
 
 @section('anchoPantalla', '100%')
 
@@ -8,7 +8,7 @@
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Lista unidad de negocio</h2>
+        <h2>Lista de Unidades de Negocio</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_light">

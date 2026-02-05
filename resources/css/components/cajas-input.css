@@ -1,0 +1,57 @@
+.g_cajas_input .g_grid_permisos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.g_cajas_input .grupo_permiso_card {
+    border: 1px solid #e2e8f0;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.g_cajas_input .grupo_permiso_card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.g_cajas_input .grupo_permiso_card h5 {
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #cbd5e1;
+    padding-bottom: 5px;
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.g_cajas_input .permiso_item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.g_cajas_input .permiso_item:last-child {
+    margin-bottom: 0;
+}
+
+.g_cajas_input .permiso_item input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: var(--color-primario);
+}
+
+.g_cajas_input .permiso_item label {
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #334155;
+    user-select: none;
+}
+
+.g_cajas_input .permiso_item label:hover {
+    color: var(--color-primario);
+}
