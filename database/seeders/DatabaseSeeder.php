@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ProyectoSeeder::class,
             UserSeeder::class,
             SedesYAreasSeeder::class,
+            TipoSolicitudSeeder::class,
         ]);
     }
 }
