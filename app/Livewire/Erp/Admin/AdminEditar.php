@@ -29,7 +29,6 @@ class AdminEditar extends Component
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $this->user_model->id,
-            'password' => 'nullable|string|min:8',
             'selected_roles' => 'required|array|min:1',
             'activo' => 'boolean',
         ];
@@ -46,7 +45,11 @@ class AdminEditar extends Component
 
     public function updated($propertyName)
     {
-        $this->validateOnly($propertyName);
+        if ($propertyName === 'password') {
+            $this->validateOnly($propertyName, ['password' => 'required|string|min:8']);
+        } else {
+            $this->validateOnly($propertyName);
+        }
     }
 
     public function update()
@@ -61,17 +64,12 @@ class AdminEditar extends Component
         try {
             DB::beginTransaction();
 
-            $data = [
+            $this->user_model->update([
                 'name' => trim($this->name),
                 'email' => strtolower(trim($this->email)),
                 'activo' => $this->activo,
-            ];
+            ]);
 
-            if ($this->password) {
-                $data['password'] = Hash::make($this->password);
-            }
-
-            $this->user_model->update($data);
             $this->user_model->syncRoles($this->selected_roles);
 
             DB::commit();
@@ -81,6 +79,33 @@ class AdminEditar extends Component
             DB::rollBack();
             Log::error('Error al actualizar usuario admin: ' . $e->getMessage());
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar el usuario.']);
+        }
+    }
+
+    public function updatePassword()
+    {
+        try {
+            $this->validate(['password' => 'required|string|min:8']);
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'La contraseña debe tener al menos 8 caracteres.']);
+            throw $e;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $this->user_model->update([
+                'password' => Hash::make($this->password),
+            ]);
+
+            DB::commit();
+
+            $this->reset('password');
+            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'La contraseña se actualizó correctamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al actualizar password admin: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar la contraseña.']);
         }
     }
 

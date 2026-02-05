@@ -20,9 +20,9 @@
         </div>
     </div>
 
-    <form wire:submit="update" class="formulario">
-        <div class="g_fila">
-            <div class="g_columna_8">
+    <div class="g_fila">
+        <div class="g_columna_8">
+            <form wire:submit="update" class="formulario">
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">General</h4>
 
@@ -95,7 +95,7 @@
                         <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
                             wire:target="update">
                             <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-save"></i> Actualizar
+                                <i class="fa-solid fa-save"></i> Actualizar General
                             </span>
                             <span wire:loading wire:target="update">
                                 <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
@@ -107,13 +107,16 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            </form>
+        </div>
 
-            <div class="g_columna_4">
+        <div class="g_columna_4">
+            <form wire:submit="updatePassword" class="formulario">
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">Contraseña</h4>
 
                     <div class="g_margin_bottom_10">
+                        <label for="password">Nueva Contraseña</label>
                         <input type="password" id="password" wire:model.blur="password"
                             class="@error('password') input-error @enderror" autocomplete="off">
                         @error('password')
@@ -123,23 +126,19 @@
 
                     <div class="formulario_botones">
                         <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="update">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-save"></i> Actualizar
+                            wire:target="updatePassword">
+                            <span wire:loading.remove wire:target="updatePassword">
+                                <i class="fa-solid fa-key"></i> Cambiar Password
                             </span>
-                            <span wire:loading wire:target="update">
+                            <span wire:loading wire:target="updatePassword">
                                 <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
                             </span>
                         </button>
-
-                        <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
-    </form>
+    </div>
 
     @script
     <script>
