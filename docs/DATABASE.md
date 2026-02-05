@@ -52,9 +52,9 @@ php artisan make:livewire erp.area.area-lista --class
 php artisan make:livewire erp.area.area-crear --class
 php artisan make:livewire erp.area.area-editar --class
 
-php artisan make:migration create_area_sede_table --table=area_sede
+php artisan make:migration create_area_sede_table
 
-php artisan make:migration create_area_user_table --table=area_user
+php artisan make:migration create_area_user_table
 
 php artisan make:model TipoSolicitud -mfsc
 php artisan make:livewire erp.tipo-solicitud.tipo-solicitud-lista --class
@@ -66,7 +66,7 @@ php artisan make:livewire erp.sub-tipo-solicitud.sub-tipo-solicitud-lista --clas
 php artisan make:livewire erp.sub-tipo-solicitud.sub-tipo-solicitud-crear --class
 php artisan make:livewire erp.sub-tipo-solicitud.sub-tipo-solicitud-editar --class
 
-php artisan make:migration create_area_tipo_solicitud_table --table=area_tipo_solicitud
+php artisan make:migration create_area_tipo_solicitud_table
 
 php artisan make:model EstadoTicket -mfsc
 php artisan make:livewire erp.estado-ticket.estado-ticket-lista --class

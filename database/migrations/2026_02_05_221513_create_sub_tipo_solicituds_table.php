@@ -10,22 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('area_user', function (Blueprint $table) {
+        Schema::create('sub_tipo_solicituds', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('area_id')
-                ->constrained()
+            $table->foreignId('tipo_solicitud_id')
+                ->constrained('tipo_solicituds')
                 ->cascadeOnDelete();
 
-            $table->foreignId('user_id')
-                ->constrained()
-                ->cascadeOnDelete();
-
-            $table->boolean('is_principal')->default(false);
+            $table->string('nombre')->unique();
+            $table->integer('tiempo_solucion')->nullable(); // si es null, hereda del tipo
+            $table->boolean('activo')->default(true);
 
             $table->timestamps();
-
-            $table->unique(['area_id', 'user_id']);
+            $table->softDeletes();
         });
     }
 
@@ -34,8 +31,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('area_user', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('sub_tipo_solicituds');
     }
 };

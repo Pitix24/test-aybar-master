@@ -10,22 +10,18 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('area_user', function (Blueprint $table) {
+        Schema::create('area_tipo_solicitud', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('area_id')
-                ->constrained()
+                ->constrained('areas')
                 ->cascadeOnDelete();
 
-            $table->foreignId('user_id')
-                ->constrained()
+            $table->foreignId('tipo_solicitud_id')
+                ->constrained('tipo_solicituds')
                 ->cascadeOnDelete();
-
-            $table->boolean('is_principal')->default(false);
 
             $table->timestamps();
-
-            $table->unique(['area_id', 'user_id']);
         });
     }
 
@@ -34,8 +30,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('area_user', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('area_tipo_solicitud');
     }
 };

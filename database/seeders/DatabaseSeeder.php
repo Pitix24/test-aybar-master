@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             GrupoProyectoSeeder::class,
             ProyectoSeeder::class,
             UserSeeder::class,
+            SedesYAreasSeeder::class,
         ]);
     }
 }
