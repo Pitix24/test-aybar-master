@@ -7,11 +7,13 @@ use App\Models\UnidadNegocio;
 use App\Models\GrupoProyecto;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProyectosExport;
 
+#[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 class ProyectoLista extends Component
 {
@@ -19,9 +21,6 @@ class ProyectoLista extends Component
 
     #[Url(as: 'q')]
     public $buscar = '';
-
-    public $unidades_negocios;
-    public $grupo_proyectos;
 
     #[Url]
     public $unidad_negocio_id = '';
@@ -35,41 +34,33 @@ class ProyectoLista extends Component
     #[Url]
     public $perPage = 20;
 
+    public $unidades_negocios = [];
+    public $grupo_proyectos = [];
+
     public function mount()
     {
-        $this->unidades_negocios = UnidadNegocio::all();
-        $this->grupo_proyectos = GrupoProyecto::all();
+        $this->unidades_negocios = UnidadNegocio::select('id', 'nombre')->orderBy('nombre')->get();
+        $this->grupo_proyectos = GrupoProyecto::select('id', 'nombre')->orderBy('nombre')->get();
     }
 
-    public function updatedBuscar()
+    public function updated($property)
     {
-        $this->resetPage();
-    }
-
-    public function updatedUnidadNegocioId()
-    {
-        $this->resetPage();
-    }
-
-    public function updatedGrupoProyectoId()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingActivo()
-    {
-        $this->resetPage();
+        if (
+            in_array($property, [
+                'buscar',
+                'unidad_negocio_id',
+                'grupo_proyecto_id',
+                'activo',
+                'perPage'
+            ])
+        ) {
+            $this->resetPage();
+        }
     }
 
     public function resetFiltros()
     {
-        $this->reset([
-            'buscar',
-            'unidad_negocio_id',
-            'grupo_proyecto_id',
-            'activo'
-        ]);
-
+        $this->reset(['buscar', 'unidad_negocio_id', 'grupo_proyecto_id', 'activo']);
         $this->perPage = 20;
         $this->resetPage();
     }
@@ -92,26 +83,41 @@ class ProyectoLista extends Component
     public function render()
     {
         $items = Proyecto::query()
-            ->with(['unidadNegocio', 'grupoProyecto'])
-            ->when($this->buscar, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('nombre', 'like', "%{$this->buscar}%")
-                        ->orWhere('id', $this->buscar);
-                });
+            ->with(['unidadNegocio:id,nombre', 'grupoProyecto:id,nombre'])
+            ->when($this->buscar !== '', function ($q) {
+                $q->where('nombre', 'like', "%{$this->buscar}%")
+                    ->orWhere('id', $this->buscar);
             })
-            ->when($this->unidad_negocio_id, function ($query) {
-                $query->where('unidad_negocio_id', $this->unidad_negocio_id);
-            })
-            ->when($this->grupo_proyecto_id, function ($query) {
-                $query->where('grupo_proyecto_id', $this->grupo_proyecto_id);
-            })
-            ->when($this->activo !== '', function ($query) {
-                $query->where('activo', $this->activo);
-            })
-            ->orderBy('created_at', 'desc')
+            ->when(
+                $this->unidad_negocio_id !== '',
+                fn($q) =>
+                $q->where('unidad_negocio_id', $this->unidad_negocio_id)
+            )
+            ->when(
+                $this->grupo_proyecto_id !== '',
+                fn($q) =>
+                $q->where('grupo_proyecto_id', $this->grupo_proyecto_id)
+            )
+            ->when(
+                $this->activo !== '',
+                fn($q) =>
+                $q->where('activo', $this->activo)
+            )
+            ->latest()
             ->paginate($this->perPage);
 
-
         return view('livewire.erp.proyecto.proyecto-lista', compact('items'));
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div class="g_panel">
+            <div class="g_vacio">
+                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                <p>Cargando ...</p>
+            </div>
+        </div>
+        HTML;
     }
 }
