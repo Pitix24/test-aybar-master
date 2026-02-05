@@ -21,60 +21,60 @@
     </div>
 
     <form wire:submit="update" class="formulario">
-        <div class="g_panel g_gap_pagina">
-            <div class="g_fila">
-                <div class="g_columna_8 g_gap_pagina">
-                    <div class="g_panel">
-                        <h4 class="g_panel_titulo">General</h4>
-                        <div class="g_fila">
-                            <div class="g_columna_6">
-                                <div>
-                                    <label for="name">
-                                        Nombre y Apellidos <span class="obligatorio"><i
-                                                class="fa-solid fa-asterisk"></i></span>
-                                    </label>
-                                    <input type="text" id="name" wire:model.blur="name"
-                                        class="@error('name') input-error @enderror" autocomplete="off">
-                                    @error('name')
-                                        <p class="mensaje_error">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
+        <div class="g_fila">
+            <div class="g_columna_8">
+                <div class="g_panel">
+                    <h4 class="g_panel_titulo">General</h4>
 
-                            <div class="g_columna_6">
-                                <div>
-                                    <label for="email">
-                                        Correo Electrónico <span class="obligatorio"><i
-                                                class="fa-solid fa-asterisk"></i></span>
-                                    </label>
-                                    <input type="email" id="email" wire:model.blur="email"
-                                        class="@error('email') input-error @enderror" autocomplete="off">
-                                    @error('email')
-                                        <p class="mensaje_error">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
+                    <div class="g_margin_bottom_10">
+                        <label for="estado_activo">
+                            Estado <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                        </label>
 
-                        <div class="g_fila">
-                            <div class="g_columna_6">
-                                <div>
-                                    <label for="password">
-                                        Contraseña <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                                    </label>
-                                    <input type="password" id="password" wire:model.blur="password"
-                                        class="@error('password') input-error @enderror" autocomplete="off">
-                                    @error('password')
-                                        <p class="mensaje_error">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
+                        <div class="g_switch-wrapper">
+                            <label class="g_switch">
+                                <input id="estado_activo" type="checkbox" wire:model.live="activo">
+                                <span class="g_switch-slider"></span>
+                            </label>
+
+                            <span class="g_switch-label">
+                                {{ $activo ? 'Activo' : 'Desactivado' }}
+                            </span>
+
+                            @error('activo')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
-                    <div class="g_panel">
-                        <h4 class="g_panel_titulo">Asignar Roles <span class="obligatorio"><i
-                                    class="fa-solid fa-asterisk"></i></span></h4>
+                    <div class="g_fila">
+                        <div class="g_columna_6 g_margin_bottom_10">
+                            <label for="name">
+                                Nombre y Apellidos <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                            </label>
+                            <input type="text" id="name" wire:model.blur="name"
+                                class="@error('name') input-error @enderror" autocomplete="off">
+                            @error('name')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="g_columna_6 g_margin_bottom_10">
+                            <label for="email">
+                                Correo Electrónico <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                            </label>
+                            <input type="email" id="email" wire:model.blur="email"
+                                class="@error('email') input-error @enderror" autocomplete="off">
+                            @error('email')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="g_margin_bottom_10">
+                        <label>
+                            Asignar Roles <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                        </label>
 
                         <div class="g_grid_permisos">
                             @foreach ($roles as $role)
@@ -90,37 +90,53 @@
                             <p class="mensaje_error">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
 
-                <div class="g_columna_4 g_columna_invertir">
-                    <div class="g_panel">
-                        <h4 class="g_panel_titulo">Activo</h4>
-                        <div>
-                            <select id="activo" wire:model.live="activo" class="@error('activo') input-error @enderror">
-                                <option value="0">DESACTIVADO</option>
-                                <option value="1">ACTIVO</option>
-                            </select>
-                            @error('activo')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="formulario_botones">
+                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                            wire:target="update">
+                            <span wire:loading.remove wire:target="update">
+                                <i class="fa-solid fa-save"></i> Actualizar
+                            </span>
+                            <span wire:loading wire:target="update">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                            </span>
+                        </button>
+
+                        <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton g_boton_cancelar">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="formulario_botones">
-                <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="update">
-                    <span wire:loading.remove wire:target="update">
-                        <i class="fa-solid fa-save"></i> Actualizar
-                    </span>
-                    <span wire:loading wire:target="update">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                    </span>
-                </button>
+            <div class="g_columna_4">
+                <div class="g_panel">
+                    <h4 class="g_panel_titulo">Contraseña</h4>
 
-                <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton g_boton_cancelar">
-                    <i class="fa-solid fa-times"></i> Cancelar
-                </a>
+                    <div class="g_margin_bottom_10">
+                        <input type="password" id="password" wire:model.blur="password"
+                            class="@error('password') input-error @enderror" autocomplete="off">
+                        @error('password')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="formulario_botones">
+                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                            wire:target="update">
+                            <span wire:loading.remove wire:target="update">
+                                <i class="fa-solid fa-save"></i> Actualizar
+                            </span>
+                            <span wire:loading wire:target="update">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                            </span>
+                        </button>
+
+                        <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton g_boton_cancelar">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

@@ -14,12 +14,13 @@
     </div>
 
     <form wire:submit="store" class="formulario">
-        <div class="g_panel g_gap_pagina">
-            <div class="g_fila">
-                <div class="g_columna_12">
-                    <div class="g_panel">
-                        <h4 class="g_panel_titulo">General</h4>
-                        <div>
+        <div class="g_fila">
+            <div class="g_columna_12">
+                <div class="g_panel">
+                    <h4 class="g_panel_titulo">General</h4>
+
+                    <div class="g_fila">
+                        <div class="g_columna_3 g_margin_bottom_10">
                             <label for="name">
                                 Nombre del Rol <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                             </label>
@@ -31,13 +32,11 @@
                             <p class="leyenda">Ej: supervisor-backoffice.</p>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="g_fila">
-                <div class="g_columna_12">
-                    <div class="g_panel">
-                        <h4 class="g_panel_titulo">Asignación de Permisos</h4>
+                    <div class="g_margin_bottom_10">
+                        <label>
+                            Asignación de Permisos <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                        </label>
 
                         <div class="g_cajas_input" x-data="{ moduloAbierto: null }">
                             <div class="g_grid_modulos">
@@ -62,7 +61,9 @@
 
                                                 @foreach($recursos as $recurso => $items)
                                                     <div class="recurso_grupo">
-                                                        <div class="recurso_titulo">{{ str_replace('-', ' ', $recurso) }}</div>
+                                                        <div class="recurso_titulo">
+                                                            {{ str_replace('-', ' ', $recurso) }}
+                                                        </div>
                                                         <div class="permisos_lista">
                                                             @foreach($items as $permission)
                                                                 <div class="permiso_item">
@@ -86,22 +87,23 @@
                             <p class="mensaje_error">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div class="formulario_botones">
+                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                            wire:target="store">
+                            <span wire:loading.remove wire:target="store">
+                                <i class="fa-solid fa-save"></i> Guardar
+                            </span>
+                            <span wire:loading wire:target="store">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                            </span>
+                        </button>
+
+                        <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_cancelar">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </a>
+                    </div>
                 </div>
-            </div>
-
-            <div class="formulario_botones">
-                <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="store">
-                    <span wire:loading.remove wire:target="store">
-                        <i class="fa-solid fa-save"></i> Guardar
-                    </span>
-                    <span wire:loading wire:target="store">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                    </span>
-                </button>
-
-                <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_cancelar">
-                    <i class="fa-solid fa-times"></i> Cancelar
-                </a>
             </div>
         </div>
     </form>

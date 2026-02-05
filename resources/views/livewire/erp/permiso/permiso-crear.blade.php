@@ -18,32 +18,28 @@
             <h4 class="g_panel_titulo">General</h4>
 
             <div class="g_fila">
-                <div class="g_columna_6">
-                    <div>
-                        <label for="name">
-                            Nombre del Permiso <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                        </label>
-                        <input type="text" id="name" wire:model.blur="name" class="@error('name') input-error @enderror"
-                            autocomplete="off"">
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label for="name">
+                        Nombre del Permiso <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                    </label>
+                    <input type="text" id="name" wire:model.blur="name" class="@error('name') input-error @enderror"
+                        autocomplete="off"">
                         @error('name')
                             <p class=" mensaje_error">{{ $message }}</p>
                         @enderror
-                        <p class="leyenda">Ej: rol-editar</p>
-                    </div>
+                    <p class="leyenda">Ej: rol-editar</p>
                 </div>
 
-                <div class="g_columna_6">
-                    <div>
-                        <label for="module">
-                            Módulo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                        </label>
-                        <input type="text" id="module" wire:model.blur="module"
-                            class="@error('module') input-error @enderror" autocomplete="off">
-                        @error('module')
-                            <p class="mensaje_error">{{ $message }}</p>
-                        @enderror
-                        <p class="leyenda">Ej: Atención al Cliente</p>
-                    </div>
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label for="module">
+                        Módulo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                    </label>
+                    <input type="text" id="module" wire:model.blur="module"
+                        class="@error('module') input-error @enderror" autocomplete="off">
+                    @error('module')
+                        <p class="mensaje_error">{{ $message }}</p>
+                    @enderror
+                    <p class="leyenda">Ej: Atención al Cliente</p>
                 </div>
             </div>
 

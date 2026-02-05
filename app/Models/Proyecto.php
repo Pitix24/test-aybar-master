@@ -19,6 +19,10 @@ class Proyecto extends Model
         'activo',
     ];
 
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
     public function unidadNegocio()
     {
         return $this->belongsTo(UnidadNegocio::class);

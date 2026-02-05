@@ -15,13 +15,34 @@
     </div>
 
     <form wire:submit="store" class="formulario">
-        <div class="g_panel g_gap_pagina">
-            <div class="g_fila">
-                <div class="g_columna_8">
-                    <div class="g_panel">
-                        <h4 class="g_panel_titulo">General</h4>
+        <div class="g_fila">
+            <div class="g_columna_8">
+                <div class="g_panel">
+                    <h4 class="g_panel_titulo">General</h4>
 
-                        <div class="g_margin_bottom_10">
+                    <div class="g_margin_bottom_10">
+                        <label for="estado_activo">
+                            Estado <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                        </label>
+
+                        <div class="g_switch-wrapper">
+                            <label class="g_switch">
+                                <input id="estado_activo" type="checkbox" wire:model.live="activo">
+                                <span class="g_switch-slider"></span>
+                            </label>
+
+                            <span class="g_switch-label">
+                                {{ $activo ? 'Activo' : 'Desactivado' }}
+                            </span>
+
+                            @error('activo')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="g_fila">
+                        <div class="g_columna_6 g_margin_bottom_10">
                             <label for="unidad_negocio_id">
                                 Unidad de negocio <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                             </label>
@@ -37,7 +58,7 @@
                             @enderror
                         </div>
 
-                        <div class="g_margin_bottom_10">
+                        <div class="g_columna_6 g_margin_bottom_10">
                             <label for="grupo_proyecto_id">
                                 Grupo proyecto<span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                             </label>
@@ -52,8 +73,10 @@
                                 <p class="mensaje_error">{{ $message }}</p>
                             @enderror
                         </div>
+                    </div>
 
-                        <div class="g_margin_bottom_10">
+                    <div class="g_fila">
+                        <div class="g_columna_6 g_margin_bottom_10">
                             <label for="nombre">Nombre <span class="obligatorio"><i
                                         class="fa-solid fa-asterisk"></i></span></label>
                             <input type="text" id="nombre" wire:model.blur="nombre"
@@ -63,7 +86,7 @@
                             @enderror
                         </div>
 
-                        <div class="g_margin_bottom_10">
+                        <div class="g_columna_6 g_margin_bottom_10">
                             <label for="slin_id">SLIN ID</label>
                             <input type="text" id="slin_id" wire:model.blur="slin_id"
                                 class="@error('slin_id') input-error @enderror" autocomplete="off">
@@ -72,37 +95,23 @@
                             @enderror
                         </div>
                     </div>
-                </div>
 
-                <div class="g_columna_4 g_columna_invertir">
-                    <div class="g_panel">
-                        <h4 class="g_panel_titulo">Activo</h4>
-                        <div>
-                            <select id="activo" wire:model.live="activo" class="@error('activo') input-error @enderror">
-                                <option value="0">DESACTIVADO</option>
-                                <option value="1">ACTIVO</option>
-                            </select>
-                            @error('activo')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="formulario_botones">
+                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                            wire:target="store">
+                            <span wire:loading.remove wire:target="store">
+                                <i class="fa-solid fa-save"></i> Guardar
+                            </span>
+                            <span wire:loading wire:target="store">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                            </span>
+                        </button>
+
+                        <a href="{{ route('erp.proyecto.vista.todo') }}" class="g_boton g_boton_cancelar">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </a>
                     </div>
                 </div>
-            </div>
-
-            <div class="formulario_botones">
-                <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="store">
-                    <span wire:loading.remove wire:target="store">
-                        <i class="fa-solid fa-save"></i> Guardar
-                    </span>
-                    <span wire:loading wire:target="store">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                    </span>
-                </button>
-
-                <a href="{{ route('erp.proyecto.vista.todo') }}" class="g_boton g_boton_cancelar">
-                    <i class="fa-solid fa-times"></i> Cancelar
-                </a>
             </div>
         </div>
     </form>

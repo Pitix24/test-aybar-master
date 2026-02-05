@@ -1,0 +1,62 @@
+/* Wrapper */
+.g_switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Switch container */
+.g_switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 22px;
+}
+
+/* Hide checkbox */
+.g_switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Slider */
+.g_switch-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #cbd5e1;
+    /* gris */
+    border-radius: 999px;
+    transition: background-color 0.25s ease;
+}
+
+/* Circle */
+.g_switch-slider::before {
+    content: "";
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    top: 2px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+/* Checked state */
+.g_switch input:checked+.g_switch-slider {
+    background-color: #22c55e;
+    /* verde */
+}
+
+.g_switch input:checked+.g_switch-slider::before {
+    transform: translateX(20px);
+}
+
+/* Label */
+.g_switch-label {
+    font-size: var(--fs-inputs);
+    font-weight: 500;
+    color: #334155;
+}

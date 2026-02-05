@@ -30,11 +30,11 @@
     margin: 0;
     text-transform: uppercase;
     color: #475569;
-    font-size: 0.9rem;
+    font-size: var(--fs-inputs);
     font-weight: 700;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
+    flex-direction: column;
 }
 
 .g_cajas_input .modulo_cabecera i.chevron {
@@ -85,7 +85,7 @@
 }
 
 .g_cajas_input .recurso_titulo {
-    font-size: 0.8rem;
+    font-size: var(--fs-inputs);
     font-weight: 600;
     color: #64748b;
     margin-bottom: 8px;
@@ -114,7 +114,7 @@
 .g_cajas_input .permiso_item label {
     margin-left: 8px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: var(--fs-inputs);
     color: #334155;
 }
 

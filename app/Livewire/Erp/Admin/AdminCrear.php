@@ -20,7 +20,7 @@ class AdminCrear extends Component
     public $email;
     public $password;
     public $selected_roles = [];
-    public $activo = true;
+    public $activo = false;
 
     protected function rules()
     {
@@ -29,7 +29,7 @@ class AdminCrear extends Component
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'selected_roles' => 'required|array|min:1',
-            'activo' => 'boolean',
+            'activo' => 'required|boolean',
         ];
     }
 
