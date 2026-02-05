@@ -1,10 +1,14 @@
-@section('tituloPagina', 'Grupo de Proyectos')
+@section('tituloPagina', 'Lista de Grupo de Proyectos')
 
 @section('anchoPantalla', '100%')
 
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading
+        wire:target="buscar, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
+        message="Cargando..." />
+
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Grupo de Proyectos</h2>
+        <h2>Lista de Grupo de Proyectos</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.grupo-proyecto.vista.todo') }}" class="g_boton g_boton_light">
@@ -12,26 +16,51 @@
 
             <a href="{{ route('erp.grupo-proyecto.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
+        </div>
+    </div>
 
-            <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
-            </button>
+    <div class="g_panel">
+        <div class="formulario">
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Unidad de negocio</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" id="buscar" name="buscar">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Activo</label>
+                    <select wire:model.live="activo">
+                        <option value="">Todos</option>
+                        <option value="1">Si</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="g_panel">
         <div class="tabla_cabecera">
-            <div class="tabla_cabecera_buscar">
-                <form action="" class="formulario">
-                    <label for="buscar">Grupo</label>
-                    <input type="text" wire:model.live.debounce.500ms="buscar" id="buscar" name="buscar">
-                </form>
+            <div class="tabla_cabecera_botones">
+                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                    wire:target="exportExcel">
+                    <span wire:loading.remove wire:target="exportExcel">Excel <i
+                            class="fa-regular fa-file-excel"></i></span>
+                    <span wire:loading wire:target="exportExcel">Exportando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+
+                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
+                </button>
             </div>
 
-            <div class="tabla_cabecera_botones">
-                <button class="g_boton g_boton_primary">
-                    <i class="fa-solid fa-download"></i> Descargar
-                </button>
+            <div class="tabla_cabecera_buscar formulario">
+                <select wire:model.live="perPage">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
             </div>
         </div>
 
@@ -83,6 +112,11 @@
             <div class="g_vacio">
                 <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay items disponibles.' }}</p>
                 <i class="fa-regular fa-face-grin-wink"></i>
+            </div>
+        @else
+            <div class="g_paginacion">
+                Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
+                de {{ $items->total() }} registros
             </div>
         @endif
     </div>

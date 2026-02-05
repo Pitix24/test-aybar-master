@@ -17,12 +17,4 @@ class GrupoProyecto extends Model
         'nombre',
         'activo'
     ];
-
-    public function scopeSearch($query, $search)
-    {
-        if ($search) {
-            $query->where('nombre', 'like', "%{$search}%")
-                ->orWhere('activo', 'like', "%{$search}%");
-        }
-    }
 }

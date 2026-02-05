@@ -76,6 +76,7 @@ class GrupoProyectoEditar extends Component
             DB::commit();
 
             $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se elimino correctamente.']);
+            return redirect()->route('erp.grupo-proyecto.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al eliminar grupo de proyecto: ' . $e->getMessage());

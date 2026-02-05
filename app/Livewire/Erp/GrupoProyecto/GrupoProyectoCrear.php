@@ -49,6 +49,7 @@ class GrupoProyectoCrear extends Component
 
             $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardo correctamente.']);
             $this->reset();
+            return redirect()->route('erp.grupo-proyecto.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al crear grupo de proyecto: ' . $e->getMessage());
