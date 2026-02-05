@@ -5,7 +5,7 @@
         <h2>Editar Rol</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.home') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_light">
                 Inicio <i class="fa-solid fa-house"></i></a>
 
             <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton g_boton_primary">
@@ -110,10 +110,10 @@
             <div class="formulario_botones">
                 <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="update">
                     <span wire:loading.remove wire:target="update">
-                        <i class="fa-solid fa-save"></i> Guardar Cambios
+                        <i class="fa-solid fa-save"></i> Actualizar
                     </span>
                     <span wire:loading wire:target="update">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                        <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
                     </span>
                 </button>
 

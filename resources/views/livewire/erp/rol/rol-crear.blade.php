@@ -6,8 +6,10 @@
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_light">
-                <i class="fa-solid fa-arrow-left"></i> Regresar
-            </a>
+                Inicio <i class="fa-solid fa-house"></i></a>
+
+            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
 
@@ -90,7 +92,7 @@
             <div class="formulario_botones">
                 <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="store">
                     <span wire:loading.remove wire:target="store">
-                        <i class="fa-solid fa-save"></i> Guardar Rol
+                        <i class="fa-solid fa-save"></i> Guardar
                     </span>
                     <span wire:loading wire:target="store">
                         <i class="fa-solid fa-spinner fa-spin"></i> Guardando...

@@ -9,9 +9,8 @@
                 Inicio <i class="fa-solid fa-house"></i>
             </a>
 
-            <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_dark">
-                <i class="fa-solid fa-arrow-left"></i> Regresar
-            </a>
+            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
 

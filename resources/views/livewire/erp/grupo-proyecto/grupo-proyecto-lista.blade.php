@@ -78,9 +78,9 @@
 
                     @if ($items->isNotEmpty())
                         <tbody>
-                            @foreach ($items as $item)
+                            @foreach ($items as $index => $item)
                                 <tr>
-                                    <td>{{ $item->id }}</td>
+                                    <td>{{ $items->firstItem() + $index }}</td>
                                     <td class="g_resaltar">{{ $item->nombre }}</td>
                                     <td>
                                         <span class="estado {{ $item->activo ? 'g_activo' : 'g_desactivado' }}"><i

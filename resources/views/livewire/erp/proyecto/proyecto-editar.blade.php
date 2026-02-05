@@ -9,6 +9,9 @@
             <a href="{{ route('erp.proyecto.vista.todo') }}" class="g_boton g_boton_light">
                 Inicio <i class="fa-solid fa-house"></i></a>
 
+            <a href="{{ route('erp.proyecto.vista.crear') }}" class="g_boton g_boton_primary">
+                Crear <i class="fa-solid fa-square-plus"></i></a>
+
             <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarProyecto()">
                 Eliminar <i class="fa-solid fa-trash-can"></i>
             </button>

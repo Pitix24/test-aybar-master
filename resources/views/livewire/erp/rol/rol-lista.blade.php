@@ -70,9 +70,9 @@
 
                     @if ($items->isNotEmpty())
                         <tbody>
-                            @foreach ($items as $item)
+                            @foreach ($items as $index => $item)
                                 <tr>
-                                    <td>{{ $item->id }}</td>
+                                    <td>{{ $items->firstItem() + $index }}</td>
                                     <td class="g_resaltar">{{ $item->name }}</td>
                                     <td>{{ $item->guard_name }}</td>
                                     <td>
