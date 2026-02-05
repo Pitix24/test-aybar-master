@@ -10,6 +10,8 @@ class Pais extends Model
     /** @use HasFactory<\Database\Factories\PaisFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $table = 'pais';
 
     public function regiones()

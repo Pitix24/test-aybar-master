@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Region;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class ProvinciaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nombre' => fake()->city(),
+            'region_id' => Region::factory(),
         ];
     }
 }

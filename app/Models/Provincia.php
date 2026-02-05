@@ -10,6 +10,8 @@ class Provincia extends Model
     /** @use HasFactory<\Database\Factories\ProvinciaFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     public function region()
     {
         return $this->belongsTo(Region::class, 'region_id');

@@ -2,6 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Distrito;
+use App\Models\Provincia;
+use App\Models\Region;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +20,20 @@ class DireccionFactory extends Factory
      */
     public function definition(): array
     {
+        $distrito = Distrito::inRandomOrder()->first() ?? Distrito::factory()->create();
+        $provincia = $distrito->provincia;
+        $region = $provincia->region;
+
         return [
-            //
+            'user_id' => User::factory(),
+            'region_id' => $region->id,
+            'provincia_id' => $provincia->id,
+            'distrito_id' => $distrito->id,
+            'direccion' => fake()->streetAddress(),
+            'direccion_numero' => fake()->buildingNumber(),
+            'opcional' => fake()->secondaryAddress(),
+            'codigo_postal' => fake()->postcode(),
+            'referencia' => fake()->sentence(),
         ];
     }
 }

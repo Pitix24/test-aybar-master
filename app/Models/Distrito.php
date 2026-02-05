@@ -10,6 +10,8 @@ class Distrito extends Model
     /** @use HasFactory<\Database\Factories\DistritoFactory> */
     use HasFactory;
 
+    public $timestamps = false;
+
     public function provincia()
     {
         return $this->belongsTo(Provincia::class, 'provincia_id');
