@@ -50,6 +50,13 @@ class User extends Authenticatable
         return $this->hasOne(Cliente::class);
     }
 
+    public function areas()
+    {
+        return $this->belongsToMany(Area::class)
+            ->withPivot('is_principal')
+            ->withTimestamps();
+    }
+
     /**
      * Get the address associated with the user.
      */
