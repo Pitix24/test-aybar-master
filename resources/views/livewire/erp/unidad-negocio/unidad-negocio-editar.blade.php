@@ -26,20 +26,22 @@
             <div class="g_columna_12">
                 <div class="g_panel" x-data="{ activeTab: 'general' }">
 
-                    <div class="tab-navigation">
-                        <div class="tab-buttons">
+                    <div class="g_tab_navegacion">
+                        <div class="g_tab_botones">
                             <button type="button" @click="activeTab = 'general'"
-                                :class="activeTab === 'general' ? 'tab-active' : 'tab-inactive'" class="tab-button">
+                                :class="activeTab === 'general' ? 'g_tab_active' : 'g_tab_inactive'"
+                                class="g_tab_boton">
                                 <i class="fa-solid fa-building"></i> Información General
                             </button>
+
                             <button type="button" @click="activeTab = 'cavali'"
-                                :class="activeTab === 'cavali' ? 'tab-active' : 'tab-inactive'" class="tab-button">
+                                :class="activeTab === 'cavali' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
                                 <i class="fa-solid fa-user-tie"></i> Representante Legal CAVALI
                             </button>
                         </div>
                     </div>
 
-                    <div x-show="activeTab === 'general'" x-transition class="tab-content">
+                    <div x-show="activeTab === 'general'" x-transition class="g_tab_content">
                         <div class="g_fila">
                             <div class="g_columna_8">
                                 <div class="g_panel">
@@ -113,7 +115,7 @@
                         </div>
                     </div>
 
-                    <div x-show="activeTab === 'cavali'" x-transition class="tab-content">
+                    <div x-show="activeTab === 'cavali'" x-transition class="g_tab_content">
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_6">
                                 <label for="cavali_girador_tipo_documento">
@@ -197,7 +199,7 @@
                         </div>
                     </div>
 
-                    <div class="formulario_botones tab-form-buttons">
+                    <div class="formulario_botones g_tab_form_buttons">
                         <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
                             wire:target="update">
                             <span wire:loading.remove wire:target="update">
