@@ -28,20 +28,4 @@ class Proyecto extends Model
     {
         return $this->belongsTo(GrupoProyecto::class);
     }
-
-    public function scopeSearch($query, $search)
-    {
-        if ($search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('nombre', 'like', "%{$search}%")
-                    ->orWhere('activo', 'like', "%{$search}%")
-                    ->orWhereHas('unidadNegocio', function ($query) use ($search) {
-                        $query->where('nombre', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('grupoProyecto', function ($query) use ($search) {
-                        $query->where('nombre', 'like', "%{$search}%");
-                    });
-            });
-        }
-    }
 }

@@ -35,50 +35,74 @@
 
                     <div x-show="activeTab === 'general'" x-transition class="tab-content">
                         <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label for="nombre">
-                                    Nombre <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                                </label>
-                                <input type="text" id="nombre" wire:model.blur="nombre"
-                                    class="@error('nombre') input-error @enderror" autocomplete="off">
-                                @error('nombre')
-                                    <p class="mensaje_error">{{ $message }}</p>
-                                @enderror
+                            <div class="g_columna_8">
+                                <div class="g_panel">
+                                    <div class="g_fila">
+                                        <div class="g_margin_bottom_10 g_columna_6">
+                                            <label for="nombre">
+                                                Nombre <span class="obligatorio"><i
+                                                        class="fa-solid fa-asterisk"></i></span>
+                                            </label>
+                                            <input type="text" id="nombre" wire:model.blur="nombre"
+                                                class="@error('nombre') input-error @enderror" autocomplete="off">
+                                            @error('nombre')
+                                                <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="g_margin_bottom_10 g_columna_6">
+                                            <label for="razon_social">
+                                                Razón social <span class="obligatorio"><i
+                                                        class="fa-solid fa-asterisk"></i></span>
+                                            </label>
+                                            <input type="text" id="razon_social" wire:model.blur="razon_social"
+                                                class="@error('razon_social') input-error @enderror" autocomplete="off">
+                                            @error('razon_social')
+                                                <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="g_fila">
+                                        <div class="g_margin_bottom_10 g_columna_6">
+                                            <label for="ruc">
+                                                RUC
+                                            </label>
+                                            <input type="text" id="ruc" wire:model.blur="ruc"
+                                                class="@error('ruc') input-error @enderror" autocomplete="off">
+                                            @error('ruc')
+                                                <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="g_margin_bottom_10 g_columna_6">
+                                            <label for="slin_id">
+                                                SLIN ID
+                                            </label>
+                                            <input type="text" id="slin_id" wire:model.blur="slin_id"
+                                                class="@error('slin_id') input-error @enderror" autocomplete="off">
+                                            @error('slin_id')
+                                                <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label for="razon_social">
-                                    Razón social <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                                </label>
-                                <input type="text" id="razon_social" wire:model.blur="razon_social"
-                                    class="@error('razon_social') input-error @enderror" autocomplete="off">
-                                @error('razon_social')
-                                    <p class="mensaje_error">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label for="ruc">
-                                    RUC
-                                </label>
-                                <input type="text" id="ruc" wire:model.blur="ruc"
-                                    class="@error('ruc') input-error @enderror" autocomplete="off">
-                                @error('ruc')
-                                    <p class="mensaje_error">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label for="slin_id">
-                                    SLIN ID
-                                </label>
-                                <input type="text" id="slin_id" wire:model.blur="slin_id"
-                                    class="@error('slin_id') input-error @enderror" autocomplete="off">
-                                @error('slin_id')
-                                    <p class="mensaje_error">{{ $message }}</p>
-                                @enderror
+                            <div class="g_columna_4 g_columna_invertir">
+                                <div class="g_panel">
+                                    <h4 class="g_panel_titulo">Activo</h4>
+                                    <div>
+                                        <select id="activo" wire:model.live="activo"
+                                            class="@error('activo') input-error @enderror">
+                                            <option value="0">DESACTIVADO</option>
+                                            <option value="1">ACTIVO</option>
+                                        </select>
+                                        @error('activo')
+                                            <p class="mensaje_error">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

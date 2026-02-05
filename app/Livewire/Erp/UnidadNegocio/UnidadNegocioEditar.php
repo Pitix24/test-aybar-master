@@ -25,6 +25,7 @@ class UnidadNegocioEditar extends Component
     public $cavali_girador_apellido = '';
     public $cavali_girador_email = '';
     public $cavali_girador_telefono = '';
+    public $activo = false;
 
     protected function rules()
     {
@@ -39,6 +40,7 @@ class UnidadNegocioEditar extends Component
             'cavali_girador_apellido' => 'nullable',
             'cavali_girador_email' => 'nullable|email',
             'cavali_girador_telefono' => 'nullable',
+            'activo' => 'required|boolean',
         ];
     }
 
@@ -55,6 +57,7 @@ class UnidadNegocioEditar extends Component
         $this->cavali_girador_apellido = $this->unidadNegocio->cavali_girador_apellido;
         $this->cavali_girador_email = $this->unidadNegocio->cavali_girador_email;
         $this->cavali_girador_telefono = $this->unidadNegocio->cavali_girador_telefono;
+        $this->activo = $this->unidadNegocio->activo;
     }
 
     public function updated($propertyName)
@@ -85,6 +88,7 @@ class UnidadNegocioEditar extends Component
                 'cavali_girador_apellido' => $this->cavali_girador_apellido,
                 'cavali_girador_email' => $this->cavali_girador_email,
                 'cavali_girador_telefono' => $this->cavali_girador_telefono,
+                'activo' => $this->activo,
             ]);
 
             DB::commit();
@@ -109,6 +113,7 @@ class UnidadNegocioEditar extends Component
             DB::commit();
 
             $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se elimino correctamente.']);
+            return redirect()->route('erp.unidad-negocio.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al eliminar unidad de negocio: ' . $e->getMessage());

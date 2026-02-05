@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\GrupoProyecto;
+use App\Models\UnidadNegocio;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,11 @@ class ProyectoFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'unidad_negocio_id' => UnidadNegocio::factory(),
+            'grupo_proyecto_id' => GrupoProyecto::factory(),
+            'nombre' => $this->faker->unique()->sentence(4),
+            'slin_id' => $this->faker->bothify('PRO-####'),
+            'activo' => $this->faker->boolean(),
         ];
     }
 }

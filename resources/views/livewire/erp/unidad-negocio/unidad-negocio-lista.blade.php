@@ -26,6 +26,15 @@
                     <label>Unidad de negocio</label>
                     <input type="text" wire:model.live.debounce.1300ms="buscar" id="buscar" name="buscar">
                 </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Activo</label>
+                    <select wire:model.live="activo">
+                        <option value="">Todos</option>
+                        <option value="1">Si</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -67,6 +76,7 @@
                             <th>SLIN ID</th>
                             <th>Cavali Girador</th>
                             <th>Girador email</th>
+                            <th>Estado</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -82,6 +92,11 @@
                                     <td>{{ $item->slin_id ?? '-' }}</td>
                                     <td class="g_inferior">{{ $item->cavali_girador_nombre ?? '-' }}</td>
                                     <td class="g_inferior">{{ $item->cavali_girador_email ?? '-' }}</td>
+                                    <td>
+                                        <span class="estado {{ $item->activo ? 'g_activo' : 'g_desactivado' }}"><i
+                                                class="fa-solid fa-circle"></i></span>
+                                        {{ $item->activo ? 'Activo' : 'Desactivo' }}
+                                    </td>
 
                                     <td class="centrar_iconos">
                                         <a href="{{ route('erp.unidad-negocio.vista.editar', $item->id) }}"

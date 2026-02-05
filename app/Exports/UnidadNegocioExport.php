@@ -10,12 +10,14 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class UnidadNegocioExport implements FromCollection, WithHeadings, ShouldAutoSize
 {
     protected string $buscar;
+    protected string $activo;
     protected int $perPage;
     protected int $page;
 
-    public function __construct(string $buscar, int $perPage, int $page)
+    public function __construct(string $buscar, string $activo, int $perPage, int $page)
     {
         $this->buscar = $buscar;
+        $this->activo = $activo;
         $this->perPage = $perPage;
         $this->page = $page;
     }
@@ -23,7 +25,18 @@ class UnidadNegocioExport implements FromCollection, WithHeadings, ShouldAutoSiz
     public function collection()
     {
         return UnidadNegocio::query()
-            ->search($this->buscar)
+            ->when($this->buscar, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nombre', 'like', "%{$this->buscar}%");
+
+                    if (is_numeric($this->buscar)) {
+                        $q->orWhere('id', (int) $this->buscar);
+                    }
+                });
+            })
+            ->when($this->activo !== '', function ($query) {
+                $query->where('activo', $this->activo);
+            })
             ->orderByDesc('created_at')
             ->skip(($this->page - 1) * $this->perPage)
             ->take($this->perPage)
@@ -36,10 +49,12 @@ class UnidadNegocioExport implements FromCollection, WithHeadings, ShouldAutoSiz
                     $item->razon_social ?? '-',
                     $item->ruc ?? '-',
                     $item->slin_id ?? '-',
+                    $item->activo ? 'Activo' : 'Inactivo',
                     $item->created_at->format('Y-m-d H:i'),
                 ];
             });
     }
+
 
     public function headings(): array
     {
@@ -50,6 +65,7 @@ class UnidadNegocioExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Razón Social',
             'RUC',
             'Slin ID',
+            'Estado',
             'Fecha Creación',
         ];
     }

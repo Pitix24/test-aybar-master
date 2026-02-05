@@ -30,7 +30,13 @@ class ProyectosExport implements FromCollection, WithHeadings, ShouldAutoSize
     {
         return Proyecto::with(['unidadNegocio', 'grupoProyecto'])
             ->when($this->buscar, function ($query) {
-                $query->search($this->buscar);
+                $query->where(function ($q) {
+                    $q->where('nombre', 'like', "%{$this->buscar}%");
+
+                    if (is_numeric($this->buscar)) {
+                        $q->orWhere('id', (int) $this->buscar);
+                    }
+                });
             })
             ->when($this->unidad_negocio_id, function ($query) {
                 $query->where('unidad_negocio_id', $this->unidad_negocio_id);
@@ -49,8 +55,8 @@ class ProyectosExport implements FromCollection, WithHeadings, ShouldAutoSize
                 return [
                     $index + 1,
                     $item->id,
-                    $item->unidadNegocio ? $item->unidadNegocio->nombre : '-',
-                    $item->grupoProyecto ? $item->grupoProyecto->nombre : '-',
+                    $item->unidadNegocio?->nombre ?? '-',
+                    $item->grupoProyecto?->nombre ?? '-',
                     $item->nombre,
                     $item->activo ? 'Activo' : 'Inactivo',
                     $item->created_at->format('Y-m-d H:i'),

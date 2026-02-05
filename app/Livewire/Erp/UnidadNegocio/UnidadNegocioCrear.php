@@ -22,20 +22,22 @@ class UnidadNegocioCrear extends Component
     public $cavali_girador_apellido = '';
     public $cavali_girador_email = '';
     public $cavali_girador_telefono = '';
+    public $activo = false;
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|string|max:255|unique:unidad_negocios,nombre',
-            'razon_social' => 'required|string|max:255',
-            'ruc' => 'nullable|string|unique:unidad_negocios,ruc',
-            'slin_id' => 'nullable|string|max:255|unique:unidad_negocios,slin_id',
-            'cavali_girador_tipo_documento' => 'nullable|string|max:255',
-            'cavali_girador_documento' => 'nullable|string|max:255',
-            'cavali_girador_nombre' => 'nullable|string|max:255',
-            'cavali_girador_apellido' => 'nullable|string|max:255',
-            'cavali_girador_email' => 'nullable|email|max:255',
-            'cavali_girador_telefono' => 'nullable|string|max:20',
+            'nombre' => 'required|unique:unidad_negocios,nombre',
+            'razon_social' => 'required',
+            'ruc' => 'nullable|unique:unidad_negocios,ruc',
+            'slin_id' => 'nullable|unique:unidad_negocios,slin_id',
+            'cavali_girador_tipo_documento' => 'nullable',
+            'cavali_girador_documento' => 'nullable',
+            'cavali_girador_nombre' => 'nullable',
+            'cavali_girador_apellido' => 'nullable',
+            'cavali_girador_email' => 'nullable|email',
+            'cavali_girador_telefono' => 'nullable',
+            'activo' => 'required|boolean',
         ];
     }
 
@@ -59,20 +61,22 @@ class UnidadNegocioCrear extends Component
             UnidadNegocio::create([
                 'nombre' => $this->nombre,
                 'razon_social' => $this->razon_social,
-                'ruc' => $this->ruc,
-                'slin_id' => $this->slin_id,
-                'cavali_girador_tipo_documento' => $this->cavali_girador_tipo_documento,
-                'cavali_girador_documento' => $this->cavali_girador_documento,
-                'cavali_girador_nombre' => $this->cavali_girador_nombre,
-                'cavali_girador_apellido' => $this->cavali_girador_apellido,
-                'cavali_girador_email' => $this->cavali_girador_email,
-                'cavali_girador_telefono' => $this->cavali_girador_telefono,
+                'ruc' => $this->ruc ?: null,
+                'slin_id' => $this->slin_id ?: null,
+                'cavali_girador_tipo_documento' => $this->cavali_girador_tipo_documento ?: null,
+                'cavali_girador_documento' => $this->cavali_girador_documento ?: null,
+                'cavali_girador_nombre' => $this->cavali_girador_nombre ?: null,
+                'cavali_girador_apellido' => $this->cavali_girador_apellido ?: null,
+                'cavali_girador_email' => $this->cavali_girador_email ?: null,
+                'cavali_girador_telefono' => $this->cavali_girador_telefono ?: null,
+                'activo' => $this->activo,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alerstaLivewire', ['title' => 'Creado', 'text' => 'Se guardo correctamente.']);
+            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardo correctamente.']);
             $this->reset();
+            return redirect()->route('erp.unidad-negocio.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al crear unidad de negocio: ' . $e->getMessage());

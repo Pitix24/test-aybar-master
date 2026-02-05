@@ -21,6 +21,9 @@ class UnidadNegocioLista extends Component
     #[Url]
     public $perPage = 20;
 
+    #[Url]
+    public $activo = '';
+
     public function updatedBuscar()
     {
         $this->resetPage();
@@ -31,9 +34,14 @@ class UnidadNegocioLista extends Component
         $this->resetPage();
     }
 
+    public function updatingActivo()
+    {
+        $this->resetPage();
+    }
+
     public function resetFiltros()
     {
-        $this->reset(['buscar']);
+        $this->reset(['buscar', 'activo']);
         $this->perPage = 20;
         $this->resetPage();
     }
@@ -43,6 +51,7 @@ class UnidadNegocioLista extends Component
         return Excel::download(
             new UnidadNegocioExport(
                 $this->buscar,
+                $this->activo,
                 $this->perPage,
                 $this->getPage()
             ),
@@ -53,7 +62,18 @@ class UnidadNegocioLista extends Component
     public function render()
     {
         $items = UnidadNegocio::query()
-            ->search($this->buscar)
+            ->when($this->buscar, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nombre', 'like', "%{$this->buscar}%");
+
+                    if (is_numeric($this->buscar)) {
+                        $q->orWhere('id', (int) $this->buscar);
+                    }
+                });
+            })
+            ->when($this->activo !== '', function ($query) {
+                $query->where('activo', $this->activo);
+            })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 

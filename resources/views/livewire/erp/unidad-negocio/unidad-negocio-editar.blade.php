@@ -12,6 +12,10 @@
             <a href="{{ route('erp.unidad-negocio.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
 
+            <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarUnidadNegocio()">
+                Eliminar <i class="fa-solid fa-trash-can"></i>
+            </button>
+
             <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_dark">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </a>
@@ -38,50 +42,74 @@
 
                     <div x-show="activeTab === 'general'" x-transition class="tab-content">
                         <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label for="nombre">
-                                    Nombre <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                                </label>
-                                <input type="text" id="nombre" wire:model.blur="nombre"
-                                    class="@error('nombre') input-error @enderror" autocomplete="off">
-                                @error('nombre')
-                                    <p class="mensaje_error">{{ $message }}</p>
-                                @enderror
+                            <div class="g_columna_8">
+                                <div class="g_panel">
+                                    <div class="g_fila">
+                                        <div class="g_margin_bottom_10 g_columna_6">
+                                            <label for="nombre">
+                                                Nombre <span class="obligatorio"><i
+                                                        class="fa-solid fa-asterisk"></i></span>
+                                            </label>
+                                            <input type="text" id="nombre" wire:model.blur="nombre"
+                                                class="@error('nombre') input-error @enderror" autocomplete="off">
+                                            @error('nombre')
+                                                <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="g_margin_bottom_10 g_columna_6">
+                                            <label for="razon_social">
+                                                Razón social <span class="obligatorio"><i
+                                                        class="fa-solid fa-asterisk"></i></span>
+                                            </label>
+                                            <input type="text" id="razon_social" wire:model.blur="razon_social"
+                                                class="@error('razon_social') input-error @enderror" autocomplete="off">
+                                            @error('razon_social')
+                                                <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="g_fila">
+                                        <div class="g_margin_bottom_10 g_columna_6">
+                                            <label for="ruc">
+                                                RUC
+                                            </label>
+                                            <input type="text" id="ruc" wire:model.blur="ruc"
+                                                class="@error('ruc') input-error @enderror" autocomplete="off">
+                                            @error('ruc')
+                                                <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="g_margin_bottom_10 g_columna_6">
+                                            <label for="slin_id">
+                                                SLIN ID
+                                            </label>
+                                            <input type="text" id="slin_id" wire:model.blur="slin_id"
+                                                class="@error('slin_id') input-error @enderror" autocomplete="off">
+                                            @error('slin_id')
+                                                <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label for="razon_social">
-                                    Razón social <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                                </label>
-                                <input type="text" id="razon_social" wire:model.blur="razon_social"
-                                    class="@error('razon_social') input-error @enderror" autocomplete="off">
-                                @error('razon_social')
-                                    <p class="mensaje_error">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label for="ruc">
-                                    RUC
-                                </label>
-                                <input type="text" id="ruc" wire:model.blur="ruc"
-                                    class="@error('ruc') input-error @enderror" autocomplete="off">
-                                @error('ruc')
-                                    <p class="mensaje_error">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label for="slin_id">
-                                    SLIN ID
-                                </label>
-                                <input type="text" id="slin_id" wire:model.blur="slin_id"
-                                    class="@error('slin_id') input-error @enderror" autocomplete="off">
-                                @error('slin_id')
-                                    <p class="mensaje_error">{{ $message }}</p>
-                                @enderror
+                            <div class="g_columna_4 g_columna_invertir">
+                                <div class="g_panel">
+                                    <h4 class="g_panel_titulo">Activo</h4>
+                                    <div>
+                                        <select id="activo" wire:model.live="activo"
+                                            class="@error('activo') input-error @enderror">
+                                            <option value="0">DESACTIVADO</option>
+                                            <option value="1">ACTIVO</option>
+                                        </select>
+                                        @error('activo')
+                                            <p class="mensaje_error">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -189,4 +217,31 @@
             </div>
         </div>
     </form>
+
+    @push('scripts')
+        <script>
+            function alertaEliminarUnidadNegocio() {
+                Swal.fire({
+                    title: '¿Quieres eliminar?',
+                    text: "No podrás recuperarlo.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '¡Sí, eliminar!',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Livewire.dispatch('eliminarUnidadNegocioOn');
+
+                        Swal.fire(
+                            '¡Eliminado!',
+                            'Eliminaste correctamente.',
+                            'success'
+                        )
+                    }
+                });
+            }
+        </script>
+    @endpush
 </div>

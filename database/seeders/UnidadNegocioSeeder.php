@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\UnidadNegocio;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class UnidadNegocioSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        UnidadNegocio::factory(30)->create();
     }
 }

@@ -23,6 +23,16 @@ class ProyectoEditar extends Component
     public $nombre;
     public $slin_id;
     public $activo = false;
+    protected function rules()
+    {
+        return [
+            'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
+            'grupo_proyecto_id' => 'required|exists:grupo_proyectos,id',
+            'nombre' => 'required|unique:proyectos,nombre,' . $this->proyecto->id,
+            'slin_id' => 'nullable|string|max:255',
+            'activo' => 'required|boolean',
+        ];
+    }
 
     public function mount($id)
     {
@@ -36,17 +46,6 @@ class ProyectoEditar extends Component
         $this->nombre = $this->proyecto->nombre;
         $this->slin_id = $this->proyecto->slin_id;
         $this->activo = $this->proyecto->activo;
-    }
-
-    protected function rules()
-    {
-        return [
-            'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
-            'grupo_proyecto_id' => 'required|exists:grupo_proyectos,id',
-            'nombre' => 'required|unique:proyectos,nombre,' . $this->proyecto->id,
-            'slin_id' => 'nullable|string|max:255',
-            'activo' => 'required|boolean',
-        ];
     }
 
     public function updated($propertyName)

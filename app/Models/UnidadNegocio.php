@@ -25,21 +25,6 @@ class UnidadNegocio extends Model
         'cavali_girador_apellido',
         'cavali_girador_email',
         'cavali_girador_telefono',
+        'activo'
     ];
-
-    public function scopeSearch($query, $search)
-    {
-        if ($search) {
-            $query->where('nombre', 'like', "%{$search}%")
-                ->orWhere('razon_social', 'like', "%{$search}%")
-                ->orWhere('ruc', 'like', "%{$search}%")
-                ->orWhere('slin_id', 'like', "%{$search}%")
-                ->orWhere('cavali_girador_tipo_documento', 'like', "%{$search}%")
-                ->orWhere('cavali_girador_documento', 'like', "%{$search}%")
-                ->orWhere('cavali_girador_nombre', 'like', "%{$search}%")
-                ->orWhere('cavali_girador_apellido', 'like', "%{$search}%")
-                ->orWhere('cavali_girador_email', 'like', "%{$search}%")
-                ->orWhere('cavali_girador_telefono', 'like', "%{$search}%");
-        }
-    }
 }

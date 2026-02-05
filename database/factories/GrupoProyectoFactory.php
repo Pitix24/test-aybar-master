@@ -16,10 +16,8 @@ class GrupoProyectoFactory extends Factory
      */
     public function definition(): array
     {
-        $nombre = $this->faker->unique()->sentence(3);
         return [
-            'nombre' => $nombre,
-            'slug' => \Illuminate\Support\Str::slug($nombre),
+            'nombre' => $this->faker->unique()->sentence(3),
             'activo' => $this->faker->boolean(),
         ];
     }

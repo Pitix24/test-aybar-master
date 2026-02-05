@@ -94,7 +94,10 @@ class ProyectoLista extends Component
         $items = Proyecto::query()
             ->with(['unidadNegocio', 'grupoProyecto'])
             ->when($this->buscar, function ($query) {
-                $query->search($this->buscar);
+                $query->where(function ($q) {
+                    $q->where('nombre', 'like', "%{$this->buscar}%")
+                        ->orWhere('id', $this->buscar);
+                });
             })
             ->when($this->unidad_negocio_id, function ($query) {
                 $query->where('unidad_negocio_id', $this->unidad_negocio_id);
@@ -107,6 +110,7 @@ class ProyectoLista extends Component
             })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
+
 
         return view('livewire.erp.proyecto.proyecto-lista', compact('items'));
     }

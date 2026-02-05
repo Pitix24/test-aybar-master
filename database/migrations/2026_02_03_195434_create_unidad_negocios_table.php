@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->string('cavali_girador_email')->nullable();
             $table->string('cavali_girador_telefono')->nullable();
 
+            $table->boolean('activo')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

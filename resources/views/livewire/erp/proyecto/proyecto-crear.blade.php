@@ -72,7 +72,6 @@
                             @enderror
                         </div>
                     </div>
-
                 </div>
 
                 <div class="g_columna_4 g_columna_invertir">
