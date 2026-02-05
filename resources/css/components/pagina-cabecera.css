@@ -11,12 +11,13 @@
     color: var(--color-light-texto);
     font-weight: var(--fw-semibold);
     display: flex;
-    align-items: flex-end;
-    gap: 5px;
+    align-items: flex-start;
+    flex-direction: column;
+    line-height: 1;
 }
 
 .cabecera_titulo_pagina h2 span {
-    font-size: var(--fs-2xs);
+    font-size: var(--fs-parrafo);
     color: var(--color-gris);
     font-weight: var(--fw-regular);
     padding-bottom: 2px;

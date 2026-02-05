@@ -1,8 +1,8 @@
-@section('tituloPagina', 'Editar Rol: ' . $role->name)
+@section('tituloPagina', 'Editar Rol')
 
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Editar Rol: <span class="text-uppercase">{{ $role->name }}</span></h2>
+        <h2>Editar Rol</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.home') }}" class="g_boton g_boton_light">
@@ -124,24 +124,24 @@
         </div>
     </form>
 
-    @push('scripts')
-        <script>
-            function alertaEliminarRol() {
-                Swal.fire({
-                    title: '¿Quieres eliminar este rol?',
-                    text: "Esto puede afectar a los usuarios que lo tengan asignado.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: '¡Sí, eliminar!',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Livewire.dispatch('eliminarRolOn');
-                    }
-                });
-            }
-        </script>
-    @endpush
+    @script
+    <script>
+        window.alertaEliminarRol = function() {
+            Swal.fire({
+                title: '¿Quieres eliminar este rol?',
+                text: "Esto puede afectar a los usuarios que lo tengan asignado.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, eliminar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $wire.eliminarRolOn();
+                }
+            });
+        }
+    </script>
+    @endscript
 </div>

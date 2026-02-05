@@ -1,8 +1,8 @@
-@section('tituloPagina', 'Crear unidad negocio')
+@section('tituloPagina', 'Crear Unidad de Negocio')
 
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Crear unidad negocio</h2>
+        <h2>Crear Unidad de Negocio</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_light">

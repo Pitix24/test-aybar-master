@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Lazy;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
@@ -29,6 +30,9 @@ class RolCrear extends Component
 
     public function updated($propertyName)
     {
+        if ($propertyName === 'name') {
+            $this->name = Str::slug($this->name);
+        }
         $this->validateOnly($propertyName);
     }
 

@@ -22,12 +22,11 @@
                                 Nombre del Rol <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                             </label>
                             <input type="text" id="name" wire:model.blur="name"
-                                class="@error('name') input-error @enderror" autocomplete="off"
-                                placeholder="ej: supervisor-backoffice">
+                                class="@error('name') input-error @enderror" autocomplete="off">
                             @error('name')
                                 <p class="mensaje_error">{{ $message }}</p>
                             @enderror
-                            <p class="leyenda">Usa minúsculas y guiones (slug) preferiblemente.</p>
+                            <p class="leyenda">Ej: supervisor-backoffice.</p>
                         </div>
                     </div>
                 </div>

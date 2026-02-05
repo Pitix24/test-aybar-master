@@ -11,6 +11,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Lazy;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
@@ -38,6 +39,9 @@ class RolEditar extends Component
 
     public function updated($propertyName)
     {
+        if ($propertyName === 'name' && $this->role->name !== 'super-admin') {
+            $this->name = Str::slug($this->name);
+        }
         $this->validateOnly($propertyName);
     }
 

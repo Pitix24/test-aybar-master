@@ -1,8 +1,8 @@
-@section('tituloPagina', 'Editar grupo Proyecto')
+@section('tituloPagina', 'Editar Grupo Proyecto')
 
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Editar grupo Proyecto</h2>
+        <h2>Editar Grupo Proyecto</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.grupo-proyecto.vista.todo') }}" class="g_boton g_boton_light">
@@ -74,30 +74,24 @@
         </div>
     </form>
 
-    @push('scripts')
-        <script>
-            function alertaEliminarGrupoProyecto() {
-                Swal.fire({
-                    title: '¿Quieres eliminar?',
-                    text: "No podrás recuperarlo.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: '¡Sí, eliminar!',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Livewire.dispatch('eliminarGrupoProyectoOn');
-
-                        Swal.fire(
-                            '¡Eliminado!',
-                            'Eliminaste correctamente.',
-                            'success'
-                        )
-                    }
-                });
-            }
-        </script>
-    @endpush
+    @script
+    <script>
+        window.alertaEliminarGrupoProyecto = function () {
+            Swal.fire({
+                title: '¿Quieres eliminar?',
+                text: "No podrás recuperarlo.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Sí, eliminar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $wire.eliminarGrupoProyectoOn();
+                }
+            });
+        }
+    </script>
+    @endscript
 </div>
