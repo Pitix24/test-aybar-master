@@ -41,4 +41,9 @@ class Area extends Model
             ->withPivot('is_principal')
             ->wherePivot('is_principal', true);
     }
+
+    public function tiposSolicitud()
+    {
+        return $this->belongsToMany(TipoSolicitud::class, 'area_tipo_solicitud')->withTimestamps();
+    }
 }

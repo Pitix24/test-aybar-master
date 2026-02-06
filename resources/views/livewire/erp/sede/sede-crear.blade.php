@@ -1,3 +1,81 @@
-<div>
-    {{-- It is quality rather than quantity that matters. - Lucius Annaeus Seneca --}}
+@section('tituloPagina', 'Crear Sede')
+
+<div class="g_gap_pagina">
+    <div class="g_panel cabecera_titulo_pagina">
+        <h2>Crear Sede</h2>
+
+        <div class="cabecera_titulo_botones">
+            <a href="{{ route('erp.sede.vista.todo') }}" class="g_boton g_boton_light">
+                Inicio <i class="fa-solid fa-house"></i></a>
+
+            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar</button>
+        </div>
+    </div>
+
+    <form wire:submit="store" class="formulario">
+        <div class="g_panel g_gap_pagina">
+
+            <div class="g_fila">
+                <div class="g_columna_8">
+                    <div class="g_panel">
+                        <h4 class="g_panel_titulo">General</h4>
+
+                        <div class="g_margin_bottom_15">
+                            <label for="nombre">
+                                Nombre <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                            </label>
+                            <input type="text" id="nombre" wire:model.blur="nombre"
+                                class="@error('nombre') input-error @enderror" autocomplete="off">
+                            @error('nombre')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="direccion">
+                                Dirección
+                            </label>
+                            <input type="text" id="direccion" wire:model.blur="direccion"
+                                class="@error('direccion') input-error @enderror" autocomplete="off">
+                            @error('direccion')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <div class="g_columna_4 g_columna_invertir">
+                    <div class="g_panel">
+                        <h4 class="g_panel_titulo">Activo</h4>
+                        <div>
+                            <select id="activo" wire:model.live="activo">
+                                <option value="0">DESACTIVADO</option>
+                                <option value="1">ACTIVO</option>
+                            </select>
+                            @error('activo')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formulario_botones">
+                <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="store">
+                    <span wire:loading.remove wire:target="store">
+                        <i class="fa-solid fa-save"></i> Guardar
+                    </span>
+                    <span wire:loading wire:target="store">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                    </span>
+                </button>
+
+                <a href="{{ route('erp.sede.vista.todo') }}" class="g_boton g_boton_cancelar">
+                    <i class="fa-solid fa-times"></i> Cancelar
+                </a>
+            </div>
+        </div>
+
+    </form>
 </div>
