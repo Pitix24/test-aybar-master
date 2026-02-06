@@ -12,18 +12,24 @@ use App\Models\SubTipoSolicitud;
 use App\Models\Canal;
 use App\Models\EstadoTicket;
 use App\Models\PrioridadTicket;
+use App\Models\TicketArchivo;
+use App\Models\TicketHistorial;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\WithFileUploads;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 class TicketEditar extends Component
 {
+    use WithFileUploads;
+
     public Ticket $ticket;
 
     // Datos del Ticket
@@ -43,6 +49,12 @@ class TicketEditar extends Component
     // Datos Participantes
     public $searchUser = '';
     public $selectedParticipants = [];
+
+    // Adjuntos
+    public $archivo;
+    public $descripcion_archivo;
+    public $archivos_existentes;
+    public $tab_activa = 'ticket'; // ticket, historial, adjuntos
 
     protected function rules()
     {
@@ -82,6 +94,7 @@ class TicketEditar extends Component
         $this->descripcion_inicial = $this->ticket->descripcion_inicial;
 
         $this->selectedParticipants = $this->ticket->usuariosParticipantes()->pluck('users.id')->toArray();
+        $this->archivos_existentes = $this->ticket->archivos()->get();
     }
 
     public function updatedUnidadNegocioId($value)
@@ -149,6 +162,78 @@ class TicketEditar extends Component
         }
     }
 
+    public function adjuntar()
+    {
+        try {
+            $this->validate([
+                'archivo' => 'required|max:10240', // 10MB max
+                'descripcion_archivo' => 'required|min:3',
+            ]);
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores en el formulario de adjunto.']);
+            throw $e;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $filename = $this->archivo->getClientOriginalName();
+            $extension = $this->archivo->getClientOriginalExtension();
+            $path = $this->archivo->store('tickets/' . $this->ticket->id, 'public');
+            $size = $this->archivo->getSize();
+            $mime = $this->archivo->getMimeType();
+
+            TicketArchivo::create([
+                'archivable_type' => Ticket::class,
+                'archivable_id' => $this->ticket->id,
+                'user_id' => auth()->id(),
+                'nombre_original' => $filename,
+                'path' => $path,
+                'extension' => $extension,
+                'size' => $size,
+                'mime_type' => $mime,
+            ]);
+
+            TicketHistorial::create([
+                'ticket_id' => $this->ticket->id,
+                'user_id' => auth()->id(),
+                'accion' => 'Adjuntar archivo',
+                'detalle' => "Se adjuntó el archivo '{$this->descripcion_archivo}' ({$filename})",
+            ]);
+
+            DB::commit();
+
+            $this->reset(['archivo', 'descripcion_archivo']);
+            $this->archivos_existentes = $this->ticket->archivos()->latest()->get();
+
+            $this->dispatch('alertaLivewire', ['title' => 'Adjuntado', 'text' => 'El archivo se ha subido correctamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al adjuntar archivo: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo subir el archivo.']);
+        }
+    }
+
+    public function cancelarAdjunto()
+    {
+        $this->reset(['archivo', 'descripcion_archivo']);
+    }
+
+    public function eliminarArchivo($archivoId)
+    {
+        try {
+            $archivo = TicketArchivo::findOrFail($archivoId);
+            Storage::disk('public')->delete($archivo->path);
+            $archivo->delete();
+
+            $this->archivos_existentes = $this->ticket->archivos()->latest()->get();
+            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'El archivo ha sido eliminado.']);
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar archivo: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'Ocurrió un error al eliminar el archivo.']);
+        }
+    }
+
     #[On('eliminarTicketOn')]
     public function eliminarTicketOn()
     {
@@ -190,6 +275,8 @@ class TicketEditar extends Component
 
         $participantesSeleccionados = User::whereIn('id', $this->selectedParticipants)->get();
 
+        $historial = $this->ticket->historial()->with('user')->latest()->get();
+
         return view('livewire.atc.ticket.ticket-editar', compact(
             'unidades',
             'proyectos',
@@ -202,7 +289,8 @@ class TicketEditar extends Component
             'prioridades',
             'gestores',
             'participantesDisponibles',
-            'participantesSeleccionados'
+            'participantesSeleccionados',
+            'historial'
         ));
     }
 

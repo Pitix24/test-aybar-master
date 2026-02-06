@@ -154,6 +154,11 @@ class Ticket extends Model
         return $this->morphMany(TicketArchivo::class, 'archivable');
     }
 
+    public function historial()
+    {
+        return $this->hasMany(TicketHistorial::class);
+    }
+
     protected static function booted()
     {
         static::creating(function ($ticket) {
