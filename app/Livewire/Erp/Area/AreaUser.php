@@ -4,82 +4,106 @@ namespace App\Livewire\Erp\Area;
 
 use App\Models\Area;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AreaUsersExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 class AreaUser extends Component
 {
+    use WithPagination;
+
     public Area $area;
-    public $buscar = '';
-    public $selectedUsers = [];
-    public $principalUserId = null;
+
+    #[Url(as: 'ua')]
+    public $searchAgregados = '';
+
+    #[Url(as: 'ud')]
+    public $searchDisponibles = '';
+
+    public $perPageDisponibles = 15;
 
     public function mount($id)
     {
         $this->area = Area::findOrFail($id);
-
-        $assignedUsers = $this->area->users()->get();
-        $this->selectedUsers = $assignedUsers->pluck('id')->toArray();
-
-        $principal = $assignedUsers->where('pivot.is_principal', true)->first();
-        $this->principalUserId = $principal ? $principal->id : null;
     }
 
-    public function toggleUser($userId)
+    public function updated($property)
     {
-        if (in_array($userId, $this->selectedUsers)) {
-            $this->selectedUsers = array_diff($this->selectedUsers, [$userId]);
-            if ($this->principalUserId == $userId) {
-                $this->principalUserId = null;
-            }
-        } else {
-            $this->selectedUsers[] = $userId;
+        if (in_array($property, ['searchAgregados', 'searchDisponibles'])) {
+            $this->resetPage();
         }
     }
 
-    public function setPrincipal($userId)
+    public function agregarUsuario($userId)
     {
-        if (in_array($userId, $this->selectedUsers)) {
-            $this->principalUserId = $userId;
-        }
+        $this->area->users()->syncWithoutDetaching([$userId => ['is_principal' => false]]);
+        $this->dispatch('alertaLivewire', ['title' => 'Agregado', 'text' => 'Usuario asignado al área correctamente.']);
     }
 
-    public function syncUsers()
+    public function quitarUsuario($userId)
     {
-        try {
-            DB::beginTransaction();
+        $this->area->users()->detach($userId);
+        $this->dispatch('alertaLivewire', ['title' => 'Quitado', 'text' => 'Usuario retirado del área.']);
+    }
 
-            $syncData = [];
-            foreach ($this->selectedUsers as $userId) {
-                $syncData[$userId] = [
-                    'is_principal' => ($userId == $this->principalUserId)
-                ];
-            }
+    public function marcarPrincipal($userId)
+    {
+        // Quitar principal actual
+        $this->area->users()->updateExistingPivot(
+            $this->area->users()->wherePivot('is_principal', true)->pluck('users.id')->toArray(),
+            ['is_principal' => false]
+        );
 
-            $this->area->users()->sync($syncData);
+        // Asignar nuevo principal
+        $this->area->users()->updateExistingPivot($userId, ['is_principal' => true]);
 
-            DB::commit();
-            $this->dispatch('alertaLivewire', ['title' => 'Sincronizado', 'text' => 'Usuarios asignados correctamente.']);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error al sincronizar usuarios de área: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo sincronizar.']);
-        }
+        $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se ha asignado el nuevo responsable del área.']);
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(
+            new AreaUsersExport($this->area, $this->searchAgregados),
+            'usuarios-area-' . strtolower($this->area->nombre) . '.xlsx'
+        );
     }
 
     public function render()
     {
-        $users = User::where('activo', true)
-            ->where('name', 'like', "%{$this->buscar}%")
+        // Usuarios ya asignados
+        $usuariosAgregados = $this->area->users()
+            ->where('rol', 'admin')
+            ->where(function ($q) {
+                $q->where('name', 'like', '%' . $this->searchAgregados . '%')
+                    ->orWhere('email', 'like', '%' . $this->searchAgregados . '%');
+            })
             ->orderBy('name')
             ->get();
 
-        return view('livewire.erp.area.area-user', compact('users'));
+        $idsAgregados = $this->area->users()->pluck('users.id')->toArray();
+
+        // Usuarios disponibles (no asignados)
+        // Nota: Filtrado por rol 'admin' sugerido en el ejemplo
+        $usuariosDisponibles = User::whereNotIn('id', $idsAgregados)
+            ->where('rol', 'admin')
+            ->where('activo', true)
+            ->where(function ($q) {
+                $q->where('name', 'like', '%' . $this->searchDisponibles . '%')
+                    ->orWhere('email', 'like', '%' . $this->searchDisponibles . '%');
+            })
+            ->orderBy('name')
+            ->paginate($this->perPageDisponibles, ['*'], 'pageUsers');
+
+        return view('livewire.erp.area.area-user', [
+            'usuariosAgregados' => $usuariosAgregados,
+            'usuariosDisponibles' => $usuariosDisponibles,
+        ]);
     }
 
     public function placeholder()
