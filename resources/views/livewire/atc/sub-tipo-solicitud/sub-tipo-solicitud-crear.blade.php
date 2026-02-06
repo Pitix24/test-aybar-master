@@ -71,7 +71,6 @@
                         <div class="g_columna_6 g_margin_bottom_10">
                             <label for="tiempo_solucion">Tiempo Solución (Horas)</label>
                             <input type="number" id="tiempo_solucion" wire:model.blur="tiempo_solucion"
-                                placeholder="Heredado del tipo de solicitud si está vacío"
                                 class="@error('tiempo_solucion') input-error @enderror" autocomplete="off">
                             @error('tiempo_solucion')
                                 <p class="mensaje_error">{{ $message }}</p>

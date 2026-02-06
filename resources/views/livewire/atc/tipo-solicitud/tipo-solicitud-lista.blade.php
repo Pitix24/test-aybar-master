@@ -11,9 +11,6 @@
         <h2>Lista de Tipos de Solicitud</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.home') }}" class="g_boton g_boton_light">
-                Inicio <i class="fa-solid fa-house"></i></a>
-
             <a href="{{ route('erp.tipo-solicitud.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>

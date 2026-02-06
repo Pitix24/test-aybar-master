@@ -13,6 +13,10 @@ class TipoSolicitud extends Model
 
     protected $fillable = ['nombre', 'tiempo_solucion', 'activo'];
 
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
     public function areas()
     {
         return $this->belongsToMany(Area::class, 'area_tipo_solicitud');

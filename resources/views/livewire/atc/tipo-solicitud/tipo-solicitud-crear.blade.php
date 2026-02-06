@@ -65,17 +65,14 @@
 
                     <div class="g_margin_bottom_10">
                         <label>Áreas Relacionadas</label>
-                        <div class="g_cajas_input">
-                            <div class="g_grid_roles">
-                                @foreach($areas as $area)
-                                    <div class="g_check_item">
-                                        <input type="checkbox" id="area_{{ $area->id }}" value="{{ $area->id }}"
-                                            wire:model="selectedAreas">
-                                        <label for="area_{{ $area->id }}">{{ $area->nombre }}</label>
-                                    </div>
-                                @endforeach
+                        @foreach($areas as $area)
+                            <div>
+                                <label for="area_{{ $area->id }}">
+                                    <input type="checkbox" id="area_{{ $area->id }}" value="{{ $area->id }}"
+                                        wire:model="selectedAreas">
+                                    {{ $area->nombre }}</label>
                             </div>
-                        </div>
+                        @endforeach
                         @error('selectedAreas')
                             <p class="mensaje_error">{{ $message }}</p>
                         @enderror
@@ -101,26 +98,3 @@
         </div>
     </form>
 </div>
-
-<style>
-    .g_grid_roles {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 10px;
-        padding: 10px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-    }
-
-    .g_check_item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .g_check_item label {
-        margin-bottom: 0;
-        cursor: pointer;
-    }
-</style>

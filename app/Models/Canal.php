@@ -13,6 +13,10 @@ class Canal extends Model
 
     protected $fillable = ['nombre', 'activo'];
 
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
     public function tickets()
     {
         return $this->hasMany(Ticket::class);

@@ -18,6 +18,10 @@ class EstadoTicket extends Model
         'activo',
     ];
 
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
     public function tickets()
     {
         return $this->hasMany(Ticket::class);

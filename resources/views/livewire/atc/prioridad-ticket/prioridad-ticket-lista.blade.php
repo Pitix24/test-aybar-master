@@ -11,9 +11,6 @@
         <h2>Lista de Prioridades de Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.home') }}" class="g_boton g_boton_light">
-                Inicio <i class="fa-solid fa-house"></i></a>
-
             <a href="{{ route('erp.prioridad-ticket.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>
@@ -89,8 +86,7 @@
                                     <td class="g_resaltar">{{ $item->nombre }}</td>
                                     <td class="g_resaltar">{{ $item->tiempo_permitido }}</td>
                                     <td>
-                                        <span class="g_badge"
-                                            style="background-color: {{ $item->color }}; color: white; padding: 2px 8px; border-radius: 4px;">
+                                        <span class="g_badge" style="background-color: {{ $item->color }};">
                                             {{ $item->color }}
                                         </span>
                                     </td>

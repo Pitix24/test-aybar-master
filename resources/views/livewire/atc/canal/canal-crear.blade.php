@@ -45,8 +45,7 @@
                         <label for="nombre">Nombre del Canal <span class="obligatorio"><i
                                     class="fa-solid fa-asterisk"></i></span></label>
                         <input type="text" id="nombre" wire:model.blur="nombre"
-                            placeholder="Ej: Correo, Llamada, Web, etc." class="@error('nombre') input-error @enderror"
-                            autocomplete="off">
+                            class="@error('nombre') input-error @enderror" autocomplete="off">
                         @error('nombre')
                             <p class="mensaje_error">{{ $message }}</p>
                         @enderror

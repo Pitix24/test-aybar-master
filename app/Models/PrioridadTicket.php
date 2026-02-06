@@ -18,6 +18,9 @@ class PrioridadTicket extends Model
         'icono',
         'activo',
     ];
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
 
     public function tickets()
     {

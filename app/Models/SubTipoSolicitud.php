@@ -13,6 +13,10 @@ class SubTipoSolicitud extends Model
 
     protected $fillable = ['tipo_solicitud_id', 'nombre', 'tiempo_solucion', 'activo'];
 
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
     public function tipoSolicitud()
     {
         return $this->belongsTo(TipoSolicitud::class);

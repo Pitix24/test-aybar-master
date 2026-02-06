@@ -74,7 +74,7 @@
                         <div class="g_columna_6 g_margin_bottom_10">
                             <label for="color">Color</label>
                             <input type="color" id="color" wire:model.blur="color"
-                                class="@error('color') input-error @enderror" style="height: 40px; padding: 2px;">
+                                class="@error('color') input-error @enderror">
                             @error('color')
                                 <p class="mensaje_error">{{ $message }}</p>
                             @enderror
@@ -104,21 +104,6 @@
                         <a href="{{ route('erp.prioridad-ticket.vista.todo') }}" class="g_boton g_boton_cancelar">
                             <i class="fa-solid fa-times"></i> Cancelar
                         </a>
-                    </div>
-                </div>
-            </div>
-            <div class="g_columna_4">
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Previsualización</h4>
-                    <div
-                        style="display: flex; align-items: center; gap: 15px; padding: 20px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0;">
-                        <i class="{{ $icono ?: 'fa-solid fa-flag' }}"
-                            style="font-size: 2rem; color: {{ $color ?: '#3b82f6' }}"></i>
-                        <div>
-                            <h3 style="margin: 0; color: #1e293b;">{{ $nombre ?: 'Nombre Prioridad' }}</h3>
-                            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 0.9rem;">
-                                {{ $tiempo_permitido ?: '0' }} Horas permitidas</p>
-                        </div>
                     </div>
                 </div>
             </div>
