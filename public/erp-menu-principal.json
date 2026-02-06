@@ -186,6 +186,64 @@
                 ]
             },
             {
+                "id": 40,
+                "nombre": "Sedes",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-map-location-dot",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.sede.vista.todo",
+                        "url": "/erp/sede",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.sede.vista.crear",
+                        "url": "/erp/sede/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 41,
+                "nombre": "Areas",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-shapes",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.area.vista.todo",
+                        "url": "/erp/area",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.area.vista.crear",
+                        "url": "/erp/area/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
                 "id": 42,
                 "nombre": "Grupo proyecto",
                 "ruta": "#",

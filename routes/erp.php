@@ -3,6 +3,11 @@
 use App\Livewire\Erp\Admin\AdminCrear;
 use App\Livewire\Erp\Admin\AdminEditar;
 use App\Livewire\Erp\Admin\AdminLista;
+use App\Livewire\Erp\Area\AreaCrear;
+use App\Livewire\Erp\Area\AreaEditar;
+use App\Livewire\Erp\Area\AreaLista;
+use App\Livewire\Erp\Area\AreaSolicitud;
+use App\Livewire\Erp\Area\AreaUser;
 use App\Livewire\Erp\Cliente\ClienteCrear;
 use App\Livewire\Erp\Cliente\ClienteEditar;
 use App\Livewire\Erp\Cliente\ClienteLista;
@@ -22,6 +27,9 @@ use App\Livewire\Erp\Proyecto\ProyectoLista;
 use App\Livewire\Erp\Rol\RolCrear;
 use App\Livewire\Erp\Rol\RolEditar;
 use App\Livewire\Erp\Rol\RolLista;
+use App\Livewire\Erp\Sede\SedeCrear;
+use App\Livewire\Erp\Sede\SedeEditar;
+use App\Livewire\Erp\Sede\SedeLista;
 use App\Livewire\Erp\UnidadNegocio\UnidadNegocioCrear;
 use App\Livewire\Erp\UnidadNegocio\UnidadNegocioEditar;
 use App\Livewire\Erp\UnidadNegocio\UnidadNegocioLista;
@@ -75,6 +83,20 @@ Route::prefix('proyecto')->name('proyecto.vista.')->group(function () {
     Route::get('/', ProyectoLista::class)->name('todo');
     Route::get('/crear', ProyectoCrear::class)->name('crear');
     Route::get('/editar/{id}', ProyectoEditar::class)->name('editar');
+});
+
+Route::prefix('sede')->name('sede.vista.')->group(function () { //ok
+    Route::get('/', SedeLista::class)->name('todo');
+    Route::get('/crear', SedeCrear::class)->name('crear');
+    Route::get('/editar/{id}', SedeEditar::class)->name('editar');
+});
+
+Route::prefix('area')->name('area.vista.')->group(function () { //ok
+    Route::get('/', AreaLista::class)->name('todo');
+    Route::get('/crear', AreaCrear::class)->name('crear');
+    Route::get('/editar/{id}', AreaEditar::class)->name('editar');
+    Route::get('/user/{id}', AreaUser::class)->name('user');
+    Route::get('/solicitud/{id}', AreaSolicitud::class)->name('solicitud');
 });
 
 require __DIR__ . '/atc.php';

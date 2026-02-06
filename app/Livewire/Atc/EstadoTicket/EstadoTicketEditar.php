@@ -2,12 +2,110 @@
 
 namespace App\Livewire\Atc\EstadoTicket;
 
+use App\Models\EstadoTicket;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
+#[Layout('layouts.erp.layout-erp')]
 class EstadoTicketEditar extends Component
 {
+    public EstadoTicket $estadoTicket;
+
+    public $nombre;
+    public $color;
+    public $icono;
+    public $activo = false;
+
+    protected function rules()
+    {
+        return [
+            'nombre' => 'required|unique:estado_tickets,nombre,' . $this->estadoTicket->id,
+            'color' => 'nullable|string',
+            'icono' => 'nullable|string',
+            'activo' => 'required|boolean',
+        ];
+    }
+
+    public function mount($id)
+    {
+        $this->estadoTicket = EstadoTicket::findOrFail($id);
+
+        $this->nombre = $this->estadoTicket->nombre;
+        $this->color = $this->estadoTicket->color;
+        $this->icono = $this->estadoTicket->icono;
+        $this->activo = $this->estadoTicket->activo;
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
+
+    public function update()
+    {
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            throw $e;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $this->estadoTicket->update([
+                'nombre' => $this->nombre,
+                'color' => $this->color,
+                'icono' => $this->icono,
+                'activo' => $this->activo,
+            ]);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al actualizar estado de ticket: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
+            return;
+        }
+    }
+
+    #[On('eliminarEstadoTicketOn')]
+    public function eliminarEstadoTicketOn()
+    {
+        try {
+            DB::beginTransaction();
+
+            $this->estadoTicket->delete();
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            return redirect()->route('erp.estado-ticket.vista.todo');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al eliminar estado de ticket: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
+            return;
+        }
+    }
+
     public function render()
     {
         return view('livewire.atc.estado-ticket.estado-ticket-editar');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-erp.placeholder />
+        HTML;
     }
 }

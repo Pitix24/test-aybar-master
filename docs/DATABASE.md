@@ -51,6 +51,8 @@ php artisan make:model Area -mfsc
 php artisan make:livewire erp.area.area-lista --class
 php artisan make:livewire erp.area.area-crear --class
 php artisan make:livewire erp.area.area-editar --class
+php artisan make:livewire erp.area.area-user --class
+php artisan make:livewire erp.area.area-solicitud --class
 
 php artisan make:migration create_area_sede_table
 
