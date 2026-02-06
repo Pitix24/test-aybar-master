@@ -56,7 +56,7 @@
             <div class="g_chat_input_container">
                 <div class="g_chat_input_wrapper">
                     <textarea wire:model="mensaje" placeholder="Escribe un mensaje..." rows="1"
-                        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
 
                     <div class="g_chat_actions">
                         <label class="g_chat_action_btn" title="Adjuntar archivo">
@@ -99,15 +99,12 @@
         };
 
         $wire.on('chatOpened', () => {
-            setTimeout(scrollToBottom, 100);
+            setTimeout(scrollToBottom, 50);
         });
 
         $wire.on('mensajeEnviado', () => {
             setTimeout(scrollToBottom, 50);
         });
-
-        // Polling para nuevos mensajes (opcional si no hay websockets)
-        // setInterval(() => { $wire.$refresh(); }, 5000);
     </script>
     @endscript
 </div>

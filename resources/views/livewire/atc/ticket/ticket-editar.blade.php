@@ -12,8 +12,7 @@
             </p>
         </div>
         <div class="cabecera_titulo_botones">
-            <button type="button" class="g_boton g_boton_primary"
-                wire:click="$dispatchTo('atc.ticket.ticket-chat', 'toggleChat')">
+            <button type="button" class="g_boton g_boton_primary" wire:click="$dispatch('toggleChat')">
                 Mensajes <i class="fa-solid fa-comments"></i>
             </button>
 
@@ -356,9 +355,9 @@
         }
     </script>
     @endscript
-</div>
 
-@livewire('atc.ticket.ticket-chat', ['ticket' => $ticket])
+    @livewire('atc.ticket.ticket-chat', ['ticket' => $ticket])
+</div>
 
 <style>
     /* Tabs System */

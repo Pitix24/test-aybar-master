@@ -7,6 +7,7 @@ use App\Models\TicketMensaje;
 use App\Models\TicketArchivo;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\On;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -20,8 +21,7 @@ class TicketChat extends Component
     public $adjunto;
     public $isOpen = false;
 
-    protected $listeners = ['toggleChat' => 'toggle'];
-
+    #[On('toggleChat')]
     public function toggle()
     {
         $this->isOpen = !$this->isOpen;
