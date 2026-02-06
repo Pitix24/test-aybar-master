@@ -10,9 +10,11 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EstadoTicketExport;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Estado de Ticket')]
 class EstadoTicketLista extends Component
 {
     use WithPagination;

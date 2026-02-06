@@ -1,7 +1,3 @@
-@section('tituloPagina', 'Lista de Sub-Tipos de Solicitud')
-
-@section('anchoPantalla', '100%')
-
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
         wire:target="buscar, tipo_solicitud_id, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"

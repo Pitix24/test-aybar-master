@@ -16,7 +16,7 @@ use App\Exports\TicketExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
-#[Title('Gestión de Tickets')]
+#[Title('Tickets')]
 class TicketLista extends Component
 {
     use WithPagination;

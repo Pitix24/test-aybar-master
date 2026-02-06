@@ -1,7 +1,3 @@
-@section('tituloPagina', 'Catálogo de Canales de Atención')
-
-@section('anchoPantalla', '100%')
-
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
         wire:target="buscar, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"

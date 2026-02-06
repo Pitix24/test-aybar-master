@@ -1,5 +1,3 @@
-@section('tituloPagina', 'Editar Estado de Ticket')
-
 <div class="g_gap_pagina">
 
     <div class="g_panel cabecera_titulo_pagina">

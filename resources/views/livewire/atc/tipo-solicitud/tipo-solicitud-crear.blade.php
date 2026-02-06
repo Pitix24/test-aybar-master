@@ -1,7 +1,4 @@
-@section('tituloPagina', 'Crear Tipo de Solicitud')
-
 <div class="g_gap_pagina">
-
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear Tipo de Solicitud</h2>
 

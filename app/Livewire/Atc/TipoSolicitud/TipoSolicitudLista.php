@@ -8,11 +8,13 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
+use Livewire\Attributes\Title;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TipoSolicitudExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Tipo de Solicitud')]
 class TipoSolicitudLista extends Component
 {
     use WithPagination;

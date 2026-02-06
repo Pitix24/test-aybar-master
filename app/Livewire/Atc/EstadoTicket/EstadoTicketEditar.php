@@ -10,9 +10,11 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Editar Estado de Ticket')]
 class EstadoTicketEditar extends Component
 {
     public EstadoTicket $estadoTicket;

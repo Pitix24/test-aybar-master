@@ -9,11 +9,13 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
+use Livewire\Attributes\Title;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SubTipoSolicitudExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Sub Tipo de Solicitud')]
 class SubTipoSolicitudLista extends Component
 {
     use WithPagination;

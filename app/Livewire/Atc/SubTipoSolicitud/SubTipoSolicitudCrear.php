@@ -10,9 +10,11 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Crear Sub Tipo de Solicitud')]
 class SubTipoSolicitudCrear extends Component
 {
     public $tipos_solicitud;

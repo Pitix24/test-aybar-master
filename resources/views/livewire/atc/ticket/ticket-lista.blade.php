@@ -1,5 +1,3 @@
-@section('descripcion', 'Página de gestión de tickets de Aybar')
-
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading wire:target="buscar, estado, prioridad, perPage, resetFiltros, exportExcel"
         message="Cargando..." />

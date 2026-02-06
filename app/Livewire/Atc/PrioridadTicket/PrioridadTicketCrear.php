@@ -9,9 +9,11 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Crear Prioridad de Ticket')]
 class PrioridadTicketCrear extends Component
 {
     public $nombre = '';
