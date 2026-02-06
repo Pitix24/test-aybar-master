@@ -39,3 +39,27 @@
         transform: rotate(360deg);
     }
 }
+
+/* =========================================================================
+   ESTILOS PARA PLACEHOLDERS (Lazy Loading Local)
+   ========================================================================= */
+
+.g_placeholder_panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+    min-height: 250px;
+}
+
+.g_placeholder_spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(2, 66, 78, 0.1);
+    border-left-color: var(--color-primario);
+    border-radius: 50%;
+    animation: spinner-rotate 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    margin-bottom: 15px;
+}
