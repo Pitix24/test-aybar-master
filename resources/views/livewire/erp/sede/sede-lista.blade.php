@@ -65,7 +65,6 @@
                 <thead>
                     <tr>
                         <th class="g_celda_centro">Nº</th>
-                        <th class="g_celda_centro">ID</th>
                         <th>Nombre</th>
                         <th>Dirección</th>
                         <th class="g_celda_centro">Estado</th>
@@ -77,7 +76,6 @@
                     @foreach ($items as $index => $item)
                         <tr>
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
-                            <td class="g_celda_centro">#{{ $item->id }}</td>
                             <td class="g_resaltar">{{ $item->nombre }}</td>
                             <td class="g_resaltar">{{ $item->direccion ?? '-' }}</td>
                             <td class="g_celda_centro">

@@ -27,4 +27,9 @@ class UnidadNegocio extends Model
         'cavali_girador_telefono',
         'activo'
     ];
+
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
 }

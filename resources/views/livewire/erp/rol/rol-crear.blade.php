@@ -17,18 +17,16 @@
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">General</h4>
 
-                    <div class="g_fila">
-                        <div class="g_columna_3 g_margin_bottom_10">
-                            <label for="name">
-                                Nombre del Rol <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                            </label>
-                            <input type="text" id="name" wire:model.blur="name"
-                                class="@error('name') input-error @enderror" autocomplete="off">
-                            @error('name')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
-                            <p class="leyenda">Ej: supervisor-backoffice.</p>
-                        </div>
+                    <div class="g_margin_bottom_10">
+                        <label for="name">
+                            Nombre del Rol <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                        </label>
+                        <input type="text" id="name" wire:model.blur="name" class="@error('name') input-error @enderror"
+                            autocomplete="off">
+                        @error('name')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                        <p class="leyenda">Ej: supervisor-backoffice.</p>
                     </div>
 
                     <div class="g_margin_bottom_10">

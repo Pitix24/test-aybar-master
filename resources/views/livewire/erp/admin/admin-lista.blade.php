@@ -90,9 +90,11 @@
                             <td class="g_resaltar">{{ $item->name }}</td>
                             <td>{{ $item->email }}</td>
                             <td>
-                                @foreach($item->roles as $role)
-                                    <span class="g_badge g_badge_light">{{ $role->name }}</span>
-                                @endforeach
+                                <div class="g_celda_tags">
+                                    @foreach($item->roles as $role)
+                                        <span class="g_badge g_badge_light">{{ $role->name }}</span>
+                                    @endforeach
+                                </div>
                             </td>
                             <td class="g_celda_centro">
                                 @if($item->activo)

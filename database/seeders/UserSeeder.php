@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
         $this->createRelatedData($superAdmin);
 
         // 2. Crear 30 usuarios aleatorios
-        $users = User::factory(30)->create();
+        $users = User::factory(50)->create();
 
         foreach ($users as $user) {
             // Si el user tiene rol 'admin' en la tabla, le asignamos un rol de Spatie aleatorio (excepto super-admin)

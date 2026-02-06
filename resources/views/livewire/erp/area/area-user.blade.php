@@ -87,9 +87,9 @@
                 </div>
 
                 @if ($usuariosAgregados->isEmpty())
-                    <div class="g_vacio">
-                        <p>No hay usuarios asignados.</p>
-                        <i class="fa-solid fa-users-slash"></i>
+                   <div class="g_vacio">
+                        <p>No se encontraron asignados.</p>
+                        <i class="fa-regular fa-face-smile"></i>
                     </div>
                 @endif
             </div>

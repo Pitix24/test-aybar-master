@@ -73,7 +73,7 @@
                         <div class="g_columna_6 g_margin_bottom_10">
                             <label for="color">Color Representativo</label>
                             <input type="color" id="color" wire:model.blur="color"
-                                class="@error('color') input-error @enderror" style="height: 40px; padding: 2px;">
+                                class="@error('color') input-error @enderror">
                             @error('color')
                                 <p class="mensaje_error">{{ $message }}</p>
                             @enderror
@@ -91,10 +91,9 @@
 
                     <div class="g_margin_bottom_10">
                         <label>Sedes vinculadas</label>
-                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px;">
+                        <div>
                             @foreach($sedes as $sede)
-                                <label
-                                    style="display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 5px 10px; border: 1px solid #e2e8f0; border-radius: 4px; background: white;">
+                                <label>
                                     <input type="checkbox" wire:model="selectedSedes" value="{{ $sede->id }}">
                                     <span>{{ $sede->nombre }}</span>
                                 </label>
@@ -119,22 +118,6 @@
                         <a href="{{ route('erp.area.vista.todo') }}" class="g_boton g_boton_cancelar">
                             <i class="fa-solid fa-times"></i> Cancelar
                         </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="g_columna_4">
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Previsualización</h4>
-                    <div
-                        style="padding: 20px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 15px;">
-                        <i class="{{ $icono ?: 'fa-solid fa-shapes' }}"
-                            style="font-size: 2.5rem; color: {{ $color ?: '#3b82f6' }}"></i>
-                        <div>
-                            <h3 style="margin: 0; color: #1e293b;">{{ $nombre ?: 'Nombre Área' }}</h3>
-                            <p style="margin: 2px 0 0 0; color: #64748b; font-size: 0.85rem;">{{ $email_buzon ?:
-                                'buzon@empresa.com' }}</p>
-                        </div>
                     </div>
                 </div>
             </div>

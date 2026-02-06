@@ -13,7 +13,7 @@ use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Unidades de Negocio')]
 class UnidadNegocioLista extends Component
 {

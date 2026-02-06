@@ -17,4 +17,8 @@ class GrupoProyecto extends Model
         'nombre',
         'activo'
     ];
+
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
 }
