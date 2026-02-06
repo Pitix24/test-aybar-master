@@ -144,6 +144,16 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
+    public function mensajes()
+    {
+        return $this->hasMany(TicketMensaje::class);
+    }
+
+    public function archivos()
+    {
+        return $this->morphMany(TicketArchivo::class, 'archivable');
+    }
+
     protected static function booted()
     {
         static::creating(function ($ticket) {

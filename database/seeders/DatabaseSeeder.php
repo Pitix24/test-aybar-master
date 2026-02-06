@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             CanalSeeder::class,
             TicketSeeder::class,
             TicketParticipanteSeeder::class,
+            TicketMensajeSeeder::class,
+            TicketArchivoSeeder::class,
         ]);
     }
 }
