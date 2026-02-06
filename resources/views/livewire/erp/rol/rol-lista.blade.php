@@ -96,7 +96,7 @@
         @if ($items->isEmpty())
             <div class="g_vacio">
                 <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay items registrados.' }}</p>
-                <i class="fa-regular fa-face-grin-wink"></i>
+                <i class="fa-regular fa-face-meh"></i>
             </div>
         @else
             <div class="g_paginacion">

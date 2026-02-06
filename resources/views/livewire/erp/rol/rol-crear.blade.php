@@ -13,7 +13,7 @@
 
     <form wire:submit="store" class="formulario">
         <div class="g_fila">
-            <div class="g_columna_12">
+            <div class="g_columna_8">
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">General</h4>
 

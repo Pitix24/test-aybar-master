@@ -35,6 +35,8 @@ use App\Livewire\Erp\UnidadNegocio\UnidadNegocioEditar;
 use App\Livewire\Erp\UnidadNegocio\UnidadNegocioLista;
 use Illuminate\Support\Facades\Route;
 
+//Route::get('/', InicioLivewire::class)->name('home');
+
 Route::get('/perfil', InicioLivewire::class)->name('home');
 
 Route::prefix('rol')->name('rol.vista.')->group(function () {

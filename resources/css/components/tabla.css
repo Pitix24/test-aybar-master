@@ -111,6 +111,16 @@
     transition: opacity 0.3s ease;
 }
 
+.g_vacio {
+    width: 100%;
+    display: flex;
+    color: #29343d;
+    font-size: 12px;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
 [wire\:loading] .g_tabla tbody {
     opacity: 0.5;
 }
