@@ -1,18 +1,25 @@
 @section('tituloPagina', 'Editar Ticket')
 
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="update, adjuntar, eliminarTicketOn, eliminarArchivo" message="Procesando..." />
+    <x-loading-overlay wire:loading wire:target="update, adjuntar, eliminarTicketOn, eliminarArchivo"
+        message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <div>
             <h2>Ticket #{{ $ticket->id }}</h2>
             <p style="margin: 0; color: #64748b;">Creado por: {{ $ticket->creadoPor?->name ?? 'Sistema' }} el
-                {{ $ticket->created_at->format('d/m/Y H:i') }}</p>
+                {{ $ticket->created_at->format('d/m/Y H:i') }}
+            </p>
         </div>
         <div class="cabecera_titulo_botones">
+            <button type="button" class="g_boton g_boton_primary"
+                wire:click="$dispatchTo('atc.ticket.ticket-chat', 'toggleChat')">
+                Mensajes <i class="fa-solid fa-comments"></i>
+            </button>
+
             <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_light">
                 Lista <i class="fa-solid fa-list"></i></a>
-            
+
             <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarTicket()">
                 Eliminar <i class="fa-solid fa-trash-can"></i>
             </button>
@@ -27,13 +34,16 @@
         <div class="g_columna_8">
             <div class="g_panel" style="padding: 0;">
                 <div class="tabs_contenedor">
-                    <button wire:click="$set('tab_activa', 'ticket')" class="tab_boton {{ $tab_activa == 'ticket' ? 'activa' : '' }}">
+                    <button wire:click="$set('tab_activa', 'ticket')"
+                        class="tab_boton {{ $tab_activa == 'ticket' ? 'activa' : '' }}">
                         <i class="fa-solid fa-circle-info"></i> Información
                     </button>
-                    <button wire:click="$set('tab_activa', 'historial')" class="tab_boton {{ $tab_activa == 'historial' ? 'activa' : '' }}">
+                    <button wire:click="$set('tab_activa', 'historial')"
+                        class="tab_boton {{ $tab_activa == 'historial' ? 'activa' : '' }}">
                         <i class="fa-solid fa-clock-rotate-left"></i> Historial
                     </button>
-                    <button wire:click="$set('tab_activa', 'adjuntos')" class="tab_boton {{ $tab_activa == 'adjuntos' ? 'activa' : '' }}">
+                    <button wire:click="$set('tab_activa', 'adjuntos')"
+                        class="tab_boton {{ $tab_activa == 'adjuntos' ? 'activa' : '' }}">
                         <i class="fa-solid fa-paperclip"></i> Adjuntos ({{ $archivos_existentes->count() }})
                     </button>
                 </div>
@@ -43,14 +53,18 @@
                     <div class="{{ $tab_activa == 'ticket' ? '' : 'g_oculto' }}">
                         <form wire:submit="update" class="formulario">
                             <div class="g_margin_bottom_15">
-                                <label for="asunto_inicial">Asunto <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                                <input type="text" id="asunto_inicial" wire:model.blur="asunto_inicial" class="@error('asunto_inicial') input-error @enderror">
+                                <label for="asunto_inicial">Asunto <span class="obligatorio"><i
+                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <input type="text" id="asunto_inicial" wire:model.blur="asunto_inicial"
+                                    class="@error('asunto_inicial') input-error @enderror">
                                 @error('asunto_inicial') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="g_margin_bottom_15">
-                                <label for="descripcion_inicial">Descripción <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                                <textarea id="descripcion_inicial" wire:model.blur="descripcion_inicial" rows="8" class="@error('descripcion_inicial') input-error @enderror"></textarea>
+                                <label for="descripcion_inicial">Descripción <span class="obligatorio"><i
+                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <textarea id="descripcion_inicial" wire:model.blur="descripcion_inicial" rows="8"
+                                    class="@error('descripcion_inicial') input-error @enderror"></textarea>
                                 @error('descripcion_inicial') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
@@ -58,13 +72,15 @@
                                 <div class="g_columna_6 g_margin_bottom_15">
                                     <label>Unidad de Negocio</label>
                                     <select wire:model.live="unidad_negocio_id">
-                                        @foreach($unidades as $u) <option value="{{ $u->id }}">{{ $u->nombre }}</option> @endforeach
+                                        @foreach($unidades as $u) <option value="{{ $u->id }}">{{ $u->nombre }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="g_columna_6 g_margin_bottom_15">
                                     <label>Proyecto</label>
                                     <select wire:model.live="proyecto_id">
-                                        @foreach($proyectos as $p) <option value="{{ $p->id }}">{{ $p->nombre }}</option> @endforeach
+                                        @foreach($proyectos as $p) <option value="{{ $p->id }}">{{ $p->nombre }}
+                                        </option> @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -73,20 +89,23 @@
                                 <div class="g_columna_4 g_margin_bottom_15">
                                     <label>Tipo Solicitud</label>
                                     <select wire:model.live="tipo_solicitud_id">
-                                        @foreach($tipos as $t) <option value="{{ $t->id }}">{{ $t->nombre }}</option> @endforeach
+                                        @foreach($tipos as $t) <option value="{{ $t->id }}">{{ $t->nombre }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="g_columna_4 g_margin_bottom_15">
                                     <label>Subtipo</label>
                                     <select wire:model="sub_tipo_solicitud_id">
                                         <option value="">General</option>
-                                        @foreach($subtipos as $st) <option value="{{ $st->id }}">{{ $st->nombre }}</option> @endforeach
+                                        @foreach($subtipos as $st) <option value="{{ $st->id }}">{{ $st->nombre }}
+                                        </option> @endforeach
                                     </select>
                                 </div>
                                 <div class="g_columna_4 g_margin_bottom_15">
                                     <label>Canal</label>
                                     <select wire:model="canal_id">
-                                        @foreach($canales as $c) <option value="{{ $c->id }}">{{ $c->nombre }}</option> @endforeach
+                                        @foreach($canales as $c) <option value="{{ $c->id }}">{{ $c->nombre }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -130,11 +149,12 @@
                             <div class="g_columna_5">
                                 <div class="g_panel" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
                                     <h5 style="margin-top: 0; margin-bottom: 15px;">Añadir Adjunto</h5>
-                                    
+
                                     <input type="file" id="fileUpload" wire:model="archivo"
                                         accept=".pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png" style="display: none;">
 
-                                    <div class="contenedor_dropzone" onclick="document.getElementById('fileUpload').click()">
+                                    <div class="contenedor_dropzone"
+                                        onclick="document.getElementById('fileUpload').click()">
                                         @if ($archivo)
                                             <div class="dropzone_item">
                                                 @php
@@ -148,12 +168,15 @@
                                                         'png' => 'fa-file-image text-purple-600',
                                                     ];
                                                 @endphp
-                                                <i class="fa-solid {{ $icons[$ext] ?? 'fa-file text-gray-500' }}" style="font-size: 2rem;"></i>
-                                                <span style="font-size: 0.8rem; display: block; margin-top: 5px;">{{ $archivo->getClientOriginalName() }}</span>
+                                                <i class="fa-solid {{ $icons[$ext] ?? 'fa-file text-gray-500' }}"
+                                                    style="font-size: 2rem;"></i>
+                                                <span
+                                                    style="font-size: 0.8rem; display: block; margin-top: 5px;">{{ $archivo->getClientOriginalName() }}</span>
                                             </div>
                                         @else
                                             <div class="g_vacio" style="padding: 20px 0;">
-                                                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.5rem; color: #94a3b8; margin-bottom: 10px;"></i>
+                                                <i class="fa-solid fa-cloud-arrow-up"
+                                                    style="font-size: 2.5rem; color: #94a3b8; margin-bottom: 10px;"></i>
                                                 <p style="font-size: 0.9rem;">Haz clic para subir archivo</p>
                                             </div>
                                         @endif
@@ -164,8 +187,10 @@
                                     @if ($archivo)
                                         <div class="g_margin_top_15">
                                             <label>Descripción del adjunto</label>
-                                            <textarea wire:model="descripcion_archivo" class="g_input" style="height: 80px;" placeholder="¿Qué contiene este archivo?"></textarea>
-                                            @error('descripcion_archivo') <p class="mensaje_error">{{ $message }}</p> @enderror
+                                            <textarea wire:model="descripcion_archivo" class="g_input" style="height: 80px;"
+                                                placeholder="¿Qué contiene este archivo?"></textarea>
+                                            @error('descripcion_archivo') <p class="mensaje_error">{{ $message }}</p>
+                                            @enderror
                                         </div>
 
                                         <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -188,7 +213,7 @@
                                             <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
                                                 @php
                                                     $ext = strtolower($file->extension);
-                                                    $iconClass = match($ext) {
+                                                    $iconClass = match ($ext) {
                                                         'pdf' => 'fa-file-pdf text-red-600',
                                                         'docx', 'doc' => 'fa-file-word text-blue-600',
                                                         'xlsx', 'xls' => 'fa-file-excel text-green-600',
@@ -198,13 +223,16 @@
                                                 @endphp
                                                 <i class="fa-solid {{ $iconClass }}" style="font-size: 1.5rem;"></i>
                                                 <div style="display: flex; flex-direction: column;">
-                                                    <a href="{{ Storage::url($file->path) }}" target="_blank" class="archivo_nombre">
+                                                    <a href="{{ Storage::url($file->path) }}" target="_blank"
+                                                        class="archivo_nombre">
                                                         {{ $file->nombre_original }}
                                                     </a>
-                                                    <span class="archivo_meta">Subido por {{ $file->user?->name }} el {{ $file->created_at->format('d/m/Y') }}</span>
+                                                    <span class="archivo_meta">Subido por {{ $file->user?->name }} el
+                                                        {{ $file->created_at->format('d/m/Y') }}</span>
                                                 </div>
                                             </div>
-                                            <button type="button" class="archivo_eliminar" wire:click="eliminarArchivo({{ $file->id }})" title="Eliminar archivo">
+                                            <button type="button" class="archivo_eliminar"
+                                                wire:click="eliminarArchivo({{ $file->id }})" title="Eliminar archivo">
                                                 <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         </div>
@@ -226,7 +254,7 @@
         <div class="g_columna_4">
             <div class="g_panel">
                 <h4 class="g_panel_titulo">Estado y Asignación</h4>
-                
+
                 <div class="g_margin_bottom_15">
                     <label>Estado Actual</label>
                     <select wire:model="estado_ticket_id">
@@ -237,7 +265,8 @@
                 <div class="g_margin_bottom_15">
                     <label>Prioridad</label>
                     <select wire:model="prioridad_ticket_id">
-                        @foreach($prioridades as $pr) <option value="{{ $pr->id }}">{{ $pr->nombre }}</option> @endforeach
+                        @foreach($prioridades as $pr) <option value="{{ $pr->id }}">{{ $pr->nombre }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -269,9 +298,10 @@
             <!-- PARTICIPANTES -->
             <div class="g_panel g_margin_top_20">
                 <h4 class="g_panel_titulo">Participantes (CC)</h4>
-                
+
                 <div class="g_select_search">
-                    <input type="text" wire:model.live.debounce.300ms="searchUser" class="g_select_search_input" placeholder="Buscar para agregar...">
+                    <input type="text" wire:model.live.debounce.300ms="searchUser" class="g_select_search_input"
+                        placeholder="Buscar para agregar...">
 
                     @if(!empty($participantesDisponibles))
                         <div class="g_select_search_results">
@@ -295,7 +325,8 @@
                                 <div class="g_select_search_selected_avatar">{{ $su->initials() }}</div>
                                 <span class="g_select_search_selected_name">{{ $su->name }}</span>
                             </div>
-                            <button type="button" class="g_select_search_remove" wire:click="removeParticipant({{ $su->id }})" title="Quitar">
+                            <button type="button" class="g_select_search_remove"
+                                wire:click="removeParticipant({{ $su->id }})" title="Quitar">
                                 <i class="fa-solid fa-times"></i>
                             </button>
                         </div>
@@ -327,6 +358,8 @@
     @endscript
 </div>
 
+@livewire('atc.ticket.ticket-chat', ['ticket' => $ticket])
+
 <style>
     /* Tabs System */
     .tabs_contenedor {
@@ -334,6 +367,7 @@
         background: #f8fafc;
         border-bottom: 2px solid #e2e8f0;
     }
+
     .tab_boton {
         padding: 15px 25px;
         border: none;
@@ -348,10 +382,12 @@
         border-bottom: 3px solid transparent;
         margin-bottom: -2px;
     }
+
     .tab_boton:hover {
         background: #f1f5f9;
         color: #1e293b;
     }
+
     .tab_boton.activa {
         color: #3b82f6;
         border-bottom-color: #3b82f6;
@@ -367,6 +403,7 @@
         cursor: pointer;
         transition: background 0.2s;
     }
+
     .contenedor_dropzone:hover {
         background: #f1f5f9;
     }
@@ -377,6 +414,7 @@
         flex-direction: column;
         gap: 10px;
     }
+
     .archivo_item {
         background: white;
         border: 1px solid #e2e8f0;
@@ -387,24 +425,29 @@
         align-items: center;
         transition: transform 0.2s;
     }
+
     .archivo_item:hover {
         transform: translateX(5px);
         border-color: #cbd5e1;
     }
+
     .archivo_nombre {
         font-weight: 600;
         color: #334155;
         text-decoration: none;
         font-size: 0.95rem;
     }
+
     .archivo_nombre:hover {
         text-decoration: underline;
         color: #3b82f6;
     }
+
     .archivo_meta {
         font-size: 0.75rem;
         color: #94a3b8;
     }
+
     .archivo_eliminar {
         color: #ef4444;
         background: none;
@@ -414,6 +457,7 @@
         border-radius: 50%;
         transition: background 0.2s;
     }
+
     .archivo_eliminar:hover {
         background: #fee2e2;
     }
@@ -427,6 +471,7 @@
         padding-left: 20px;
         margin-left: 10px;
     }
+
     .historial_item {
         position: relative;
         background: #f8fafc;
@@ -434,6 +479,7 @@
         border-radius: 12px;
         border: 1px solid #e2e8f0;
     }
+
     .historial_item::before {
         content: '';
         position: absolute;
@@ -445,25 +491,30 @@
         border-radius: 50%;
         box-shadow: 0 0 0 4px #dbeafe;
     }
+
     .historial_meta {
         display: flex;
         justify-content: space-between;
         margin-bottom: 8px;
     }
+
     .historial_accion {
         font-weight: 700;
         color: #1e293b;
         font-size: 0.9rem;
     }
+
     .historial_fecha {
         font-size: 0.75rem;
         color: #94a3b8;
     }
+
     .historial_detalle {
         font-size: 0.85rem;
         color: #475569;
         margin: 0 0 10px 0;
     }
+
     .historial_usuario {
         font-size: 0.75rem;
         font-weight: 600;
@@ -474,12 +525,28 @@
         border-radius: 4px;
     }
 
-    .g_oculto { display: none; }
-    
+    .g_oculto {
+        display: none;
+    }
+
     /* Helpers Colores Extensiones */
-    .text-red-600 { color: #dc2626; }
-    .text-blue-600 { color: #2563eb; }
-    .text-green-600 { color: #16a34a; }
-    .text-purple-600 { color: #9333ea; }
-    .text-orange-500 { color: #f97316; }
+    .text-red-600 {
+        color: #dc2626;
+    }
+
+    .text-blue-600 {
+        color: #2563eb;
+    }
+
+    .text-green-600 {
+        color: #16a34a;
+    }
+
+    .text-purple-600 {
+        color: #9333ea;
+    }
+
+    .text-orange-500 {
+        color: #f97316;
+    }
 </style>
