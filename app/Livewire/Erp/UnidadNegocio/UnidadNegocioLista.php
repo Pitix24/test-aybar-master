@@ -10,9 +10,11 @@ use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UnidadNegocioExport;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Unidades de Negocio')]
 class UnidadNegocioLista extends Component
 {
     use WithPagination;

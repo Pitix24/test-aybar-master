@@ -1,14 +1,10 @@
-@section('tituloPagina', 'Lista de Unidades de Negocio')
-
-@section('anchoPantalla', '100%')
-
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
         wire:target="buscar, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Lista de Unidades de Negocio</h2>
+        <h2>Unidades de Negocio</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.home') }}" class="g_boton g_boton_light">
@@ -40,8 +36,8 @@
     </div>
 
     <div class="g_panel">
-        <div class="tabla_cabecera">
-            <div class="tabla_cabecera_botones">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
                 <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
                     wire:target="exportExcel">
                     <span wire:loading.remove wire:target="exportExcel">Excel <i
@@ -51,11 +47,11 @@
                 </button>
 
                 <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                    Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
 
-            <div class="tabla_cabecera_buscar formulario">
+            <div class="g_tabla_cabecera_filtro formulario">
                 <select wire:model.live="perPage">
                     <option value="20">20</option>
                     <option value="50">50</option>
@@ -64,52 +60,50 @@
             </div>
         </div>
 
-        <div class="tabla_contenido">
-            <div class="contenedor_tabla">
-                <table class="tabla">
-                    <thead>
+        <div class="g_contenedor_tabla">
+            <table class="g_tabla">
+                <thead>
+                    <tr>
+                        <th class="g_celda_centro">Nº</th>
+                        <th>Empresa</th>
+                        <th>Razón Social</th>
+                        <th class="g_celda_centro">RUC</th>
+                        <th class="g_celda_centro">SLIN ID</th>
+                        <th>Girador</th>
+                        <th>Email Girador</th>
+                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($items as $index => $item)
                         <tr>
-                            <th>Nº</th>
-                            <th>Empresa</th>
-                            <th>Razón Social</th>
-                            <th>RUC</th>
-                            <th>SLIN ID</th>
-                            <th>Cavali Girador</th>
-                            <th>Girador email</th>
-                            <th>Estado</th>
-                            <th></th>
+                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_resaltar">{{ $item->nombre }}</td>
+                            <td class="g_inferior g_resumir">{{ $item->razon_social ?? '-' }}</td>
+                            <td class="g_celda_centro">{{ $item->ruc ?? '-' }}</td>
+                            <td class="g_celda_centro">{{ $item->slin_id ?? '-' }}</td>
+                            <td class="g_inferior">{{ $item->cavali_girador_nombre ?? '-' }}</td>
+                            <td class="g_inferior">{{ $item->cavali_girador_email ?? '-' }}</td>
+                            <td class="g_celda_centro">
+                                @if($item->activo)
+                                    <span class="g_badge g_badge_success">Activo</span>
+                                @else
+                                    <span class="g_badge g_badge_danger">Inactivo</span>
+                                @endif
+                            </td>
+
+                            <td class="g_celda_acciones g_celda_centro centro">
+                                <a href="{{ route('erp.unidad-negocio.vista.editar', $item->id) }}"
+                                    class="g_accion_editar" title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-
-                    @if ($items->isNotEmpty())
-                        <tbody>
-                            @foreach ($items as $index => $item)
-                                <tr>
-                                    <td>{{ $items->firstItem() + $index }}</td>
-                                    <td class="g_resaltar">{{ $item->nombre }}</td>
-                                    <td class="g_inferior g_resumir">{{ $item->razon_social ?? '-' }}</td>
-                                    <td>{{ $item->ruc ?? '-' }}</td>
-                                    <td>{{ $item->slin_id ?? '-' }}</td>
-                                    <td class="g_inferior">{{ $item->cavali_girador_nombre ?? '-' }}</td>
-                                    <td class="g_inferior">{{ $item->cavali_girador_email ?? '-' }}</td>
-                                    <td>
-                                        <span class="estado {{ $item->activo ? 'g_activo' : 'g_desactivado' }}"><i
-                                                class="fa-solid fa-circle"></i></span>
-                                        {{ $item->activo ? 'Activo' : 'Desactivo' }}
-                                    </td>
-
-                                    <td class="centrar_iconos">
-                                        <a href="{{ route('erp.unidad-negocio.vista.editar', $item->id) }}"
-                                            class="g_accion_editar">
-                                            <span><i class="fa-solid fa-pencil"></i></span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    @endif
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
         @if ($items->hasPages())

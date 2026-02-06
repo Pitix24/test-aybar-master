@@ -10,9 +10,11 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SedeExport;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Sedes')]
 class SedeLista extends Component
 {
     use WithPagination;

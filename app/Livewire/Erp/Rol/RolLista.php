@@ -13,6 +13,7 @@ use App\Exports\RolesExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Lista de Roles')]
 class RolLista extends Component
 {
     use WithPagination;

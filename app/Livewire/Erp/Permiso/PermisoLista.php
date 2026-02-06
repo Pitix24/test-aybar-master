@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Lista de Permisos')]
 class PermisoLista extends Component
 {
     use WithPagination;

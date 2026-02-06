@@ -14,6 +14,7 @@ use Spatie\Permission\Models\Role;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Usuarios Admin')]
 class AdminLista extends Component
 {
     use WithPagination;

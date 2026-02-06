@@ -1,7 +1,3 @@
-@section('tituloPagina', 'Lista de Roles')
-
-@section('anchoPantalla', '100%')
-
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
         wire:target="buscar, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
@@ -23,16 +19,16 @@
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Rol</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar">
+                    <label>Buscar rol</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Nombre o ID...">
                 </div>
             </div>
         </div>
     </div>
 
     <div class="g_panel">
-        <div class="tabla_cabecera">
-            <div class="tabla_cabecera_botones">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
                 <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
                     wire:target="exportExcel">
                     <span wire:loading.remove wire:target="exportExcel">Excel <i
@@ -46,7 +42,7 @@
                 </button>
             </div>
 
-            <div class="tabla_cabecera_buscar formulario">
+            <div class="g_tabla_cabecera_filtro formulario">
                 <select wire:model.live="perPage">
                     <option value="20">20</option>
                     <option value="50">50</option>
@@ -55,43 +51,40 @@
             </div>
         </div>
 
-        <div class="tabla_contenido">
-            <div class="contenedor_tabla">
-                <table class="tabla">
-                    <thead>
+        <div class="g_contenedor_tabla">
+            <table class="g_tabla">
+                <thead>
+                    <tr>
+                        <th class="g_celda_centro">N°</th>
+                        <th>Nombre del Rol</th>
+                        <th>Guard</th>
+                        <th>Permisos</th>
+                        <th class="g_celda_centro">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($items as $index => $item)
                         <tr>
-                            <th>ID</th>
-                            <th>Nombre del Rol</th>
-                            <th>Guard</th>
-                            <th>Permisos</th>
-                            <th></th>
+                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_resaltar">{{ $item->name }}</td>
+                            <td>{{ $item->guard_name }}</td>
+                            <td>
+                                <span class="g_badge g_badge_light">
+                                    {{ $item->permissions_count ?? $item->permissions->count() }} permisos
+                                </span>
+                            </td>
+
+                            <td class="g_celda_acciones g_celda_centro centro">
+                                <a href="{{ route('erp.rol.vista.editar', $item->id) }}"
+                                    class="g_accion_editar" title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-
-                    @if ($items->isNotEmpty())
-                        <tbody>
-                            @foreach ($items as $index => $item)
-                                <tr>
-                                    <td>{{ $items->firstItem() + $index }}</td>
-                                    <td class="g_resaltar">{{ $item->name }}</td>
-                                    <td>{{ $item->guard_name }}</td>
-                                    <td>
-                                        <span class="g_badge info">
-                                            {{ $item->permissions_count ?? $item->permissions->count() }} permisos
-                                        </span>
-                                    </td>
-
-                                    <td class="centrar_iconos">
-                                        <a href="{{ route('erp.rol.vista.editar', $item->id) }}" class="g_accion_editar">
-                                            <span><i class="fa-solid fa-pencil"></i></span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    @endif
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
         @if ($items->hasPages())

@@ -11,9 +11,11 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AreaUsersExport;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Vincular Usuarios')]
 class AreaUser extends Component
 {
     use WithPagination;

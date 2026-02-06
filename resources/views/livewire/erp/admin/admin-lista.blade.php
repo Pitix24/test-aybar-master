@@ -1,12 +1,10 @@
-@section('tituloPagina', 'Lista de Usuarios Admin')
-
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
         wire:target="buscar, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Lista de Usuarios Admin</h2>
+        <h2>Usuarios Admin</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.home') }}" class="g_boton g_boton_light">
@@ -48,8 +46,8 @@
     </div>
 
     <div class="g_panel">
-        <div class="tabla_cabecera">
-            <div class="tabla_cabecera_botones">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
                 <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
                     wire:target="exportExcel">
                     <span wire:loading.remove wire:target="exportExcel">Excel <i
@@ -63,7 +61,7 @@
                 </button>
             </div>
 
-            <div class="tabla_cabecera_buscar formulario">
+            <div class="g_tabla_cabecera_filtro formulario">
                 <select wire:model.live="perPage">
                     <option value="20">20</option>
                     <option value="50">50</option>
@@ -72,45 +70,46 @@
             </div>
         </div>
 
-        <div class="tabla_contenido">
-            <div class="contenedor_tabla">
-                <table class="tabla">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Rol</th>
-                            <th>Estado</th>
-                            <th></th>
-                        </tr>
-                    </thead>
+        <div class="g_contenedor_tabla">
+            <table class="g_tabla">
+                <thead>
+                    <tr>
+                        <th class="g_celda_centro">Nº</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Acciones</th>
+                    </tr>
+                </thead>
 
-                    @if ($items->isNotEmpty())
-                        <tbody>
-                            @foreach ($items as $index => $item)
-                                <tr>
-                                    <td>{{ $items->firstItem() + $index }}</td>
-                                    <td class="g_resaltar">{{ $item->name }}</td>
-                                    <td>{{ $item->email }}</td>
-                                    <td class="g_resaltar">{{ $item->roles->pluck('name')->implode(', ') }}</td>
-                                    <td>
-                                        <span class="estado {{ $item->activo ? 'g_activo' : 'g_desactivado' }}">
-                                            <i class="fa-solid fa-circle"></i>
-                                            {{ $item->activo ? 'Activo' : 'Inactivo' }}
-                                        </span>
-                                    </td>
-                                    <td class="centrar_iconos">
-                                        <a href="{{ route('erp.admin.vista.editar', $item->id) }}" class="g_accion_editar">
-                                            <span><i class="fa-solid fa-pencil"></i></span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    @endif
-                </table>
-            </div>
+                <tbody>
+                    @foreach ($items as $index => $item)
+                        <tr>
+                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_resaltar">{{ $item->name }}</td>
+                            <td>{{ $item->email }}</td>
+                            <td>
+                                @foreach($item->roles as $role)
+                                    <span class="g_badge g_badge_light">{{ $role->name }}</span>
+                                @endforeach
+                            </td>
+                            <td class="g_celda_centro">
+                                @if($item->activo)
+                                    <span class="g_badge g_badge_success">Activo</span>
+                                @else
+                                    <span class="g_badge g_badge_danger">Inactivo</span>
+                                @endif
+                            </td>
+                            <td class="g_celda_acciones g_celda_centro centro">
+                                <a href="{{ route('erp.admin.vista.editar', $item->id) }}" class="g_accion_editar" title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
         @if ($items->hasPages())
