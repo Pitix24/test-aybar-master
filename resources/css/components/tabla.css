@@ -13,8 +13,6 @@
 
 .g_tabla {
     width: 100%;
-    min-width: 900px;
-    /* Fuerza el scroll horizontal para evitar que las filas se rompan */
     border-collapse: collapse;
     font-size: var(--fs-tabla, 14px);
     text-align: left;

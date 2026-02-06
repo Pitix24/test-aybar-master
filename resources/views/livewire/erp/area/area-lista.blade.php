@@ -1,7 +1,3 @@
-@section('tituloPagina', 'Lista de Áreas')
-
-@section('anchoPantalla', '100%')
-
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
         wire:target="buscar, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
@@ -40,8 +36,8 @@
     </div>
 
     <div class="g_panel">
-        <div class="tabla_cabecera">
-            <div class="tabla_cabecera_botones">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
                 <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
                     wire:target="exportExcel">
                     <span wire:loading.remove wire:target="exportExcel">Excel <i
@@ -51,11 +47,11 @@
                 </button>
 
                 <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                    Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
 
-            <div class="tabla_cabecera_buscar formulario">
+            <div class="g_tabla_cabecera_filtro formulario">
                 <select wire:model.live="perPage">
                     <option value="20">20</option>
                     <option value="50">50</option>
@@ -64,63 +60,63 @@
             </div>
         </div>
 
-        <div class="tabla_contenido">
-            <div class="contenedor_tabla">
-                <table class="tabla">
-                    <thead>
+        <div class="g_contenedor_tabla">
+            <table class="g_tabla">
+                <thead>
+                    <tr>
+                        <th class="g_celda_centro">Nº</th>
+                        <th class="g_celda_centro">Icono</th>
+                        <th>Nombre</th>
+                        <th>Buzón Email</th>
+                        <th>Sedes</th>
+                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($items as $index => $item)
                         <tr>
-                            <th>Nº</th>
-                            <th>Icono</th>
-                            <th>Nombre</th>
-                            <th>Buzón Email</th>
-                            <th>Sedes</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
+                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_celda_centro">
+                                <i class="{{ $item->icono ?? 'fa-solid fa-shapes' }}"
+                                    style="color: {{ $item->color }};"></i>
+                            </td>
+                            <td class="g_resaltar">{{ $item->nombre }}</td>
+                            <td class="g_inferior">{{ $item->email_buzon ?? '-' }}</td>
+                            <td>
+                                <div>
+                                    @foreach($item->sedes as $sede)
+                                        <span class="g_badge g_badge_light">{{ $sede->nombre }}</span>
+                                    @endforeach
+                                </div>
+                            </td>
+                            <td class="g_celda_centro">
+                                @if($item->activo)
+                                    <span class="g_badge g_badge_success">Activo</span>
+                                @else
+                                    <span class="g_badge g_badge_danger">Inactivo</span>
+                                @endif
+                            </td>
+
+                            <td class="g_celda_acciones g_celda_centro centro">
+                                <a href="{{ route('erp.area.vista.user', $item->id) }}" class="g_accion_ver"
+                                    title="Usuarios">
+                                    <i class="fa-solid fa-users-gear"></i>
+                                </a>
+                                <a href="{{ route('erp.area.vista.solicitud', $item->id) }}" class="g_accion_ver"
+                                    title="Tipos de Solicitud">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </a>
+                                <a href="{{ route('erp.area.vista.editar', $item->id) }}" class="g_accion_editar"
+                                    title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-
-                    @if ($items->isNotEmpty())
-                        <tbody>
-                            @foreach ($items as $index => $item)
-                                <tr>
-                                    <td>{{ $items->firstItem() + $index }}</td>
-                                    <td><i class="{{ $item->icono ?? 'fa-solid fa-shapes' }}"
-                                            style="color: {{ $item->color }}"></i></td>
-                                    <td class="g_resaltar">{{ $item->nombre }}</td>
-                                    <td>{{ $item->email_buzon ?? '-' }}</td>
-                                    <td>
-                                        @foreach($item->sedes as $sede)
-                                            <span class="g_badge g_badge_light">{{ $sede->nombre }}</span>
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        <span class="estado {{ $item->activo ? 'g_activo' : 'g_desactivado' }}"><i
-                                                class="fa-solid fa-circle"></i></span>
-                                        {{ $item->activo ? 'Activo' : 'Desactivo' }}
-                                    </td>
-
-                                    <td class="centrar_iconos">
-                                        <div style="display: flex; gap: 8px; justify-content: center;">
-                                            <a href="{{ route('erp.area.vista.user', $item->id) }}" class="g_accion_ver"
-                                                title="Usuarios">
-                                                <span><i class="fa-solid fa-users-gear"></i></span>
-                                            </a>
-                                            <a href="{{ route('erp.area.vista.solicitud', $item->id) }}" class="g_accion_ver"
-                                                title="Tipos de Solicitud">
-                                                <span><i class="fa-solid fa-file-invoice"></i></span>
-                                            </a>
-                                            <a href="{{ route('erp.area.vista.editar', $item->id) }}" class="g_accion_editar"
-                                                title="Editar">
-                                                <span><i class="fa-solid fa-pencil"></i></span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    @endif
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
         @if ($items->hasPages())

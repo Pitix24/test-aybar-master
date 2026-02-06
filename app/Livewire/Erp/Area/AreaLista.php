@@ -10,9 +10,11 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AreaExport;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Áreas')]
 class AreaLista extends Component
 {
     use WithPagination;
