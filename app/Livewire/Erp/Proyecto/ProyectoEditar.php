@@ -12,8 +12,10 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
+#[Title('Editar Proyecto')]
 #[Layout('layouts.erp.layout-erp')]
 class ProyectoEditar extends Component
 {

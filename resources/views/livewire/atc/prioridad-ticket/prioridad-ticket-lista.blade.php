@@ -49,11 +49,14 @@
             </div>
 
             <div class="g_tabla_cabecera_filtro formulario">
-                <select wire:model.live="perPage">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+                <div>
+                    <label>Mostrar</label>
+                    <select wire:model.live="perPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
             </div>
         </div>
 

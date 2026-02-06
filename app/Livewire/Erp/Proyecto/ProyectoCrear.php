@@ -11,8 +11,10 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
+#[Title('Crear Proyecto')]
 #[Layout('layouts.erp.layout-erp')]
 class ProyectoCrear extends Component
 {

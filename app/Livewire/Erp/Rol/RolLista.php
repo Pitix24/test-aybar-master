@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 use Livewire\Attributes\Lazy;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RolesExport;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]

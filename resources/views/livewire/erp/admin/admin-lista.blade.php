@@ -7,9 +7,6 @@
         <h2>Usuarios Admin</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.home') }}" class="g_boton g_boton_light">
-                Inicio <i class="fa-solid fa-house"></i></a>
-
             <a href="{{ route('erp.admin.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>
@@ -62,11 +59,14 @@
             </div>
 
             <div class="g_tabla_cabecera_filtro formulario">
-                <select wire:model.live="perPage">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+                <div>
+                    <label>Mostrar</label>
+                    <select wire:model.live="perPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -102,7 +102,8 @@
                                 @endif
                             </td>
                             <td class="g_celda_acciones g_celda_centro centro">
-                                <a href="{{ route('erp.admin.vista.editar', $item->id) }}" class="g_accion_editar" title="Editar">
+                                <a href="{{ route('erp.admin.vista.editar', $item->id) }}" class="g_accion_editar"
+                                    title="Editar">
                                     <i class="fa-solid fa-pencil"></i>
                                 </a>
                             </td>

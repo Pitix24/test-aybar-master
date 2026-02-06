@@ -1,12 +1,10 @@
-@section('tituloPagina', 'Editar Grupo Proyecto')
-
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar Grupo Proyecto</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.grupo-proyecto.vista.todo') }}" class="g_boton g_boton_light">
-                Inicio <i class="fa-solid fa-house"></i></a>
+                Lista <i class="fa-solid fa-house"></i></a>
 
             <a href="{{ route('erp.grupo-proyecto.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>

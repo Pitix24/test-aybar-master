@@ -9,8 +9,10 @@ use Livewire\Component;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
+#[Title('Crear Grupo de Proyecto')]
 #[Layout('layouts.erp.layout-erp')]
 class GrupoProyectoCrear extends Component
 {

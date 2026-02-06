@@ -12,9 +12,11 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Editar Usuario Admin')]
 class AdminEditar extends Component
 {
     public User $user_model;

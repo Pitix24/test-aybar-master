@@ -1,15 +1,15 @@
-@section('tituloPagina', 'Crear Sede')
-
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear Sede</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.sede.vista.todo') }}" class="g_boton g_boton_light">
-                Inicio <i class="fa-solid fa-house"></i></a>
+                Lista <i class="fa-solid fa-list"></i>
+            </a>
 
             <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
-                <i class="fa-solid fa-arrow-left"></i> Regresar</button>
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 

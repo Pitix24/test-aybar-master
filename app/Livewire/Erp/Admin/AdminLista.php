@@ -11,6 +11,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]

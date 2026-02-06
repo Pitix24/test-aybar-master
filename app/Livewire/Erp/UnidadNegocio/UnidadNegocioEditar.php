@@ -10,9 +10,11 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Editar Unidad de Negocio')]
 class UnidadNegocioEditar extends Component
 {
     public UnidadNegocio $unidadNegocio;

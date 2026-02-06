@@ -10,9 +10,11 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Crear Permiso')]
 class PermisoCrear extends Component
 {
     public $name;

@@ -1,5 +1,3 @@
-@section('tituloPagina', 'Crear Área')
-
 <div class="g_gap_pagina">
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -7,10 +5,12 @@
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.area.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i></a>
+                Lista <i class="fa-solid fa-list"></i>
+            </a>
 
             <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
-                <i class="fa-solid fa-arrow-left"></i> Regresar</button>
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 

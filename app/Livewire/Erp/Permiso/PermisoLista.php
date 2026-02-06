@@ -10,6 +10,7 @@ use Livewire\Attributes\Url;
 use Livewire\Attributes\Lazy;
 use Spatie\Permission\Models\Permission;
 use Maatwebsite\Excel\Facades\Excel;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]

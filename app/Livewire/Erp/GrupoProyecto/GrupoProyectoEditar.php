@@ -10,8 +10,10 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
 #[Lazy]
+#[Title('Editar Grupo de Proyecto')]
 #[Layout('layouts.erp.layout-erp')]
 class GrupoProyectoEditar extends Component
 {

@@ -11,9 +11,11 @@ use Livewire\Attributes\Lazy;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Crear Rol')]
 class RolCrear extends Component
 {
     public $name;

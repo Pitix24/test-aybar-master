@@ -40,7 +40,10 @@
                     </div>
 
                     <div class="g_tabla_cabecera_filtro formulario">
-                        <input type="text" wire:model.live.debounce.800ms="searchAgregados">
+                        <div>
+                            <label>Tipo solicitud</label>
+                            <input type="text" wire:model.live.debounce.800ms="searchAgregados">
+                        </div>
                     </div>
                 </div>
 
@@ -87,7 +90,10 @@
                 <div class="g_tabla_cabecera">
                     <div class="g_tabla_cabecera_botones"></div>
                     <div class="g_tabla_cabecera_filtro formulario">
-                        <input type="text" wire:model.live.debounce.800ms="searchDisponibles">
+                        <div>
+                            <label>Tipo solicitud</label>
+                            <input type="text" wire:model.live.debounce.800ms="searchDisponibles">
+                        </div>
                     </div>
                 </div>
 
