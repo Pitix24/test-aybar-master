@@ -10,11 +10,13 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
+use Livewire\Attributes\Title;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TicketExport;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
+#[Title('Gestión de Tickets')]
 class TicketLista extends Component
 {
     use WithPagination;

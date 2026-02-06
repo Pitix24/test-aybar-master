@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="@yield('descripcion')">
 
-    <title>@yield('titulo', config('app.name'))</title>
+    <title>{{ $title ?? config('app.name') }}</title>
 
     <!-- Estilos generales -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -41,8 +41,7 @@
 
         <!--CONTENIDO LAYOUT PAGINA-->
         <div class="contenido_layout_pagina">
-            <div class="g_centrar_pagina" @hasSection('anchoPantalla') style="max-width: @yield('anchoPantalla')"
-            @endif">
+            <div class="g_centrar_pagina" style="max-width: {{ $anchoPantalla ?? 'var(--ancho-centrar-pagina)' }}">
                 <main class="g_pading_pagina">
                     @yield('content')
                     @if (isset($slot))
