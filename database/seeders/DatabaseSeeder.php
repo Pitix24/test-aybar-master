@@ -33,6 +33,9 @@ class DatabaseSeeder extends Seeder
             TicketParticipanteSeeder::class,
             TicketMensajeSeeder::class,
             TicketArchivoSeeder::class,
+            TicketHistorialSeeder::class,
+            TicketDerivadoSeeder::class,
+            TicketEmailSeeder::class,
         ]);
     }
 }

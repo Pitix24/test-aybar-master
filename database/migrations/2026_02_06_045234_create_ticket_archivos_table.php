@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->string('url')->nullable();
             $table->string('titulo')->nullable();
             $table->string('descripcion')->nullable();
-            $table->string('extension', 10);
+            $table->string('extension', 20);
             $table->bigInteger('size');
             $table->string('mime_type');
 

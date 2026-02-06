@@ -17,7 +17,11 @@ class TicketEmailFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'ticket_id' => \App\Models\Ticket::factory(),
+            'emisor_id' => \App\Models\User::factory(),
+            'receptor_id' => \App\Models\User::factory(),
+            'asunto' => $this->faker->sentence(),
+            'mensaje' => $this->faker->paragraphs(3, true),
         ];
     }
 }
