@@ -1,0 +1,85 @@
+/* =========================================================================
+   COMPONENTE: BADGES (g_badge)
+   ========================================================================= */
+
+.g_badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+/* VARIANTE: SÓLIDA (Default) */
+.g_badge_primary {
+    background-color: #635bff;
+    color: white;
+}
+
+.g_badge_success {
+    background: #4caf50;
+    color: white;
+}
+
+.g_badge_info {
+    background: #2196f3;
+    color: white;
+}
+
+.g_badge_warning {
+    background: #f8c20a;
+    color: #000;
+}
+
+.g_badge_danger {
+    background: #ff6692;
+    color: white;
+}
+
+.g_badge_light {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #e2e8f0;
+}
+
+/* VARIANTE: DINÁMICA SOFT (Para colores de DB) 
+   Usa el color heredado para el borde y un fondo suave automático
+*/
+.g_badge_soft {
+    background-color: color-mix(in srgb, currentColor, transparent 85%);
+    border-color: color-mix(in srgb, currentColor, transparent 50%);
+}
+
+/* VARIANTE: OUTLINE */
+.g_badge_outline {
+    background-color: transparent;
+    border-color: currentColor;
+}
+
+/* BADGES DE MENÚ CRÍTICO */
+.g_menu_badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    color: #fff;
+    margin-left: auto;
+}
+
+.g_menu_badge.info {
+    background-color: #2196f3;
+}
+
+.g_menu_badge.success {
+    background-color: #4caf50;
+}
+
+.g_menu_badge.danger {
+    background-color: #f44336;
+}

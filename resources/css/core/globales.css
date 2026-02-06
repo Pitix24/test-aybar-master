@@ -42,6 +42,52 @@
     margin-bottom: 10px;
 }
 
+/* UTILIDADES DE TEXTO */
+.g_negrita {
+    font-weight: 700;
+}
+
+.g_mayuscula {
+    text-transform: uppercase;
+}
+
+.g_resaltar {
+    color: #29343d;
+    font-weight: 600;
+}
+
+.g_inferior {
+    color: #98a4ae;
+    font-size: 0.85em;
+}
+
+.g_resumir {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+    display: inline-block;
+}
+
+/* ESTADOS Y COLORES RÁPIDOS */
+.g_activo {
+    color: #36c76c;
+    font-weight: 600;
+}
+
+.g_desactivado {
+    color: #ff6692;
+    font-weight: 600;
+}
+
+.g_info {
+    color: #46caeb;
+}
+
+.g_error {
+    color: #ff6692;
+}
+
 .g_contenedor_columna {
     margin-top: 70px;
     display: flex;

@@ -1,0 +1,45 @@
+/* =========================================================================
+   COMPONENTE: TOOLTIPS (g_tooltip)
+   ========================================================================= */
+
+.g_tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.g_tooltip i {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.g_tooltip_content {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 6px;
+    visibility: hidden;
+    opacity: 0;
+
+    max-width: 220px;
+    padding: 8px 10px;
+
+    font-size: 12px;
+    line-height: 1.4;
+    color: #ffffff;
+    background-color: #000000;
+
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+    z-index: 999;
+    white-space: normal;
+    transition: opacity 0.2s, visibility 0.2s;
+}
+
+.g_tooltip:hover .g_tooltip_content {
+    visibility: visible;
+    opacity: 1;
+}

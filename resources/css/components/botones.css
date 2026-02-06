@@ -1,8 +1,20 @@
+/* =========================================================================
+   COMPONENT: BOTONES (g_boton)
+   ========================================================================= */
+
 .g_boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 4px 12px;
+    font-size: var(--fs-button, 14px);
     border-radius: 6px;
-    padding: 3px 8px;
-    font-size: var(--fs-button);
+    border: 1px solid transparent;
     cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1.2;
     width: max-content;
 }
 
@@ -10,31 +22,13 @@
     filter: brightness(1.1);
 }
 
-.g_boton_guardar {
-    background-color: #02424e;
-    color: white;
+.g_boton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
-.g_boton_cancelar {
-    background-color: #ffa726;
-    color: #02424e;
-}
-
-.g_boton_agregar {
-    background-color: #dddbff;
-    color: #02424E;
-}
-
-.g_boton_pdf {
-    background-color: #ff6692;
-    color: white;
-}
-
-.g_boton_excel {
-    background-color: #36c76c;
-    color: white;
-}
-
+/* VARIANTES PRINCIPALES */
 .g_boton_primary {
     background-color: #635bff;
     color: white;
@@ -50,8 +44,8 @@
     color: white;
 }
 
-.g_boton_info {
-    background-color: #46caeb;
+.g_boton_danger {
+    background-color: #ff6692;
     color: white;
 }
 
@@ -60,14 +54,15 @@
     color: white;
 }
 
-.g_boton_danger {
-    background-color: #ff6692;
+.g_boton_info {
+    background-color: #46caeb;
     color: white;
 }
 
 .g_boton_light {
     background-color: #eff4fa;
-    color: black;
+    color: #1a1f36;
+    border: 1px solid #e3e8ee;
 }
 
 .g_boton_dark {
@@ -75,222 +70,69 @@
     color: white;
 }
 
-.g_activo {
-    color: #36c76c;
+/* VARIANTES ESPECÍFICAS ERP */
+.g_boton_guardar {
+    background-color: #02424e;
+    color: white;
 }
 
-.g_desactivado {
-    color: #ff6692;
+.g_boton_cancelar {
+    background-color: #ffa726;
+    color: #02424e;
+}
+
+.g_boton_agregar {
+    background-color: #dddbff;
+    color: #02424e;
+}
+
+.g_boton_pdf {
+    background-color: #ff6692;
+    color: white;
+}
+
+.g_boton_excel {
+    background-color: #36c76c;
+    color: white;
+}
+
+/* BOTONES DE ACCIÓN (PEQUEÑOS/ICONOS) */
+.g_accion_ver,
+.g_accion_editar,
+.g_accion_eliminar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    background: transparent;
 }
 
 .g_accion_ver {
     color: #f8c20a;
 }
 
+.g_accion_ver:hover {
+    background-color: #f8c20a15;
+}
+
 .g_accion_editar {
     color: #46caeb;
 }
 
-.g_resaltar {
-    color: #29343d;
+.g_accion_editar:hover {
+    background-color: #46caeb15;
 }
 
-.g_inventario {
-    color: #fa417f;
+.g_accion_eliminar {
+    color: #ff6692;
 }
 
-.g_inferior {
-    color: #98a4ae;
-}
-
-.g_negrita {
-    font-weight: 700;
-}
-
-.g_resumir {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-}
-
-.g_mayuscula {
-    text-transform: uppercase;
-}
-
-.g_vacio {
-    width: 100%;
-    display: flex;
-    color: #29343d;
-    font-size: 12px;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-}
-
-.g_badge {
-    background: #e5e7eb;
-    padding: 3px 8px;
-    border-radius: 5px;
-    margin-right: 3px;
-    font-size: 12px;
-}
-
-.g_badge.activo {
-    background: #4caf50 !important;
-    color: white;
-}
-
-.g_badge.info {
-    background: #58a3ff !important;
-    color: rgb(3, 64, 114);
-}
-
-.g_badge.warning {
-    background: #f8c20a !important;
-    color: rgb(0, 0, 0);
-}
-
-.g_badge.danger {
-    background: #ff6692 !important;
-    color: white;
-}
-
-.g_estado {
-    font-size: 8px;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 5px;
-}
-
-.g_celda_wrap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.g_centrar_iconos {
-    display: grid;
-    gap: 10px;
-}
-
-.g_centrar_iconos a,
-.g_centrar_iconos button {
-    cursor: pointer;
-}
-
-.g_boton_personalizado {
-    text-decoration: none;
-    font-weight: 700;
-    transition: color 0.3s ease, background-color 0.3s ease;
-    padding: 8px 15px;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    border-radius: 25px;
-    justify-content: center;
-}
-
-.g_boton_personalizado.verde {
-    background: var(--color-verde);
-    border: 1px solid var(--color-verde);
-    color: var(--color-blanco);
-}
-
-.g_boton_personalizado.amarillo {
-    background: var(--color-amarillo);
-    border: 1px solid var(--color-amarillo);
-    color: var(--color-verde);
-}
-
-.g_boton_personalizado.negro {
-    background: var(--color-oscuro);
-    border: 1px solid var(--color-oscuro);
-    color: var(--color-blanco);
-}
-
-.g_boton_personalizado:hover {
-    filter: brightness(1.1);
-}
-
-.g_boton_cerrar {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background: var(--color-error);
-    color: white;
-    border: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.g_boton_cerrar:hover {
-    filter: brightness(1.1);
-}
-
-.g_menu_badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 12px;
-    color: #fff;
-    margin-left: 8px;
-    white-space: nowrap;
-}
-
-.g_menu_badge.info {
-    background-color: #2196f3;
-}
-
-.g_menu_badge.success {
-    background-color: #4caf50;
-}
-
-.g_menu_badge.warning {
-    background-color: #ff9800;
-}
-
-.g_menu_badge.danger {
-    background-color: #f44336;
-}
-
-.g_tooltip {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.g_tooltip i {
-    font-size: 14px;
-    color: #6b7280;
-    /* gris */
-}
-
-.g_tooltip_content {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 6px;
-
-    max-width: 220px;
-    padding: 8px 10px;
-
-    font-size: 12px;
-    line-height: 1.4;
-    color: #ffffff;
-    background-color: #000000;
-
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-
-    z-index: 999;
-    white-space: normal;
+.g_accion_eliminar:hover {
+    background-color: #ff669215;
 }

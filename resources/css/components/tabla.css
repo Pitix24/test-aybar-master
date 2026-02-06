@@ -1,127 +1,117 @@
-/*TABLA CONTENIDO*/
-.tabla_contenido {
-    border-collapse: collapse;
+/* =========================================================================
+   COMPONENTE: TABLA (g_tabla)
+   ========================================================================= */
+
+.g_contenedor_tabla {
     width: 100%;
-    font-size: var(--fs-tabla);
     overflow-x: auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 }
 
-.contenedor_tabla {
-    overflow: hidden;
-    min-width: 100%;
-    display: inline-block;
-    border-collapse: collapse;
-}
-
-.contenedor_tabla.borde {
-    border: 1px solid #e0e6eb;
-    border-radius: 12px;
-}
-
-/*TABLA*/
-.tabla {
-    min-width: 100%;
+.g_tabla {
     width: 100%;
+    min-width: 900px;
+    /* Fuerza el scroll horizontal para evitar que las filas se rompan */
     border-collapse: collapse;
-}
-
-.tabla th,
-.tabla tfoot td {
-    font-weight: 600;
-}
-
-.tabla a {
-    cursor: pointer;
-}
-
-.tabla tbody tr:nth-child(odd) {
-    background-color: #f9f9f9;
-}
-
-.tabla tr:hover {
-    background-color: #eff4fa;
-}
-
-.tabla th,
-.tabla td {
-    padding: 7px 5px;
+    font-size: var(--fs-tabla, 14px);
     text-align: left;
 }
 
-.tabla tr:not(:last-child) td,
-.tabla th {
-    border-bottom: 1px solid #e0e6eb;
+/* CABECERA STICKY */
+.g_tabla thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    padding: 12px 10px;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+    z-index: 10;
 }
 
-.tabla td img {
-    height: 30px;
+.g_tabla td {
+    padding: 10px;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    white-space: nowrap;
+    /* Evita que el texto salte de línea y rompa la fila */
 }
 
-/*TABLA PARA ELIMINAR*/
-.tabla_eliminar {
-    width: 100%;
+/* FILAS */
+.g_tabla tbody tr:hover {
+    background-color: #f1f5f9;
+    transition: background-color 0.2s ease;
+}
+
+.g_tabla tbody tr:nth-child(even) {
+    background-color: #f8fafc50;
+}
+
+/* IMÁGENES EN CELDAS */
+.g_tabla td img {
+    height: 35px;
+    width: auto;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+/* VARIANTES */
+.g_tabla_compacta th,
+.g_tabla_compacta td {
+    padding: 6px 8px;
     font-size: 13px;
 }
 
-.tabla_eliminar th,
-.tabla_eliminar td {
-    padding: 5px 5px;
-    text-align: left;
+.g_tabla_bordeada td,
+.g_tabla_bordeada th {
+    border-left: 1px solid #f1f5f9;
+    border-right: 1px solid #f1f5f9;
 }
 
-.tabla_eliminar .boton_eliminar {
-    cursor: pointer;
-    padding: 9px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 8px;
-    background-color: #ffccdb;
-    color: #ff6692;
+/* ESTADO VACÍO / PLACEHOLDER */
+.g_tabla_vacia {
+    text-align: center;
+    padding: 40px !important;
+    color: #94a3b8;
+    font-style: italic;
 }
 
-.tabla_eliminar .boton_activo {
-    padding: 9px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 8px;
-    background-color: #7ff5c0;
-    color: #19c678;
+/* UTILIDADES DE CELDA */
+.g_celda_centro {
+    text-align: center;
 }
 
-.tabla_eliminar .boton_guardar {
-    padding: 9px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 8px;
-    background-color: #0b44ee;
-    color: #ffffff;
+.g_celda_derecha {
+    text-align: right;
 }
 
-.tabla_eliminar .boton_eliminar:hover,
-.tabla_eliminar .boton_guardar:hover,
-.tabla_eliminar .boton_activo:hover {
-    filter: brightness(1.1);
+.g_celda_wrap {
+    white-space: normal !important;
+    min-width: 200px;
 }
 
-.tabla_eliminar select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-color: transparent;
-    background-image: none;
-    padding-right: 0;
-}
+/* Para celdas con mucho texto */
 
-.tabla_caja .cabecera {
+.g_celda_acciones {
     display: flex;
-    justify-content: space-between;
+    gap: 8px;
+    justify-content: flex-start;
+    align-items: center;
 }
 
-.tabla_caja .boton_eliminar {
-    padding: 9px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 8px;
-    background-color: #ffccdb;
-    color: #ff6692;
+.g_celda_acciones.centro {
+    justify-content: center;
+}
+
+/* TRANSICIÓN SUAVE AL CARGAR (Livewire compatible) */
+.g_tabla tbody {
+    transition: opacity 0.3s ease;
+}
+
+[wire\:loading] .g_tabla tbody {
+    opacity: 0.5;
 }

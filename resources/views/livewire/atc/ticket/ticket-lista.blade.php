@@ -67,61 +67,60 @@
             </div>
         </div>
 
-        <div class="tabla_contenido">
-            <div class="contenedor_tabla">
-                <table class="tabla">
-                    <thead>
+        <div class="g_contenedor_tabla">
+            <table class="g_tabla">
+                <thead>
+                    <tr>
+                        <th class="g_celda_centro">ID</th>
+                        <th>Asunto</th>
+                        <th>Cliente</th>
+                        <th>Área</th>
+                        <th class="g_celda_centro">Estado</th>
+                        <th>Prioridad</th>
+                        <th>Gestor</th>
+                        <th>Fecha</th>
+                        <th class="g_celda_centro">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($items as $item)
                         <tr>
-                            <th>ID</th>
-                            <th>Asunto</th>
-                            <th>Cliente</th>
-                            <th>Área</th>
-                            <th>Estado</th>
-                            <th>Prioridad</th>
-                            <th>Gestor</th>
-                            <th>Fecha</th>
-                            <th>Acciones</th>
+                            <td class="g_celda_centro">
+                                <span class="g_badge g_badge_light">#{{ $item->id }}</span>
+                            </td>
+                            <td class="g_resaltar g_celda_wrap">{{ $item->asunto_inicial }}</td>
+                            <td>{{ $item->cliente?->name ?? 'N/A' }}</td>
+                            <td>
+                                @if($item->area)
+                                    <span class="g_badge g_badge_soft" style="color: {{ $item->area->color }};">
+                                        <i class="{{ $item->area->icono }}"></i> {{ $item->area->nombre }}
+                                    </span>
+                                @else
+                                    <span class="g_badge g_badge_light">-</span>
+                                @endif
+                            </td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge g_badge_soft" style="color: {{ $item->estado?->color }};">
+                                    {{ $item->estado?->nombre }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="g_badge g_badge_soft" style="color: {{ $item->prioridad?->color }};">
+                                    <i class="{{ $item->prioridad?->icono }}"></i> {{ $item->prioridad?->nombre }}
+                                </span>
+                            </td>
+                            <td>{{ $item->gestor?->name ?? 'Sin asignar' }}</td>
+                            <td class="g_inferior g_celda_centro">{{ $item->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="g_celda_acciones g_celda_centro">
+                                <a href="{{ route('erp.ticket.vista.editar', $item->id) }}" class="g_accion_editar"
+                                    title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($items as $item)
-                            <tr>
-                                <td><span class="g_badge g_badge_light">#{{ $item->id }}</span></td>
-                                <td class="g_resaltar">{{ $item->asunto_inicial }}</td>
-                                <td>{{ $item->cliente?->name ?? 'N/A' }}</td>
-                                <td>
-                                    @if($item->area)
-                                        <span class="g_badge"
-                                            style="background-color: {{ $item->area->color }}20; color: {{ $item->area->color }}; border: 1px solid {{ $item->area->color }}">
-                                            <i class="{{ $item->area->icono }}"></i> {{ $item->area->nombre }}
-                                        </span>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="g_badge"
-                                        style="background-color: {{ $item->estado?->color }}20; color: {{ $item->estado?->color }}; border: 1px solid {{ $item->estado?->color }}">
-                                        {{ $item->estado?->nombre }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span style="color: {{ $item->prioridad?->color }}">
-                                        <i class="{{ $item->prioridad?->icono }}"></i> {{ $item->prioridad?->nombre }}
-                                    </span>
-                                </td>
-                                <td>{{ $item->gestor?->name ?? 'Sin asignar' }}</td>
-                                <td style="font-size: 0.8rem;">{{ $item->created_at->format('d/m/Y H:i') }}</td>
-                                <td class="centrar_iconos">
-                                    <a href="{{ route('erp.ticket.vista.editar', $item->id) }}" class="g_accion_editar">
-                                        <span><i class="fa-solid fa-pencil"></i></span>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
         @if ($items->hasPages())
@@ -132,8 +131,13 @@
 
         @if ($items->isEmpty())
             <div class="g_vacio">
-                <p>No se encontraron tickets.</p>
-                <i class="fa-solid fa-folder-open"></i>
+                <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay items disponibles.' }}</p>
+                <i class="fa-regular fa-face-grin-wink"></i>
+            </div>
+        @else
+            <div class="g_paginacion">
+                Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
+                de {{ $items->total() }} registros
             </div>
         @endif
     </div>

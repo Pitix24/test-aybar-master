@@ -25,6 +25,8 @@
 ================================ */
 @import "../components/panel.css";
 @import "../components/botones.css";
+@import "../components/badge.css";
+@import "../components/tooltips.css";
 @import "../components/pagina-cabecera.css";
 @import "../components/tabla-cabecera.css";
 @import "../components/tabla.css";
