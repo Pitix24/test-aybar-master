@@ -20,6 +20,9 @@ return new class extends Migration {
 
             $table->string('nombre_original');
             $table->string('path');
+            $table->string('url')->nullable();
+            $table->string('titulo')->nullable();
+            $table->string('descripcion')->nullable();
             $table->string('extension', 10);
             $table->bigInteger('size');
             $table->string('mime_type');

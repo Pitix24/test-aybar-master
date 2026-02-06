@@ -21,4 +21,9 @@ class GrupoProyecto extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
+
+    public function proyectos()
+    {
+        return $this->hasMany(Proyecto::class);
+    }
 }

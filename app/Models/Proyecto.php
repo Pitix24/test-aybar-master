@@ -32,4 +32,9 @@ class Proyecto extends Model
     {
         return $this->belongsTo(GrupoProyecto::class);
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

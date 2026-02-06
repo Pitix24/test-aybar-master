@@ -32,4 +32,14 @@ class UnidadNegocio extends Model
         'activo' => 'boolean',
     ];
 
+    public function proyectos()
+    {
+        return $this->hasMany(Proyecto::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
 }

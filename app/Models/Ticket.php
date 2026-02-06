@@ -102,6 +102,21 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'gestor_id');
     }
 
+    public function archivos()
+    {
+        return $this->morphMany(TicketArchivo::class, 'archivable');
+    }
+
+    public function historial()
+    {
+        return $this->hasMany(TicketHistorial::class);
+    }
+
+    public function derivados()
+    {
+        return $this->hasMany(TicketDerivado::class);
+    }
+
     public function padre()
     {
         return $this->belongsTo(Ticket::class, 'ticket_padre_id');
@@ -129,6 +144,11 @@ class Ticket extends Model
             ->withTimestamps();
     }
 
+    public function mensajes()
+    {
+        return $this->hasMany(TicketMensaje::class);
+    }
+
     public function creadoPor()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -144,19 +164,14 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
-    public function mensajes()
+    public function getTieneDerivadosAttribute()
     {
-        return $this->hasMany(TicketMensaje::class);
+        return $this->derivados()->exists();
     }
 
-    public function archivos()
+    public function getTieneArchivosAttribute()
     {
-        return $this->morphMany(TicketArchivo::class, 'archivable');
-    }
-
-    public function historial()
-    {
-        return $this->hasMany(TicketHistorial::class);
+        return $this->archivos()->exists();
     }
 
     protected static function booted()

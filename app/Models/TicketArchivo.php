@@ -17,6 +17,9 @@ class TicketArchivo extends Model
         'user_id',
         'nombre_original',
         'path',
+        'url',
+        'titulo',
+        'descripcion',
         'extension',
         'size',
         'mime_type',
@@ -32,6 +35,6 @@ class TicketArchivo extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

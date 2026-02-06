@@ -46,4 +46,9 @@ class Area extends Model
     {
         return $this->belongsToMany(TipoSolicitud::class, 'area_tipo_solicitud')->withTimestamps();
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }
