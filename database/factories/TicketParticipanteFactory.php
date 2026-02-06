@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,9 @@ class TicketParticipanteFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'ticket_id' => Ticket::inRandomOrder()->first()?->id ?? Ticket::factory(),
+            'user_id' => User::inRandomOrder()->first()?->id ?? User::factory(),
+            'activo' => $this->faker->boolean(90), // 90% chance of being active
         ];
     }
 }

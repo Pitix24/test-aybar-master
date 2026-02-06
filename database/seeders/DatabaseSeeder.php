@@ -26,6 +26,11 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SedesYAreasSeeder::class,
             TipoSolicitudSeeder::class,
+            EstadoTicketSeeder::class,
+            PrioridadTicketSeeder::class,
+            CanalSeeder::class,
+            TicketSeeder::class,
+            TicketParticipanteSeeder::class,
         ]);
     }
 }
