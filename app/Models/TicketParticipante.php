@@ -2,11 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TicketParticipante extends Model
 {
-    /** @use HasFactory<\Database\Factories\TicketParticipanteFactory> */
     use HasFactory;
+
+    protected $table = 'ticket_participantes';
+
+    protected $fillable = [
+        'ticket_id',
+        'user_id',
+        'activo',
+    ];
+
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

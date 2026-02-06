@@ -22,4 +22,10 @@ class TipoSolicitud extends Model
     {
         return $this->hasMany(SubTipoSolicitud::class);
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
 }

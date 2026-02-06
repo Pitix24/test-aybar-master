@@ -17,4 +17,9 @@ class SubTipoSolicitud extends Model
     {
         return $this->belongsTo(TipoSolicitud::class);
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }
