@@ -48,7 +48,7 @@
                 </button>
             </div>
 
-            <div class="tabla_cabecera_buscar formulario">
+            <div class="tabla_cabecera_filtro formulario">
                 <select wire:model.live="perPage">
                     <option value="20">20</option>
                     <option value="50">50</option>
@@ -57,51 +57,51 @@
             </div>
         </div>
 
-        <div class="tabla_contenido">
-            <div class="contenedor_tabla">
-                <table class="tabla">
-                    <thead>
+        <div class="g_contenedor_tabla">
+            <table class="g_tabla">
+                <thead>
+                    <tr>
+                        <th class="g_celda_centro">Nº</th>
+                        <th class="g_celda_centro">Icono</th>
+                        <th>Nombre</th>
+                        <th>Color / Badge</th>
+                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($items as $index => $item)
                         <tr>
-                            <th>Nº</th>
-                            <th>Icono</th>
-                            <th>Nombre</th>
-                            <th>Color / Badge</th>
-                            <th>Estado</th>
-                            <th></th>
+                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_celda_centro">
+                                <i class="{{ $item->icono ?? 'fa-solid fa-circle' }}"
+                                    style="color: {{ $item->color }}; font-size: 1.2rem;"></i>
+                            </td>
+                            <td class="g_resaltar">{{ $item->nombre }}</td>
+                            <td>
+                                <span class="g_badge g_badge_soft" style="color: {{ $item->color }};">
+                                    {{ strtoupper($item->color) }}
+                                </span>
+                            </td>
+                            <td class="g_celda_centro">
+                                @if($item->activo)
+                                    <span class="g_badge g_badge_success">Activo</span>
+                                @else
+                                    <span class="g_badge g_badge_danger">Inactivo</span>
+                                @endif
+                            </td>
+
+                            <td class="g_celda_acciones g_celda_centro">
+                                <a href="{{ route('erp.estado-ticket.vista.editar', $item->id) }}" class="g_accion_editar"
+                                    title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-
-                    @if ($items->isNotEmpty())
-                        <tbody>
-                            @foreach ($items as $index => $item)
-                                <tr>
-                                    <td>{{ $items->firstItem() + $index }}</td>
-                                    <td><i class="{{ $item->icono ?? 'fa-solid fa-circle' }}"
-                                            style="color: {{ $item->color }}"></i></td>
-                                    <td class="g_resaltar">{{ $item->nombre }}</td>
-                                    <td>
-                                        <span class="g_badge" style="background-color: {{ $item->color }};">
-                                            {{ $item->color }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="estado {{ $item->activo ? 'g_activo' : 'g_desactivado' }}"><i
-                                                class="fa-solid fa-circle"></i></span>
-                                        {{ $item->activo ? 'Activo' : 'Desactivo' }}
-                                    </td>
-
-                                    <td class="centrar_iconos">
-                                        <a href="{{ route('erp.estado-ticket.vista.editar', $item->id) }}"
-                                            class="g_accion_editar">
-                                            <span><i class="fa-solid fa-pencil"></i></span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    @endif
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
         @if ($items->hasPages())

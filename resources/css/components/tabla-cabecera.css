@@ -16,11 +16,10 @@
 }
 
 
-/*TABLA CABECERA BUSCAR*/
-.tabla_cabecera_buscar {
+/*TABLA CABECERA FILTRO*/
+.tabla_cabecera_filtro {
     display: flex;
 }
-
 
 @media (max-width: 900px) {
 
@@ -37,7 +36,7 @@
     }
 
     /*TABLA CABECERA BUSCAR*/
-    .tabla_cabecera_buscar {
+    .tabla_cabecera_filtro {
         width: 100%;
     }
 
