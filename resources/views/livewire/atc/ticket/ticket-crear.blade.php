@@ -155,33 +155,39 @@
                 <!-- PARTICIPANTES -->
                 <div class="g_panel g_margin_top_20">
                     <h4 class="g_panel_titulo">Participantes (CC)</h4>
-                    <div class="g_margin_bottom_10">
-                        <input type="text" wire:model.live.debounce.300ms="searchUser" placeholder="Buscar usuario...">
+                    
+                    <div class="g_select_search">
+                        <input type="text" wire:model.live.debounce.300ms="searchUser" 
+                            class="g_select_search_input" placeholder="Buscar usuario para copiar...">
 
                         @if(!empty($participantesDisponibles))
-                            <div class="g_sugerencias"
-                                style="position: absolute; width: 100%; z-index: 10; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <div class="g_select_search_results">
                                 @foreach($participantesDisponibles as $du)
-                                    <div wire:click="addParticipant({{ $du->id }})"
-                                        style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px;">
-                                        <div
-                                            style="width: 30px; height: 30px; background: #3b82f6; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.7rem;">
+                                    <div class="g_select_search_item" wire:click="addParticipant({{ $du->id }})">
+                                        <div class="g_select_search_avatar">
                                             {{ $du->initials() }}
                                         </div>
-                                        <span>{{ $du->name }}</span>
+                                        <div class="g_select_search_info">
+                                            <span class="g_select_search_name">{{ $du->name }}</span>
+                                            <span class="g_select_search_sub">{{ $du->email }}</span>
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
                         @endif
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="g_select_search_selected_list">
                         @foreach($participantesSeleccionados as $su)
-                            <div
-                                style="padding: 8px 12px; background: #f1f5f9; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
-                                <span style="font-size: 0.85rem;">{{ $su->name }}</span>
-                                <button type="button" wire:click="removeParticipant({{ $su->id }})"
-                                    style="color: #ef4444; background: none; border: none; cursor: pointer;">
+                            <div class="g_select_search_selected_item">
+                                <div class="g_select_search_selected_info">
+                                    <div class="g_select_search_selected_avatar">
+                                        {{ $su->initials() }}
+                                    </div>
+                                    <span class="g_select_search_selected_name">{{ $su->name }}</span>
+                                </div>
+                                <button type="button" class="g_select_search_remove" 
+                                    wire:click="removeParticipant({{ $su->id }})" title="Quitar">
                                     <i class="fa-solid fa-times"></i>
                                 </button>
                             </div>
