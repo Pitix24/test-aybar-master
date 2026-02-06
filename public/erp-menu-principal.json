@@ -244,5 +244,190 @@
                 ]
             }
         ]
+    },
+    {
+        "id": 14,
+        "nombre": "14",
+        "ruta": "#",
+        "url": "#",
+        "icono": "fa-solid fa-headset",
+        "nivel": 1,
+        "roles": [],
+        "submenus": [
+            {
+                "id": 42,
+                "nombre": "Tipo solicitud",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-tag",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.tipo-solicitud.vista.todo",
+                        "url": "/erp/tipo-solicitud",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.tipo-solicitud.vista.crear",
+                        "url": "/erp/tipo-solicitud/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 41,
+                "nombre": "Sub tipo solicitud",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-indent",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.sub-tipo-solicitud.vista.todo",
+                        "url": "/erp/sub-tipo-solicitud",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.sub-tipo-solicitud.vista.crear",
+                        "url": "/erp/sub-tipo-solicitud/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 43,
+                "nombre": "Prioridad ticket",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-bolt",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.prioridad-ticket.vista.todo",
+                        "url": "/erp/prioridad-ticket",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.prioridad-ticket.vista.crear",
+                        "url": "/erp/prioridad-ticket/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 44,
+                "nombre": "Estados ticket",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.estado-ticket.vista.todo",
+                        "url": "/erp/estado-ticket",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.estado-ticket.vista.crear",
+                        "url": "/erp/estado-ticket/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 45,
+                "nombre": "Canal",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-bullhorn",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.canal.vista.todo",
+                        "url": "/erp/canal",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.canal.vista.crear",
+                        "url": "/erp/canal/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 46,
+                "nombre": "Ticket",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-clipboard-check",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.ticket.vista.todo",
+                        "url": "/erp/ticket",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.ticket.vista.crear",
+                        "url": "/erp/ticket/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
     }
 ]

@@ -76,3 +76,5 @@ Route::prefix('proyecto')->name('proyecto.vista.')->group(function () {
     Route::get('/crear', ProyectoCrear::class)->name('crear');
     Route::get('/editar/{id}', ProyectoEditar::class)->name('editar');
 });
+
+require __DIR__ . '/atc.php';

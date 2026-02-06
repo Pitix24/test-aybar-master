@@ -57,63 +57,63 @@ php artisan make:migration create_area_sede_table
 php artisan make:migration create_area_user_table
 
 php artisan make:model TipoSolicitud -mfsc
-php artisan make:livewire erp.tipo-solicitud.tipo-solicitud-lista --class
-php artisan make:livewire erp.tipo-solicitud.tipo-solicitud-crear --class
-php artisan make:livewire erp.tipo-solicitud.tipo-solicitud-editar --class
+php artisan make:livewire atc.tipo-solicitud.tipo-solicitud-lista --class
+php artisan make:livewire atc.tipo-solicitud.tipo-solicitud-crear --class
+php artisan make:livewire atc.tipo-solicitud.tipo-solicitud-editar --class
 
 php artisan make:model SubTipoSolicitud -mfsc
-php artisan make:livewire erp.sub-tipo-solicitud.sub-tipo-solicitud-lista --class
-php artisan make:livewire erp.sub-tipo-solicitud.sub-tipo-solicitud-crear --class
-php artisan make:livewire erp.sub-tipo-solicitud.sub-tipo-solicitud-editar --class
+php artisan make:livewire atc.sub-tipo-solicitud.sub-tipo-solicitud-lista --class
+php artisan make:livewire atc.sub-tipo-solicitud.sub-tipo-solicitud-crear --class
+php artisan make:livewire atc.sub-tipo-solicitud.sub-tipo-solicitud-editar --class
 
 php artisan make:migration create_area_tipo_solicitud_table
 
 php artisan make:model EstadoTicket -mfsc
-php artisan make:livewire erp.estado-ticket.estado-ticket-lista --class
-php artisan make:livewire erp.estado-ticket.estado-ticket-crear --class
-php artisan make:livewire erp.estado-ticket.estado-ticket-editar --class
+php artisan make:livewire atc.estado-ticket.estado-ticket-lista --class
+php artisan make:livewire atc.estado-ticket.estado-ticket-crear --class
+php artisan make:livewire atc.estado-ticket.estado-ticket-editar --class
 
 php artisan make:model PrioridadTicket -mfsc
-php artisan make:livewire erp.prioridad-ticket.prioridad-ticket-lista --class
-php artisan make:livewire erp.prioridad-ticket.prioridad-ticket-crear --class
-php artisan make:livewire erp.prioridad-ticket.prioridad-ticket-editar --class
+php artisan make:livewire atc.prioridad-ticket.prioridad-ticket-lista --class
+php artisan make:livewire atc.prioridad-ticket.prioridad-ticket-crear --class
+php artisan make:livewire atc.prioridad-ticket.prioridad-ticket-editar --class
 
 php artisan make:model Canal -mfsc
-php artisan make:livewire erp.canal.canal-lista --class
-php artisan make:livewire erp.canal.canal-crear --class
-php artisan make:livewire erp.canal.canal-editar --class
+php artisan make:livewire atc.canal.canal-lista --class
+php artisan make:livewire atc.canal.canal-crear --class
+php artisan make:livewire atc.canal.canal-editar --class
 
 php artisan make:model Ticket -mfsc
-php artisan make:livewire erp.ticket.ticket-lista --class
-php artisan make:livewire erp.ticket.ticket-crear --class
-php artisan make:livewire erp.ticket.ticket-editar --class
+php artisan make:livewire atc.ticket.ticket-lista --class
+php artisan make:livewire atc.ticket.ticket-crear --class
+php artisan make:livewire atc.ticket.ticket-editar --class
 
 php artisan make:model TicketParticipante -mfsc
-php artisan make:livewire erp.ticket-participante.ticket-participante-lista --class
-php artisan make:livewire erp.ticket-participante.ticket-participante-crear --class
-php artisan make:livewire erp.ticket-participante.ticket-participante-editar --class
+php artisan make:livewire atc.ticket-participante.ticket-participante-lista --class
+php artisan make:livewire atc.ticket-participante.ticket-participante-crear --class
+php artisan make:livewire atc.ticket-participante.ticket-participante-editar --class
 
 php artisan make:model TicketArchivo -mfsc
-php artisan make:livewire erp.ticket-archivo.ticket-archivo-lista --class
-php artisan make:livewire erp.ticket-archivo.ticket-archivo-crear --class
-php artisan make:livewire erp.ticket-archivo.ticket-archivo-editar --class
+php artisan make:livewire atc.ticket-archivo.ticket-archivo-lista --class
+php artisan make:livewire atc.ticket-archivo.ticket-archivo-crear --class
+php artisan make:livewire atc.ticket-archivo.ticket-archivo-editar --class
 
 php artisan make:model TicketHistorial -mfsc
-php artisan make:livewire erp.ticket-historial.ticket-historial-lista --class
-php artisan make:livewire erp.ticket-historial.ticket-historial-crear --class
-php artisan make:livewire erp.ticket-historial.ticket-historial-editar --class
+php artisan make:livewire atc.ticket-historial.ticket-historial-lista --class
+php artisan make:livewire atc.ticket-historial.ticket-historial-crear --class
+php artisan make:livewire atc.ticket-historial.ticket-historial-editar --class
 
 php artisan make:model TicketDerivado -mfsc
-php artisan make:livewire erp.ticket-derivado.ticket-derivado-lista --class
-php artisan make:livewire erp.ticket-derivado.ticket-derivado-crear --class
-php artisan make:livewire erp.ticket-derivado.ticket-derivado-editar --class
+php artisan make:livewire atc.ticket-derivado.ticket-derivado-lista --class
+php artisan make:livewire atc.ticket-derivado.ticket-derivado-crear --class
+php artisan make:livewire atc.ticket-derivado.ticket-derivado-editar --class
 
 php artisan make:model TicketMensaje -mfsc
-php artisan make:livewire erp.ticket-mensaje.ticket-mensaje-lista --class
-php artisan make:livewire erp.ticket-mensaje.ticket-mensaje-crear --class
-php artisan make:livewire erp.ticket-mensaje.ticket-mensaje-editar --class
+php artisan make:livewire atc.ticket-mensaje.ticket-mensaje-lista --class
+php artisan make:livewire atc.ticket-mensaje.ticket-mensaje-crear --class
+php artisan make:livewire atc.ticket-mensaje.ticket-mensaje-editar --class
 
 php artisan make:model TicketEmail -mfsc
-php artisan make:livewire erp.ticket-email.ticket-email-lista --class
-php artisan make:livewire erp.ticket-email.ticket-email-crear --class
-php artisan make:livewire erp.ticket-email.ticket-email-editar --class
+php artisan make:livewire atc.ticket-email.ticket-email-lista --class
+php artisan make:livewire atc.ticket-email.ticket-email-crear --class
+php artisan make:livewire atc.ticket-email.ticket-email-editar --class
