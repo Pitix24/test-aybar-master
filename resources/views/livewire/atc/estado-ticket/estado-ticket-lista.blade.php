@@ -33,8 +33,8 @@
     </div>
 
     <div class="g_panel">
-        <div class="tabla_cabecera">
-            <div class="tabla_cabecera_botones">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
                 <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
                     wire:target="exportExcel">
                     <span wire:loading.remove wire:target="exportExcel">Excel <i
@@ -48,7 +48,7 @@
                 </button>
             </div>
 
-            <div class="tabla_cabecera_filtro formulario">
+            <div class="g_tabla_cabecera_filtro formulario">
                 <select wire:model.live="perPage">
                     <option value="20">20</option>
                     <option value="50">50</option>
@@ -75,8 +75,7 @@
                         <tr>
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
                             <td class="g_celda_centro">
-                                <i class="{{ $item->icono ?? 'fa-solid fa-circle' }}"
-                                    style="color: {{ $item->color }}; font-size: 1.2rem;"></i>
+                                <i class="{{ $item->icono ?? 'fa-solid fa-circle' }}" style="color: {{ $item->color }}"></i>
                             </td>
                             <td class="g_resaltar">{{ $item->nombre }}</td>
                             <td>

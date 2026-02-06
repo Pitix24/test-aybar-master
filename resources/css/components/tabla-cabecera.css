@@ -1,5 +1,5 @@
 /*TABLA CABECERA*/
-.tabla_cabecera {
+.g_tabla_cabecera {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -7,7 +7,7 @@
     gap: 5px;
 }
 
-.tabla_cabecera_botones {
+.g_tabla_cabecera_botones {
     display: flex;
     gap: 15px;
     overflow-y: auto;
@@ -17,26 +17,26 @@
 
 
 /*TABLA CABECERA FILTRO*/
-.tabla_cabecera_filtro {
+.g_tabla_cabecera_filtro {
     display: flex;
 }
 
 @media (max-width: 900px) {
 
     /*TABLA CABECERA*/
-    .tabla_cabecera {
+    .g_tabla_cabecera {
         flex-direction: column;
         align-items: flex-start;
     }
 
     /*TABLA CABECERA BOTONES*/
-    .tabla_cabecera_botones {
+    .g_tabla_cabecera_botones {
         width: 100%;
         justify-content: flex-start;
     }
 
     /*TABLA CABECERA BUSCAR*/
-    .tabla_cabecera_filtro {
+    .g_tabla_cabecera_filtro {
         width: 100%;
     }
 
