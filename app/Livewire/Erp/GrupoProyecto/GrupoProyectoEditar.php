@@ -97,7 +97,7 @@ class GrupoProyectoEditar extends Component
     public function placeholder()
     {
         return <<<'HTML'
-        <x-erp.placeholder />
+        <x-placeholder />
         HTML;
     }
 }

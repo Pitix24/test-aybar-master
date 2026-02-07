@@ -14,7 +14,6 @@
 
     <div class="g_dropdown_profile" x-show="open" x-transition x-cloak @click.stop="">
 
-        {{-- Theme Slider/Toggle --}}
         <button type="button" class="g_dropdown_item" x-on:click.stop="toggleTheme()" title="Cambiar tema">
             <div class="g_dropdown_theme_toggle">
                 <span>
@@ -27,7 +26,6 @@
 
         <div class="g_dropdown_divider"></div>
 
-        {{-- Logout --}}
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="g_dropdown_item g_dropdown_item_danger">
