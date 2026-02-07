@@ -4,7 +4,7 @@
             <i class="fa-solid fa-address-card"></i>
             Perfil
             @if (auth()->user()->necesitaActualizarDatosPersonales() || auth()->user()->necesitaActualizarDirecciones())
-            <span class="g_menu_badge warning">Actualiza</span>
+                <span class="g_menu_badge warning">Actualiza</span>
             @endif
         </span>
         <i class="fa-solid fa-chevron-right"></i>
@@ -20,7 +20,7 @@
         <i class="fa-solid fa-chevron-right"></i>
     </a>
 
-    <form method="POST" action="{{ route('logout.cliente') }}">
+    <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit">
             <span><i class="fa-solid fa-power-off"></i> Cerrar</span>

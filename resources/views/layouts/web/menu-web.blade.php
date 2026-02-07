@@ -31,48 +31,48 @@
 
                 <ul class="menu_principal">
                     @guest
-                    <li class="menu_item">
-                        <a href="/ingresar" class="boton_personalizado boton_personalizado_amarillo_v2"><i
-                                class="fa-solid fa-user-circle"></i>MI PORTAL</a>
-                    </li>
+                        <li class="menu_item">
+                            <a href="{{ route('login') }}" class="boton_personalizado boton_personalizado_amarillo_v2"><i
+                                    class="fa-solid fa-user-circle"></i>MI PORTAL</a>
+                        </li>
                     @else
-                    @if (auth()->user()->rol === 'cliente')
-                    <li class="menu_item menu_cliente">
-                        <a href="{{ route('cliente.home') }}" class="boton_personalizado boton_personalizado_blanco_v2">
-                            <i class="fa-solid fa-address-card"></i>
-                            MI PERFIL
-                        </a>
-                    </li>
+                        @if (auth()->user()->rol === 'cliente')
+                            <li class="menu_item menu_cliente">
+                                <a href="{{ route('cliente.home') }}" class="boton_personalizado boton_personalizado_blanco_v2">
+                                    <i class="fa-solid fa-address-card"></i>
+                                    MI PERFIL
+                                </a>
+                            </li>
 
-                    <li class="menu_item menu_cliente">
-                        <a href="{{ route('cliente.lote') }}" class="boton_personalizado boton_personalizado_blanco_v2">
-                            <i class="fa-solid fa-border-all"></i>
-                            MIS PROYECTOS
-                        </a>
-                    </li>
+                            <li class="menu_item menu_cliente">
+                                <a href="{{ route('cliente.lote') }}" class="boton_personalizado boton_personalizado_blanco_v2">
+                                    <i class="fa-solid fa-border-all"></i>
+                                    MIS PROYECTOS
+                                </a>
+                            </li>
 
-                    <li class="menu_item menu_cliente">
-                        <a href="{{ route('cliente.tutorial') }}"
-                            class="boton_personalizado boton_personalizado_amarillo_v2">
-                            <i class="fa-solid fa-circle-play"></i>
-                            TUTORIALES
-                        </a>
-                    </li>
+                            <li class="menu_item menu_cliente">
+                                <a href="{{ route('cliente.tutorial') }}"
+                                    class="boton_personalizado boton_personalizado_amarillo_v2">
+                                    <i class="fa-solid fa-circle-play"></i>
+                                    TUTORIALES
+                                </a>
+                            </li>
 
-                    <li class="menu_item menu_cliente">
-                        <form method="POST" action="{{ route('logout.cliente') }}">
-                            @csrf
-                            <button type="submit" class="boton_personalizado boton_personalizado_negro">
-                                <span><i class="fa-solid fa-power-off"></i> CERRAR</span>
-                            </button>
-                        </form>
-                    </li>
-                    @elseif (auth()->user()->rol === 'admin')
-                    <li class="menu_item">
-                        <a href="{{ route('admin.home') }}"
-                            class="boton_personalizado boton_personalizado_amarillo_v2">BACKOFFICE</a>
-                    </li>
-                    @endif
+                            <li class="menu_item menu_cliente">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="boton_personalizado boton_personalizado_negro">
+                                        <span><i class="fa-solid fa-power-off"></i> CERRAR</span>
+                                    </button>
+                                </form>
+                            </li>
+                        @elseif (auth()->user()->rol === 'admin')
+                            <li class="menu_item">
+                                <a href="{{ route('admin.home') }}"
+                                    class="boton_personalizado boton_personalizado_amarillo_v2">BACKOFFICE</a>
+                            </li>
+                        @endif
                     @endguest
                 </ul>
             </nav>

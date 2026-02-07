@@ -1,20 +1,14 @@
 <?php
 
-use App\Http\Controllers\Web\LoginController;
 use App\Livewire\Web\Sesion\ClienteRegistrarLivewire;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [LoginController::class, 'indexIngresarCliente'])->name('home');
-Route::get('/ingresar', [LoginController::class, 'indexIngresarCliente'])->name('ingresar.cliente');
+/**
+ * Rutas Públicas
+ */
+Route::get('/', function () {
+    return redirect()->route('login');
+})->middleware(['web', 'redirect.by.role'])->name('home');
 
+// Registro de clientes (Livewire con búsqueda DNI)
 Route::get('/registrar', ClienteRegistrarLivewire::class)->name('registrar.cliente');
-
-/*Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-require __DIR__ . '/settings.php';*/
