@@ -37,7 +37,7 @@
     <!--CONTENEDOR LAYOUT PAGINA-->
     <div class="contenedor_layout_pagina" :class="{ 'estilo_contenedor_layout_pagina': estadoNavAbierto }">
         <!--HEADER LAYOUT PAGINA-->
-        @livewire('erp.menu.componente-header-livewire')
+        @livewire('erp.header.componente-header-livewire')
 
         <!--CONTENIDO LAYOUT PAGINA-->
         <div class="contenido_layout_pagina">

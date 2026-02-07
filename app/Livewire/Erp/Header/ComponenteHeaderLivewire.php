@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\Menu;
+namespace App\Livewire\Erp\Header;
 
 use Livewire\Component;
 
@@ -8,6 +8,6 @@ class ComponenteHeaderLivewire extends Component
 {
     public function render()
     {
-        return view('livewire.erp.menu.componente-header-livewire');
+        return view('livewire.erp.header.componente-header-livewire');
     }
 }
