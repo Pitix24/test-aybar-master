@@ -1,0 +1,4 @@
+.layout_web .layout_web_contenido {
+    /*margin-top: var(--alto-header-web);*/
+    margin-top: calc(var(--alto-header-web) + var(--alto-header-web-banner));
+}

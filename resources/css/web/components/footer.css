@@ -1,0 +1,233 @@
+.web_footer {
+    background: var(--color-verde);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* LINKS RAPIDO */
+.web_footer .links_rapido {
+    padding: 20px var(--padding-costados);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    border-bottom: 1px solid var(--color-plomo);
+}
+
+.web_footer .links_rapido a {
+    font-size: 17px;
+    line-height: 17px;
+    color: var(--color-blanco);
+    font-weight: 600;
+}
+
+.web_footer .links_rapido a:hover {
+    color: var(--color-amarillo);
+}
+
+/* REDES SOCIALES */
+.web_footer .footer_socials {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    padding: 0px var(--padding-costados);
+}
+
+.web_footer .footer_socials a span {
+    font-size: 28px;
+    text-align: center;
+    background: var(--color-blanco);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-direction: column;
+}
+
+.web_footer .footer_socials a span:hover {
+    background: var(--color-amarillo);
+}
+
+.web_footer .footer_socials a i {
+    color: var(--color-verde);
+}
+
+.web_footer .footer_socials a p {
+    margin-top: 10px;
+    font-size: 15px;
+    color: var(--color-blanco);
+}
+
+/* TITULO */
+.web_footer .footer_titulo {
+    padding: 0px var(--padding-costados);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.web_footer .footer_titulo blockquote {
+    text-align: center;
+    font-size: 40px;
+    color: var(--color-amarillo);
+}
+
+.web_footer .footer_titulo p {
+    text-align: center;
+    font-size: 17px;
+    line-height: 20px;
+    color: white;
+}
+
+/* CONTACTO */
+.centrar_footer_contacto {
+    margin: auto;
+}
+
+.footer_contacto {
+    color: var(--color-blanco);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px var(--padding-costados);
+}
+
+.footer_contacto .item_grid {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.footer_contacto .item_grid i {
+    font-size: 40px;
+}
+
+.footer_contacto .item_grid .datos {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer_contacto .item_grid .datos p {
+    font-weight: 600;
+}
+
+/* FINAL */
+.footer_final {
+    padding: 20px var(--padding-costados);
+    background: var(--color-blanco);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* TERMINOS */
+.web_footer .footer_terminos {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.web_footer .footer_terminos span {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.web_footer .footer_terminos span:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 1px;
+    background-color: var(--color-negro);
+    opacity: 0.3;
+}
+
+.web_footer .footer_terminos span a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+    color: var(--color-negro);
+    padding: 10px;
+}
+
+.web_footer .footer_terminos span a:hover {
+    color: var(--color-verde);
+}
+
+.web_footer .footer_terminos i {
+    font-size: 30px;
+    margin-right: 6px;
+    color: var(--color-verde);
+}
+
+/* COPY */
+.web_footer .footer_copy {
+    font-size: 14px;
+    color: var(--color-negro);
+    text-align: center;
+}
+
+.web_footer .footer_copy a {
+    color: var(--color-negro);
+    text-decoration: none;
+}
+
+.web_footer .footer_copy a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .web_footer {
+        gap: 20px;
+    }
+
+    .web_footer .links_rapido {
+        gap: 25px;
+        height: auto;
+        flex-wrap: wrap;
+    }
+
+    .web_footer .footer_socials {
+        gap: 25px;
+    }
+
+    .web_footer .footer_socials a span {
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+    }
+
+    .web_footer .footer_socials a p {
+        display: none;
+    }
+
+    .web_footer .footer_titulo blockquote {
+        line-height: 40px;
+        font-size: 35px;
+    }
+
+    .web_footer .footer_contacto {
+        grid-template-columns: 1fr;
+    }
+
+    .web_footer .footer_terminos {
+        flex-direction: column;
+        align-items: center;
+        gap: 0px;
+    }
+
+    .web_footer .footer_terminos span:not(:last-child)::after {
+        content: none;
+    }
+
+    .web_footer .footer_terminos a br {
+        display: none;
+    }
+}

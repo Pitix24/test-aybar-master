@@ -5,9 +5,6 @@
 
 @import "../core/tokens/typography.css";
 @import "../core/tokens/colors.css";
-@import "../core/tokens/spacing.css";
-@import "../core/tokens/shadows.css";
-@import "../core/tokens/spacing.css";
 
 @import "../core/themes.css";
 @import "../core/base.css";

@@ -10,6 +10,8 @@ export default defineConfig({
             input: [
                 'resources/css/erp/erp.css',
                 'resources/js/erp/erp.js',
+                "resources/css/web/web.css",
+                "resources/js/web/web.js",
             ],
             refresh: true,
         }),

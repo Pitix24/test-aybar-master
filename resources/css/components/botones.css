@@ -136,3 +136,83 @@
 .g_accion_eliminar:hover {
     background-color: #ff669215;
 }
+
+.boton_personalizado {
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.3s ease, background-color 0.3s ease;
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 25px;
+    justify-content: center;
+}
+
+.boton_personalizado_negro {
+    background: var(--color-negro);
+    border: 1px solid var(--color-negro);
+    color: var(--color-blanco);
+}
+
+.boton_personalizado_verde {
+    background: var(--color-primario);
+    border: 1px solid var(--color-primario);
+    color: var(--color-blanco);
+}
+
+.boton_personalizado_verde:hover {
+    background: var(--color-secundario);
+    border: 1px solid var(--color-primario);
+    color: var(--color-primario);
+}
+
+.boton_personalizado_blanco {
+    background: var(--color-plomo);
+    border: 1px solid var(--color-gris);
+    color: var(--color-primario);
+}
+
+.boton_personalizado_blanco:hover {
+    background: var(--color-primario);
+    border: 1px solid var(--color-primario);
+    color: var(--color-blanco);
+}
+
+.boton_personalizado_blanco_v2 {
+    background: var(--color-plomo);
+    border: 1px solid var(--color-gris);
+    color: var(--color-primario);
+}
+
+.boton_personalizado_blanco_v2:hover {
+    background: var(--color-secundario);
+    border: 1px solid var(--color-secundario);
+    color: var(--color-primario);
+}
+
+.boton_personalizado_amarillo {
+    background: var(--color-secundario);
+    border: 1px solid var(--color-secundario);
+    color: var(--color-primario);
+}
+
+.boton_personalizado_amarillo:hover {
+    background: var(--color-primario);
+    border: 1px solid var(--color-secundario);
+    color: var(--color-blanco);
+}
+
+.boton_personalizado_amarillo_v2 {
+    background: var(--color-secundario);
+    border: 1px solid var(--color-secundario);
+    color: var(--color-primario);
+}
+
+.boton_personalizado_amarillo_v2:hover {
+    background: var(--color-blanco);
+    border: 1px solid var(--color-secundario);
+    color: var(--color-primario);
+}

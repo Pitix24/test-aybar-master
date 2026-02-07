@@ -1,0 +1,24 @@
+.contenido_web_header_banner {
+    max-width: var(--ancho-centrar-pagina);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contenido_web_header_banner p,
+.contenido_web_header_banner span {
+    font-size: 19px;
+    line-height: 19px;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .contenido_web_header_banner span {
+        display: none;
+    }
+
+    .contenido_web_header_banner img {
+        display: none;
+    }
+}
