@@ -1,53 +1,59 @@
 [
     {
         "id": 50,
-        "nombre": "Módulo Perfil",
-        "ruta": null,
-        "url": null,
+        "nombre": "50",
+        "ruta": "#",
+        "url": "#",
         "icono": "fa-solid fa-circle-user",
         "nivel": 1,
+        "roles": [],
         "submenus": [
             {
                 "id": 41,
                 "nombre": "Perfil",
                 "ruta": "erp.home",
-                "url": null,
+                "url": "/erp/perfil",
                 "icono": "fa-solid fa-user-tie",
                 "nivel": 2,
+                "roles": [],
                 "submenus": []
             }
         ]
     },
     {
         "id": 48,
-        "nombre": "Módulo Usuarios",
-        "ruta": null,
-        "url": null,
+        "nombre": "48",
+        "ruta": "#",
+        "url": "#",
         "icono": "fa-solid fa-users-cog",
         "nivel": 1,
+        "roles": [],
         "submenus": [
             {
                 "id": 50,
                 "nombre": "Roles",
-                "ruta": null,
-                "url": null,
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-user-shield",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.rol.vista.todo",
-                        "url": null,
+                        "url": "/erp/rol",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.rol.vista.crear",
-                        "url": null,
+                        "url": "/erp/rol/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
@@ -55,25 +61,28 @@
             {
                 "id": 51,
                 "nombre": "Permisos",
-                "ruta": null,
-                "url": null,
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-user-cog",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.permiso.vista.todo",
-                        "url": null,
+                        "url": "/erp/permiso",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.permiso.vista.crear",
-                        "url": null,
+                        "url": "/erp/permiso/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
@@ -81,51 +90,57 @@
             {
                 "id": 41,
                 "nombre": "Admins",
-                "ruta": null,
-                "url": null,
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-user-tie",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.admin.vista.todo",
-                        "url": null,
+                        "url": "/erp/admin",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.admin.vista.crear",
-                        "url": null,
+                        "url": "/erp/admin/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
             },
             {
                 "id": 42,
-                "nombre": "Clientes (Portal)",
-                "ruta": null,
-                "url": null,
+                "nombre": "Clientes(Portal)",
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-users",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.cliente.vista.todo",
-                        "url": null,
+                        "url": "/erp/cliente",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.cliente.vista.crear",
-                        "url": null,
+                        "url": "/erp/cliente/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
@@ -134,34 +149,38 @@
     },
     {
         "id": 49,
-        "nombre": "Módulo Configuración",
-        "ruta": null,
-        "url": null,
+        "nombre": "49",
+        "ruta": "#",
+        "url": "#",
         "icono": "fa-solid fa-city",
         "nivel": 1,
+        "roles": [],
         "submenus": [
             {
                 "id": 39,
                 "nombre": "Unidad Negocio",
-                "ruta": null,
-                "url": null,
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-archway",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.unidad-negocio.vista.todo",
-                        "url": null,
+                        "url": "/erp/unidad-negocio",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.unidad-negocio.vista.crear",
-                        "url": null,
+                        "url": "/erp/unidad-negocio/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
@@ -169,77 +188,86 @@
             {
                 "id": 40,
                 "nombre": "Sedes",
-                "ruta": null,
-                "url": null,
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-map-location-dot",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.sede.vista.todo",
-                        "url": null,
+                        "url": "/erp/sede",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.sede.vista.crear",
-                        "url": null,
+                        "url": "/erp/sede/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
             },
             {
                 "id": 41,
-                "nombre": "Áreas",
-                "ruta": null,
-                "url": null,
+                "nombre": "Areas",
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-shapes",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.area.vista.todo",
-                        "url": null,
+                        "url": "/erp/area",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.area.vista.crear",
-                        "url": null,
+                        "url": "/erp/area/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
             },
             {
                 "id": 42,
-                "nombre": "Grupo Proyecto",
-                "ruta": null,
-                "url": null,
+                "nombre": "Grupo proyecto",
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-layer-group",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.grupo-proyecto.vista.todo",
-                        "url": null,
+                        "url": "/erp/grupo-proyecto",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.grupo-proyecto.vista.crear",
-                        "url": null,
+                        "url": "/erp/grupo-proyecto/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
@@ -247,51 +275,57 @@
             {
                 "id": 43,
                 "nombre": "Proyecto",
-                "ruta": null,
-                "url": null,
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-diagram-project",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.proyecto.vista.todo",
-                        "url": null,
+                        "url": "/erp/proyecto",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.proyecto.vista.crear",
-                        "url": null,
+                        "url": "/erp/proyecto/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
             },
             {
                 "id": 48,
-                "nombre": "Menú",
-                "ruta": null,
-                "url": null,
+                "nombre": "Menu",
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-bars",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.menu.vista.todo",
-                        "url": null,
+                        "url": "/erp/menu",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.menu.vista.crear",
-                        "url": null,
+                        "url": "/erp/menu/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
@@ -300,112 +334,125 @@
     },
     {
         "id": 14,
-        "nombre": "Módulo Tickets",
-        "ruta": null,
-        "url": null,
+        "nombre": "14",
+        "ruta": "#",
+        "url": "#",
         "icono": "fa-solid fa-headset",
         "nivel": 1,
+        "roles": [],
         "submenus": [
             {
                 "id": 42,
-                "nombre": "Tipo Solicitud",
-                "ruta": null,
-                "url": null,
+                "nombre": "Tipo solicitud",
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-tag",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.tipo-solicitud.vista.todo",
-                        "url": null,
+                        "url": "/erp/tipo-solicitud",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.tipo-solicitud.vista.crear",
-                        "url": null,
+                        "url": "/erp/tipo-solicitud/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
             },
             {
                 "id": 41,
-                "nombre": "Sub Tipo Solicitud",
-                "ruta": null,
-                "url": null,
+                "nombre": "Sub tipo solicitud",
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-indent",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.sub-tipo-solicitud.vista.todo",
-                        "url": null,
+                        "url": "/erp/sub-tipo-solicitud",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.sub-tipo-solicitud.vista.crear",
-                        "url": null,
+                        "url": "/erp/sub-tipo-solicitud/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
             },
             {
                 "id": 43,
-                "nombre": "Prioridad Ticket",
-                "ruta": null,
-                "url": null,
+                "nombre": "Prioridad ticket",
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-bolt",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.prioridad-ticket.vista.todo",
-                        "url": null,
+                        "url": "/erp/prioridad-ticket",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.prioridad-ticket.vista.crear",
-                        "url": null,
+                        "url": "/erp/prioridad-ticket/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
             },
             {
                 "id": 44,
-                "nombre": "Estados Ticket",
-                "ruta": null,
-                "url": null,
+                "nombre": "Estados ticket",
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-lock-open",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.estado-ticket.vista.todo",
-                        "url": null,
+                        "url": "/erp/estado-ticket",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.estado-ticket.vista.crear",
-                        "url": null,
+                        "url": "/erp/estado-ticket/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
@@ -413,25 +460,28 @@
             {
                 "id": 45,
                 "nombre": "Canal",
-                "ruta": null,
-                "url": null,
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-bullhorn",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.canal.vista.todo",
-                        "url": null,
+                        "url": "/erp/canal",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.canal.vista.crear",
-                        "url": null,
+                        "url": "/erp/canal/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
@@ -439,25 +489,28 @@
             {
                 "id": 46,
                 "nombre": "Ticket",
-                "ruta": null,
-                "url": null,
+                "ruta": "#",
+                "url": "#",
                 "icono": "fa-solid fa-clipboard-check",
                 "nivel": 2,
+                "roles": [],
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
                         "ruta": "erp.ticket.vista.todo",
-                        "url": null,
+                        "url": "/erp/ticket",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.ticket.vista.crear",
-                        "url": null,
+                        "url": "/erp/ticket/crear",
                         "nivel": 3,
+                        "roles": [],
                         "submenus": []
                     }
                 ]
