@@ -1,0 +1,60 @@
+.g_profile_container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+.g_profile_container:hover {
+    background: var(--color-fondo);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.g_profile_info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.g_profile_name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-texto-primario);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.g_profile_email {
+    font-size: 0.7rem;
+    color: var(--color-placeholder);
+    margin: 0;
+}
+
+.g_profile_avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-primario);
+    padding: 1px;
+    background: white;
+}
+
+.g_profile_arrow {
+    font-size: 0.7rem;
+    color: var(--color-placeholder);
+    transition: transform 0.3s ease;
+    margin-top: 4px;
+}
+
+.g_profile_container.active .g_profile_arrow {
+    transform: rotate(180deg);
+}
