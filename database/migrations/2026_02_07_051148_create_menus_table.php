@@ -19,8 +19,7 @@ return new class extends Migration {
             $table->string('icono')->nullable();
             $table->integer('nivel')->default(1);
             $table->integer('orden')->default(0);
-            $table->json('roles')->nullable();
-            $table->json('permisos')->nullable();
+            $table->string('permiso')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });

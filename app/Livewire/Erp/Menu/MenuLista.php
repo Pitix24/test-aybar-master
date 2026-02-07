@@ -3,12 +3,12 @@
 namespace App\Livewire\Erp\Menu;
 
 use App\Models\Menu;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
-use Livewire\Component; // Added for MenuCrear and MenuEditar
-use Livewire\WithPagination; // Added for MenuCrear and MenuEditar
-use Spatie\Permission\Models\Permission; // Added for MenuCrear based on instruction snippet
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
@@ -17,32 +17,40 @@ class MenuLista extends Component
 {
     use WithPagination;
 
+    #[Url(as: 'q')]
     public $buscar = '';
 
-    protected $listeners = ['delete' => 'eliminar'];
+    #[Url]
+    public $activo = '';
 
-    public function eliminar($id)
+    #[Url]
+    public $perPage = 50;
+
+    public function updated($property)
     {
-        $menu = Menu::findOrFail($id);
-        $menu->delete();
-        $this->dispatch('notificacion', [
-            'titulo' => 'Éxito',
-            'mensaje' => 'Ítem del menú eliminado correctamente.',
-            'tipo' => 'success'
-        ]);
+        if (in_array($property, ['buscar', 'activo', 'perPage'])) {
+            $this->resetPage();
+        }
     }
 
-    public function toggleActivo($id)
+    public function resetFiltros()
     {
-        $menu = Menu::findOrFail($id);
-        $menu->activo = !$menu->activo;
-        $menu->save();
+        $this->reset(['buscar', 'activo']);
+        $this->perPage = 50;
+        $this->resetPage();
     }
 
     public function render()
     {
-        $items = Menu::whereNull('parent_id')
-            ->where('nombre', 'like', '%' . $this->buscar . '%')
+        $items = Menu::query()
+            ->whereNull('parent_id')
+            ->when($this->buscar !== '', function ($q) {
+                $q->where('nombre', 'like', "%{$this->buscar}%")
+                    ->orWhere('id', $this->buscar);
+            })
+            ->when($this->activo !== '', function ($q) {
+                $q->where('activo', $this->activo);
+            })
             ->with([
                 'submenus' => function ($query) {
                     $query->with([
@@ -53,10 +61,16 @@ class MenuLista extends Component
                 }
             ])
             ->orderBy('orden')
-            ->paginate(50);
+            ->paginate($this->perPage);
 
-        return view('livewire.erp.menu.menu-lista', [
-            'items' => $items
-        ]);
+        return view('livewire.erp.menu.menu-lista', compact('items'));
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }
+

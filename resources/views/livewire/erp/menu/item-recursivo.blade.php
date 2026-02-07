@@ -11,14 +11,9 @@
                 <span class="g_resaltar">
                     <i class="{{ $item->icono }} g_margin_right_5"></i> {{ $item->nombre }}
                 </span>
-                @if($item->roles || $item->permisos)
+                @if($item->permiso)
                     <div class="g_celda_tags" style="margin-top: 4px;">
-                        @foreach($item->roles ?? [] as $r)
-                            <span class="g_badge g_badge_light" style="font-size: 10px;">R: {{ $r }}</span>
-                        @endforeach
-                        @foreach($item->permisos ?? [] as $p)
-                            <span class="g_badge g_badge_warning" style="font-size: 10px;">P: {{ $p }}</span>
-                        @endforeach
+                        <span class="g_badge g_badge_warning" style="font-size: 10px;">P: {{ $item->permiso }}</span>
                     </div>
                 @endif
             </div>
@@ -36,26 +31,17 @@
         {{ $item->orden }}
     </td>
     <td class="g_celda_centro">
-        <button wire:click="toggleActivo({{ $item->id }})" class="g_boton_invisible">
-            @if($item->activo)
-                <span class="g_badge g_badge_success">Activo</span>
-            @else
-                <span class="g_badge g_badge_danger">Inactivo</span>
-            @endif
-        </button>
+        @if($item->activo)
+            <span class="g_badge g_badge_success">Activo</span>
+        @else
+            <span class="g_badge g_badge_danger">Inactivo</span>
+        @endif
     </td>
     <td class="g_celda_acciones g_celda_centro centro">
         @can('menu-editar')
             <a href="{{ route('erp.menu.vista.editar', $item->id) }}" class="g_accion_editar" title="Editar">
                 <i class="fa-solid fa-pencil"></i>
             </a>
-        @endcan
-        @can('menu-eliminar')
-            <button
-                wire:click="$dispatch('confirmarEliminar', { id: {{ $item->id }}, mensaje: '¿Eliminar este ítem y todos sus submenús?' })"
-                class="g_accion_eliminar" title="Eliminar">
-                <i class="fa-solid fa-trash-can"></i>
-            </button>
         @endcan
     </td>
 </tr>

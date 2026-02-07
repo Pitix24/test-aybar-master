@@ -1,13 +1,13 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="buscar, toggleActivo, eliminar" message="Cargando..." />
+    <x-loading-overlay wire:loading wire:target="buscar, activo, resetFiltros, gotoPage" message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Administrar Menú ERP</h2>
+        <h2>Gestión de Menú ERP</h2>
 
         <div class="cabecera_titulo_botones">
             @can('menu-crear')
                 <a href="{{ route('erp.menu.vista.crear') }}" class="g_boton g_boton_primary">
-                    Crear Ítem <i class="fa-solid fa-square-plus"></i></a>
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
         </div>
     </div>
@@ -15,9 +15,24 @@
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_12">
-                    <label>Buscar Ítem</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Nombre del menú...">
+                <div class="g_margin_bottom_10 g_columna_6">
+                    <label>Nombre del Ítem</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Buscar por nombre o ID...">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Estado</label>
+                    <select wire:model.live="activo">
+                        <option value="">Todos</option>
+                        <option value="1">Activos</option>
+                        <option value="0">Inactivos</option>
+                    </select>
+                </div>
+
+                <div class="g_columna_3 g_fila_final">
+                    <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                        Limpiar <i class="fa-solid fa-rotate-left"></i>
+                    </button>
                 </div>
             </div>
         </div>

@@ -14,14 +14,11 @@ class Menu extends Model
         'icono',
         'nivel',
         'orden',
-        'roles',
-        'permisos',
+        'permiso',
         'activo',
     ];
 
     protected $casts = [
-        'roles' => 'array',
-        'permisos' => 'array',
         'activo' => 'boolean',
     ];
 
@@ -38,5 +35,14 @@ class Menu extends Model
     public function submenus()
     {
         return $this->children();
+    }
+
+    protected static function booted()
+    {
+        static::saving(function ($menu) {
+            if ($menu->ruta && $menu->url) {
+                throw new \LogicException('Un menú no puede tener ruta y url.');
+            }
+        });
     }
 }

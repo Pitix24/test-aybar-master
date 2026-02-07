@@ -29,13 +29,12 @@ class MenuSeeder extends Seeder
             $menu = \App\Models\Menu::create([
                 'parent_id' => $parentId,
                 'nombre' => $item['nombre'],
-                'ruta' => $item['ruta'] ?? '#',
-                'url' => $item['url'] ?? '#',
+                'ruta' => ($item['ruta'] ?? null) === '#' ? null : ($item['ruta'] ?? null),
+                'url' => ($item['url'] ?? null) === '#' ? null : ($item['url'] ?? null),
                 'icono' => $item['icono'] ?? null,
                 'nivel' => $item['nivel'] ?? 1,
                 'orden' => $index,
-                'roles' => $item['roles'] ?? [],
-                'permisos' => $item['permisos'] ?? [],
+                'permiso' => $item['permiso'] ?? null,
                 'activo' => true,
             ]);
 

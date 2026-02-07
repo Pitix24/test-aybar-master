@@ -39,25 +39,16 @@ class LayoutErpServiceProvider extends ServiceProvider
                     // Si tiene submenús, los filtramos primero
                     $submenusFiltrados = $filtrarMenu($item->submenus);
 
-                    // Verificación de Roles
-                    $rolesPermitidos = $item->roles ?? [];
-                    $tieneRol = empty($rolesPermitidos)
-                        ? true
-                        : $user->hasAnyRole($rolesPermitidos);
-
-                    // Verificación de Permisos
-                    $permisosRequeridos = $item->permisos ?? [];
-                    $tienePermiso = empty($permisosRequeridos)
-                        ? true
-                        : $user->hasAnyPermission($permisosRequeridos);
+                    // Verificación de Permiso Único
+                    $tienePermiso = !$item->permiso || $user->can($item->permiso);
 
                     // El item se muestra si:
-                    // Tiene permiso/rol directo Y (si tiene submenús, alguno sobrevivió)
-                    if (($tieneRol && $tienePermiso)) {
+                    // Tiene permiso directo Y (si tiene submenús, alguno sobrevivió)
+                    if ($tienePermiso) {
                         $item->setRelation('submenus', collect($submenusFiltrados));
 
-                        // Si es un item con ruta '#' (agrupador), solo lo mostramos si tiene submenús visibles
-                        if ($item->ruta === '#' && empty($submenusFiltrados)) {
+                        // Si es un item con ruta '#' o vacío y no tiene submenús visibles, lo ocultamos
+                        if (($item->ruta === '#' || empty($item->ruta)) && empty($submenusFiltrados)) {
                             continue;
                         }
 
@@ -75,8 +66,9 @@ class LayoutErpServiceProvider extends ServiceProvider
 
             $menuPrincipal = collect($filtrarMenu($menuItems));
 
-            // RUTA ACTUAL
-            $currentRoute = parse_url(url()->current(), PHP_URL_PATH);
+            // RUTA Y URL ACTUAL
+            $currentRoute = \Illuminate\Support\Facades\Route::currentRouteName();
+            $currentUrl = url()->current();
 
             $seleccion = [
                 'nivel1' => null,
@@ -87,25 +79,37 @@ class LayoutErpServiceProvider extends ServiceProvider
 
             // RECORRER MENÚ PARA DETERMINAR SELECCIÓN
             foreach ($menuPrincipal as $n1) {
-                if ($n1->url === $currentRoute) {
+                if (
+                    ($n1->ruta && $n1->ruta === $currentRoute) ||
+                    (!$n1->ruta && $n1->url && url($n1->url) === $currentUrl)
+                ) {
                     $seleccion['nivel1'] = $n1->id;
                 }
 
                 foreach ($n1->submenus as $n2) {
-                    if ($n2->url === $currentRoute) {
+                    if (
+                        ($n2->ruta && $n2->ruta === $currentRoute) ||
+                        (!$n2->ruta && $n2->url && url($n2->url) === $currentUrl)
+                    ) {
                         $seleccion['nivel1'] = $n1->id;
                         $seleccion['nivel2'] = $n2->id;
                     }
 
                     foreach ($n2->submenus as $n3) {
-                        if ($n3->url === $currentRoute) {
+                        if (
+                            ($n3->ruta && $n3->ruta === $currentRoute) ||
+                            (!$n3->ruta && $n3->url && url($n3->url) === $currentUrl)
+                        ) {
                             $seleccion['nivel1'] = $n1->id;
                             $seleccion['nivel2'] = $n2->id;
                             $seleccion['nivel3'] = $n3->id;
                         }
 
                         foreach ($n3->submenus as $n4) {
-                            if ($n4->url === $currentRoute) {
+                            if (
+                                ($n4->ruta && $n4->ruta === $currentRoute) ||
+                                (!$n4->ruta && $n4->url && url($n4->url) === $currentUrl)
+                            ) {
                                 $seleccion['nivel1'] = $n1->id;
                                 $seleccion['nivel2'] = $n2->id;
                                 $seleccion['nivel3'] = $n3->id;
