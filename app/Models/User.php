@@ -104,4 +104,14 @@ class User extends Authenticatable
     {
         $this->notify(new ResetPasswordCustom($token));
     }
+
+    public function necesitaActualizarDatosPersonales(): bool
+    {
+        return empty(optional($this->cliente)->telefono_principal);
+    }
+
+    public function necesitaActualizarDireccion(): bool
+    {
+        return !$this->direccion()->exists();
+    }
 }
