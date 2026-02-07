@@ -300,6 +300,35 @@
                         "submenus": []
                     }
                 ]
+            },
+            {
+                "id": 48,
+                "nombre": "Menu",
+                "ruta": "#",
+                "url": "#",
+                "icono": "fa-solid fa-bars",
+                "nivel": 2,
+                "roles": [],
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.menu.vista.todo",
+                        "url": "/erp/menu",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.menu.vista.crear",
+                        "url": "/erp/menu/crear",
+                        "nivel": 3,
+                        "roles": [],
+                        "submenus": []
+                    }
+                ]
             }
         ]
     },

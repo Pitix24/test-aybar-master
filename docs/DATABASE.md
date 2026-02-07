@@ -119,3 +119,8 @@ php artisan make:model TicketEmail -mfsc
 php artisan make:livewire atc.ticket-email.ticket-email-lista --class
 php artisan make:livewire atc.ticket-email.ticket-email-crear --class
 php artisan make:livewire atc.ticket-email.ticket-email-editar --class
+
+php artisan make:model Menu -mfsc ✅
+php artisan make:livewire erp.menu.menu-lista --class ✅
+php artisan make:livewire erp.menu.menu-crear --class ✅
+php artisan make:livewire erp.menu.menu-editar --class ✅

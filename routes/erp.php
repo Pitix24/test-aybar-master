@@ -1,5 +1,8 @@
 <?php
 
+use App\Livewire\Erp\Menu\MenuCrear;
+use App\Livewire\Erp\Menu\MenuEditar;
+use App\Livewire\Erp\Menu\MenuLista;
 use App\Livewire\Erp\Admin\AdminCrear;
 use App\Livewire\Erp\Admin\AdminEditar;
 use App\Livewire\Erp\Admin\AdminLista;
@@ -108,7 +111,6 @@ Route::group(['middleware' => ['permission:sede-ver']], function () {
         Route::get('/editar/{id}', SedeEditar::class)->name('editar');
     });
 });
-
 Route::group(['middleware' => ['permission:area-ver']], function () {
     Route::prefix('area')->name('area.vista.')->group(function () { //ok
         Route::get('/', AreaLista::class)->name('todo');
@@ -116,6 +118,14 @@ Route::group(['middleware' => ['permission:area-ver']], function () {
         Route::get('/editar/{id}', AreaEditar::class)->name('editar');
         Route::get('/user/{id}', AreaUser::class)->name('user');
         Route::get('/solicitud/{id}', AreaSolicitud::class)->name('solicitud');
+    });
+});
+
+Route::group(['middleware' => []], function () {
+    Route::prefix('menu')->name('menu.vista.')->group(function () {
+        Route::get('/', MenuLista::class)->name('todo');
+        Route::get('/crear', MenuCrear::class)->name('crear');
+        Route::get('/editar/{id}', MenuEditar::class)->name('editar');
     });
 });
 

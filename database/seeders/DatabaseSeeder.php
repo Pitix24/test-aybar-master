@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             DistritoSeeder::class,
             RolesYPermisosSeeder::class,
             UserSeeder::class,
+            MenuSeeder::class,
 
             UnidadNegocioSeeder::class,
             SedesYAreasSeeder::class,
