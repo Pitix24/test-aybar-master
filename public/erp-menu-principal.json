@@ -1,6 +1,6 @@
 [
     {
-        "id": 50,
+        "id": 51,
         "nombre": "Módulo Perfil",
         "ruta": null,
         "url": null,
@@ -19,11 +19,11 @@
         ]
     },
     {
-        "id": 48,
-        "nombre": "Módulo Usuarios",
+        "id": 50,
+        "nombre": "Módulo Sistema",
         "ruta": null,
         "url": null,
-        "icono": "fa-solid fa-users-cog",
+        "icono": "fa-solid fa-gear",
         "nivel": 1,
         "submenus": [
             {
@@ -78,6 +78,42 @@
                     }
                 ]
             },
+            {
+                "id": 48,
+                "nombre": "Menú",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-bars",
+                "nivel": 2,
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.menu.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.menu.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 48,
+        "nombre": "Módulo Usuarios",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-users-cog",
+        "nivel": 1,
+        "submenus": [
             {
                 "id": 41,
                 "nombre": "Admins",
@@ -134,7 +170,7 @@
     },
     {
         "id": 49,
-        "nombre": "Módulo Configuración",
+        "nombre": "Módulo Negocio",
         "ruta": null,
         "url": null,
         "icono": "fa-solid fa-city",
@@ -264,32 +300,6 @@
                         "id": 112,
                         "nombre": "Crear",
                         "ruta": "erp.proyecto.vista.crear",
-                        "url": null,
-                        "nivel": 3,
-                        "submenus": []
-                    }
-                ]
-            },
-            {
-                "id": 48,
-                "nombre": "Menú",
-                "ruta": null,
-                "url": null,
-                "icono": "fa-solid fa-bars",
-                "nivel": 2,
-                "submenus": [
-                    {
-                        "id": 111,
-                        "nombre": "Lista",
-                        "ruta": "erp.menu.vista.todo",
-                        "url": null,
-                        "nivel": 3,
-                        "submenus": []
-                    },
-                    {
-                        "id": 112,
-                        "nombre": "Crear",
-                        "ruta": "erp.menu.vista.crear",
                         "url": null,
                         "nivel": 3,
                         "submenus": []

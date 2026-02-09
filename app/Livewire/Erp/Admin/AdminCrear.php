@@ -42,6 +42,8 @@ class AdminCrear extends Component
 
     public function store()
     {
+        abort_unless(auth()->user()->can('admin.crear'), 403);
+
         try {
             $this->validate();
         } catch (ValidationException $e) {

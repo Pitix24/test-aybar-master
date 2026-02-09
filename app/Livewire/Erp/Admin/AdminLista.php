@@ -55,6 +55,8 @@ class AdminLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('admin.exportar'), 403);
+
         return Excel::download(
             new AdminsExport(
                 $this->buscar,

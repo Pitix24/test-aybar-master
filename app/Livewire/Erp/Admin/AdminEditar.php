@@ -56,6 +56,8 @@ class AdminEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('admin.editar'), 403);
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -86,6 +88,8 @@ class AdminEditar extends Component
 
     public function updatePassword()
     {
+        abort_unless(auth()->user()->can('admin.editar'), 403);
+
         try {
             $this->validate(['password' => 'required|string|min:8']);
         } catch (ValidationException $e) {
@@ -114,6 +118,8 @@ class AdminEditar extends Component
     #[On('eliminarAdminOn')]
     public function eliminarAdminOn()
     {
+        abort_unless(auth()->user()->can('admin.eliminar'), 403);
+
         try {
             DB::beginTransaction();
             $this->user_model->delete();
