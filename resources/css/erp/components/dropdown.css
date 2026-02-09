@@ -1,12 +1,13 @@
-.g_dropdown_wrapper {
+.header_dropdown_wrapper {
     position: relative;
     display: inline-flex;
     align-items: center;
+    height: var(--alto-header-admin);
 }
 
 /* ---------- TRIGGER ---------- */
 
-.g_dropdown_trigger {
+.header_dropdown_trigger {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -21,7 +22,7 @@
 
 /* ---------- PANEL ---------- */
 
-.g_dropdown_cabecera {
+.header_dropdown_cabecera {
     position: absolute;
     top: 50px;
     right: 0;
@@ -34,31 +35,31 @@
 }
 
 /* Posición */
-.g_dropdown_cabecera.right {
+.header_dropdown_cabecera.right {
     right: 0;
 }
 
-.g_dropdown_cabecera.left {
+.header_dropdown_cabecera.left {
     left: 0;
     right: auto;
 }
 
 /* Tamaños */
-.g_dropdown_cabecera.narrow {
+.header_dropdown_cabecera.narrow {
     width: 200px;
 }
 
-.g_dropdown_cabecera.normal {
+.header_dropdown_cabecera.normal {
     width: 240px;
 }
 
-.g_dropdown_cabecera.wide {
+.header_dropdown_cabecera.wide {
     width: 280px;
 }
 
 /* ---------- CUERPO ---------- */
 
-.g_dropdown_cuerpo {
+.header_dropdown_cuerpo {
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -67,7 +68,7 @@
 
 /* ---------- ITEMS ---------- */
 
-.g_dropdown_item {
+.header_dropdown_item {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -82,42 +83,42 @@
     transition: all 0.2s ease;
 }
 
-.g_dropdown_item:hover {
+.header_dropdown_item:hover {
     background: var(--color-fondo);
     color: var(--color-primario);
 }
 
-.g_dropdown_item.active {
+.header_dropdown_item.active {
     background: var(--color-primario-light);
     color: var(--color-primario);
 }
 
-.g_dropdown_item i {
+.header_dropdown_item i {
     width: 20px;
     text-align: center;
     font-size: 1.05rem;
 }
 
 /* Check */
-.g_dropdown_item_check {
+.header_dropdown_item_check {
     margin-left: auto;
     font-size: 0.75rem;
     color: var(--color-primario);
 }
 
 /* Divider */
-.g_dropdown_divider {
+.header_dropdown_divider {
     height: 1px;
     background: var(--border-color);
     margin: 8px 0;
 }
 
 /* Danger */
-.g_dropdown_item_danger {
+.header_dropdown_item_danger {
     color: #ef4444 !important;
 }
 
-.g_dropdown_item_danger:hover {
+.header_dropdown_item_danger:hover {
     background: #fef2f2 !important;
 }
 

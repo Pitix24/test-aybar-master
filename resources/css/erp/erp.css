@@ -37,11 +37,11 @@
 @import "../components/select-search.css";
 @import "../components/ticket-chat.css";
 @import "../components/profile.css";
-@import "../components/dropdown.css";
 
 /* ================================
-   COMPONENTS ERP
+COMPONENTS ERP
 ================================ */
 @import "./components/header.css";
+@import "./components/dropdown.css";
 @import "./components/menu.css";
 @import "./components/sub-menu.css";
