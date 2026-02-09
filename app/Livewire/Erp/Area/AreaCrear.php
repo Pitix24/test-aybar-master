@@ -44,6 +44,7 @@ class AreaCrear extends Component
 
     public function store()
     {
+        abort_unless(auth()->user()->can('area.crear'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {

@@ -51,6 +51,7 @@ class EstadoTicketEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('estado-ticket.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -82,6 +83,7 @@ class EstadoTicketEditar extends Component
     #[On('eliminarEstadoTicketOn')]
     public function eliminarEstadoTicketOn()
     {
+        abort_unless(auth()->user()->can('estado-ticket.eliminar'), 403);
         try {
             DB::beginTransaction();
 

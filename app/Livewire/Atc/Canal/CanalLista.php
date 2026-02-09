@@ -50,6 +50,7 @@ class CanalLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('canal.exportar'), 403);
         return Excel::download(
             new CanalExport(
                 $this->buscar,

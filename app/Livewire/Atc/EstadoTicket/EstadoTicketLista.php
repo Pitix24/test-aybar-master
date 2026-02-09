@@ -50,6 +50,7 @@ class EstadoTicketLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('estado-ticket.exportar'), 403);
         return Excel::download(
             new EstadoTicketExport(
                 $this->buscar,

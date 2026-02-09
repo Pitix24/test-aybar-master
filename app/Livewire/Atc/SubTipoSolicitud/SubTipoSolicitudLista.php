@@ -62,6 +62,7 @@ class SubTipoSolicitudLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('sub-tipo-solicitud.exportar'), 403);
         return Excel::download(
             new SubTipoSolicitudExport(
                 $this->buscar,

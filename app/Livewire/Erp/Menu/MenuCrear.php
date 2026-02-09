@@ -71,6 +71,8 @@ class MenuCrear extends Component
 
     public function store()
     {
+        abort_unless(auth()->user()->can('menu.crear'), 403);
+
         try {
             $this->validate();
             $this->normalizarRutas();

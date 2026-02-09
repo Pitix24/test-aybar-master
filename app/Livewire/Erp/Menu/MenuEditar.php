@@ -88,6 +88,8 @@ class MenuEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('menu.editar'), 403);
+
         try {
             $this->validate();
             $this->normalizarRutas();
@@ -125,6 +127,8 @@ class MenuEditar extends Component
     #[On('eliminarMenuOn')]
     public function eliminarMenuOn()
     {
+        abort_unless(auth()->user()->can('menu.eliminar'), 403);
+
         try {
             DB::transaction(function () {
                 $this->menu->delete();

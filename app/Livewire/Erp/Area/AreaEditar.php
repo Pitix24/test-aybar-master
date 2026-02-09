@@ -59,6 +59,7 @@ class AreaEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('area.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -93,6 +94,7 @@ class AreaEditar extends Component
     #[On('eliminarAreaOn')]
     public function eliminarAreaOn()
     {
+        abort_unless(auth()->user()->can('area.eliminar'), 403);
         try {
             DB::beginTransaction();
 

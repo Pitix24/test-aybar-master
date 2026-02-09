@@ -54,6 +54,7 @@ class PrioridadTicketEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('prioridad-ticket.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -86,6 +87,7 @@ class PrioridadTicketEditar extends Component
     #[On('eliminarPrioridadTicketOn')]
     public function eliminarPrioridadTicketOn()
     {
+        abort_unless(auth()->user()->can('prioridad-ticket.eliminar'), 403);
         try {
             DB::beginTransaction();
 

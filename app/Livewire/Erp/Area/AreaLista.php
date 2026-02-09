@@ -50,6 +50,7 @@ class AreaLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('area.exportar'), 403);
         return Excel::download(
             new AreaExport(
                 $this->buscar,

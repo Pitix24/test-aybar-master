@@ -50,6 +50,7 @@ class SedeLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('sede.exportar'), 403);
         return Excel::download(
             new SedeExport(
                 $this->buscar,

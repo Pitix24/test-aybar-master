@@ -46,6 +46,7 @@ class PermisoLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('permiso.exportar'), 403);
         return Excel::download(
             new PermisosExport(
                 $this->buscar,

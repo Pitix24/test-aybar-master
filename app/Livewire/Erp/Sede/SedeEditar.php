@@ -48,6 +48,7 @@ class SedeEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('sede.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -78,6 +79,7 @@ class SedeEditar extends Component
     #[On('eliminarSedeOn')]
     public function eliminarSedeOn()
     {
+        abort_unless(auth()->user()->can('sede.eliminar'), 403);
         try {
             DB::beginTransaction();
 

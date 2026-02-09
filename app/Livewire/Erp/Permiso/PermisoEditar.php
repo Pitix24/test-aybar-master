@@ -45,6 +45,7 @@ class PermisoEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('permiso.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -73,6 +74,7 @@ class PermisoEditar extends Component
     #[On('eliminarPermisoOn')]
     public function eliminarPermisoOn()
     {
+        abort_unless(auth()->user()->can('permiso.eliminar'), 403);
         try {
             DB::beginTransaction();
             $this->permission->delete();

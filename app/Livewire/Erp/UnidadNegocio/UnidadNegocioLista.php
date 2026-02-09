@@ -50,6 +50,7 @@ class UnidadNegocioLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('unidad-negocio.exportar'), 403);
         return Excel::download(
             new UnidadNegocioExport(
                 $this->buscar,

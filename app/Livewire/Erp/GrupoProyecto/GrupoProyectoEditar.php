@@ -43,6 +43,7 @@ class GrupoProyectoEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('grupo-proyecto.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -72,6 +73,7 @@ class GrupoProyectoEditar extends Component
     #[On('eliminarGrupoProyectoOn')]
     public function eliminarGrupoProyectoOn()
     {
+        abort_unless(auth()->user()->can('grupo-proyecto.eliminar'), 403);
         try {
             DB::beginTransaction();
 

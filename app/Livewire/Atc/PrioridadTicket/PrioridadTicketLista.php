@@ -50,6 +50,7 @@ class PrioridadTicketLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('prioridad-ticket.exportar'), 403);
         return Excel::download(
             new PrioridadTicketExport(
                 $this->buscar,

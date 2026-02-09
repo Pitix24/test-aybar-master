@@ -44,18 +44,21 @@ class AreaSolicitud extends Component
 
     public function agregarTipo($tipoId)
     {
+        abort_unless(auth()->user()->can('area.editar'), 403);
         $this->area->tiposSolicitud()->syncWithoutDetaching([$tipoId]);
         $this->dispatch('alertaLivewire', ['title' => 'Agregado', 'text' => 'Tipo de solicitud vinculado correctamente.']);
     }
 
     public function quitarTipo($tipoId)
     {
+        abort_unless(auth()->user()->can('area.editar'), 403);
         $this->area->tiposSolicitud()->detach($tipoId);
         $this->dispatch('alertaLivewire', ['title' => 'Quitado', 'text' => 'Vínculo eliminado correctamente.']);
     }
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('area.exportar'), 403);
         return Excel::download(
             new AreaTiposExport($this->area, $this->searchAgregados),
             'tipos-asignados-' . strtolower($this->area->nombre) . '.xlsx'

@@ -40,6 +40,7 @@ class RolCrear extends Component
 
     public function store()
     {
+        abort_unless(auth()->user()->can('rol.crear'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {

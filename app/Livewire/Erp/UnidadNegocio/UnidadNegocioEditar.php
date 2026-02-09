@@ -71,6 +71,7 @@ class UnidadNegocioEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('unidad-negocio.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -109,6 +110,7 @@ class UnidadNegocioEditar extends Component
     #[On('eliminarUnidadNegocioOn')]
     public function eliminarUnidadNegocioOn()
     {
+        abort_unless(auth()->user()->can('unidad-negocio.eliminar'), 403);
         try {
             DB::beginTransaction();
 

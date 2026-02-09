@@ -44,18 +44,21 @@ class AreaUser extends Component
 
     public function agregarUsuario($userId)
     {
+        abort_unless(auth()->user()->can('area.editar'), 403);
         $this->area->users()->syncWithoutDetaching([$userId => ['is_principal' => false]]);
         $this->dispatch('alertaLivewire', ['title' => 'Agregado', 'text' => 'Usuario asignado al área correctamente.']);
     }
 
     public function quitarUsuario($userId)
     {
+        abort_unless(auth()->user()->can('area.editar'), 403);
         $this->area->users()->detach($userId);
         $this->dispatch('alertaLivewire', ['title' => 'Quitado', 'text' => 'Usuario retirado del área.']);
     }
 
     public function marcarPrincipal($userId)
     {
+        abort_unless(auth()->user()->can('area.editar'), 403);
         // Quitar principal actual
         $this->area->users()->updateExistingPivot(
             $this->area->users()->wherePivot('is_principal', true)->pluck('users.id')->toArray(),
@@ -70,6 +73,7 @@ class AreaUser extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('area.exportar'), 403);
         return Excel::download(
             new AreaUsersExport($this->area, $this->searchAgregados),
             'usuarios-area-' . strtolower($this->area->nombre) . '.xlsx'

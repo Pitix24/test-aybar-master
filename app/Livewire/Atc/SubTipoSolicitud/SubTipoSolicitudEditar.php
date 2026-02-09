@@ -55,6 +55,7 @@ class SubTipoSolicitudEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('sub-tipo-solicitud.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -86,6 +87,7 @@ class SubTipoSolicitudEditar extends Component
     #[On('eliminarSubTipoSolicitudOn')]
     public function eliminarSubTipoSolicitudOn()
     {
+        abort_unless(auth()->user()->can('sub-tipo-solicitud.eliminar'), 403);
         try {
             DB::beginTransaction();
 

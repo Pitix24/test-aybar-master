@@ -45,6 +45,7 @@ class SubTipoSolicitudCrear extends Component
 
     public function store()
     {
+        abort_unless(auth()->user()->can('sub-tipo-solicitud.crear'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {

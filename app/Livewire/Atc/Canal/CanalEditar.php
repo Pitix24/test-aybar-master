@@ -45,6 +45,7 @@ class CanalEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('canal.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -74,6 +75,7 @@ class CanalEditar extends Component
     #[On('eliminarCanalOn')]
     public function eliminarCanalOn()
     {
+        abort_unless(auth()->user()->can('canal.eliminar'), 403);
         try {
             DB::beginTransaction();
 

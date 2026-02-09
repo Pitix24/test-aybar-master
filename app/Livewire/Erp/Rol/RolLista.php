@@ -46,6 +46,7 @@ class RolLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('rol.exportar'), 403);
         return Excel::download(
             new RolesExport(
                 $this->buscar,

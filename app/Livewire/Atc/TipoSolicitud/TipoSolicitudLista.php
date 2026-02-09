@@ -50,6 +50,7 @@ class TipoSolicitudLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('tipo-solicitud.exportar'), 403);
         return Excel::download(
             new TipoSolicitudExport(
                 $this->buscar,

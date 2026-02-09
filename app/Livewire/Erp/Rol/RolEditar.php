@@ -49,6 +49,7 @@ class RolEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('rol.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -79,6 +80,7 @@ class RolEditar extends Component
     #[On('eliminarRolOn')]
     public function eliminarRolOn()
     {
+        abort_unless(auth()->user()->can('rol.eliminar'), 403);
         try {
             if ($this->role->name === 'super-admin') {
                 $this->dispatch('alertaLivewire', ['title' => 'Acción Protegida', 'text' => 'No puedes eliminar el rol super-admin.']);

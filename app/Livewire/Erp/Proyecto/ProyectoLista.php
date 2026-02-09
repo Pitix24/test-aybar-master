@@ -69,6 +69,7 @@ class ProyectoLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('proyecto.exportar'), 403);
         return Excel::download(
             new ProyectosExport(
                 $this->buscar,

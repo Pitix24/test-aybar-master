@@ -59,6 +59,7 @@ class ProyectoEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('proyecto.editar'), 403);
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -91,6 +92,7 @@ class ProyectoEditar extends Component
     #[On('eliminarProyectoOn')]
     public function eliminarProyectoOn()
     {
+        abort_unless(auth()->user()->can('proyecto.eliminar'), 403);
         try {
             DB::beginTransaction();
 

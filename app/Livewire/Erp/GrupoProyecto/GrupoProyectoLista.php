@@ -50,6 +50,7 @@ class GrupoProyectoLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('grupo-proyecto.exportar'), 403);
         return Excel::download(
             new GrupoProyectoExport(
                 $this->buscar,
