@@ -72,39 +72,53 @@ class LayoutErpServiceProvider extends ServiceProvider
                 'nivel4' => null,
             ];
 
+            // Función para verificar si una ruta de menú debe estar activa
+            $esRutaActiva = function ($menuRuta, $menuUrl, $currentRoute, $currentUrl) {
+                // 1. Coincidencia exacta de ruta
+                if ($menuRuta && $menuRuta === $currentRoute)
+                    return true;
+
+                // 2. Coincidencia exacta de URL
+                if (!$menuRuta && $menuUrl && url($menuUrl) === $currentUrl)
+                    return true;
+
+                // 3. Coincidencia por prefijo (Contexto): erp.rol.vista.todo -> erp.rol.vista.*
+                if ($menuRuta && $currentRoute) {
+                    $partesMenu = explode('.', $menuRuta);
+                    $partesActual = explode('.', $currentRoute);
+
+                    // Si comparten los primeros 3 niveles (ej: erp.modulo.item), lo consideramos activo
+                    if (count($partesMenu) >= 3 && count($partesActual) >= 3) {
+                        return $partesMenu[0] === $partesActual[0] &&
+                            $partesMenu[1] === $partesActual[1] &&
+                            $partesMenu[2] === $partesActual[2];
+                    }
+                }
+
+                return false;
+            };
+
             // RECORRER MENÚ PARA DETERMINAR SELECCIÓN
             foreach ($menuPrincipal as $n1) {
-                if (
-                    ($n1->ruta && $n1->ruta === $currentRoute) ||
-                    (!$n1->ruta && $n1->url && url($n1->url) === $currentUrl)
-                ) {
+                if ($esRutaActiva($n1->ruta, $n1->url, $currentRoute, $currentUrl)) {
                     $seleccion['nivel1'] = $n1->id;
                 }
 
                 foreach ($n1->submenus as $n2) {
-                    if (
-                        ($n2->ruta && $n2->ruta === $currentRoute) ||
-                        (!$n2->ruta && $n2->url && url($n2->url) === $currentUrl)
-                    ) {
+                    if ($esRutaActiva($n2->ruta, $n2->url, $currentRoute, $currentUrl)) {
                         $seleccion['nivel1'] = $n1->id;
                         $seleccion['nivel2'] = $n2->id;
                     }
 
                     foreach ($n2->submenus as $n3) {
-                        if (
-                            ($n3->ruta && $n3->ruta === $currentRoute) ||
-                            (!$n3->ruta && $n3->url && url($n3->url) === $currentUrl)
-                        ) {
+                        if ($esRutaActiva($n3->ruta, $n3->url, $currentRoute, $currentUrl)) {
                             $seleccion['nivel1'] = $n1->id;
                             $seleccion['nivel2'] = $n2->id;
                             $seleccion['nivel3'] = $n3->id;
                         }
 
                         foreach ($n3->submenus as $n4) {
-                            if (
-                                ($n4->ruta && $n4->ruta === $currentRoute) ||
-                                (!$n4->ruta && $n4->url && url($n4->url) === $currentUrl)
-                            ) {
+                            if ($esRutaActiva($n4->ruta, $n4->url, $currentRoute, $currentUrl)) {
                                 $seleccion['nivel1'] = $n1->id;
                                 $seleccion['nivel2'] = $n2->id;
                                 $seleccion['nivel3'] = $n3->id;
