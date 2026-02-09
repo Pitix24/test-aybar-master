@@ -35,12 +35,6 @@ class UserSeeder extends Seeder
                     'admin',
                     'supervisor-atc',
                     'asesor-atc',
-                    'supervisor-backoffice',
-                    'asesor-backoffice',
-                    'supervisor-legal',
-                    'asesor-legal',
-                    'supervisor-archivo',
-                    'asesor-archivo',
                 ];
 
                 // Aseguramos que sea una instancia de User antes de llamar a assignRole

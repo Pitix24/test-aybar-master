@@ -1,24 +1,5 @@
 [
     {
-        "id": 51,
-        "nombre": "Módulo Perfil",
-        "ruta": null,
-        "url": null,
-        "icono": "fa-solid fa-circle-user",
-        "nivel": 1,
-        "submenus": [
-            {
-                "id": 41,
-                "nombre": "Perfil",
-                "ruta": "erp.home",
-                "url": null,
-                "icono": "fa-solid fa-user-tie",
-                "nivel": 2,
-                "submenus": []
-            }
-        ]
-    },
-    {
         "id": 50,
         "nombre": "Módulo Sistema",
         "ruta": null,
@@ -310,7 +291,7 @@
     },
     {
         "id": 14,
-        "nombre": "Módulo Tickets",
+        "nombre": "Módulo ATC",
         "ruta": null,
         "url": null,
         "icono": "fa-solid fa-headset",
