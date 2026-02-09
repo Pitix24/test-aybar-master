@@ -3,17 +3,25 @@
         <i class="fa-solid fa-bars"></i>
     </span>
 
-    <div class="header_menu">
-        <div class="header_dropdown_wrapper" x-data="{ open: false }">
+    <div class="header_menu" x-data="{ menuAbierto: null }" @keydown.escape.window="menuAbierto = null">
+        <!-- Dropdown Tema -->
+        <div class="header_dropdown_wrapper" x-data="{ 
+            get open() { return menuAbierto === 'tema' }, 
+            set open(val) { menuAbierto = val ? 'tema' : null } 
+        }">
             <button type="button" class="header_dropdown_trigger" @click="open = !open" title="Cambiar tema">
                 <i x-show="theme === 'light'" class="fa-solid fa-sun" x-cloak></i>
                 <i x-show="theme === 'dark'" class="fa-solid fa-moon" x-cloak></i>
             </button>
 
-            <x-theme-dropdown x-show="open" @click.outside="open = false" />
+            <x-theme-dropdown x-show="open" @click.outside="if(open) open = false" />
         </div>
 
-        <div class="header_dropdown_wrapper" x-data="{ open: false }">
+        <!-- Dropdown Perfil -->
+        <div class="header_dropdown_wrapper" x-data="{ 
+            get open() { return menuAbierto === 'perfil' }, 
+            set open(val) { menuAbierto = val ? 'perfil' : null } 
+        }">
             <button type="button" class="header_dropdown_trigger" @click="open = !open">
                 <img src="{{ asset('assets/imagen/default.jpg') }}" class="header_profile_avatar">
 
@@ -25,7 +33,7 @@
                 <i class="fa-solid fa-sort-down header_arrow"></i>
             </button>
 
-            <x-profile-dropdown x-show="open" @click.outside="open = false" />
+            <x-profile-dropdown x-show="open" @click.outside="if(open) open = false" />
         </div>
     </div>
 </header>

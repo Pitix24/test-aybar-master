@@ -47,22 +47,11 @@ window.xDataLayout = function () {
         },
 
         toggleContenedorAside() {
-            let anchoPantalla = window.innerWidth || screen.width;
-
-            if (anchoPantalla < 768) {
-                this.estadoAsideAbierto = true;
-                if (this.seleccionadoNivel_1) this.estadoNavAbierto = true;
-            }
+            this.toggleSidebarLayout();
         },
 
         toggleContenedorNavLinks() {
-            let anchoPantalla = window.innerWidth || screen.width;
-
-            if (anchoPantalla > 768 && this.seleccionadoNivel_1) {
-                this.estadoNavAbierto = !this.estadoNavAbierto;
-            } else if (anchoPantalla < 768) {
-                this.estadoAsideAbierto = false;
-            }
+            this.toggleSidebarLayout();
         },
 
         toogleNivel_1(event, id) {
@@ -102,5 +91,27 @@ window.xDataLayout = function () {
                 this.seleccionadoNivel_4 =
                 null;
         },
+
+        closeSidebarLayout() {
+            let anchoPantalla = window.innerWidth || screen.width;
+            if (anchoPantalla < 768) {
+                this.estadoAsideAbierto = false;
+            } else {
+                this.estadoNavAbierto = false;
+            }
+        },
+
+        toggleSidebarLayout() {
+            let anchoPantalla = window.innerWidth || screen.width;
+            if (anchoPantalla < 768) {
+                this.estadoAsideAbierto = !this.estadoAsideAbierto;
+                // Si abrimos el aside en móvil y hay algo seleccionado, abrimos nav links
+                if (this.estadoAsideAbierto && this.seleccionadoNivel_1) {
+                    this.estadoNavAbierto = true;
+                }
+            } else {
+                this.estadoNavAbierto = !this.estadoNavAbierto;
+            }
+        }
     };
 };
