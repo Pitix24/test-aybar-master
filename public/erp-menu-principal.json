@@ -6,6 +6,7 @@
         "url": null,
         "icono": "fa-solid fa-gear",
         "nivel": 1,
+        "permiso": "menu.ver",
         "submenus": [
             {
                 "id": 50,
@@ -14,6 +15,7 @@
                 "url": null,
                 "icono": "fa-solid fa-user-shield",
                 "nivel": 2,
+                "permiso": "rol.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -21,6 +23,7 @@
                         "ruta": "erp.rol.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "rol.ver",
                         "submenus": []
                     },
                     {
@@ -29,6 +32,7 @@
                         "ruta": "erp.rol.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "rol.crear",
                         "submenus": []
                     }
                 ]
@@ -40,6 +44,7 @@
                 "url": null,
                 "icono": "fa-solid fa-user-cog",
                 "nivel": 2,
+                "permiso": "permiso.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -47,6 +52,7 @@
                         "ruta": "erp.permiso.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "permiso.ver",
                         "submenus": []
                     },
                     {
@@ -55,6 +61,7 @@
                         "ruta": "erp.permiso.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "permiso.crear",
                         "submenus": []
                     }
                 ]
@@ -66,6 +73,7 @@
                 "url": null,
                 "icono": "fa-solid fa-bars",
                 "nivel": 2,
+                "permiso": "menu.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -73,6 +81,7 @@
                         "ruta": "erp.menu.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "menu.ver",
                         "submenus": []
                     },
                     {
@@ -81,6 +90,7 @@
                         "ruta": "erp.menu.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "menu.crear",
                         "submenus": []
                     }
                 ]
@@ -94,6 +104,7 @@
         "url": null,
         "icono": "fa-solid fa-users-cog",
         "nivel": 1,
+        "permiso": "admin.ver",
         "submenus": [
             {
                 "id": 41,
@@ -102,6 +113,7 @@
                 "url": null,
                 "icono": "fa-solid fa-user-tie",
                 "nivel": 2,
+                "permiso": "admin.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -109,6 +121,7 @@
                         "ruta": "erp.admin.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "admin.ver",
                         "submenus": []
                     },
                     {
@@ -117,6 +130,7 @@
                         "ruta": "erp.admin.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "admin.crear",
                         "submenus": []
                     }
                 ]
@@ -128,6 +142,7 @@
                 "url": null,
                 "icono": "fa-solid fa-users",
                 "nivel": 2,
+                "permiso": "cliente.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -135,6 +150,7 @@
                         "ruta": "erp.cliente.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "cliente.ver",
                         "submenus": []
                     },
                     {
@@ -143,6 +159,7 @@
                         "ruta": "erp.cliente.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "cliente.crear",
                         "submenus": []
                     }
                 ]
@@ -156,6 +173,7 @@
         "url": null,
         "icono": "fa-solid fa-city",
         "nivel": 1,
+        "permiso": "unidad-negocio.ver",
         "submenus": [
             {
                 "id": 39,
@@ -164,6 +182,7 @@
                 "url": null,
                 "icono": "fa-solid fa-archway",
                 "nivel": 2,
+                "permiso": "unidad-negocio.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -171,6 +190,7 @@
                         "ruta": "erp.unidad-negocio.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "unidad-negocio.ver",
                         "submenus": []
                     },
                     {
@@ -179,6 +199,7 @@
                         "ruta": "erp.unidad-negocio.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "unidad-negocio.crear",
                         "submenus": []
                     }
                 ]
@@ -190,6 +211,7 @@
                 "url": null,
                 "icono": "fa-solid fa-map-location-dot",
                 "nivel": 2,
+                "permiso": "sede.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -197,6 +219,7 @@
                         "ruta": "erp.sede.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "sede.ver",
                         "submenus": []
                     },
                     {
@@ -205,6 +228,7 @@
                         "ruta": "erp.sede.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "sede.crear",
                         "submenus": []
                     }
                 ]
@@ -216,6 +240,7 @@
                 "url": null,
                 "icono": "fa-solid fa-shapes",
                 "nivel": 2,
+                "permiso": "area.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -223,6 +248,7 @@
                         "ruta": "erp.area.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "area.ver",
                         "submenus": []
                     },
                     {
@@ -231,6 +257,7 @@
                         "ruta": "erp.area.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "area.crear",
                         "submenus": []
                     }
                 ]
@@ -242,6 +269,7 @@
                 "url": null,
                 "icono": "fa-solid fa-layer-group",
                 "nivel": 2,
+                "permiso": "grupo-proyecto.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -249,6 +277,7 @@
                         "ruta": "erp.grupo-proyecto.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "grupo-proyecto.ver",
                         "submenus": []
                     },
                     {
@@ -257,6 +286,7 @@
                         "ruta": "erp.grupo-proyecto.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "grupo-proyecto.crear",
                         "submenus": []
                     }
                 ]
@@ -268,6 +298,7 @@
                 "url": null,
                 "icono": "fa-solid fa-diagram-project",
                 "nivel": 2,
+                "permiso": "proyecto.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -275,6 +306,7 @@
                         "ruta": "erp.proyecto.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "proyecto.ver",
                         "submenus": []
                     },
                     {
@@ -283,6 +315,7 @@
                         "ruta": "erp.proyecto.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "proyecto.crear",
                         "submenus": []
                     }
                 ]
@@ -296,6 +329,7 @@
         "url": null,
         "icono": "fa-solid fa-headset",
         "nivel": 1,
+        "permiso": "ticket.ver",
         "submenus": [
             {
                 "id": 42,
@@ -304,6 +338,7 @@
                 "url": null,
                 "icono": "fa-solid fa-tag",
                 "nivel": 2,
+                "permiso": "tipo-solicitud.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -311,6 +346,7 @@
                         "ruta": "erp.tipo-solicitud.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "tipo-solicitud.ver",
                         "submenus": []
                     },
                     {
@@ -319,6 +355,7 @@
                         "ruta": "erp.tipo-solicitud.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "tipo-solicitud.crear",
                         "submenus": []
                     }
                 ]
@@ -330,6 +367,7 @@
                 "url": null,
                 "icono": "fa-solid fa-indent",
                 "nivel": 2,
+                "permiso": "sub-tipo-solicitud.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -337,6 +375,7 @@
                         "ruta": "erp.sub-tipo-solicitud.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "sub-tipo-solicitud.ver",
                         "submenus": []
                     },
                     {
@@ -345,6 +384,7 @@
                         "ruta": "erp.sub-tipo-solicitud.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "sub-tipo-solicitud.crear",
                         "submenus": []
                     }
                 ]
@@ -356,6 +396,7 @@
                 "url": null,
                 "icono": "fa-solid fa-bolt",
                 "nivel": 2,
+                "permiso": "prioridad-ticket.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -363,6 +404,7 @@
                         "ruta": "erp.prioridad-ticket.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "prioridad-ticket.ver",
                         "submenus": []
                     },
                     {
@@ -371,6 +413,7 @@
                         "ruta": "erp.prioridad-ticket.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "prioridad-ticket.crear",
                         "submenus": []
                     }
                 ]
@@ -382,6 +425,7 @@
                 "url": null,
                 "icono": "fa-solid fa-lock-open",
                 "nivel": 2,
+                "permiso": "estado-ticket.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -389,6 +433,7 @@
                         "ruta": "erp.estado-ticket.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "estado-ticket.ver",
                         "submenus": []
                     },
                     {
@@ -397,6 +442,7 @@
                         "ruta": "erp.estado-ticket.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "estado-ticket.crear",
                         "submenus": []
                     }
                 ]
@@ -408,6 +454,7 @@
                 "url": null,
                 "icono": "fa-solid fa-bullhorn",
                 "nivel": 2,
+                "permiso": "canal.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -415,6 +462,7 @@
                         "ruta": "erp.canal.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "canal.ver",
                         "submenus": []
                     },
                     {
@@ -423,6 +471,7 @@
                         "ruta": "erp.canal.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "canal.crear",
                         "submenus": []
                     }
                 ]
@@ -434,6 +483,7 @@
                 "url": null,
                 "icono": "fa-solid fa-clipboard-check",
                 "nivel": 2,
+                "permiso": "ticket.ver",
                 "submenus": [
                     {
                         "id": 111,
@@ -441,6 +491,7 @@
                         "ruta": "erp.ticket.vista.todo",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "ticket.ver",
                         "submenus": []
                     },
                     {
@@ -449,6 +500,7 @@
                         "ruta": "erp.ticket.vista.crear",
                         "url": null,
                         "nivel": 3,
+                        "permiso": "ticket.crear",
                         "submenus": []
                     }
                 ]

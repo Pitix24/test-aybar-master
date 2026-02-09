@@ -84,6 +84,7 @@ class UserSeeder extends Seeder
             // Aseguramos que sea una instancia de User antes de llamar a assignRole
             if ($admin instanceof User) {
                 $admin->assignRole(fake()->randomElement($rolesAdministrativos));
+                $this->createRelatedData($admin);
             }
         }
     }
