@@ -13,9 +13,13 @@ document.addEventListener('alpine:init', () => {
         },
 
         toggleTheme() {
-            this.theme = this.theme === 'light' ? 'dark' : 'light';
+            this.setTheme(this.theme === 'light' ? 'dark' : 'light');
+        },
+
+        setTheme(val) {
+            this.theme = val;
             document.documentElement.setAttribute('data-theme', this.theme);
             localStorage.setItem('theme', this.theme);
-        },
+        }
     }));
 });

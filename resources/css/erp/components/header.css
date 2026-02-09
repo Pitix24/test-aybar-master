@@ -10,13 +10,58 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    justify-content: flex-end;
+    justify-content: space-between;
     border-bottom: 1px solid var(--border-color);
 }
 
 .layout_menu_hamburguesa_celular {
     display: none;
     cursor: pointer;
+}
+
+.g_header_actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-left: auto;
+}
+
+.g_profile_info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: right;
+}
+
+.g_profile_info span {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-texto-primario);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.g_profile_info small {
+    font-size: 0.7rem;
+    color: var(--color-placeholder);
+    margin: 0;
+}
+
+.g_profile_avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-primario);
+    padding: 1px;
+    background: white;
+}
+
+.g_arrow {
+    font-size: 0.7rem;
+    color: var(--color-placeholder);
+    transition: transform 0.3s ease;
+    margin-top: 4px;
 }
 
 @media (max-width: 768px) {

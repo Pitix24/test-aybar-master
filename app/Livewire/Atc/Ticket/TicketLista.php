@@ -49,6 +49,8 @@ class TicketLista extends Component
 
     public function exportExcel()
     {
+        abort_unless(auth()->user()->can('ticket.exportar'), 403);
+
         return Excel::download(
             new TicketExport(
                 $this->buscar,

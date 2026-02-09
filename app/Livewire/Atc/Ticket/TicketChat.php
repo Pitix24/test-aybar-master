@@ -32,6 +32,8 @@ class TicketChat extends Component
 
     public function enviar()
     {
+        abort_unless(auth()->user()->can('ticket.ver'), 403);
+
         if (trim($this->mensaje) == '' && !$this->adjunto) {
             return;
         }

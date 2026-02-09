@@ -122,6 +122,8 @@ class TicketEditar extends Component
 
     public function update()
     {
+        abort_unless(auth()->user()->can('ticket.editar'), 403);
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -164,6 +166,8 @@ class TicketEditar extends Component
 
     public function adjuntar()
     {
+        abort_unless(auth()->user()->can('ticket.editar'), 403);
+
         try {
             $this->validate([
                 'archivo' => 'required|max:10240', // 10MB max
@@ -221,6 +225,8 @@ class TicketEditar extends Component
 
     public function eliminarArchivo($archivoId)
     {
+        abort_unless(auth()->user()->can('ticket.eliminar'), 403);
+
         try {
             $archivo = TicketArchivo::findOrFail($archivoId);
             Storage::disk('public')->delete($archivo->path);
@@ -237,6 +243,8 @@ class TicketEditar extends Component
     #[On('eliminarTicketOn')]
     public function eliminarTicketOn()
     {
+        abort_unless(auth()->user()->can('ticket.eliminar'), 403);
+
         try {
             DB::beginTransaction();
             $this->ticket->delete();
