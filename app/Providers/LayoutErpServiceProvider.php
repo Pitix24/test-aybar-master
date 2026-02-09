@@ -72,61 +72,65 @@ class LayoutErpServiceProvider extends ServiceProvider
                 'nivel4' => null,
             ];
 
-            // Función para verificar si una ruta de menú debe estar activa
-            $esRutaActiva = function ($menuRuta, $menuUrl, $currentRoute, $currentUrl) {
-                // 1. Coincidencia exacta de ruta
+            // Sistema de selección inteligente
+            $mejorPuntaje = 0; // 0: nada, 1: prefijo, 2: exacto
+
+            // Función evaluadora
+            $evaluarRuta = function ($menuRuta, $menuUrl) use ($currentRoute, $currentUrl) {
                 if ($menuRuta && $menuRuta === $currentRoute)
-                    return true;
-
-                // 2. Coincidencia exacta de URL
+                    return 2;
                 if (!$menuRuta && $menuUrl && url($menuUrl) === $currentUrl)
-                    return true;
+                    return 2;
 
-                // 3. Coincidencia por prefijo (Contexto): erp.rol.vista.todo -> erp.rol.vista.*
                 if ($menuRuta && $currentRoute) {
                     $partesMenu = explode('.', $menuRuta);
                     $partesActual = explode('.', $currentRoute);
-
-                    // Si comparten los primeros 3 niveles (ej: erp.modulo.item), lo consideramos activo
                     if (count($partesMenu) >= 3 && count($partesActual) >= 3) {
-                        return $partesMenu[0] === $partesActual[0] &&
+                        if (
+                            $partesMenu[0] === $partesActual[0] &&
                             $partesMenu[1] === $partesActual[1] &&
-                            $partesMenu[2] === $partesActual[2];
+                            $partesMenu[2] === $partesActual[2]
+                        ) {
+                            return 1;
+                        }
                     }
                 }
-
-                return false;
+                return 0;
             };
 
             // RECORRER MENÚ PARA DETERMINAR SELECCIÓN
             foreach ($menuPrincipal as $n1) {
-                if ($esRutaActiva($n1->ruta, $n1->url, $currentRoute, $currentUrl)) {
-                    $seleccion['nivel1'] = $n1->id;
+                $p1 = $evaluarRuta($n1->ruta, $n1->url);
+                if ($p1 > $mejorPuntaje) {
+                    $mejorPuntaje = $p1;
+                    $seleccion = ['nivel1' => $n1->id, 'nivel2' => null, 'nivel3' => null, 'nivel4' => null];
                 }
 
                 foreach ($n1->submenus as $n2) {
-                    if ($esRutaActiva($n2->ruta, $n2->url, $currentRoute, $currentUrl)) {
-                        $seleccion['nivel1'] = $n1->id;
-                        $seleccion['nivel2'] = $n2->id;
+                    $p2 = $evaluarRuta($n2->ruta, $n2->url);
+                    if ($p2 > $mejorPuntaje) {
+                        $mejorPuntaje = $p2;
+                        $seleccion = ['nivel1' => $n1->id, 'nivel2' => $n2->id, 'nivel3' => null, 'nivel4' => null];
                     }
 
                     foreach ($n2->submenus as $n3) {
-                        if ($esRutaActiva($n3->ruta, $n3->url, $currentRoute, $currentUrl)) {
-                            $seleccion['nivel1'] = $n1->id;
-                            $seleccion['nivel2'] = $n2->id;
-                            $seleccion['nivel3'] = $n3->id;
+                        $p3 = $evaluarRuta($n3->ruta, $n3->url);
+                        if ($p3 > $mejorPuntaje) {
+                            $mejorPuntaje = $p3;
+                            $seleccion = ['nivel1' => $n1->id, 'nivel2' => $n2->id, 'nivel3' => $n3->id, 'nivel4' => null];
                         }
 
                         foreach ($n3->submenus as $n4) {
-                            if ($esRutaActiva($n4->ruta, $n4->url, $currentRoute, $currentUrl)) {
-                                $seleccion['nivel1'] = $n1->id;
-                                $seleccion['nivel2'] = $n2->id;
-                                $seleccion['nivel3'] = $n3->id;
-                                $seleccion['nivel4'] = $n4->id;
+                            $p4 = $evaluarRuta($n4->ruta, $n4->url);
+                            if ($p4 > $mejorPuntaje) {
+                                $mejorPuntaje = $p4;
+                                $seleccion = ['nivel1' => $n1->id, 'nivel2' => $n2->id, 'nivel3' => $n3->id, 'nivel4' => $n4->id];
                             }
                         }
                     }
                 }
+                if ($mejorPuntaje === 2)
+                    break;
             }
 
             $view->with([
