@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MenuSeeder::class,
 
-            UnidadNegocioSeeder::class,
+            /*UnidadNegocioSeeder::class,
             SedesYAreasSeeder::class,
             GrupoProyectoSeeder::class,
             ProyectoSeeder::class,
@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
             TicketArchivoSeeder::class,
             TicketHistorialSeeder::class,
             TicketDerivadoSeeder::class,
-            TicketEmailSeeder::class,
+            TicketEmailSeeder::class,*/
         ]);
     }
 }

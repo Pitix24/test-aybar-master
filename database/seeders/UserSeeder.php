@@ -64,11 +64,11 @@ class UserSeeder extends Seeder
         $this->command->info('Creando clientes específicos...');
 
         // 4. Clientes
-        $clientes = User::factory(50)->cliente()->create();
+        /*$clientes = User::factory(50)->cliente()->create();
 
         foreach ($clientes as $cliente) {
             $this->createRelatedData($cliente);
-        }
+        }*/
 
         // 5. Admins
         $admins = User::factory(20)->admin()->create();
