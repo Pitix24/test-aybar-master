@@ -178,7 +178,7 @@ class RolesYPermisosSeeder extends Seeder
 
         // Supervisor ATC: Todos los permisos de Atención al Cliente
         $supervisor_atc = Role::findByName('supervisor-atc');
-        $permisosATC = Permission::where('module', 'Atención al Cliente')->get();
+        $permisosATC = Permission::where('module', 'Módulo ATC')->get();
         $supervisor_atc->syncPermissions($permisosATC);
         $this->command->info("✓ Supervisor ATC: {$permisosATC->count()} permisos");
 

@@ -43,7 +43,7 @@ class LayoutErpServiceProvider extends ServiceProvider
                     $tienePermiso = !$item->permiso || $user->can($item->permiso);
 
                     // El item se muestra si:
-                    // Tiene permiso directo Y (si tiene submenús, alguno sobrevivió)
+                    // Tiene permiso directo
                     if ($tienePermiso) {
                         $item->setRelation('submenus', collect($submenusFiltrados));
 
@@ -52,11 +52,6 @@ class LayoutErpServiceProvider extends ServiceProvider
                             continue;
                         }
 
-                        $resultado[] = $item;
-                    }
-                    // Caso especial: si el item principal no tiene permiso pero sus hijos sí
-                    elseif (!empty($submenusFiltrados)) {
-                        $item->setRelation('submenus', collect($submenusFiltrados));
                         $resultado[] = $item;
                     }
                 }
