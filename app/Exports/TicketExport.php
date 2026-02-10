@@ -23,6 +23,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
     protected $fecha_fin;
     protected $con_derivados;
     protected $con_citas;
+    protected $con_hijos;
 
     public function __construct(
         $buscar,
@@ -38,7 +39,8 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
         $fecha_inicio,
         $fecha_fin,
         $con_derivados,
-        $con_citas
+        $con_citas,
+        $con_hijos
     ) {
         $this->buscar = $buscar;
         $this->unidad_negocio_id = $unidad_negocio_id;
@@ -54,6 +56,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
         $this->fecha_fin = $fecha_fin;
         $this->con_derivados = $con_derivados;
         $this->con_citas = $con_citas;
+        $this->con_hijos = $con_hijos;
     }
 
     public function collection()
@@ -83,6 +86,8 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
             ->when($this->con_derivados === '0', fn($q) => $q->whereDoesntHave('derivados'))
             ->when($this->con_citas === '1', fn($q) => $q->whereHas('citas'))
             ->when($this->con_citas === '0', fn($q) => $q->whereDoesntHave('citas'))
+            ->when($this->con_hijos === '1', fn($q) => $q->where('ticket_padre_id', '!=', null))
+            ->when($this->con_hijos === '0', fn($q) => $q->where('ticket_padre_id', null))
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($item, $index) {

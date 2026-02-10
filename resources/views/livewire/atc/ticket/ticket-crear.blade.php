@@ -143,16 +143,8 @@
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Estado Inicial <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
-                            <select wire:model.live="estado_ticket_id"
-                                class="@error('estado_ticket_id') input-error @enderror">
-                                <option value="">Seleccionar...</option>
-                                @foreach($estados as $es)
-                                    <option value="{{ $es->id }}">{{ $es->nombre }}</option>
-                                @endforeach
-                            </select>
-                            @error('estado_ticket_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            <label>Estado</label>
+                            <input type="text" value="Nuevo" disabled>
                         </div>
                     </div>
 
@@ -175,6 +167,7 @@
                     @if (!empty($lotes_agregados))
                         <div class="g_margin_bottom_10">
                             <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+
                             <div class="g_contenedor_tabla">
                                 <table class="g_tabla">
                                     <thead>

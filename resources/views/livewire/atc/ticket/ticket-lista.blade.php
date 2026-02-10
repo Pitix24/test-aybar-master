@@ -132,6 +132,15 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Hijos</label>
+                    <select wire:model.live="con_hijos">
+                        <option value="">Todos</option>
+                        <option value="1">Con hijos</option>
+                        <option value="0">Sin hijos</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Fecha inicio</label>
                     <input type="date" wire:model.live="fecha_inicio">
                 </div>

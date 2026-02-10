@@ -52,7 +52,6 @@ class TicketCrear extends Component
     public $unidades_negocios = [], $unidad_negocio_id = '';
     public $proyectos = [], $proyecto_id = '';
 
-    public $estados = [], $estado_ticket_id = '';
     public $prioridades = [], $prioridad_ticket_id = '';
 
     public $searchUser = '';
@@ -72,7 +71,6 @@ class TicketCrear extends Component
             'gestor_id' => 'nullable',
             'asunto_inicial' => 'required|min:5|max:255',
             'descripcion_inicial' => 'required|min:10',
-            'estado_ticket_id' => 'required|exists:estado_tickets,id',
             'prioridad_ticket_id' => 'required|exists:prioridad_tickets,id',
             'ticket_padre_id' => 'nullable|exists:tickets,id',
             'selectedParticipants' => 'nullable|array',
@@ -90,7 +88,20 @@ class TicketCrear extends Component
     public function mount($ticketPadre = null)
     {
         if ($ticketPadre) {
-            $this->ticketPadre = Ticket::findOrFail($ticketPadre);
+            // Si ya es una instancia de Ticket (Route Model Binding)
+            if ($ticketPadre instanceof Ticket) {
+                $this->ticketPadre = $ticketPadre;
+            }
+            // Si es un array (a veces Livewire pasa los parámetros así)
+            elseif (is_array($ticketPadre)) {
+                $id = $ticketPadre['id'] ?? reset($ticketPadre);
+                $this->ticketPadre = Ticket::findOrFail($id);
+            }
+            // Si es un ID (string o int)
+            else {
+                $this->ticketPadre = Ticket::findOrFail($ticketPadre);
+            }
+
             $this->ticket_padre_id = $this->ticketPadre->id;
             $this->unidad_negocio_id = $this->ticketPadre->unidad_negocio_id;
             $this->proyecto_id = $this->ticketPadre->proyecto_id;
@@ -109,19 +120,17 @@ class TicketCrear extends Component
         if ($user->areas()->exists()) {
             $this->area_id = $user->areas()->orderBy('area_user.created_at')->value('areas.id');
         } else {
-            $this->area_id = Area::orderBy('id')->value('id');
+            $this->area_id = Area::where('activo', true)->orderBy('id')->value('id');
         }
 
-        // Cargar catálogos
-        $this->areas = Area::all();
-        $this->canales = Canal::all();
-        $this->unidades_negocios = UnidadNegocio::all();
-        $this->estados = EstadoTicket::all();
-        $this->prioridades = PrioridadTicket::all();
+        // Cargar catálogos activos
+        $this->areas = Area::where('activo', true)->orderBy('nombre')->get();
+        $this->canales = Canal::where('activo', true)->orderBy('nombre')->get();
+        $this->unidades_negocios = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
+        $this->prioridades = PrioridadTicket::where('activo', true)->get();
 
         // Valores por defecto
         if (!$this->ticket_padre_id) {
-            $this->estado_ticket_id = $this->estados->firstWhere('nombre', 'Abierto')?->id ?? $this->estados->first()?->id;
             $this->prioridad_ticket_id = $this->prioridades->firstWhere('nombre', 'Media')?->id ?? $this->prioridades->first()?->id;
         }
 
@@ -147,8 +156,11 @@ class TicketCrear extends Component
 
     public function loadProyectos()
     {
-        if (!is_null($this->unidad_negocio_id)) {
-            $this->proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)->get();
+        if ($this->unidad_negocio_id) {
+            $this->proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)
+                ->where('activo', true)
+                ->orderBy('nombre')
+                ->get();
         }
     }
 
@@ -213,8 +225,11 @@ class TicketCrear extends Component
 
     public function loadSubTipoSolicitudes()
     {
-        if (!is_null($this->tipo_solicitud_id)) {
-            $this->sub_tipos_solicitudes = SubTipoSolicitud::where('tipo_solicitud_id', $this->tipo_solicitud_id)->get();
+        if ($this->tipo_solicitud_id) {
+            $this->sub_tipos_solicitudes = SubTipoSolicitud::where('tipo_solicitud_id', $this->tipo_solicitud_id)
+                ->where('activo', true)
+                ->orderBy('nombre')
+                ->get();
         }
     }
 
@@ -337,6 +352,8 @@ class TicketCrear extends Component
         try {
             DB::beginTransaction();
 
+            $estadoAbiertoId = EstadoTicket::id(EstadoTicket::NUEVO);
+
             $ticket = Ticket::create([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'proyecto_id' => $this->proyecto_id,
@@ -346,7 +363,7 @@ class TicketCrear extends Component
                 'tipo_solicitud_id' => $this->tipo_solicitud_id,
                 'sub_tipo_solicitud_id' => $this->sub_tipo_solicitud_id ?: null,
                 'canal_id' => $this->canal_id,
-                'estado_ticket_id' => $this->estado_ticket_id,
+                'estado_ticket_id' => $estadoAbiertoId,
                 'prioridad_ticket_id' => $this->prioridad_ticket_id,
                 'gestor_id' => $this->gestor_id ?: null,
                 'asunto_inicial' => $this->asunto_inicial,

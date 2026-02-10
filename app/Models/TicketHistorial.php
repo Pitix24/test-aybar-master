@@ -25,4 +25,9 @@ class TicketHistorial extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function usuarioHistorial()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -22,8 +22,20 @@ class EstadoTicket extends Model
         'activo' => 'boolean',
     ];
 
+    public const NUEVO = 'Nuevo';
+    public const EN_GESTION = 'En Gestión';
+    public const DERIVADO = 'Derivado';
+    public const EN_ESPERA_CLIENTE = 'En Espera Cliente';
+    public const ATENDIDO = 'Atendido';
+    public const CERRADO = 'Cerrado';
+
     public function tickets()
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public static function id(string $nombre): int
+    {
+        return static::where('nombre', $nombre)->value('id');
     }
 }

@@ -75,6 +75,9 @@ class TicketLista extends Component
     public $con_citas = '';
 
     #[Url]
+    public $con_hijos = '';
+
+    #[Url]
     public $perPage = 20;
 
     public $estados = [];
@@ -155,6 +158,7 @@ class TicketLista extends Component
                 'fecha_fin',
                 'con_derivados',
                 'con_citas',
+                'con_hijos',
                 'perPage',
             ])
         ) {
@@ -179,6 +183,7 @@ class TicketLista extends Component
             'fecha_fin',
             'con_derivados',
             'con_citas',
+            'con_hijos',
         ]);
         $this->perPage = 20;
         $this->resetPage();
@@ -203,7 +208,8 @@ class TicketLista extends Component
                 $this->fecha_inicio,
                 $this->fecha_fin,
                 $this->con_derivados,
-                $this->con_citas
+                $this->con_citas,
+                $this->con_hijos,
             ),
             'tickets.xlsx'
         );
@@ -258,6 +264,16 @@ class TicketLista extends Component
                 $this->con_citas === '0',
                 fn($q) =>
                 $q->whereDoesntHave('citas')
+            )
+            ->when(
+                $this->con_hijos === '1',
+                fn($q) =>
+                $q->where('ticket_padre_id', '!=', null)
+            )
+            ->when(
+                $this->con_hijos === '0',
+                fn($q) =>
+                $q->where('ticket_padre_id', null)
             )
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
