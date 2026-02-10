@@ -9,7 +9,6 @@ use App\Models\UnidadNegocio;
 use App\Models\Proyecto;
 use App\Models\User;
 use App\Models\Area;
-use App\Models\TipoSolicitud;
 use App\Models\SubTipoSolicitud;
 use App\Models\Canal;
 use App\Models\EstadoTicket;
@@ -21,65 +20,64 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
+#[Title('Crear Ticket')]
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 class TicketCrear extends Component
 {
-    // Ticket Padre
-    public $ticketPadre;
+    public Ticket $ticketPadre;
     public ?int $ticket_padre_id = null;
+    public ?Area $area_seleccionada = null;
 
-    // Datos del Ticket
-    public $unidad_negocio_id = '';
-    public $proyecto_id = '';
-    public $cliente_id = ''; // ID de usuario si existe
-    public $area_id = '';
-    public $tipo_solicitud_id = '';
-    public $sub_tipo_solicitud_id = '';
-    public $canal_id = '';
-    public $estado_ticket_id = 1; // Por defecto el primero
-    public $prioridad_ticket_id = 3; // Por defecto Media
-    public $gestor_id = '';
+    public $areas = [], $area_id = "";
+    public $tipos_solicitudes = [], $tipo_solicitud_id = "";
+    public $sub_tipos_solicitudes = [], $sub_tipo_solicitud_id = "";
+    public $canales = [], $canal_id = "";
+    public $cliente, $cliente_id = "", $origen = "";
+
+    public $gestores = [], $gestor_id = "";
     public $asunto_inicial = '';
     public $descripcion_inicial = '';
-
-    // Cliente lookup y datos adicionales
     public $dni = '';
-    public $nombres = '';
-    public $origen = ''; // slin, antiguo
-    public $cliente; // Objeto cliente/usuario
-    public $informaciones;
-
-    // Lotes
     public $lote_id = '';
     public $lotes_agregados = [];
 
-    // Datos Participantes
+    public $unidades_negocios = [], $unidad_negocio_id = '';
+    public $proyectos = [], $proyecto_id = '';
+
+    public $estados = [], $estado_id = '';
+    public $prioridades = [], $prioridad_id = '';
+
     public $searchUser = '';
-    public $selectedParticipants = []; // IDs de usuarios
+    public $selectedParticipants = [];
+
+    public Collection $informaciones;
 
     protected function rules()
     {
         $rules = [
-            'asunto_inicial' => 'required|min:5|max:255',
-            'descripcion_inicial' => 'required|min:10',
             'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
             'proyecto_id' => 'required|exists:proyectos,id',
             'area_id' => 'required|exists:areas,id',
             'tipo_solicitud_id' => 'required',
             'sub_tipo_solicitud_id' => 'nullable',
             'canal_id' => 'required|exists:canals,id',
+            'gestor_id' => 'nullable',
+            'asunto_inicial' => 'required|min:5|max:255',
+            'descripcion_inicial' => 'required|min:10',
             'estado_ticket_id' => 'required|exists:estado_tickets,id',
             'prioridad_ticket_id' => 'required|exists:prioridad_tickets,id',
-            'gestor_id' => 'nullable',
             'ticket_padre_id' => 'nullable|exists:tickets,id',
             'selectedParticipants' => 'nullable|array',
             'selectedParticipants.*' => 'exists:users,id',
         ];
 
         if (!$this->ticket_padre_id) {
-            $rules['dni'] = 'required';
+            $rules['cliente_id'] = 'required';
         }
 
         return $rules;
@@ -87,32 +85,95 @@ class TicketCrear extends Component
 
     public function mount($ticketPadre = null)
     {
-        $this->informaciones = collect();
-
         if ($ticketPadre) {
             $this->ticketPadre = Ticket::findOrFail($ticketPadre);
             $this->ticket_padre_id = $this->ticketPadre->id;
             $this->unidad_negocio_id = $this->ticketPadre->unidad_negocio_id;
             $this->proyecto_id = $this->ticketPadre->proyecto_id;
-            $this->cliente_id = $this->ticketPadre->cliente_id;
-            $this->dni = $this->ticketPadre->dni;
-            $this->nombres = $this->ticketPadre->nombres;
-            $this->origen = $this->ticketPadre->origen;
             $this->canal_id = $this->ticketPadre->canal_id;
-            $this->asunto_inicial = "RE: " . $this->ticketPadre->asunto_inicial;
+            $this->dni = $this->ticketPadre->dni;
+            $this->origen = $this->ticketPadre->origen;
+            $this->loadProyectos();
         }
 
-        // Seleccionar área por defecto del usuario
         $user = auth()->user();
+
         if ($user->areas()->exists()) {
             $this->area_id = $user->areas()->orderBy('area_user.created_at')->value('areas.id');
         } else {
             $this->area_id = Area::orderBy('id')->value('id');
         }
 
+        $this->areas = Area::all();
+        $this->canales = Canal::all();
+        $this->unidades_negocios = UnidadNegocio::all();
+        $this->estados = EstadoTicket::all();
+        $this->prioridades = PrioridadTicket::all();
+        $this->informaciones = collect();
+
         if ($this->area_id) {
             $this->cargarDatosArea($this->area_id);
         }
+    }
+
+    public function updatedUnidadNegocioId($value)
+    {
+        $this->proyecto_id = '';
+        if ($value) {
+            $this->loadProyectos();
+        }
+    }
+
+    public function loadProyectos()
+    {
+        if (!is_null($this->unidad_negocio_id)) {
+            $this->proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)->get();
+        }
+    }
+
+    public function cargarDatosArea($areaId)
+    {
+        $area = Area::find($areaId);
+
+        if (!$area) {
+            $this->area_seleccionada = null;
+            $this->tipos_solicitudes = collect();
+            $this->gestores = collect();
+            $this->gestor_id = null;
+            $this->tipo_solicitud_id = null;
+            return;
+        }
+
+        $this->area_seleccionada = $area;
+
+        $this->tipos_solicitudes = $area->tiposSolicitud()
+            ->where('activo', true)
+            ->get();
+
+        $this->gestores = $area->users()
+            ->where('activo', true)
+            ->withPivot('is_principal')
+            ->orderByDesc('area_user.is_principal')
+            ->orderBy('users.name')
+            ->get();
+
+        $user = Auth::user();
+
+        if ($this->gestores->contains('id', $user->id)) {
+            $this->gestor_id = $user->id;
+        } else {
+            $principal = $this->gestores
+                ->first(fn($u) => (bool) $u->pivot->is_principal);
+
+            if ($principal) {
+                $this->gestor_id = $principal->id;
+            } else {
+                $this->gestor_id = $this->gestores->first()?->id;
+            }
+        }
+
+        $this->tipo_solicitud_id = '';
+        $this->sub_tipo_solicitud_id = '';
     }
 
     public function updatedAreaId($value)
@@ -120,39 +181,20 @@ class TicketCrear extends Component
         $this->cargarDatosArea($value);
     }
 
-    public function cargarDatosArea($areaId)
-    {
-        $area = Area::find($areaId);
-        if (!$area)
-            return;
-
-        $gestoresDisp = $area->users()
-            ->where('activo', true)
-            ->withPivot('is_principal')
-            ->orderByDesc('area_user.is_principal')
-            ->orderBy('users.name')
-            ->get();
-
-        $user = auth()->user();
-        if ($gestoresDisp->contains('id', $user->id)) {
-            $this->gestor_id = $user->id;
-        } else {
-            $principal = $gestoresDisp->first(fn($u) => (bool) $u->pivot->is_principal);
-            $this->gestor_id = $principal ? $principal->id : $gestoresDisp->first()?->id;
-        }
-
-        $this->tipo_solicitud_id = '';
-        $this->sub_tipo_solicitud_id = '';
-    }
-
-    public function updatedUnidadNegocioId($value)
-    {
-        $this->proyecto_id = '';
-    }
-
     public function updatedTipoSolicitudId($value)
     {
         $this->sub_tipo_solicitud_id = '';
+
+        if ($value) {
+            $this->loadSubTipoSolicitudes();
+        }
+    }
+
+    public function loadSubTipoSolicitudes()
+    {
+        if (!is_null($this->tipo_solicitud_id)) {
+            $this->sub_tipos_solicitudes = SubTipoSolicitud::where('tipo_solicitud_id', $this->tipo_solicitud_id)->get();
+        }
     }
 
     public function buscarCliente(ConsultaClienteService $service)
@@ -311,20 +353,6 @@ class TicketCrear extends Component
 
     public function render()
     {
-        $unidades = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
-        $proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)->where('activo', true)->orderBy('nombre')->get();
-        $areas = Area::where('activo', true)->orderBy('nombre')->get();
-
-        $areaSel = Area::find($this->area_id);
-        $tipos = $areaSel ? $areaSel->tiposSolicitud()->where('activo', true)->get() : collect();
-        $subtipos = SubTipoSolicitud::where('tipo_solicitud_id', $this->tipo_solicitud_id)->where('activo', true)->orderBy('nombre')->get();
-
-        $canales = Canal::where('activo', true)->orderBy('nombre')->get();
-        $estados = EstadoTicket::where('activo', true)->get();
-        $prioridades = PrioridadTicket::where('activo', true)->get();
-
-        $gestores = $areaSel ? $areaSel->users()->where('activo', true)->orderBy('users.name')->get() : collect();
-
         $participantesDisponibles = [];
         if (strlen($this->searchUser) > 2) {
             $participantesDisponibles = User::where('activo', true)
@@ -336,19 +364,7 @@ class TicketCrear extends Component
 
         $participantesSeleccionados = User::whereIn('id', $this->selectedParticipants)->get();
 
-        return view('livewire.atc.ticket.ticket-crear', compact(
-            'unidades',
-            'proyectos',
-            'areas',
-            'tipos',
-            'subtipos',
-            'canales',
-            'estados',
-            'prioridades',
-            'gestores',
-            'participantesDisponibles',
-            'participantesSeleccionados'
-        ));
+        return view('livewire.atc.ticket.ticket-crear');
     }
 
     public function placeholder()
