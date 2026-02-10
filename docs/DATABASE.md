@@ -121,7 +121,23 @@ php artisan make:livewire atc.ticket-email.ticket-email-lista --class
 php artisan make:livewire atc.ticket-email.ticket-email-crear --class
 php artisan make:livewire atc.ticket-email.ticket-email-editar --class
 
-php artisan make:model Menu -mfsc ✅
-php artisan make:livewire erp.menu.menu-lista --class ✅
-php artisan make:livewire erp.menu.menu-crear --class ✅
-php artisan make:livewire erp.menu.menu-editar --class ✅
+php artisan make:model Menu -mfsc
+php artisan make:livewire erp.menu.menu-lista --class
+php artisan make:livewire erp.menu.menu-crear --class
+php artisan make:livewire erp.menu.menu-editar --class
+
+php artisan make:model MotivoCita -mfsc
+php artisan make:livewire atc.motivo-cita.motivo-cita-lista --class
+php artisan make:livewire atc.motivo-cita.motivo-cita-crear --class
+php artisan make:livewire atc.motivo-cita.motivo-cita-editar --class
+
+php artisan make:model EstadoCita -mfsc
+php artisan make:livewire atc.estado-cita.estado-cita-lista --class
+php artisan make:livewire atc.estado-cita.estado-cita-crear --class
+php artisan make:livewire atc.estado-cita.estado-cita-editar --class
+
+php artisan make:model Cita -mfsc
+php artisan make:livewire atc.cita.cita-lista --class
+php artisan make:livewire atc.cita.cita-crear --class
+php artisan make:livewire atc.cita.cita-editar --class
+php artisan make:livewire atc.cita.cita-calendario --class

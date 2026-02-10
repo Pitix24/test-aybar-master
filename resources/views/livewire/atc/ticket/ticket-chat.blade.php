@@ -7,9 +7,7 @@
                 <i class="fa-solid fa-comments"></i>
                 Mensajes del Ticket #{{ $ticket->id }}
                 @if($es_interno)
-                    <span
-                        style="font-size: 0.7rem; background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 10px; border: 1px solid #f59e0b;">Nota
-                        Interna</span>
+                    <span>Nota Interna</span>
                 @endif
             </h3>
             <button class="g_chat_close" wire:click="toggle">
@@ -19,34 +17,30 @@
 
         <div class="g_chat_body" id="chat-body">
             @forelse($mensajes as $msg)
-                @php
-                    $isMine = $msg->user_id === auth()->id();
-                @endphp
-                <div
-                    class="g_message {{ $isMine ? 'g_message_sent' : 'g_message_received' }} {{ $msg->es_interno ? 'g_message_internal' : '' }}">
-                    <div class="g_message_user_info">
-                        <strong>{{ $msg->user->name }}</strong>
-                        @if($msg->es_interno) <i class="fa-solid fa-lock" title="Solo visible para admin"></i> @endif
-                    </div>
-                    <div class="g_message_content">
-                        {{ $msg->mensaje }}
+                        @php
+                            $isMine = $msg->user_id === auth()->id();
+                        @endphp
+                        <div
+                            class="g_message {{ $isMine ? 'g_message_sent' : 'g_message_received' }} {{ $msg->es_interno ? 'g_message_internal' : '' }}">
+                            <div class="g_message_user_info">
+                                <strong>{{ $msg->user->name }}</strong>
+                                @if($msg->es_interno) <i class="fa-solid fa-lock" title="Solo visible para admin"></i> @endif
+                            </div>
+                            <div class="g_message_content">
+                                {!! preg_replace(
+                    '~(https?://[^\s<]+)~i',
+                    '<a href="$1" target="_blank" style="text-decoration: underline; color: inherit; font-weight: bold;">$1</a>',
+                    e($msg->mensaje)
+                ) !!}
 
-                        @foreach($msg->archivos as $archivo)
-                            <a href="{{ Storage::url($archivo->path) }}" target="_blank" class="g_chat_attachment_preview"
-                                style="color: inherit; text-decoration: none;">
-                                <i class="fa-solid fa-paperclip"></i>
-                                <span>{{ $archivo->nombre_original }}</span>
-                            </a>
-                        @endforeach
-
-                        <div class="g_message_time">
-                            {{ $msg->created_at->format('H:i') }}
+                                <div class="g_message_time">
+                                    {{ $msg->created_at->format('H:i') }}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
             @empty
                 <div class="g_vacio">
-                    <i class="fa-solid fa-message-slash" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 10px;"></i>
+                    <i class="fa-solid fa-message-slash"></i>
                     <p>No hay mensajes aún. Comienza la conversación.</p>
                 </div>
             @endforelse
@@ -59,25 +53,11 @@
                         oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
 
                     <div class="g_chat_actions">
-                        <label class="g_chat_action_btn" title="Adjuntar archivo">
-                            <i class="fa-solid fa-paperclip"></i>
-                            <input type="file" wire:model="adjunto" style="display: none;">
-                        </label>
-
-                        <button class="g_chat_action_btn {{ $es_interno ? 'text-orange-500' : '' }}"
+                        <button class="g_chat_action_btn {{ $es_interno ? 'g_chat_action_btn_active' : '' }}"
                             wire:click="$toggle('es_interno')"
                             title="{{ $es_interno ? 'Desactivar nota interna' : 'Activar como nota interna' }}">
                             <i class="fa-solid {{ $es_interno ? 'fa-lock' : 'fa-lock-open' }}"></i>
                         </button>
-
-                        @if($adjunto)
-                            <div style="font-size: 0.75rem; color: #3b82f6; display: flex; align-items: center; gap: 5px;">
-                                <i class="fa-solid fa-file-circle-check"></i>
-                                {{ Str::limit($adjunto->getClientOriginalName(), 15) }}
-                                <i class="fa-solid fa-times" style="cursor: pointer; color: #ef4444;"
-                                    wire:click="$set('adjunto', null)"></i>
-                            </div>
-                        @endif
                     </div>
                 </div>
 
