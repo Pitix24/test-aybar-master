@@ -7,12 +7,7 @@
         message="Guardando cambios..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Editar ticket @if ($ticket->padre)
-                asociado al ticket
-                <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}" target="_blank">#{{
-            $ticket->padre->id }}</a>
-        @endif
-        </h2>
+        <h2>Editar ticket</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_light">
@@ -21,6 +16,10 @@
 
             <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton g_boton_primary">
                 Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
+
+            <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton g_boton_secondary">
+                Derivar <i class="fa-solid fa-route"></i>
+            </a>
 
             <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarTicket()">
                 Eliminar <i class="fa-solid fa-trash-can"></i>
@@ -51,6 +50,12 @@
                             :class="activeTab === 'participantes' ? 'g_tab_active' : 'g_tab_inactive'"
                             class="g_tab_boton">
                             <i class="fa-solid fa-users"></i> Participantes
+                        </button>
+
+                        <button type="button" @click="activeTab = 'derivaciones'"
+                            :class="activeTab === 'derivaciones' ? 'g_tab_active' : 'g_tab_inactive'"
+                            class="g_tab_boton">
+                            <i class="fa-solid fa-route"></i> Derivaciones
                         </button>
 
                         <button type="button" @click="activeTab = 'historial'"
@@ -158,7 +163,6 @@
                     @endif
                 </div>
 
-                <!-- TAB CLIENTE -->
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_6">
@@ -190,7 +194,6 @@
                     </div>
                 </div>
 
-                <!-- TAB PARTICIPANTES -->
                 <div x-show="activeTab === 'participantes'" x-transition class="g_tab_content">
                     <div class="g_margin_bottom_10">
                         <label for="searchUser">Buscar y agregar participantes</label>
@@ -248,6 +251,40 @@
                     </div>
                 </div>
 
+                <div x-show="activeTab === 'derivaciones'" x-transition class="g_tab_content">
+                    <div class="g_contenedor_tabla">
+                        <table class="g_tabla">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>De Área</th>
+                                    <th>A Área</th>
+                                    <th>Deriva</th>
+                                    <th>Recibe</th>
+                                    <th>Motivo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($derivados as $der)
+                                    <tr wire:key="der-{{ $der->id }}">
+                                        <td class="g_negrita">{{ $der->created_at->format('d/m H:i') }}</td>
+                                        <td>{{ $der->deArea->nombre ?? 'N/A' }}</td>
+                                        <td><span class="g_badge g_badge_primary">{{ $der->aArea->nombre ?? 'N/A' }}</span>
+                                        </td>
+                                        <td><small>{{ $der->usuarioDeriva->name ?? 'N/A' }}</small></td>
+                                        <td><small>{{ $der->usuarioRecibe->name ?? 'N/A' }}</small></td>
+                                        <td style="font-size: 0.85rem;">{{ $der->motivo ?? 'Sin motivo' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="g_celda_vacia">No hay derivaciones registradas.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div x-show="activeTab === 'historial'" x-transition class="g_tab_content">
                     <div class="g_contenedor_tabla">
                         <table class="g_tabla">
@@ -294,7 +331,7 @@
             </form>
         </div>
 
-        <div class="g_columna_4">
+        <div class="g_columna_4 g_gap_pagina">
             <div class="g_panel">
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-cloud-arrow-up"></i> Nuevo Adjunto</h4>
                 <div class="formulario">
@@ -387,8 +424,37 @@
                 </div>
             </div>
 
+            @if ($ticket->padre)
+                <div class="g_panel">
+                    <h4 class="g_panel_titulo">Ticket Principal (Padre)</h4>
+                    <div class="g_contenedor_tabla">
+                        <table class="g_tabla g_tabla_pequena">
+                            <thead>
+                                <tr>
+                                    <th>Ticket</th>
+                                    <th>Gestor</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="g_negrita">#{{ $ticket->padre->id }}</td>
+                                    <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
+                                    <td class="g_celda_centro">
+                                        <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}"
+                                            class="g_accion_editar" title="Ver Ticket Padre">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
             @if (!$ticket->hijos->isEmpty())
-                <div class="g_panel g_margin_top_20">
+                <div class="g_panel">
                     <h4 class="g_panel_titulo">Tickets Asociados (Hijos)</h4>
                     <div class="g_contenedor_tabla">
                         <table class="g_tabla g_tabla_pequena">

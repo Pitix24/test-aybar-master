@@ -12,6 +12,7 @@ use App\Livewire\Atc\SubTipoSolicitud\SubTipoSolicitudCrear;
 use App\Livewire\Atc\SubTipoSolicitud\SubTipoSolicitudEditar;
 use App\Livewire\Atc\SubTipoSolicitud\SubTipoSolicitudLista;
 use App\Livewire\Atc\Ticket\TicketCrear;
+use App\Livewire\Atc\Ticket\TicketDerivar;
 use App\Livewire\Atc\Ticket\TicketEditar;
 use App\Livewire\Atc\Ticket\TicketLista;
 use App\Livewire\Atc\TipoSolicitud\TipoSolicitudCrear;
@@ -76,5 +77,6 @@ Route::group(['middleware' => ['permission:ticket.ver']], function () {
             Route::get('/', TicketLista::class)->name('todo');
             Route::get('/crear/{ticketPadre?}', TicketCrear::class)->middleware('permission:ticket.crear')->name('crear');
             Route::get('/editar/{id}', TicketEditar::class)->middleware('permission:ticket.editar')->name('editar');
+            Route::get('/derivado/{id}', TicketDerivar::class)->name('derivar');
         });
 });

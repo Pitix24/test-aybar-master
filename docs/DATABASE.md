@@ -89,6 +89,7 @@ php artisan make:model Ticket -mfsc
 php artisan make:livewire atc.ticket.ticket-lista --class
 php artisan make:livewire atc.ticket.ticket-crear --class
 php artisan make:livewire atc.ticket.ticket-editar --class
+php artisan make:livewire atc.ticket.ticket-derivar --class
 
 php artisan make:model TicketParticipante -mfsc
 php artisan make:livewire atc.ticket-participante.ticket-participante-lista --class

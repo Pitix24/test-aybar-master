@@ -55,7 +55,7 @@ class TicketEditar extends Component
 
     public function mount($id)
     {
-        $this->ticket = Ticket::with(['hijos', 'usuariosParticipantes', 'cliente'])->findOrFail($id);
+        $this->ticket = Ticket::with(['hijos', 'padre.gestor', 'usuariosParticipantes', 'cliente'])->findOrFail($id);
 
         $this->email = $this->ticket->email;
         $this->celular = $this->ticket->celular;
@@ -252,6 +252,7 @@ class TicketEditar extends Component
             'participantesSeleccionados' => User::whereIn('id', $this->selectedParticipants)->get(),
             'participantesDisponibles' => $participantesDisponibles,
             'historial' => $this->ticket->historial()->with('usuarioHistorial')->latest()->get(),
+            'derivados' => $this->ticket->derivados()->with(['deArea', 'aArea', 'usuarioDeriva', 'usuarioRecibe'])->latest()->get(),
         ]);
     }
 
