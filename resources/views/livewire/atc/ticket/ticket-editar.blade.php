@@ -7,7 +7,7 @@
     <div class="g_panel cabecera_titulo_pagina">
         <div>
             <h2>Ticket #{{ $ticket->id }}</h2>
-            <p style="margin: 0; color: #64748b;">Creado por: {{ $ticket->creadoPor?->name ?? 'Sistema' }} el
+            <p style="margin: 0; color: #64748b;">Creado por: <span class="g_negrita">{{ $ticket->creadoPor?->name ?? 'Sistema' }}</span> el
                 {{ $ticket->created_at->format('d/m/Y H:i') }}
             </p>
         </div>
@@ -15,6 +15,16 @@
             <button type="button" class="g_boton g_boton_primary" wire:click="$dispatch('toggleChat')">
                 Mensajes <i class="fa-solid fa-comments"></i>
             </button>
+
+            <a href="{{ route('erp.ticket.vista.crear', ['ticketPadre' => $ticket->id]) }}" class="g_boton g_boton_success">
+                Nuevo Hijo <i class="fa-solid fa-square-plus"></i>
+            </a>
+
+            @if ($ticket->padre)
+                <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}" class="g_boton g_boton_secondary">
+                    Ir al Padre #{{ $ticket->padre->id }} <i class="fa-solid fa-arrow-up"></i>
+                </a>
+            @endif
 
             <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_light">
                 Lista <i class="fa-solid fa-list"></i></a>
@@ -31,108 +41,209 @@
     <div class="g_fila">
         <!-- COLUMNA IZQUIERDA: FORMULARIO Y TABS -->
         <div class="g_columna_8">
-            <div class="g_panel" style="padding: 0;">
-                <div class="tabs_contenedor">
-                    <button wire:click="$set('tab_activa', 'ticket')"
-                        class="tab_boton {{ $tab_activa == 'ticket' ? 'activa' : '' }}">
-                        <i class="fa-solid fa-circle-info"></i> Información
-                    </button>
-                    <button wire:click="$set('tab_activa', 'historial')"
-                        class="tab_boton {{ $tab_activa == 'historial' ? 'activa' : '' }}">
-                        <i class="fa-solid fa-clock-rotate-left"></i> Historial
-                    </button>
-                    <button wire:click="$set('tab_activa', 'adjuntos')"
-                        class="tab_boton {{ $tab_activa == 'adjuntos' ? 'activa' : '' }}">
-                        <i class="fa-solid fa-paperclip"></i> Adjuntos ({{ $archivos_existentes->count() }})
-                    </button>
+            <div class="g_panel" x-data="{ mainTab: '{{ $tab_activa }}' }">
+                <!-- NAVEGACIÓN PRINCIPAL (TABS) -->
+                <div class="g_tab_navegacion">
+                    <div class="g_tab_botones">
+                        <button type="button" @click="mainTab = 'ticket'; $wire.set('tab_activa', 'ticket')"
+                            :class="mainTab === 'ticket' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-circle-info"></i> Información
+                        </button>
+                        <button type="button" @click="mainTab = 'historial'; $wire.set('tab_activa', 'historial')"
+                            :class="mainTab === 'historial' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Historial
+                        </button>
+                        <button type="button" @click="mainTab = 'adjuntos'; $wire.set('tab_activa', 'adjuntos')"
+                            :class="mainTab === 'adjuntos' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-paperclip"></i> Adjuntos ({{ $archivos_existentes->count() }})
+                        </button>
+                    </div>
                 </div>
 
-                <div style="padding: 20px;">
+                <div class="g_tab_content">
                     <!-- TAB: INFORMACIÓN -->
-                    <div class="{{ $tab_activa == 'ticket' ? '' : 'g_oculto' }}">
-                        <form wire:submit="update" class="formulario">
-                            <div class="g_margin_bottom_15">
-                                <label for="asunto_inicial">Asunto <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
-                                <input type="text" id="asunto_inicial" wire:model.blur="asunto_inicial"
-                                    class="@error('asunto_inicial') input-error @enderror">
-                                @error('asunto_inicial') <p class="mensaje_error">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div class="g_margin_bottom_15">
-                                <label for="descripcion_inicial">Descripción <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
-                                <textarea id="descripcion_inicial" wire:model.blur="descripcion_inicial" rows="8"
-                                    class="@error('descripcion_inicial') input-error @enderror"></textarea>
-                                @error('descripcion_inicial') <p class="mensaje_error">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div class="g_fila">
-                                <div class="g_columna_6 g_margin_bottom_15">
-                                    <label>Unidad de Negocio</label>
-                                    <select wire:model.live="unidad_negocio_id">
-                                        @foreach($unidades as $u) <option value="{{ $u->id }}">{{ $u->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="g_columna_6 g_margin_bottom_15">
-                                    <label>Proyecto</label>
-                                    <select wire:model.live="proyecto_id">
-                                        @foreach($proyectos as $p) <option value="{{ $p->id }}">{{ $p->nombre }}
-                                        </option> @endforeach
-                                    </select>
+                    <div x-show="mainTab === 'ticket'" x-transition>
+                        <div x-data="{ subTab: 'general' }">
+                            <!-- SUB-TABS (Estilo Crear) -->
+                            <div class="g_tab_navegacion" style="margin-top: 0; background: #f8fafc; border-radius: 8px 8px 0 0;">
+                                <div class="g_tab_botones">
+                                    <button type="button" @click="subTab = 'general'"
+                                        :class="subTab === 'general' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                                        <i class="fa-solid fa-file-lines"></i> Requerimiento y Respuesta
+                                    </button>
+                                    <button type="button" @click="subTab = 'cliente'"
+                                        :class="subTab === 'cliente' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                                        <i class="fa-solid fa-user"></i> Datos del Solicitante
+                                    </button>
                                 </div>
                             </div>
 
-                            <div class="g_fila">
-                                <div class="g_columna_4 g_margin_bottom_15">
-                                    <label>Tipo Solicitud</label>
-                                    <select wire:model.live="tipo_solicitud_id">
-                                        @foreach($tipos as $t) <option value="{{ $t->id }}">{{ $t->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="g_columna_4 g_margin_bottom_15">
-                                    <label>Subtipo</label>
-                                    <select wire:model="sub_tipo_solicitud_id">
-                                        <option value="">General</option>
-                                        @foreach($subtipos as $st) <option value="{{ $st->id }}">{{ $st->nombre }}
-                                        </option> @endforeach
-                                    </select>
-                                </div>
-                                <div class="g_columna_4 g_margin_bottom_15">
-                                    <label>Canal</label>
-                                    <select wire:model="canal_id">
-                                        @foreach($canales as $c) <option value="{{ $c->id }}">{{ $c->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                            <form wire:submit="update" class="formulario" style="padding: 20px;">
+                                <!-- SUB-TAB: GENERAL -->
+                                <div x-show="subTab === 'general'" x-transition>
+                                    <div class="g_margin_bottom_15">
+                                        <label for="asunto_inicial">Asunto Inicial</label>
+                                        <input type="text" id="asunto_inicial" wire:model.blur="asunto_inicial"
+                                            class="@error('asunto_inicial') input-error @enderror">
+                                        @error('asunto_inicial') <p class="mensaje_error">{{ $message }}</p> @enderror
+                                    </div>
 
-                            <div class="formulario_botones">
-                                <button type="submit" class="g_boton g_boton_guardar">
-                                    <i class="fa-solid fa-pencil"></i> Guardar Cambios
-                                </button>
-                            </div>
-                        </form>
+                                    <div class="g_margin_bottom_15">
+                                        <label for="descripcion_inicial">Descripción Inicial</label>
+                                        <textarea id="descripcion_inicial" wire:model.blur="descripcion_inicial" rows="5"
+                                            class="@error('descripcion_inicial') input-error @enderror"></textarea>
+                                        @error('descripcion_inicial') <p class="mensaje_error">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <hr class="g_hr">
+
+                                    <div class="g_margin_bottom_15">
+                                        <label for="asunto_respuesta" style="color: var(--primary);">Asunto Respuesta (Cierre/Avance)</label>
+                                        <input type="text" id="asunto_respuesta" wire:model.blur="asunto_respuesta"
+                                            placeholder="Resumen de la solución o estado actual...">
+                                    </div>
+
+                                    <div class="g_margin_bottom_15">
+                                        <label for="descripcion_respuesta" style="color: var(--primary);">Descripción Detallada de Respuesta</label>
+                                        <textarea id="descripcion_respuesta" wire:model.blur="descripcion_respuesta" rows="6"
+                                            placeholder="Explique aquí la solución brindada o respuesta al cliente..."></textarea>
+                                    </div>
+
+                                    <div class="g_fila">
+                                        <div class="g_columna_6 g_margin_bottom_15">
+                                            <label>Unidad de Negocio</label>
+                                            <select wire:model.live="unidad_negocio_id">
+                                                @foreach($unidades as $u) <option value="{{ $u->id }}">{{ $u->nombre }}</option> @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="g_columna_6 g_margin_bottom_15">
+                                            <label>Proyecto</label>
+                                            <select wire:model.live="proyecto_id">
+                                                @foreach($proyectos as $p) <option value="{{ $p->id }}">{{ $p->nombre }}</option> @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="g_fila">
+                                        <div class="g_columna_4 g_margin_bottom_15">
+                                            <label>Tipo Solicitud</label>
+                                            <select wire:model.live="tipo_solicitud_id">
+                                                @foreach($tipos as $t) <option value="{{ $t->id }}">{{ $t->nombre }}</option> @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="g_columna_4 g_margin_bottom_15">
+                                            <label>Subtipo</label>
+                                            <select wire:model="sub_tipo_solicitud_id">
+                                                <option value="">General</option>
+                                                @foreach($subtipos as $st) <option value="{{ $st->id }}">{{ $st->nombre }}</option> @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="g_columna_4 g_margin_bottom_15">
+                                            <label>Canal de Origen</label>
+                                            <select wire:model="canal_id">
+                                                @foreach($canales as $c) <option value="{{ $c->id }}">{{ $c->nombre }}</option> @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    @if (!empty($lotes))
+                                        <div class="g_margin_top_10">
+                                            <label>Lotes Vinculados</label>
+                                            <div class="g_contenedor_tabla">
+                                                <table class="g_tabla g_tabla_pequena">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Razón Social</th>
+                                                            <th>Proyecto</th>
+                                                            <th>Mz./Lt.</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($lotes as $index => $l)
+                                                            <tr wire:key="lote-edit-{{ $index }}">
+                                                                <td>{{ $l['razon_social'] }}</td>
+                                                                <td>{{ $l['proyecto'] }}</td>
+                                                                <td>{{ $l['numero_lote'] }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- SUB-TAB: CLIENTE -->
+                                <div x-show="subTab === 'cliente'" x-transition>
+                                    <div class="g_fila">
+                                        <div class="g_columna_6 g_margin_bottom_15">
+                                            <label>DNI / RUC / CE</label>
+                                            <div style="display: flex; gap: 10px;">
+                                                <input type="text" wire:model="dni" disabled class="g_input_disabled" style="flex: 1;">
+                                                <a href="https://aybarcorp.com/slin/cliente/{{ $dni }}" target="_blank" class="g_boton g_boton_dark" title="Ver en SLIN">
+                                                    <i class="fa-solid fa-external-link"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="g_columna_6 g_margin_bottom_15">
+                                            <label>Origen Datos</label>
+                                            <span class="g_badge g_badge_light">{{ strtoupper($origen ?? 'N/A') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="g_margin_bottom_15">
+                                        <label>Nombre Completo / Razón Social</label>
+                                        <input type="text" wire:model="nombres" class="g_input">
+                                    </div>
+
+                                    <div class="g_fila">
+                                        <div class="g_columna_6 g_margin_bottom_15">
+                                            <label>Correo Electrónico</label>
+                                            <input type="email" wire:model="email" class="g_input" placeholder="ejemplo@correo.com">
+                                        </div>
+                                        <div class="g_columna_6 g_margin_bottom_15">
+                                            <label>Celular / Teléfono</label>
+                                            <input type="text" wire:model="celular" class="g_input" placeholder="999888777">
+                                        </div>
+                                    </div>
+
+                                    <div class="g_alerta g_alerta_info">
+                                        <i class="fa-solid fa-circle-info"></i> Estos datos son específicos para el contacto de este ticket.
+                                        @if($ticket->cliente)
+                                            <br>Propietario de la cuenta: <strong>{{ $ticket->cliente->name }}</strong>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="formulario_botones g_margin_top_20">
+                                    <button type="submit" class="g_boton g_boton_primary">
+                                        <i class="fa-solid fa-save"></i> Guardar Todos los Cambios
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     <!-- TAB: HISTORIAL -->
-                    <div class="{{ $tab_activa == 'historial' ? '' : 'g_oculto' }}">
+                    <div x-show="mainTab === 'historial'" x-transition style="padding: 20px;">
                         <div class="historial_lista">
-                            @foreach($historial as $h)
+                            @foreach($historialFull as $h)
                                 <div class="historial_item">
                                     <div class="historial_meta">
                                         <span class="historial_accion">{{ $h->accion }}</span>
                                         <span class="historial_fecha">{{ $h->created_at->format('d/m/Y H:i') }}</span>
                                     </div>
-                                    <p class="historial_detalle">{{ $h->detalle }}</p>
+                                    <div class="historial_detalle">
+                                        @foreach (explode(' | ', $h->detalle) as $linea)
+                                            <div>{{ $linea }}</div>
+                                        @endforeach
+                                    </div>
                                     <div class="historial_usuario">
                                         <i class="fa-solid fa-user-tag"></i> {{ $h->user?->name ?? 'Sistema' }}
                                     </div>
                                 </div>
                             @endforeach
-                            @if($historial->isEmpty())
+                            @if($historialFull->isEmpty())
                                 <div class="g_vacio">
                                     <p>No hay historial registrado.</p>
                                     <i class="fa-solid fa-timeline"></i>
@@ -142,7 +253,7 @@
                     </div>
 
                     <!-- TAB: ADJUNTOS -->
-                    <div class="{{ $tab_activa == 'adjuntos' ? '' : 'g_oculto' }}">
+                    <div x-show="mainTab === 'adjuntos'" x-transition style="padding: 20px;">
                         <div class="g_fila">
                             <!-- SUBIDOR -->
                             <div class="g_columna_5">
@@ -222,16 +333,16 @@
                                                 @endphp
                                                 <i class="fa-solid {{ $iconClass }}" style="font-size: 1.5rem;"></i>
                                                 <div style="display: flex; flex-direction: column;">
-                                                    <a href="{{ Storage::url($file->path) }}" target="_blank"
+                                                    <a href="{{ $file->url }}" target="_blank"
                                                         class="archivo_nombre">
-                                                        {{ $file->nombre_original }}
+                                                        {{ $file->descripcion ?? $file->nombre_original }}
                                                     </a>
                                                     <span class="archivo_meta">Subido por {{ $file->user?->name }} el
                                                         {{ $file->created_at->format('d/m/Y') }}</span>
                                                 </div>
                                             </div>
                                             <button type="button" class="archivo_eliminar"
-                                                wire:click="eliminarArchivo({{ $file->id }})" title="Eliminar archivo">
+                                                onclick="alertaEliminarArchivo({{ $file->id }})" title="Eliminar archivo">
                                                 <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         </div>
@@ -247,6 +358,44 @@
                     </div>
                 </div>
             </div>
+
+            <!-- TICKETS HIJOS (Si existen) -->
+            @if (!$ticket->hijos->isEmpty())
+                <div class="g_panel g_margin_top_20">
+                    <h4 class="g_panel_titulo">Tickets Derivados / Hijos</h4>
+                    <div class="g_contenedor_tabla">
+                        <table class="g_tabla">
+                            <thead>
+                                <tr>
+                                    <th># ID</th>
+                                    <th>Asunto</th>
+                                    <th>Área</th>
+                                    <th>Gestor</th>
+                                    <th>Estado</th>
+                                    <th class="g_celda_centro">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ticket->hijos as $hijo)
+                                    <tr>
+                                        <td class="g_negrita">#{{ $hijo->id }}</td>
+                                        <td>{{ $hijo->asunto_inicial }}</td>
+                                        <td>{{ $hijo->area?->nombre }}</td>
+                                        <td>{{ $hijo->gestor?->name }}</td>
+                                        <td>{!! $hijo->estado?->badge !!}</td>
+                                        <td class="g_celda_acciones g_celda_centro">
+                                            <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}"
+                                                class="g_accion_editar" title="Ver Ticket">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <!-- COLUMNA DERECHA -->
@@ -270,26 +419,17 @@
                 </div>
 
                 <div class="g_margin_bottom_15">
+                    <label>Área Responsable</label>
+                    <select wire:model.live="area_id">
+                        @foreach($areas as $ar) <option value="{{ $ar->id }}">{{ $ar->nombre }}</option> @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_15">
                     <label>Gestor Asignado</label>
                     <select wire:model="gestor_id">
                         <option value="">Sin asignar</option>
                         @foreach($gestores as $ge) <option value="{{ $ge->id }}">{{ $ge->name }}</option> @endforeach
-                    </select>
-                </div>
-
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;">
-
-                <div class="g_margin_bottom_15">
-                    <label>Cliente / Solicitante</label>
-                    <select wire:model="cliente_id">
-                        @foreach($clientes as $cl) <option value="{{ $cl->id }}">{{ $cl->name }}</option> @endforeach
-                    </select>
-                </div>
-
-                <div class="g_margin_bottom_15">
-                    <label>Área Responsable</label>
-                    <select wire:model="area_id">
-                        @foreach($areas as $ar) <option value="{{ $ar->id }}">{{ $ar->nombre }}</option> @endforeach
                     </select>
                 </div>
             </div>
@@ -353,6 +493,23 @@
                 }
             });
         }
+
+        window.alertaEliminarArchivo = function (id) {
+            Swal.fire({
+                title: '¿Eliminar Adjunto?',
+                text: "El archivo será borrado permanentemente.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $wire.dispatch('eliminarArchivoOn', { archivoId: id });
+                }
+            });
+        }
     </script>
     @endscript
 
@@ -360,42 +517,53 @@
 </div>
 
 <style>
-    /* Tabs System */
-    .tabs_contenedor {
-        display: flex;
-        background: #f8fafc;
+    /* Estilos específicos para tabs y diseño premium */
+    .g_tab_navegacion {
         border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 0;
     }
 
-    .tab_boton {
-        padding: 15px 25px;
+    .g_tab_botones {
+        display: flex;
+        gap: 5px;
+    }
+
+    .g_tab_boton {
+        padding: 12px 20px;
         border: none;
         background: none;
         cursor: pointer;
         font-weight: 600;
         color: #64748b;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        transition: all 0.2s;
         border-bottom: 3px solid transparent;
         margin-bottom: -2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .tab_boton:hover {
-        background: #f1f5f9;
-        color: #1e293b;
+    .g_tab_boton:hover {
+        color: var(--primary);
     }
 
-    .tab_boton.activa {
-        color: #3b82f6;
-        border-bottom-color: #3b82f6;
-        background: white;
+    .g_tab_active {
+        color: var(--primary) !important;
+        border-bottom-color: var(--primary) !important;
+        background: rgba(var(--primary-rgb), 0.05); /* Suponiendo que existe la variable rgb */
+    }
+
+    .g_tab_inactive {
+        opacity: 0.7;
+    }
+
+    .g_tab_content {
+        /* min-height: 400px; */
     }
 
     /* Dropzone */
     .contenedor_dropzone {
-        padding: 30px;
+        padding: 20px;
         text-align: center;
         border-radius: 8px;
         background: white;
@@ -411,39 +579,34 @@
     .archivos_lista {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
 
     .archivo_item {
         background: white;
         border: 1px solid #e2e8f0;
-        padding: 12px 15px;
+        padding: 10px 15px;
         border-radius: 8px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        transition: transform 0.2s;
+        transition: all 0.2s;
     }
 
     .archivo_item:hover {
-        transform: translateX(5px);
-        border-color: #cbd5e1;
+        border-color: var(--primary);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
     .archivo_nombre {
         font-weight: 600;
         color: #334155;
         text-decoration: none;
-        font-size: 0.95rem;
-    }
-
-    .archivo_nombre:hover {
-        text-decoration: underline;
-        color: #3b82f6;
+        font-size: 0.9rem;
     }
 
     .archivo_meta {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: #94a3b8;
     }
 
@@ -452,7 +615,7 @@
         background: none;
         border: none;
         cursor: pointer;
-        padding: 8px;
+        padding: 6px;
         border-radius: 50%;
         transition: background 0.2s;
     }
@@ -461,91 +624,67 @@
         background: #fee2e2;
     }
 
-    /* Historial */
+    /* Historial Premium */
     .historial_lista {
         display: flex;
         flex-direction: column;
         gap: 15px;
-        border-left: 2px solid #e2e8f0;
-        padding-left: 20px;
-        margin-left: 10px;
+        padding-left: 10px;
     }
 
     .historial_item {
-        position: relative;
-        background: #f8fafc;
+        background: #fdfdfd;
         padding: 15px;
         border-radius: 12px;
-        border: 1px solid #e2e8f0;
-    }
-
-    .historial_item::before {
-        content: '';
-        position: absolute;
-        left: -27px;
-        top: 20px;
-        width: 12px;
-        height: 12px;
-        background: #3b82f6;
-        border-radius: 50%;
-        box-shadow: 0 0 0 4px #dbeafe;
+        border: 1px solid #edf2f7;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
 
     .historial_meta {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
     }
 
     .historial_accion {
         font-weight: 700;
-        color: #1e293b;
-        font-size: 0.9rem;
+        color: #2d3748;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .historial_fecha {
-        font-size: 0.75rem;
-        color: #94a3b8;
+        font-size: 0.7rem;
+        color: #a0aec0;
     }
 
     .historial_detalle {
         font-size: 0.85rem;
-        color: #475569;
-        margin: 0 0 10px 0;
+        color: #4a5568;
+        margin: 5px 0 10px 0;
+        line-height: 1.4;
     }
 
     .historial_usuario {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
-        color: #64748b;
-        background: #f1f5f9;
+        color: #718096;
+        background: #edf2f7;
         display: inline-block;
-        padding: 3px 8px;
+        padding: 2px 8px;
         border-radius: 4px;
     }
 
-    .g_oculto {
-        display: none;
+    /* Helpers */
+    .g_hr {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        margin: 20px 0;
     }
 
-    /* Helpers Colores Extensiones */
-    .text-red-600 {
-        color: #dc2626;
-    }
-
-    .text-blue-600 {
-        color: #2563eb;
-    }
-
-    .text-green-600 {
-        color: #16a34a;
-    }
-
-    .text-purple-600 {
-        color: #9333ea;
-    }
-
-    .text-orange-500 {
-        color: #f97316;
-    }
+    .text-red-600 { color: #dc2626; }
+    .text-blue-600 { color: #2563eb; }
+    .text-green-600 { color: #16a34a; }
+    .text-purple-600 { color: #9333ea; }
 </style>
