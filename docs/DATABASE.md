@@ -127,17 +127,67 @@ php artisan make:livewire erp.menu.menu-crear --class
 php artisan make:livewire erp.menu.menu-editar --class
 
 php artisan make:model MotivoCita -mfsc
-php artisan make:livewire atc.motivo-cita.motivo-cita-lista --class
-php artisan make:livewire atc.motivo-cita.motivo-cita-crear --class
-php artisan make:livewire atc.motivo-cita.motivo-cita-editar --class
+php artisan make:livewire cita.motivo-cita.motivo-cita-lista --class
+php artisan make:livewire cita.motivo-cita.motivo-cita-crear --class
+php artisan make:livewire cita.motivo-cita.motivo-cita-editar --class
 
 php artisan make:model EstadoCita -mfsc
-php artisan make:livewire atc.estado-cita.estado-cita-lista --class
-php artisan make:livewire atc.estado-cita.estado-cita-crear --class
-php artisan make:livewire atc.estado-cita.estado-cita-editar --class
+php artisan make:livewire cita.estado-cita.estado-cita-lista --class
+php artisan make:livewire cita.estado-cita.estado-cita-crear --class
+php artisan make:livewire cita.estado-cita.estado-cita-editar --class
 
 php artisan make:model Cita -mfsc
-php artisan make:livewire atc.cita.cita-lista --class
-php artisan make:livewire atc.cita.cita-crear --class
-php artisan make:livewire atc.cita.cita-editar --class
-php artisan make:livewire atc.cita.cita-calendario --class
+php artisan make:livewire cita.cita.cita-lista --class
+php artisan make:livewire cita.cita.cita-crear --class
+php artisan make:livewire cita.cita.cita-editar --class
+php artisan make:livewire cita.cita.cita-calendario --class
+
+php artisan make:model CitaEmail -mfsc
+php artisan make:livewire cita.cita-email.cita-email-lista --class
+php artisan make:livewire cita.cita-email.cita-email-crear --class
+php artisan make:livewire cita.cita-email.cita-email-editar --class
+
+php artisan make:model EstadoSolicitudEvidenciaPago -mfsc
+php artisan make:livewire backoffice.estado-solicitud-evidencia-pago.estado-solicitud-evidencia-pago-lista --class
+php artisan make:livewire backoffice.estado-solicitud-evidencia-pago.estado-solicitud-evidencia-pago-crear --class
+php artisan make:livewire backoffice.estado-solicitud-evidencia-pago.estado-solicitud-evidencia-pago-editar --class
+
+php artisan make:model SolicitudEvidenciaPago -mfsc
+php artisan make:livewire backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-lista --class
+php artisan make:livewire backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-crear --class
+php artisan make:livewire backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-editar --class
+
+php artisan make:model EvidenciaPago -mfsc
+php artisan make:livewire backoffice.evidencia-pago.evidencia-pago-lista --class
+php artisan make:livewire backoffice.evidencia-pago.evidencia-pago-crear --class
+php artisan make:livewire backoffice.evidencia-pago.evidencia-pago-editar --class
+
+php artisan make:model SolicitudEvidenciaPagoEmail -mfsc
+php artisan make:livewire backoffice.solicitud-evidencia-pago-email.solicitud-evidencia-pago-email-lista --class
+php artisan make:livewire backoffice.solicitud-evidencia-pago-email.solicitud-evidencia-pago-email-crear --class
+php artisan make:livewire backoffice.solicitud-evidencia-pago-email.solicitud-evidencia-pago-email-editar --class
+
+php artisan make:model EvidenciaPagoAntiguo -mfsc
+php artisan make:livewire backoffice.evidencia-pago-antiguo.evidencia-pago-antiguo-lista --class
+php artisan make:livewire backoffice.evidencia-pago-antiguo.evidencia-pago-antiguo-crear --class
+php artisan make:livewire backoffice.evidencia-pago-antiguo.evidencia-pago-antiguo-editar --class
+
+php artisan make:model EstadoSolicitudDigitalizarLetra -mfsc
+php artisan make:livewire backoffice.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-lista --class
+php artisan make:livewire backoffice.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-crear --class
+php artisan make:livewire backoffice.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-editar --class
+
+php artisan make:model SolicitudDigitalizarLetra -mfsc
+php artisan make:livewire cavali.solicitud-digitalizar-letra.solicitud-digitalizar-letra-lista --class
+php artisan make:livewire cavali.solicitud-digitalizar-letra.solicitud-digitalizar-letra-crear --class
+php artisan make:livewire cavali.solicitud-digitalizar-letra.solicitud-digitalizar-letra-editar --class
+
+php artisan make:model EnvioCavali -mfsc
+php artisan make:livewire cavali.envios-cavali.envios-cavali-lista --class
+php artisan make:livewire cavali.envios-cavali.envios-cavali-crear --class
+php artisan make:livewire cavali.envios-cavali.envios-cavali-editar --class
+
+php artisan make:model EnvioCavaliSolicitud -mfsc
+php artisan make:livewire cavali.envio-cavali-solicitud.envio-cavali-solicitud-lista --class
+php artisan make:livewire cavali.envio-cavali-solicitud.envio-cavali-solicitud-crear --class
+php artisan make:livewire cavali.envio-cavali-solicitud.envio-cavali-solicitud-editar --class
