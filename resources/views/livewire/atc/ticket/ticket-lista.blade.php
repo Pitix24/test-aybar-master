@@ -85,7 +85,7 @@
                     <label>Sub tipo solicitud </label>
                     <select wire:model.live="sub_tipo_solicitud_id">
                         <option value="">Todos</option>
-                        @foreach ($sub_tipos_solicitudes as $item)
+                        @foreach ($sub_tipo_solicitudes as $item)
                             <option value="{{ $item->id }}">{{ $item->nombre }}</option>
                         @endforeach
                     </select>
@@ -176,14 +176,16 @@
             <table class="g_tabla">
                 <thead>
                     <tr>
-                        <th class="g_celda_centro">ID</th>
-                        <th>Asunto</th>
+                        <th class="g_celda_centro">Ticket</th>
                         <th>Cliente</th>
                         <th>Área</th>
+                        <th>Solicitud</th>
+                        <th>Canal</th>
                         <th class="g_celda_centro">Estado</th>
-                        <th>Prioridad</th>
                         <th>Gestor</th>
+                        <th>Prioridad</th>
                         <th>Fecha</th>
+                        <th>Derivado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
@@ -193,8 +195,7 @@
                             <td class="g_celda_centro">
                                 <span class="g_badge g_badge_light">#{{ $item->id }}</span>
                             </td>
-                            <td class="g_resaltar g_celda_wrap">{{ $item->asunto_inicial }}</td>
-                            <td>{{ $item->cliente?->name ?? 'N/A' }}</td>
+                            <td class="g_negrita g_resumir">{{ $item->nombres }}</td>
                             <td>
                                 @if($item->area)
                                     <span class="g_badge g_badge_soft" style="color: {{ $item->area->color }};">
@@ -204,18 +205,25 @@
                                     <span class="g_badge g_badge_light">-</span>
                                 @endif
                             </td>
+                            <td class="g_resumir g_inferior">{{ $item->tipoSolicitud->nombre }}</td>
+                            <td>{{ $item->canal->nombre }}</td>
                             <td class="g_celda_centro">
                                 <span class="g_badge g_badge_soft" style="color: {{ $item->estado?->color }};">
                                     {{ $item->estado?->nombre }}
                                 </span>
                             </td>
+                            <td>{{ $item->gestor?->name ?? 'Sin asignar' }}</td>
                             <td>
                                 <span class="g_badge g_badge_soft" style="color: {{ $item->prioridad?->color }};">
                                     <i class="{{ $item->prioridad?->icono }}"></i> {{ $item->prioridad?->nombre }}
                                 </span>
                             </td>
-                            <td>{{ $item->gestor?->name ?? 'Sin asignar' }}</td>
                             <td class="g_inferior g_celda_centro">{{ $item->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge {{ $item->tiene_derivados ? 'g_badge_success' : 'g_badge_light' }}">
+                                    {{ $item->tiene_derivados ? 'SI' : 'NO' }}
+                                </span>
+                            </td>
                             <td class="g_celda_acciones g_celda_centro">
                                 <a href="{{ route('erp.ticket.vista.editar', $item->id) }}" class="g_accion_editar"
                                     title="Editar">

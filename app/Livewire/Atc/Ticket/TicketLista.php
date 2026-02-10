@@ -122,7 +122,7 @@ class TicketLista extends Component
     public function updatedSolicitudId($value)
     {
         $this->sub_tipo_solicitud_id = '';
-        $this->sub_tipos_solicitudes = [];
+        $this->sub_tipo_solicitudes = [];
 
         if ($value) {
             $this->loadSubTipoSolicitudes();
@@ -132,7 +132,7 @@ class TicketLista extends Component
     public function loadSubTipoSolicitudes()
     {
         if (!is_null($this->solicitud_id)) {
-            $this->sub_tipos_solicitudes = SubTipoSolicitud::where('tipo_solicitud_id', $this->solicitud_id)->get();
+            $this->sub_tipo_solicitudes = SubTipoSolicitud::where('tipo_solicitud_id', $this->solicitud_id)->get();
         }
     }
 
@@ -191,21 +191,19 @@ class TicketLista extends Component
         return Excel::download(
             new TicketExport(
                 $this->buscar,
-                $this->unidades_negocios_id,
+                $this->unidad_negocio_id,
                 $this->proyecto_id,
                 $this->estado_id,
-                $this->areas_id,
-                $this->solicitudes_id,
-                $this->sub_tipo_solicitudes_id,
+                $this->area_id,
+                $this->solicitud_id,
+                $this->sub_tipo_solicitud_id,
                 $this->canal_id,
                 $this->usuario_admin_id,
                 $this->prioridad_id,
                 $this->fecha_inicio,
                 $this->fecha_fin,
                 $this->con_derivados,
-                $this->con_citas,
-                $this->perPage,
-                $this->getPage()
+                $this->con_citas
             ),
             'tickets.xlsx'
         );
@@ -218,6 +216,7 @@ class TicketLista extends Component
                 $query->where(function ($q) {
                     $q->where('id', 'like', "%{$this->buscar}%")
                         ->orWhere('dni', 'like', "%{$this->buscar}%")
+                        ->orWhere('asunto_inicial', 'like', "%{$this->buscar}%")
                         ->orWhere('nombres', 'like', "%{$this->buscar}%");
                 });
             })
