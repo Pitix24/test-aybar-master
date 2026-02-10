@@ -6,43 +6,162 @@
         <h2>Listado de Tickets</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.home') }}" class="g_boton g_boton_light">
-                Inicio <i class="fa-solid fa-house"></i></a>
-
             <a href="{{ route('erp.ticket.vista.crear') }}" class="g_boton g_boton_primary">
-                Nuevo Ticket <i class="fa-solid fa-square-plus"></i></a>
+                Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>
     </div>
 
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_4">
-                    <label>Buscar (ID, Asunto, Cliente)</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Ingrese término...">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Cliente/DNI/Nombres</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" id="buscar" name="buscar">
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Estado</label>
-                    <select wire:model.live="estado">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Empresa </label>
+                    <select wire:model.live="unidad_negocio_id">
                         <option value="">Todos</option>
-                        @foreach($estados as $est)
-                            <option value="{{ $est->id }}">{{ $est->nombre }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Prioridad</label>
-                    <select wire:model.live="prioridad">
-                        <option value="">Todas</option>
-                        @foreach($prioridades as $pri)
-                            <option value="{{ $pri->id }}">{{ $pri->nombre }}</option>
+                        @foreach ($unidades_negocios as $item)
+                            <option value="{{ $item->id }}">{{ $item->nombre }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Proyecto </label>
+                    <select wire:model.live="proyecto_id">
+                        <option value="">Todos</option>
+                        @foreach ($proyectos as $item)
+                            <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Gestor </label>
+                    <select wire:model.live="usuario_admin_id">
+                        <option value="">Todos</option>
+                        @foreach ($usuarios_admin as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado </label>
+                    <select wire:model.live="estado_id">
+                        <option value="">Todos</option>
+                        @foreach ($estados as $estadoItem)
+                            <option value="{{ $estadoItem->id }}">{{ $estadoItem->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Area </label>
+                    <select wire:model.live="area_id">
+                        <option value="">Todos</option>
+                        @foreach ($areas as $item)
+                            <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Solicitud </label>
+                    <select wire:model.live="solicitud_id">
+                        <option value="">Todos</option>
+                        @foreach ($solicitudes as $item)
+                            <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Sub tipo solicitud </label>
+                    <select wire:model.live="sub_tipo_solicitud_id">
+                        <option value="">Todos</option>
+                        @foreach ($sub_tipos_solicitudes as $item)
+                            <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Canal </label>
+                    <select wire:model.live="canal_id">
+                        <option value="">Todos</option>
+                        @foreach ($canales as $item)
+                            <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Prioridad</label>
+                    <select wire:model.live="prioridad_id">
+                        <option value="">Todos</option>
+                        @foreach ($prioridades as $item)
+                            <option value="{{ $item->id }}">{{ $item->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Citas</label>
+                    <select wire:model.live="con_citas">
+                        <option value="">Todos</option>
+                        <option value="1">Con citas</option>
+                        <option value="0">Sin citas</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Derivados</label>
+                    <select wire:model.live="con_derivados">
+                        <option value="">Todos</option>
+                        <option value="1">Con derivados</option>
+                        <option value="0">Sin derivados</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha inicio</label>
+                    <input type="date" wire:model.live="fecha_inicio">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha fin</label>
+                    <input type="date" wire:model.live="fecha_fin">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="g_panel">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
+                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                    wire:target="exportExcel">
+                    <span wire:loading.remove wire:target="exportExcel">Excel <i
+                            class="fa-regular fa-file-excel"></i></span>
+                    <span wire:loading wire:target="exportExcel">Exportando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+
+                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
+            <div class="g_tabla_cabecera_filtro formulario">
+                <div>
                     <label>Mostrar</label>
                     <select wire:model.live="perPage">
                         <option value="20">20</option>
@@ -50,20 +169,6 @@
                         <option value="100">100</option>
                     </select>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="g_panel">
-        <div class="tabla_cabecera">
-            <div class="tabla_cabecera_botones">
-                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled">
-                    Excel <i class="fa-regular fa-file-excel"></i>
-                </button>
-
-                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                    Limpiar <i class="fa-solid fa-rotate-left"></i>
-                </button>
             </div>
         </div>
 

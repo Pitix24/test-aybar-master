@@ -19,10 +19,10 @@ class DatabaseSeeder extends Seeder
             ProvinciaSeeder::class,
             DistritoSeeder::class,
             RolesYPermisosSeeder::class,
-            UserSeeder::class,
             MenuSeeder::class,
 
-            /*UnidadNegocioSeeder::class,
+            /*UserSeeder::class,
+            UnidadNegocioSeeder::class,
             SedesYAreasSeeder::class,
             GrupoProyectoSeeder::class,
             ProyectoSeeder::class,
