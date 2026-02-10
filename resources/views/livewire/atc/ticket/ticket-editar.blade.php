@@ -1,7 +1,3 @@
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('resources/css/components/dropzone.css') }}">
-@endpush
-
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading wire:target="store, adjuntar, eliminarTicketOn, eliminarArchivo"
         message="Guardando cambios..." />
@@ -11,7 +7,7 @@
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_light">
-                Inicio <i class="fa-solid fa-house"></i>
+                Lista <i class="fa-solid fa-list"></i>
             </a>
 
             <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton g_boton_primary">
@@ -25,15 +21,14 @@
                 Eliminar <i class="fa-solid fa-trash-can"></i>
             </button>
 
-            <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_dark">
-                <i class="fa-solid fa-arrow-left"></i> Regresar
-            </a>
+            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
 
     <div class="g_fila">
         <div class="g_columna_8">
-            <form wire:submit="store" class="formulario g_panel" x-data="{ activeTab: 'general' }">
+            <form wire:submit="update" class="formulario g_panel" x-data="{ activeTab: 'general' }">
                 <div class="g_tab_navegacion">
                     <div class="g_tab_botones">
                         <button type="button" @click="activeTab = 'general'"
@@ -187,11 +182,6 @@
                             <input type="text" wire:model.live="celular">
                         </div>
                     </div>
-
-                    <div class="g_alerta_info g_margin_top_10">
-                        <i class="fa-solid fa-info-circle"></i>
-                        Estos datos son para este ticket específico.
-                    </div>
                 </div>
 
                 <div x-show="activeTab === 'participantes'" x-transition class="g_tab_content">
@@ -200,7 +190,7 @@
                         <div class="g_select_search">
                             <div class="g_posicion_relativa">
                                 <input type="text" id="searchUser" wire:model.live="searchUser" autocomplete="off"
-                                    class="g_select_search_input" placeholder="Escribe nombre del usuario...">
+                                    class="g_select_search_input">
                             </div>
 
                             @if(!empty($participantesDisponibles))
@@ -252,7 +242,7 @@
                 </div>
 
                 <div x-show="activeTab === 'derivaciones'" x-transition class="g_tab_content">
-                    <div class="g_contenedor_tabla">
+                    <div class="g_margin_bottom_10 g_contenedor_tabla">
                         <table class="g_tabla">
                             <thead>
                                 <tr>
@@ -273,7 +263,7 @@
                                         </td>
                                         <td><small>{{ $der->usuarioDeriva->name ?? 'N/A' }}</small></td>
                                         <td><small>{{ $der->usuarioRecibe->name ?? 'N/A' }}</small></td>
-                                        <td style="font-size: 0.85rem;">{{ $der->motivo ?? 'Sin motivo' }}</td>
+                                        <td>{{ $der->motivo ?? 'Sin motivo' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -286,7 +276,7 @@
                 </div>
 
                 <div x-show="activeTab === 'historial'" x-transition class="g_tab_content">
-                    <div class="g_contenedor_tabla">
+                    <div class="g_margin_bottom_10 g_contenedor_tabla">
                         <table class="g_tabla">
                             <thead>
                                 <tr>
@@ -319,14 +309,19 @@
                 </div>
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="store">
-                            <i class="fa-solid fa-save"></i> Guardar Cambios
+                    <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                        wire:target="update">
+                        <span wire:loading.remove wire:target="update">
+                            <i class="fa-solid fa-pencil"></i> Actualizar
                         </span>
-                        <span wire:loading wire:target="store">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                        <span wire:loading wire:target="update">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
                         </span>
                     </button>
+
+                    <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_cancelar">
+                        <i class="fa-solid fa-times"></i> Cancelar
+                    </a>
                 </div>
             </form>
         </div>
@@ -334,6 +329,7 @@
         <div class="g_columna_4 g_gap_pagina">
             <div class="g_panel">
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-cloud-arrow-up"></i> Nuevo Adjunto</h4>
+
                 <div class="formulario">
                     <input type="file" id="fileUpload" wire:model="archivo"
                         accept=".pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png" style="display: none;">
@@ -344,14 +340,14 @@
                                 @php
                                     $ext = strtolower($archivo->getClientOriginalExtension());
                                     $icons = [
-                                        'pdf' => 'fa-file-pdf text-red-600',
-                                        'docx' => 'fa-file-word text-blue-600',
-                                        'xlsx' => 'fa-file-excel text-green-600',
-                                        'pptx' => 'fa-file-powerpoint text-orange-500',
+                                        'pdf' => 'fa-file-pdf',
+                                        'docx' => 'fa-file-word',
+                                        'xlsx' => 'fa-file-excel',
+                                        'pptx' => 'fa-file-powerpoin',
                                     ];
                                 @endphp
 
-                                <i class="fa-solid {{ $icons[$ext] ?? 'fa-file text-gray-500' }}"></i>
+                                <i class="fa-solid {{ $icons[$ext] ?? 'fa-file' }}"></i>
                                 <span>{{ $archivo->getClientOriginalName() }}</span>
 
                                 <button type="button" wire:click="$set('archivo', null)" class="remove_button">
@@ -369,19 +365,23 @@
                     @enderror
 
                     @if ($archivo)
-                        <div class="g_margin_top_10">
-                            <label>Descripción del archivo</label>
-                            <textarea wire:model="descripcion_archivo" class="g_input" rows="2"
-                                placeholder="Ej: Foto del medidor..."></textarea>
+                        <div class="g_margin_bottom_10">
+                            <label for="descripcion_archivo">Descripción del archivo <span class="obligatorio"><i
+                                        class="fa-solid fa-asterisk"></i></span></label>
+                            <textarea wire:model="descripcion_archivo" id="descripcion_archivo" class="g_input"
+                                rows="2"></textarea>
                             @error('descripcion_archivo')
                                 <p class="mensaje_error">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="formulario_botones g_margin_top_15">
-                            <button type="button" wire:click="adjuntar" class="g_boton g_boton_primary" style="width: 100%;"
-                                wire:loading.attr="disabled" wire:target="adjuntar">
-                                <i class="fa-solid fa-paperclip"></i> Adjuntar
+                        <div class="formulario_botones g_margin_bottom_10">
+                            <button wire:click="adjuntar" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                                wire:target="adjuntar">
+                                <span wire:loading.remove wire:target="adjuntar">Adjuntar <i
+                                        class="fa-solid fa-paperclip"></i></span>
+                                <span wire:loading wire:target="adjuntar">Adjuntando... <i
+                                        class="fa-solid fa-spinner fa-spin"></i></span>
                             </button>
                         </div>
                     @endif
@@ -471,8 +471,9 @@
                                         <td class="g_negrita">#{{ $hijo->id }}</td>
                                         <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
                                         <td class="g_celda_centro">
-                                            <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion_editar">
-                                                <i class="fa-solid fa-pencil"></i>
+                                            <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion_editar"
+                                                title="Ver Ticket Hijo">
+                                                <i class="fa-solid fa-eye"></i>
                                             </a>
                                         </td>
                                     </tr>

@@ -18,7 +18,7 @@
 
 .cabecera_titulo_pagina h2 span {
     font-size: var(--fs-parrafo);
-    color: var(--color-gris);
+    color: var(--color-negro);
     font-weight: var(--fw-regular);
     padding-bottom: 2px;
 }

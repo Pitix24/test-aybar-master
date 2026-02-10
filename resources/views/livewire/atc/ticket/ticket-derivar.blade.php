@@ -31,7 +31,7 @@
                 </div>
 
                 <div x-show="activeTab === 'informacion'" x-transition class="g_tab_content formulario">
-                    <form wire:submit="derivar">
+                    <form wire:submit="store">
                         <div class="g_fila">
                             <div class="g_columna_6 g_margin_bottom_10">
                                 <label>Área inicial</label>
@@ -48,7 +48,8 @@
                             <div class="g_columna_6 g_margin_bottom_10">
                                 <label for="a_area_id">Área destino <span class="obligatorio"><i
                                             class="fa-solid fa-asterisk"></i></span></label>
-                                <select id="a_area_id" wire:model.live="a_area_id" required>
+                                <select id="a_area_id" wire:model.live="a_area_id"
+                                    class="@error('a_area_id') input-error @enderror">
                                     <option value="" selected disabled>Seleccionar área destino</option>
                                     @foreach ($areas as $area)
                                         <option value="{{ $area->id }}">{{ $area->nombre }}</option>
@@ -60,7 +61,8 @@
                             <div class="g_columna_6 g_margin_bottom_10">
                                 <label for="gestor_id">Gestor destino<span class="obligatorio"><i
                                             class="fa-solid fa-asterisk"></i></span></label>
-                                <select id="gestor_id" wire:model.live="gestor_id">
+                                <select id="gestor_id" wire:model.live="gestor_id"
+                                    class="@error('gestor_id') input-error @enderror">
                                     <option value="" selected disabled>Sin asignar</option>
                                     @foreach ($gestores as $usuario)
                                         <option value="{{ $usuario->id }}">
@@ -73,18 +75,29 @@
                         </div>
 
                         <div class="g_fila">
-                            <div class="g_columna_12">
+                            <div class="g_columna_12 g_margin_bottom_10">
                                 <label for="motivo">Motivo<span class="obligatorio"><i
                                             class="fa-solid fa-asterisk"></i></span></label>
-                                <textarea id="motivo" wire:model.live="motivo" rows="4"></textarea>
+                                <textarea id="motivo" wire:model.live="motivo" rows="4"
+                                    class="@error('motivo') input-error @enderror"></textarea>
                                 @error('motivo') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
                         <div class="formulario_botones">
-                            <button type="submit" class="g_boton g_boton_guardar">
-                                <i class="fa-solid fa-route"></i> Ejecutar Derivación
+                            <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="store">
+                                    <i class="fa-solid fa-route"></i> Derivar
+                                </span>
+                                <span wire:loading wire:target="store">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Derivando...
+                                </span>
                             </button>
+
+                            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}"
+                                class="g_boton g_boton_cancelar">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -95,37 +108,27 @@
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
-                                    <th>De Áre → A Área</th>
-                                    <th>Participantes</th>
+                                    <th>De Área</th>
+                                    <th>A Área</th>
+                                    <th>Deriva</th>
+                                    <th>Recibe</th>
                                     <th>Motivo</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($derivados as $der)
-                                    <tr wire:key="der-list-{{ $der->id }}">
-                                        <td>
-                                            <div class="g_negrita">{{ $der->created_at->format('d/m/Y') }}</div>
-                                            <small>{{ $der->created_at->format('H:i') }}</small>
+                                @forelse ($derivados as $der)
+                                    <tr wire:key="der-{{ $der->id }}">
+                                        <td class="g_negrita">{{ $der->created_at->format('d/m H:i') }}</td>
+                                        <td>{{ $der->deArea->nombre ?? 'N/A' }}</td>
+                                        <td><span class="g_badge g_badge_primary">{{ $der->aArea->nombre ?? 'N/A' }}</span>
                                         </td>
-                                        <td>
-                                            <div style="font-size: 0.8rem; color: #64748b;">
-                                                {{ $der->deArea->nombre ?? 'N/A' }}
-                                            </div>
-                                            <i class="fa-solid fa-arrow-right"
-                                                style="padding: 0 5px; font-size: 0.7rem;"></i>
-                                            <span class="g_badge g_badge_primary">{{ $der->aArea->nombre ?? 'N/A' }}</span>
-                                        </td>
-                                        <td>
-                                            <div style="font-size: 0.75rem;"><strong>Deriva:</strong>
-                                                {{ $der->usuarioDeriva->name ?? 'N/A' }}</div>
-                                            <div style="font-size: 0.75rem;"><strong>Recibe:</strong>
-                                                {{ $der->usuarioRecibe->name ?? 'N/A' }}</div>
-                                        </td>
-                                        <td style="font-size: 0.85rem;">{{ $der->motivo }}</td>
+                                        <td><small>{{ $der->usuarioDeriva->name ?? 'N/A' }}</small></td>
+                                        <td><small>{{ $der->usuarioRecibe->name ?? 'N/A' }}</small></td>
+                                        <td>{{ $der->motivo ?? 'Sin motivo' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="g_celda_vacia">No hay registros de derivación.</td>
+                                        <td colspan="6" class="g_celda_vacia">No hay derivaciones registradas.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -135,41 +138,108 @@
             </div>
         </div>
 
-        <div class="g_columna_4 g_gap_pagina">
+        <div class="g_columna_4 formulario">
             <div class="g_panel">
-                <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Información del Ticket</h4>
+                <h4 class="g_panel_titulo">Ticket padre</h4>
 
-                <div class="formulario">
-                    <div class="g_margin_bottom_10">
-                        <label>Estado Actual</label>
-                        <div><span class="g_badge g_badge_light">{{ $ticket->estado->nombre ?? 'N/A' }}</span></div>
-                    </div>
+                <div class="g_margin_bottom_10">
+                    <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton g_boton_secondary">
+                        <i class="fa-solid fa-eye"></i> Ver ticket
+                    </a>
+                </div>
 
-                    <div class="g_margin_bottom_10">
+                <div class="g_fila">
+                    <div class="g_margin_bottom_10 g_columna_6">
                         <label>Empresa</label>
-                        <input type="text" disabled value="{{ $ticket->unidadNegocio->nombre ?? 'N/A' }}">
+                        <input type="text" disabled value="{{ $ticket->unidadNegocio->nombre ?? 'Sin asignar' }}">
                     </div>
 
-                    <div class="g_margin_bottom_10">
+                    <div class="g_margin_bottom_10 g_columna_6">
                         <label>Proyecto</label>
-                        <input type="text" disabled value="{{ $ticket->proyecto->nombre ?? 'N/A' }}">
-                    </div>
-
-                    <div class="g_margin_bottom_10">
-                        <label>Gestor Asignado</label>
-                        <input type="text" disabled value="{{ $ticket->gestor->name ?? 'N/A' }}">
-                    </div>
-
-                    <div class="g_margin_bottom_10">
-                        <label>Asunto</label>
-                        <textarea disabled rows="2">{{ $ticket->asunto_inicial }}</textarea>
-                    </div>
-
-                    <div class="g_margin_bottom_10">
-                        <label>Descripción</label>
-                        <textarea disabled rows="4">{{ $ticket->descripcion_inicial }}</textarea>
+                        <input type="text" disabled value="{{ $ticket->proyecto->nombre ?? 'Sin asignar' }}">
                     </div>
                 </div>
+
+                <div class="g_fila">
+                    <div class="g_margin_bottom_10 g_columna_6">
+                        <label>Área origen</label>
+                        <input type="text" disabled value="{{ $ticket->area->nombre ?? 'Sin asignar' }}">
+                    </div>
+
+                    <div class="g_margin_bottom_10 g_columna_6">
+                        <label>Tipo solicitud</label>
+                        <input type="text" disabled value="{{ $ticket->tipoSolicitud->nombre ?? 'Sin asignar' }}">
+                    </div>
+                </div>
+
+                <div class="g_fila">
+                    <div class="g_margin_bottom_10 g_columna_6">
+                        <label>Sub tipo solicitud</label>
+                        <input type="text" disabled value="{{ $ticket->subTipoSolicitud->nombre ?? 'Sin asignar' }}">
+                    </div>
+
+                    <div class="g_margin_bottom_10 g_columna_6">
+                        <label>Canal</label>
+                        <input type="text" disabled value="{{ $ticket->canal->nombre ?? 'Sin asignar' }}">
+                    </div>
+                </div>
+
+                <div class="g_fila">
+                    <div class="g_margin_bottom_10 g_columna_6">
+                        <label>Cliente</label>
+                        <input type="text" disabled value="{{ $ticket->nombres ?? 'Sin asignar' }}">
+                    </div>
+
+                    <div class="g_margin_bottom_10 g_columna_6">
+                        <label for="gestor_id">
+                            Asignado <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                        </label>
+                        <input type="text" disabled value="{{ $ticket->gestor->name ?? 'Sin asignar' }}">
+                    </div>
+                </div>
+
+                <div class="g_fila">
+                    <div class="g_columna_12 g_margin_bottom_10">
+                        <label>Asunto </label>
+                        <textarea disabled>{{ $ticket->asunto_inicial ?? 'Sin asunto' }}</textarea>
+                    </div>
+                </div>
+
+                <div class="g_fila">
+                    <div class="g_columna_12 g_margin_bottom_10">
+                        <label>Descripción </label>
+                        <textarea disabled>{{ $ticket->descripcion_inicial ?? 'Sin descripción' }}</textarea>
+                    </div>
+                </div>
+
+                @if (!empty($ticket->lotes))
+                    <div class="g_fila">
+                        <div class="g_columna_12">
+                            <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+
+                            <div class="g_contenedor_tabla">
+                                <table class="g_tabla">
+                                    <thead>
+                                        <tr>
+                                            <th>Razón Social</th>
+                                            <th>Proyecto</th>
+                                            <th>Mz./Lt.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($ticket->lotes as $index => $l)
+                                            <tr wire:key="lote-parent-{{ $index }}">
+                                                <td> {{ $l['razon_social'] }} </td>
+                                                <td> {{ $l['proyecto'] }} </td>
+                                                <td> {{ $l['numero_lote'] }} </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

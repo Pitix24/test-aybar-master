@@ -2,9 +2,8 @@
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear ticket
             @if ($ticket_padre_id)
-                asociado al ticket
-                <a href="{{ route('erp.ticket.vista.editar', $ticket_padre_id) }}"
-                    target="_blank">#{{ $ticket_padre_id }}</a>
+                <span>Asociado al ticket: <a href="{{ route('erp.ticket.vista.editar', $ticket_padre_id) }}" target="_blank"
+                        class="g_negrita">#{{ $ticket_padre_id }}</a></span>
             @endif
         </h2>
 
@@ -199,7 +198,6 @@
                     @endif
                 </div>
 
-                <!-- TAB CLIENTE -->
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_6">
@@ -225,16 +223,8 @@
                             <input type="text" wire:model.blur="celular">
                         </div>
                     </div>
-
-                    @if($origen === 'antiguo')
-                        <div class="g_alerta_info">
-                            <i class="fa-solid fa-info-circle"></i>
-                            El cliente pertenece a la base de datos anterior.
-                        </div>
-                    @endif
                 </div>
 
-                <!-- TAB PARTICIPANTES -->
                 <div x-show="activeTab === 'participantes'" x-transition class="g_tab_content">
                     <div class="g_margin_bottom_10">
                         <label for="searchUser">Buscar y agregar participantes</label>
@@ -313,6 +303,13 @@
             @if ($ticketPadre)
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">Ticket padre</h4>
+
+                    <div class="g_margin_bottom_10">
+                        <a href="{{ route('erp.ticket.vista.editar', $ticketPadre->id) }}"
+                            class="g_boton g_boton_secondary">
+                            <i class="fa-solid fa-eye"></i> Ver ticket
+                        </a>
+                    </div>
 
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_6">
@@ -427,6 +424,7 @@
                             {{ session('success') }}
                         </div>
                     @endif
+
                     <h4 class="g_panel_titulo">Cliente</h4>
 
                     <div class="g_margin_bottom_10">
@@ -478,5 +476,4 @@
             @endif
         </div>
     </div>
-
 </div>

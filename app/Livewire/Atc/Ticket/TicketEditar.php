@@ -80,7 +80,7 @@ class TicketEditar extends Component
         $this->selectedParticipants = array_diff($this->selectedParticipants, [$userId]);
     }
 
-    public function store()
+    public function update()
     {
         abort_unless(auth()->user()->can('ticket.editar'), 403);
 

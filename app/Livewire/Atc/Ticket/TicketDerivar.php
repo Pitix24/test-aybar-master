@@ -88,11 +88,16 @@ class TicketDerivar extends Component
             : $this->gestores->first()->id;
     }
 
-    public function derivar()
+    public function store()
     {
         abort_unless(auth()->user()->can('ticket.editar'), 403);
 
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Faltan campos obligatorios.']);
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
@@ -149,6 +154,11 @@ class TicketDerivar extends Component
                 'text' => 'No se pudo procesar la derivación.'
             ]);
         }
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
     }
 
     public function render()
