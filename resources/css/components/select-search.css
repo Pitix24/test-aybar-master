@@ -20,6 +20,7 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     margin-top: 5px;
     overflow: hidden;
+    font-size: 14px;
 }
 
 .g_select_search_item {
@@ -38,99 +39,4 @@
 
 .g_select_search_item:hover {
     background-color: #f8fafc;
-}
-
-.g_select_search_avatar {
-    width: 32px;
-    height: 32px;
-    background: #3b82f6;
-    border-radius: 50%;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
-.g_select_search_info {
-    display: flex;
-    flex-direction: column;
-}
-
-.g_select_search_name {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #1e293b;
-}
-
-.g_select_search_sub {
-    font-size: 0.75rem;
-    color: #64748b;
-}
-
-/* Lista de seleccionados */
-.g_select_search_selected_list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.g_select_search_selected_item {
-    padding: 8px 12px;
-    background: #f1f5f9;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid #e2e8f0;
-    transition: all 0.2s;
-}
-
-.g_select_search_selected_item:hover {
-    background: #e2e8f0;
-}
-
-.g_select_search_selected_info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.g_select_search_selected_avatar {
-    width: 24px;
-    height: 24px;
-    background: #cbd5e1;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: #475569;
-}
-
-.g_select_search_selected_name {
-    font-size: 0.85rem;
-    color: #334155;
-    font-weight: 500;
-}
-
-.g_select_search_remove {
-    color: #ef4444;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-.g_select_search_remove:hover {
-    background-color: #fee2e2;
 }

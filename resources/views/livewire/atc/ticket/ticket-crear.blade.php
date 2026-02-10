@@ -1,11 +1,9 @@
-@section('tituloPagina', 'Crear Ticket')
-
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear ticket
             @if ($ticket_padre_id)
                 asociado al ticket
-                <a href="{{ route('admin.ticket.vista.editar', $ticket_padre_id) }}"
+                <a href="{{ route('erp.ticket.vista.editar', $ticket_padre_id) }}"
                     target="_blank">#{{ $ticket_padre_id }}</a>
             @endif
         </h2>
@@ -19,7 +17,6 @@
         </div>
     </div>
 
-
     <div class="g_fila">
         <div class="g_columna_8">
             <form wire:submit="store" class="formulario g_panel" x-data="{ activeTab: 'general' }">
@@ -27,12 +24,18 @@
                     <div class="g_tab_botones">
                         <button type="button" @click="activeTab = 'general'"
                             :class="activeTab === 'general' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
-                            <i class="fa-solid fa-building"></i> Información General
+                            <i class="fa-solid fa-file-invoice"></i> Información General
                         </button>
 
                         <button type="button" @click="activeTab = 'cliente'"
                             :class="activeTab === 'cliente' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
-                            <i class="fa-solid fa-user-tie"></i> Cliente
+                            <i class="fa-solid fa-user"></i> Cliente
+                        </button>
+
+                        <button type="button" @click="activeTab = 'participantes'"
+                            :class="activeTab === 'participantes' ? 'g_tab_active' : 'g_tab_inactive'"
+                            class="g_tab_boton">
+                            <i class="fa-solid fa-users"></i> Participantes
                         </button>
                     </div>
                 </div>
@@ -42,10 +45,11 @@
                         <div class="g_margin_bottom_10 g_columna_4">
                             <label>Unidad de Negocio <span class="obligatorio"><i
                                         class="fa-solid fa-asterisk"></i></span></label>
-                            <select wire:model.live="unidad_negocio_id">
+                            <select wire:model.live="unidad_negocio_id"
+                                class="@error('unidad_negocio_id') input-error @enderror">
                                 <option value="">Seleccione...</option>
-                                @foreach($unidades_negocios as $u) <option value="{{ $u->id }}">{{ $u->nombre }}
-                                    </option>
+                                @foreach($unidades_negocios as $u)
+                                    <option value="{{ $u->id }}">{{ $u->nombre }}</option>
                                 @endforeach
                             </select>
                             @error('unidad_negocio_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -54,55 +58,22 @@
                         <div class="g_margin_bottom_10 g_columna_4">
                             <label>Proyecto <span class="obligatorio"><i
                                         class="fa-solid fa-asterisk"></i></span></label>
-                            <select wire:model.live="proyecto_id">
+                            <select wire:model.live="proyecto_id" class="@error('proyecto_id') input-error @enderror">
                                 <option value="">Seleccione...</option>
-                                @foreach($proyectos as $p) <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                                @foreach($proyectos as $p)
+                                    <option value="{{ $p->id }}">{{ $p->nombre }}</option>
                                 @endforeach
                             </select>
                             @error('proyecto_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Canal <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                            <select wire:model="canal_id">
-                                <option value="">Seleccione...</option>
-                                @foreach($canales as $c) <option value="{{ $c->id }}">{{ $c->nombre }}</option>
-                                @endforeach
-                            </select>
-                            @error('canal_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-
-                    <div class="g_fila">
-                        <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Tipo Solicitud <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
-                            <select wire:model.live="tipo_solicitud_id">
-                                <option value="">Seleccione...</option>
-                                @foreach($tipos_solicitudes as $t) <option value="{{ $t->id }}">{{ $t->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('tipo_solicitud_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Subtipo</label>
-                            <select wire:model="sub_tipo_solicitud_id">
-                                <option value="">Seleccione...</option>
-                                @foreach($sub_tipos_solicitudes as $st) <option value="{{ $st->id }}">
-                                        {{ $st->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="g_margin_bottom_10 g_columna_4">
                             <label>Área Destino <span class="obligatorio"><i
                                         class="fa-solid fa-asterisk"></i></span></label>
-                            <select wire:model.live="area_id">
+                            <select wire:model.live="area_id" class="@error('area_id') input-error @enderror">
                                 <option value="">Seleccione...</option>
-                                @foreach($areas as $ar) <option value="{{ $ar->id }}">{{ $ar->nombre }}</option>
+                                @foreach($areas as $ar)
+                                    <option value="{{ $ar->id }}">{{ $ar->nombre }}</option>
                                 @endforeach
                             </select>
                             @error('area_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -111,29 +82,77 @@
 
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Prioridad</label>
-                            <select wire:model="prioridad_ticket_id">
-                                @foreach($prioridades as $pr) <option value="{{ $pr->id }}">{{ $pr->nombre }}
-                                    </option>
+                            <label>Tipo Solicitud <span class="obligatorio"><i
+                                        class="fa-solid fa-asterisk"></i></span></label>
+                            <select wire:model.live="tipo_solicitud_id"
+                                class="@error('tipo_solicitud_id') input-error @enderror">
+                                <option value="">Seleccione...</option>
+                                @foreach($tipos_solicitudes as $t)
+                                    <option value="{{ $t->id }}">{{ $t->nombre }}</option>
+                                @endforeach
+                            </select>
+                            @error('tipo_solicitud_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_4">
+                            <label>Subtipo</label>
+                            <select wire:model.live="sub_tipo_solicitud_id">
+                                <option value="">Seleccione...</option>
+                                @foreach($sub_tipos_solicitudes as $st)
+                                    <option value="{{ $st->id }}">{{ $st->nombre }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Gestor Asignado</label>
-                            <select wire:model="gestor_id">
+                            <label>Canal <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
+                            <select wire:model.live="canal_id" class="@error('canal_id') input-error @enderror">
+                                <option value="">Seleccione...</option>
+                                @foreach($canales as $c)
+                                    <option value="{{ $c->id }}">{{ $c->nombre }}</option>
+                                @endforeach
+                            </select>
+                            @error('canal_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_4">
+                            <label>Prioridad <span class="obligatorio"><i
+                                        class="fa-solid fa-asterisk"></i></span></label>
+                            <select wire:model.live="prioridad_ticket_id"
+                                class="@error('prioridad_ticket_id') input-error @enderror">
+                                <option value="">Seleccionar...</option>
+                                @foreach($prioridades as $pr)
+                                    <option value="{{ $pr->id }}">{{ $pr->nombre }}</option>
+                                @endforeach
+                            </select>
+                            @error('prioridad_ticket_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_4">
+                            <label>Gestor Asignado <span class="obligatorio"><i
+                                        class="fa-solid fa-asterisk"></i></span></label>
+                            <select wire:model.live="gestor_id" class="@error('gestor_id') input-error @enderror">
                                 <option value="">Sin asignar</option>
-                                @foreach($gestores as $ge) <option value="{{ $ge->id }}">{{ $ge->name }}</option>
+                                @foreach($gestores as $ge)
+                                    <option value="{{ $ge->id }}">{{ $ge->name }}</option>
                                 @endforeach
                             </select>
+                            @error('gestor_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Estado Inicial</label>
-                            <select wire:model="estado_ticket_id">
-                                @foreach($estados as $es) <option value="{{ $es->id }}">{{ $es->nombre }}</option>
+                            <label>Estado Inicial <span class="obligatorio"><i
+                                        class="fa-solid fa-asterisk"></i></span></label>
+                            <select wire:model.live="estado_ticket_id"
+                                class="@error('estado_ticket_id') input-error @enderror">
+                                <option value="">Seleccionar...</option>
+                                @foreach($estados as $es)
+                                    <option value="{{ $es->id }}">{{ $es->nombre }}</option>
                                 @endforeach
                             </select>
+                            @error('estado_ticket_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
@@ -154,73 +173,145 @@
                     </div>
 
                     @if (!empty($lotes_agregados))
-                        <h4 class="g_panel_titulo">Lotes vinculados</h4>
-                        <div class="g_contenedor_tabla">
-                            <table class="g_tabla">
-                                <thead>
-                                    <tr>
-                                        <th>Razón Social</th>
-                                        <th>Proyecto</th>
-                                        <th>Mz./Lt.</th>
-                                        <th class="g_celda_centro">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($lotes_agregados as $index => $l)
-                                        <tr wire:key="lote-{{ $index }}">
-                                            <td>{{ $l['razon_social'] }}</td>
-                                            <td>{{ $l['proyecto'] }}</td>
-                                            <td>{{ $l['numero_lote'] }}</td>
-                                            <td class="g_celda_acciones g_celda_centro">
-                                                <button type="button" wire:click="quitarLote('{{ $l['id'] }}')"
-                                                    class="g_accion_eliminar" title="Quitar">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </td>
+                        <div class="g_margin_bottom_10">
+                            <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+                            <div class="g_contenedor_tabla">
+                                <table class="g_tabla">
+                                    <thead>
+                                        <tr>
+                                            <th>Razón Social</th>
+                                            <th>Proyecto</th>
+                                            <th>Mz./Lt.</th>
+                                            <th class="g_celda_centro">Acciones</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($lotes_agregados as $index => $l)
+                                            <tr wire:key="lote-{{ $index }}">
+                                                <td>{{ $l['razon_social'] }}</td>
+                                                <td>{{ $l['proyecto'] }}</td>
+                                                <td>{{ $l['numero_lote'] }}</td>
+                                                <td class="g_celda_acciones g_celda_centro">
+                                                    <button type="button" wire:click="quitarLote('{{ $l['id'] }}')"
+                                                        class="g_accion_eliminar" title="Quitar">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     @endif
                 </div>
 
+                <!-- TAB CLIENTE -->
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
-                    <div class="g_margin_bottom_10 g_columna_3">
-                        <label for="cliente_id">
-                            Cliente <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                        </label>
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Nombre del Cliente</label>
+                            <input type="text" wire:model.blur="nombres">
+                        </div>
 
-                        @if ($ticketPadre)
-                            <input type="text" disabled value="{{ $ticketPadre->nombres ?? 'Sin asignar' }}">
-                        @else
-                            <input type="text" disabled value="{{ $cliente?->nombre ?? 'Sin asignar' }}">
-                            @error('cliente_id')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
-                        @endif
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>DNI/CE/RUC</label>
+                            <input type="text" disabled value="{{ $dni ?? 'No identificado' }}"
+                                class="g_input_disabled">
+                        </div>
                     </div>
 
-                    <div class="g_margin_bottom_10 g_columna_3">
-                        <label>DNI</label>
-                        <input type="text" disabled value="{{ $ticket->dni ?? 'Sin asignar' }}">
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Email</label>
+                            <input type="text" wire:model.blur="email">
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Celular</label>
+                            <input type="text" wire:model.blur="celular">
+                        </div>
                     </div>
 
-                    <div class="g_margin_bottom_10 g_columna_3">
-                        <label>Correo</label>
-                        <input type="text" wire:model.live="email">
+                    @if($origen === 'antiguo')
+                        <div class="g_alerta_info">
+                            <i class="fa-solid fa-info-circle"></i>
+                            El cliente pertenece a la base de datos anterior.
+                        </div>
+                    @endif
+                </div>
+
+                <!-- TAB PARTICIPANTES -->
+                <div x-show="activeTab === 'participantes'" x-transition class="g_tab_content">
+                    <div class="g_margin_bottom_10">
+                        <label for="searchUser">Buscar y agregar participantes</label>
+                        <div class="g_select_search">
+                            <div class="g_posicion_relativa">
+                                <input type="text" id="searchUser" wire:model.live="searchUser" autocomplete="off"
+                                    class="g_select_search_input">
+                            </div>
+
+                            @if(!empty($participantesDisponibles))
+                                <div class="g_select_search_results">
+                                    @foreach($participantesDisponibles as $user)
+                                        <div class="g_select_search_item" wire:click="addParticipant({{ $user->id }})">
+                                            <span>{{ $user->name }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
-                    <div class="g_margin_bottom_10 g_columna_3">
-                        <label>Celular</label>
-                        <input type="text" wire:model.live="celular">
+                    <div class="g_margin_bottom_10">
+                        <h4 class="g_panel_titulo"><i class="fa-solid fa-users-gear"></i> Lista de participantes</h4>
+                        <div class="g_contenedor_tabla">
+                            <table class="g_tabla">
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Email</th>
+                                        <th class="g_celda_centro">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($participantesSeleccionados as $part)
+                                        <tr wire:key="part-{{ $part->id }}">
+                                            <td>
+                                                <strong>{{ $part->name }}</strong>
+                                            </td>
+                                            <td>{{ $part->email }}</td>
+                                            <td class="g_celda_acciones g_celda_centro">
+                                                <button type="button" wire:click="removeParticipant({{ $part->id }})"
+                                                    class="g_accion_eliminar" title="Quitar participante">
+                                                    <i class="fa-solid fa-user-minus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="g_celda_vacia">No hay participantes agregados.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div class="formulario_botones g_margin_top_20">
-                    <button type="submit" class="g_boton g_boton_primary" wire:loading.attr="disabled">
-                        <i class="fa-solid fa-save"></i> Generar Ticket
+                <div class="formulario_botones">
+                    <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="store">
+                            <i class="fa-solid fa-save"></i> Guardar
+                        </span>
+                        <span wire:loading wire:target="store">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                        </span>
                     </button>
+
+                    <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_cancelar">
+                        <i class="fa-solid fa-times"></i> Cancelar
+                    </a>
                 </div>
             </form>
         </div>
@@ -296,26 +387,27 @@
                     @if (!empty($ticketPadre->lotes))
                         <div class="g_fila">
                             <div class="g_columna_12">
-                                <label>Lotes</label>
-
-                                <table class="tabla_eliminar">
-                                    <thead>
-                                        <tr>
-                                            <th>Razón Social</th>
-                                            <th>Proyecto</th>
-                                            <th>Mz./Lt.</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($ticketPadre->lotes as $index => $l)
-                                            <tr class="sorteable_item" wire:key="lote-{{ $index }}">
-                                                <td> {{ $l['razon_social'] }} </td>
-                                                <td> {{ $l['proyecto'] }} </td>
-                                                <td> {{ $l['numero_lote'] }} </td>
+                                <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+                                <div class="g_contenedor_tabla">
+                                    <table class="g_tabla">
+                                        <thead>
+                                            <tr>
+                                                <th>Razón Social</th>
+                                                <th>Proyecto</th>
+                                                <th>Mz./Lt.</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($ticketPadre->lotes as $index => $l)
+                                                <tr wire:key="lote-parent-{{ $index }}">
+                                                    <td> {{ $l['razon_social'] }} </td>
+                                                    <td> {{ $l['proyecto'] }} </td>
+                                                    <td> {{ $l['numero_lote'] }} </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -331,7 +423,7 @@
 
                     @if (session('error'))
                         <div class="g_alerta_error">
-                            <i class="fa-solid fa-circle-check"></i>
+                            <i class="fa-solid fa-circle-exclamation"></i>
                             {{ session('error') }}
                         </div>
                     @endif
@@ -348,16 +440,18 @@
                         <label for="dni">DNI/CE/RUC <span class="obligatorio"><i
                                     class="fa-solid fa-asterisk"></i></span></label>
                         <input type="text" id="dni" wire:model.live="dni"
-                            x-on:input="$el.value = $el.value.replace(/[^0-9]/g, '')" required>
+                            x-on:input="$el.value = $el.value.replace(/[^0-9]/g, '')" required
+                            class="@error('dni') input-error @enderror">
                         @error('dni')
                             <p class="mensaje_error">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div class="formulario_botones g_margin_bottom_10">
-                        <button wire:click="buscarCliente" class="guardar" wire:loading.attr="disabled"
+                        <button wire:click="buscarCliente" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
                             wire:target="buscarCliente">
-                            <span wire:loading.remove wire:target="buscarCliente">Buscar</span>
+                            <span wire:loading.remove wire:target="buscarCliente"><i class="fa-solid fa-search"></i>
+                                Buscar</span>
                             <span wire:loading wire:target="buscarCliente">Buscando...</span>
                         </button>
                     </div>
@@ -379,9 +473,10 @@
                         </div>
 
                         <div class="formulario_botones">
-                            <button wire:click="agregarLote" class="guardar" wire:loading.attr="disabled"
+                            <button wire:click="agregarLote" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
                                 wire:target="agregarLote">
-                                <span wire:loading.remove wire:target="agregarLote">Agregar</span>
+                                <span wire:loading.remove wire:target="agregarLote"><i class="fa-solid fa-plus"></i>
+                                    Agregar</span>
                                 <span wire:loading wire:target="agregarLote">Agregando...</span>
                             </button>
                         </div>

@@ -43,14 +43,17 @@ class TicketCrear extends Component
     public $asunto_inicial = '';
     public $descripcion_inicial = '';
     public $dni = '';
+    public $nombres = '';
+    public $email = '';
+    public $celular = '';
     public $lote_id = '';
     public $lotes_agregados = [];
 
     public $unidades_negocios = [], $unidad_negocio_id = '';
     public $proyectos = [], $proyecto_id = '';
 
-    public $estados = [], $estado_id = '';
-    public $prioridades = [], $prioridad_id = '';
+    public $estados = [], $estado_ticket_id = '';
+    public $prioridades = [], $prioridad_ticket_id = '';
 
     public $searchUser = '';
     public $selectedParticipants = [];
@@ -77,7 +80,8 @@ class TicketCrear extends Component
         ];
 
         if (!$this->ticket_padre_id) {
-            $rules['cliente_id'] = 'required';
+            $rules['dni'] = 'required';
+            $rules['nombres'] = 'required';
         }
 
         return $rules;
@@ -92,23 +96,40 @@ class TicketCrear extends Component
             $this->proyecto_id = $this->ticketPadre->proyecto_id;
             $this->canal_id = $this->ticketPadre->canal_id;
             $this->dni = $this->ticketPadre->dni;
+            $this->nombres = $this->ticketPadre->nombres;
+            $this->email = $this->ticketPadre->email;
+            $this->celular = $this->ticketPadre->celular;
             $this->origen = $this->ticketPadre->origen;
             $this->loadProyectos();
         }
 
         $user = auth()->user();
 
+        // Determinar área inicial
         if ($user->areas()->exists()) {
             $this->area_id = $user->areas()->orderBy('area_user.created_at')->value('areas.id');
         } else {
             $this->area_id = Area::orderBy('id')->value('id');
         }
 
+        // Cargar catálogos
         $this->areas = Area::all();
         $this->canales = Canal::all();
         $this->unidades_negocios = UnidadNegocio::all();
         $this->estados = EstadoTicket::all();
         $this->prioridades = PrioridadTicket::all();
+
+        // Valores por defecto
+        if (!$this->ticket_padre_id) {
+            $this->estado_ticket_id = $this->estados->firstWhere('nombre', 'Abierto')?->id ?? $this->estados->first()?->id;
+            $this->prioridad_ticket_id = $this->prioridades->firstWhere('nombre', 'Media')?->id ?? $this->prioridades->first()?->id;
+        }
+
+        // Añadir al creador como participante por defecto
+        if (!in_array($user->id, $this->selectedParticipants)) {
+            $this->selectedParticipants[] = $user->id;
+        }
+
         $this->informaciones = collect();
 
         if ($this->area_id) {
@@ -210,18 +231,24 @@ class TicketCrear extends Component
 
                 if ($resultado['origen'] === 'antiguo') {
                     $this->cliente = DB::table('clientes_2')->where('dni', $this->dni)->first();
-                    $this->cliente_id = null; // No tiene ID en users aún
+                    $this->cliente_id = null;
                     $this->nombres = $this->cliente->nombre;
+                    $this->email = $this->cliente->email ?? '';
+                    $this->celular = $this->cliente->celular ?? $this->cliente->telefono ?? '';
                     $this->origen = "antiguo";
                 } elseif ($resultado['origen'] === 'slin') {
                     $this->cliente = Cliente::where('dni', $this->dni)->first();
                     if ($this->cliente) {
                         $this->cliente_id = $this->cliente->user_id ?? $this->cliente->user->id;
                         $this->nombres = $this->cliente->user->name;
+                        $this->email = $this->cliente->user->email;
+                        $this->celular = $this->cliente->celular ?? '';
                     } else {
                         session()->flash('info', 'Debes crear la cuenta del cliente.');
                         $firstLot = collect($this->informaciones)->first();
                         $this->nombres = $firstLot->nombre ?? $firstLot->razon_social ?? '';
+                        $this->email = $firstLot->email ?? '';
+                        $this->celular = $firstLot->celular ?? '';
                     }
                     $this->origen = "slin";
                 }
@@ -234,8 +261,12 @@ class TicketCrear extends Component
                 if ($this->cliente) {
                     $this->cliente_id = $this->cliente->user_id ?? $this->cliente->user->id;
                     $this->nombres = $this->cliente->user->name;
+                    $this->email = $this->cliente->user->email;
+                    $this->celular = $this->cliente->celular ?? '';
                 } else {
                     $this->nombres = "SIN CUENTA VINCULADA";
+                    $this->email = '';
+                    $this->celular = '';
                 }
                 $this->origen = "slin";
                 break;
@@ -322,6 +353,8 @@ class TicketCrear extends Component
                 'descripcion_inicial' => $this->descripcion_inicial,
                 'dni' => $this->dni,
                 'nombres' => $this->nombres,
+                'email' => $this->email,
+                'celular' => $this->celular,
                 'origen' => $this->origen,
                 'lotes' => $this->lotes_agregados,
                 'created_by' => auth()->id(),
@@ -351,6 +384,11 @@ class TicketCrear extends Component
         }
     }
 
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
+
     public function render()
     {
         $participantesDisponibles = [];
@@ -364,7 +402,10 @@ class TicketCrear extends Component
 
         $participantesSeleccionados = User::whereIn('id', $this->selectedParticipants)->get();
 
-        return view('livewire.atc.ticket.ticket-crear');
+        return view('livewire.atc.ticket.ticket-crear', [
+            'participantesDisponibles' => $participantesDisponibles,
+            'participantesSeleccionados' => $participantesSeleccionados
+        ]);
     }
 
     public function placeholder()

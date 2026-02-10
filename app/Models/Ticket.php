@@ -34,6 +34,7 @@ class Ticket extends Model
         'dni',
         'nombres',
         'email',
+        'celular',
         'direccion',
         'origen',
 
