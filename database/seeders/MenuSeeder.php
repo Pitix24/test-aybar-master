@@ -12,6 +12,7 @@ class MenuSeeder extends Seeder
      */
     public function run(): void
     {
+        \App\Models\Menu::truncate();
         $jsonPath = public_path('erp-menu-principal.json');
 
         if (!file_exists($jsonPath)) {

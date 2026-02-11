@@ -78,5 +78,6 @@ Route::group(['middleware' => ['permission:area.ver']], function () {
 });
 
 require __DIR__ . '/atc.php';
+require __DIR__ . '/cita.php';
 require __DIR__ . '/sistema.php';
 require __DIR__ . '/users.php';

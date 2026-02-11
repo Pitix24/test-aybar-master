@@ -116,6 +116,23 @@ class RolesYPermisosSeeder extends Seeder
                 'ticket.derivar',
                 'ticket.reportar',
                 'ticket.validar',
+            ],
+            'Módulo Cita' => [
+                'estado-cita.ver',
+                'estado-cita.crear',
+                'estado-cita.editar',
+                'estado-cita.eliminar',
+                'estado-cita.exportar',
+                'motivo-cita.ver',
+                'motivo-cita.crear',
+                'motivo-cita.editar',
+                'motivo-cita.eliminar',
+                'motivo-cita.exportar',
+                'cita.ver',
+                'cita.crear',
+                'cita.editar',
+                'cita.eliminar',
+                'cita.exportar',
             ]
         ];
 
@@ -151,6 +168,8 @@ class RolesYPermisosSeeder extends Seeder
             'admin' => 'Administrador',
             'supervisor-atc' => 'Supervisor ATC',
             'asesor-atc' => 'Asesor ATC',
+            'supervisor-cita' => 'Supervisor Cita',
+            'asesor-cita' => 'Asesor Cita',
         ];
 
         foreach ($roles as $rolName => $descripcion) {
@@ -182,7 +201,7 @@ class RolesYPermisosSeeder extends Seeder
         $supervisor_atc->syncPermissions($permisosATC);
         $this->command->info("✓ Supervisor ATC: {$permisosATC->count()} permisos");
 
-        // Asesor ATC: Permisos limitados de tickets y citas
+        // Asesor ATC: Permisos limitados de tickets
         $asesor_atc = Role::findByName('asesor-atc');
         $asesor_atc->syncPermissions([
             'ticket.ver',
@@ -190,7 +209,22 @@ class RolesYPermisosSeeder extends Seeder
             'ticket.editar',
             'ticket.derivar',
         ]);
-        $this->command->info("✓ Asesor ATC: 8 permisos");
+        $this->command->info("✓ Asesor ATC: 4 permisos");
+
+        // Supervisor Cita: Todos los permisos de Cita
+        $supervisor_cita = Role::findByName('supervisor-cita');
+        $permisosCita = Permission::where('module', 'Módulo Cita')->get();
+        $supervisor_cita->syncPermissions($permisosCita);
+        $this->command->info("✓ Supervisor Cita: {$permisosCita->count()} permisos");
+
+        // Asesor Cita: Permisos limitados de citas
+        $asesor_cita = Role::findByName('asesor-cita');
+        $asesor_cita->syncPermissions([
+            'cita.ver',
+            'cita.crear',
+            'cita.editar',
+        ]);
+        $this->command->info("✓ Asesor Cita: 3 permisos");
 
         $this->command->newLine();
         $this->command->info("========================================");
