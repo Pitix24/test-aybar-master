@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Erp\Cliente\ClienteConsultar;
 use App\Livewire\Erp\Cliente\ClienteCrear;
 use App\Livewire\Erp\Cliente\ClienteEditar;
 use App\Livewire\Erp\Cliente\ClienteLista;
@@ -7,6 +8,8 @@ use App\Livewire\Erp\Cliente\ClienteLista;
 use App\Livewire\Erp\Admin\AdminCrear;
 use App\Livewire\Erp\Admin\AdminEditar;
 use App\Livewire\Erp\Admin\AdminLista;
+use App\Livewire\Erp\ClienteAntiguo\ClienteAntiguoLista;
+use App\Livewire\Erp\ClienteAntiguo\ClienteAntiguoCrear;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:admin.navegacion']], function () {
@@ -22,8 +25,15 @@ Route::group(['middleware' => ['permission:cliente.navegacion']], function () {
         Route::get('/', ClienteLista::class)->middleware('permission:cliente.lista')->name('todo');
         Route::get('/crear', ClienteCrear::class)->middleware('permission:cliente.crear')->name('crear');
         Route::get('/editar/{id}', ClienteEditar::class)->middleware('permission:cliente.editar')->name('editar');
+        Route::get('/consultar/{dni?}', ClienteConsultar::class)->middleware('permission:cliente.consultar')->name('consultar');
     });
 });
+
+Route::prefix('cliente-antiguo')->name('cliente-antiguo.vista.')->group(function () { //ok
+    Route::get('/', ClienteAntiguoLista::class)->name('todo');
+    Route::get('/crear', ClienteAntiguoCrear::class)->name('crear');
+});
+
 
 /*
 --------------------------------------------------------------------------

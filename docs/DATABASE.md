@@ -22,6 +22,10 @@ php artisan make:model Cliente -mfsc
 php artisan make:livewire erp.cliente.cliente-lista --class
 php artisan make:livewire erp.cliente.cliente-crear --class
 php artisan make:livewire erp.cliente.cliente-editar --class
+php artisan make:livewire erp.cliente.cliente-consultar --class
+
+php artisan make:livewire erp.cliente-antiguo.cliente-antiguo-lista --class
+php artisan make:livewire erp.cliente-antiguo.cliente-antiguo-crear --class
 
 php artisan make:livewire erp.admin.admin-lista --class
 php artisan make:livewire erp.admin.admin-crear --class

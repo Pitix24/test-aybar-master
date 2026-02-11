@@ -5,6 +5,7 @@ use App\Livewire\Letra\EnvioCavaliSolicitud\EnvioCavaliSolicitudLista;
 use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraCrear;
 use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraEditar;
 use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;
+use App\Livewire\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraLista;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:estado-solicitud-digitalizar-letra.ver']], function () {
@@ -14,6 +15,11 @@ Route::group(['middleware' => ['permission:estado-solicitud-digitalizar-letra.ve
         Route::get('/editar/{id}', EstadoSolicitudDigitalizarLetraEditar::class)->middleware('permission:estado-solicitud-digitalizar-letra.editar')->name('editar');
     });
 });
+
+Route::prefix('solicitar-letra-digital')->name('solicitar-letra-digital.vista.')->group(function () {
+    Route::get('/', SolicitudDigitalizarLetraLista::class)->name('todo');
+});
+
 
 Route::group(['middleware' => ['permission:envio-cavali-solicitud.ver']], function () {
     Route::prefix('envio-cavali-solicitud')->name('envio-cavali-solicitud.vista.')->group(function () {

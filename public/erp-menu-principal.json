@@ -152,6 +152,35 @@
                         "nivel": 3,
                         "permiso": "cliente.lista",
                         "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Consultar",
+                        "ruta": "erp.cliente.vista.consultar",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "cliente.consultar",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 42,
+                "nombre": "Clientes (Antiguo)",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-users",
+                "nivel": 2,
+                "permiso": "cliente-antiguo.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.cliente-antiguo.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "cliente-antiguo.lista",
+                        "submenus": []
                     }
                 ]
             }
@@ -582,15 +611,6 @@
                         "nivel": 3,
                         "permiso": "cita.ver",
                         "submenus": []
-                    },
-                    {
-                        "id": 112,
-                        "nombre": "Crear",
-                        "ruta": "erp.cita.vista.crear",
-                        "url": null,
-                        "nivel": 3,
-                        "permiso": "cita.crear",
-                        "submenus": []
                     }
                 ]
             },
@@ -622,24 +642,24 @@
                 "url": null,
                 "icono": "fa-solid fa-lock-open",
                 "nivel": 2,
-                "permiso": "estado-evidencia-pago.ver",
+                "permiso": "estado-solicitud-evidencia-pago.ver",
                 "submenus": [
                     {
                         "id": 111,
                         "nombre": "Lista",
-                        "ruta": "erp.estado-evidencia-pago.vista.todo",
+                        "ruta": "erp.estado-solicitud-evidencia-pago.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "estado-evidencia-pago.ver",
+                        "permiso": "estado-solicitud-evidencia-pago.ver",
                         "submenus": []
                     },
                     {
                         "id": 112,
                         "nombre": "Crear",
-                        "ruta": "erp.estado-evidencia-pago.vista.crear",
+                        "ruta": "erp.estado-solicitud-evidencia-pago.vista.crear",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "estado-evidencia-pago.crear",
+                        "permiso": "estado-solicitud-evidencia-pago.crear",
                         "submenus": []
                     }
                 ]
@@ -697,8 +717,37 @@
         "submenus": [
             {
                 "id": 44,
+                "nombre": "Estados evidencias",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "permiso": "estado-solicitud-digitalizar-letra.ver",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.estado-solicitud-digitalizar-letra.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "estado-solicitud-digitalizar-letra.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.estado-solicitud-digitalizar-letra.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "estado-solicitud-digitalizar-letra.crear",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 45,
                 "nombre": "Solicitud letras",
-                "ruta": "erp.solicitud-letra.vista.todo",
+                "ruta": "erp.solicitar-letra-digital.vista.todo",
                 "url": null,
                 "icono": "fa-solid fa-lock-open",
                 "nivel": 2,
@@ -706,34 +755,13 @@
                 "submenus": []
             },
             {
-                "id": 43,
+                "id": 46,
                 "nombre": "Envios letras",
-                "ruta": "erp.envio-letra.vista.todo",
+                "ruta": "erp.envio-cavali-solicitud.vista.todo",
                 "url": null,
                 "icono": "fa-solid fa-file-invoice-dollar",
                 "nivel": 2,
                 "permiso": "envio-letra.ver",
-                "submenus": []
-            }
-        ]
-    },
-    {
-        "id": 8,
-        "nombre": "Módulo Reportes",
-        "ruta": null,
-        "url": null,
-        "icono": "fa-solid fa-pen-nib",
-        "nivel": 1,
-        "permiso": "reporte.ver",
-        "submenus": [
-            {
-                "id": 44,
-                "nombre": "Reporte clientes",
-                "ruta": "erp.reporte-cliente.vista.todo",
-                "url": null,
-                "icono": "fa-solid fa-users",
-                "nivel": 2,
-                "permiso": "reporte-cliente.ver",
                 "submenus": []
             }
         ]
