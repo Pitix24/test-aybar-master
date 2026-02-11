@@ -1,20 +1,59 @@
-@section('tituloPagina', 'Estados de Cita')
-
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading
+        wire:target="buscar, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
+        message="Cargando..." />
+
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Estados de Cita</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.estado-cita.vista.crear') }}" class="g_boton g_boton_primary">
-                Nuevo Estado <i class="fa-solid fa-square-plus"></i></a>
+                Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>
     </div>
 
     <div class="g_panel">
-        <div class="tabla_cabecera">
-            <div class="tabla_cabecera_buscar">
-                <input type="text" wire:model.live.debounce.500ms="buscar" placeholder="Buscar por nombre...">
-                <i class="fa-solid fa-magnifying-glass"></i>
+        <div class="formulario">
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_4">
+                    <label>Nombre del Estado</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" id="buscar" name="buscar">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Activo</label>
+                    <select wire:model.live="activo">
+                        <option value="">Todos</option>
+                        <option value="1">Si</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="g_panel">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
+                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                    wire:target="exportExcel">
+                    <span wire:loading.remove wire:target="exportExcel">Excel <i
+                            class="fa-regular fa-file-excel"></i></span>
+                    <span wire:loading wire:target="exportExcel">Exportando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+
+                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
+            <div class="g_tabla_cabecera_filtro formulario">
+                <select wire:model.live="perPage">
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
             </div>
         </div>
 
@@ -22,40 +61,36 @@
             <table class="g_tabla">
                 <thead>
                     <tr>
-                        <th style="width: 60px;">ID</th>
-                        <th>Nombre / Etiqueta</th>
-                        <th style="width: 100px;">Color</th>
-                        <th style="width: 100px;">Icono</th>
-                        <th style="width: 120px;">Estado</th>
-                        <th style="width: 100px;" class="g_celda_centro">Acciones</th>
+                        <th class="g_celda_centro">Nº</th>
+                        <th class="g_celda_centro">Icono</th>
+                        <th>Nombre</th>
+                        <th>Color / Badge</th>
+                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @foreach ($items as $item)
-                        <tr wire:key="estado-{{ $item->id }}">
-                            <td class="g_negrita">#{{ $item->id }}</td>
-                            <td>
-                                <span class="g_negrita">{{ $item->nombre }}</span>
+                    @foreach ($items as $index => $item)
+                        <tr>
+                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_celda_centro">
+                                <i class="{{ $item->icono ?? 'fa-solid fa-circle' }}" style="color: {{ $item->color }}"></i>
                             </td>
+                            <td class="g_resaltar">{{ $item->nombre }}</td>
                             <td>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div
-                                        style="width: 20px; height: 20px; border-radius: 4px; background: {{ $item->color ?? '#64748b' }}; border: 1px solid #e2e8f0;">
-                                    </div>
-                                    <span style="font-size: 0.8rem; color: #64748b;">{{ $item->color }}</span>
-                                </div>
+                                <span class="g_badge g_badge_soft" style="color: {{ $item->color }};">
+                                    {{ strtoupper($item->color) }}
+                                </span>
                             </td>
                             <td class="g_celda_centro">
-                                <i class="{{ $item->icono ?? 'fa-solid fa-circle' }}"
-                                    style="color: {{ $item->color }}; font-size: 1.2rem;"></i>
-                            </td>
-                            <td>
                                 @if($item->activo)
-                                    <span class="g_badge g_badge_success"><i class="fa-solid fa-check-circle"></i> Activo</span>
+                                    <span class="g_badge g_badge_success">Activo</span>
                                 @else
-                                    <span class="g_badge g_badge_light"><i class="fa-solid fa-times-circle"></i> Inactivo</span>
+                                    <span class="g_badge g_badge_danger">Inactivo</span>
                                 @endif
                             </td>
+
                             <td class="g_celda_acciones g_celda_centro">
                                 <a href="{{ route('erp.estado-cita.vista.editar', $item->id) }}" class="g_accion_editar"
                                     title="Editar">
@@ -64,23 +99,25 @@
                             </td>
                         </tr>
                     @endforeach
-                    @if($items->isEmpty())
-                        <tr>
-                            <td colspan="6">
-                                <div class="g_vacio">
-                                    <p>No se encontraron estados de cita.</p>
-                                    <i class="fa-solid fa-folder-open"></i>
-                                </div>
-                            </td>
-                        </tr>
-                    @endif
                 </tbody>
             </table>
         </div>
 
         @if ($items->hasPages())
             <div class="g_paginacion">
-                {{ $items->links() }}
+                {{ $items->links('vendor.pagination.default-livewire') }}
+            </div>
+        @endif
+
+        @if ($items->isEmpty())
+            <div class="g_vacio">
+                <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay items disponibles.' }}</p>
+                <i class="fa-regular fa-face-grin-wink"></i>
+            </div>
+        @else
+            <div class="g_paginacion">
+                Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
+                de {{ $items->total() }} registros
             </div>
         @endif
     </div>

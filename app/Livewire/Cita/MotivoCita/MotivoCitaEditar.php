@@ -3,25 +3,31 @@
 namespace App\Livewire\Cita\MotivoCita;
 
 use App\Models\MotivoCita;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 
+#[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Editar Motivo de Cita')]
 class MotivoCitaEditar extends Component
 {
-    public MotivoCita $motivo;
+    public MotivoCita $motivoCita;
 
     public $nombre;
-    public $icono;
     public $color;
-    public $activo;
+    public $icono;
+    public $activo = false;
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|string|max:255|unique:motivo_citas,nombre,' . $this->motivo->id,
+            'nombre' => 'required|unique:motivo_citas,nombre,' . $this->motivoCita->id,
             'color' => 'nullable|string',
             'icono' => 'nullable|string',
             'activo' => 'required|boolean',
@@ -30,52 +36,80 @@ class MotivoCitaEditar extends Component
 
     public function mount($id)
     {
-        $this->motivo = MotivoCita::findOrFail($id);
+        $this->motivoCita = MotivoCita::findOrFail($id);
 
-        $this->nombre = $this->motivo->nombre;
-        $this->icono = $this->motivo->icono;
-        $this->color = $this->motivo->color;
-        $this->activo = (bool) $this->motivo->activo;
+        $this->nombre = $this->motivoCita->nombre;
+        $this->color = $this->motivoCita->color;
+        $this->icono = $this->motivoCita->icono;
+        $this->activo = $this->motivoCita->activo;
     }
 
-    public function store()
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
+
+    public function update()
     {
         abort_unless(auth()->user()->can('motivo-cita.editar'), 403);
-
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores en el formulario.']);
+            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
             throw $e;
         }
 
-        $this->motivo->update([
-            'nombre' => $this->nombre,
-            'icono' => $this->icono,
-            'color' => $this->color,
-            'activo' => $this->activo,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'El motivo de cita ha sido actualizado.']);
+            $this->motivoCita->update([
+                'nombre' => $this->nombre,
+                'color' => $this->color,
+                'icono' => $this->icono,
+                'activo' => $this->activo,
+            ]);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al actualizar motivo de cita: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
+            return;
+        }
     }
 
     #[On('eliminarMotivoCitaOn')]
     public function eliminarMotivoCitaOn()
     {
         abort_unless(auth()->user()->can('motivo-cita.eliminar'), 403);
+        try {
+            DB::beginTransaction();
 
-        if ($this->motivo->citas()->exists()) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'No se puede eliminar un motivo que tiene citas asociadas.']);
+            $this->motivoCita->delete();
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            return redirect()->route('erp.motivo-cita.vista.todo');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al eliminar motivo de cita: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
             return;
         }
-
-        $this->motivo->delete();
-        $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'El motivo ha sido eliminado.']);
-        return redirect()->route('erp.motivo-cita.vista.todo');
     }
 
     public function render()
     {
         return view('livewire.cita.motivo-cita.motivo-cita-editar');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }
