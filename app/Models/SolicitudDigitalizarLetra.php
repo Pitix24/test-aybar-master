@@ -56,7 +56,7 @@ class SolicitudDigitalizarLetra extends Model
     {
         return $this->belongsToMany(
             EnvioCavali::class,
-            'envio_cavali_solicituds',
+            'envio_cavali_solicitud',
             'solicitud_digitalizar_letras_id',
             'envios_cavali_id'
         );

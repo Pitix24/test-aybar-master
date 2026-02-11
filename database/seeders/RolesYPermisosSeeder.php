@@ -168,6 +168,13 @@ class RolesYPermisosSeeder extends Seeder
                 'estado-solicitud-digitalizar-letra.eliminar',
                 'estado-solicitud-digitalizar-letra.exportar',
                 'envio-cavali-solicitud.ver',
+                'envio-cavali-solicitud.editar',
+                'envio-cavali-solicitud.eliminar',
+                'envio-cavali-solicitud.exportar',
+                'solicitud-digitalizar-letra.ver',
+                'solicitud-digitalizar-letra.editar',
+                'solicitud-digitalizar-letra.eliminar',
+                'solicitud-digitalizar-letra.exportar',
             ],
             'Módulo Reportes' => [
                 'reporte.ver',
