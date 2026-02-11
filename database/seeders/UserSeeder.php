@@ -71,7 +71,7 @@ class UserSeeder extends Seeder
         }*/
 
         // 5. Admins
-        $admins = User::factory(20)->admin()->create();
+        /*$admins = User::factory(20)->admin()->create();
 
         foreach ($admins as $admin) {
             // Si el user tiene rol 'admin' en la tabla, le asignamos un rol de Spatie aleatorio (excepto super-admin)
@@ -86,7 +86,7 @@ class UserSeeder extends Seeder
                 $admin->assignRole(fake()->randomElement($rolesAdministrativos));
                 $this->createRelatedData($admin);
             }
-        }
+        }*/
     }
 
     /**

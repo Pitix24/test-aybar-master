@@ -6,7 +6,7 @@
         "url": null,
         "icono": "fa-solid fa-gear",
         "nivel": 1,
-        "permiso": "menu.ver",
+        "permiso": "modulo-sistema.ver",
         "submenus": [
             {
                 "id": 50,
@@ -15,7 +15,7 @@
                 "url": null,
                 "icono": "fa-solid fa-user-shield",
                 "nivel": 2,
-                "permiso": "rol.ver",
+                "permiso": "rol.navegacion",
                 "submenus": [
                     {
                         "id": 111,
@@ -23,7 +23,7 @@
                         "ruta": "erp.rol.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "rol.ver",
+                        "permiso": "rol.lista",
                         "submenus": []
                     },
                     {
@@ -44,7 +44,7 @@
                 "url": null,
                 "icono": "fa-solid fa-user-cog",
                 "nivel": 2,
-                "permiso": "permiso.ver",
+                "permiso": "permiso.navegacion",
                 "submenus": [
                     {
                         "id": 111,
@@ -52,7 +52,7 @@
                         "ruta": "erp.permiso.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "permiso.ver",
+                        "permiso": "permiso.lista",
                         "submenus": []
                     },
                     {
@@ -73,7 +73,7 @@
                 "url": null,
                 "icono": "fa-solid fa-bars",
                 "nivel": 2,
-                "permiso": "menu.ver",
+                "permiso": "menu.navegacion",
                 "submenus": [
                     {
                         "id": 111,
@@ -81,7 +81,7 @@
                         "ruta": "erp.menu.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "menu.ver",
+                        "permiso": "menu.lista",
                         "submenus": []
                     },
                     {
@@ -104,7 +104,7 @@
         "url": null,
         "icono": "fa-solid fa-users-cog",
         "nivel": 1,
-        "permiso": "admin.ver",
+        "permiso": "modulo-usuarios.ver",
         "submenus": [
             {
                 "id": 41,
@@ -113,7 +113,7 @@
                 "url": null,
                 "icono": "fa-solid fa-user-tie",
                 "nivel": 2,
-                "permiso": "admin.ver",
+                "permiso": "admin.navegacion",
                 "submenus": [
                     {
                         "id": 111,
@@ -121,7 +121,7 @@
                         "ruta": "erp.admin.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "admin.ver",
+                        "permiso": "admin.lista",
                         "submenus": []
                     },
                     {
@@ -142,7 +142,7 @@
                 "url": null,
                 "icono": "fa-solid fa-users",
                 "nivel": 2,
-                "permiso": "cliente.ver",
+                "permiso": "cliente.navegacion",
                 "submenus": [
                     {
                         "id": 111,
@@ -150,16 +150,7 @@
                         "ruta": "erp.cliente.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "cliente.ver",
-                        "submenus": []
-                    },
-                    {
-                        "id": 112,
-                        "nombre": "Crear",
-                        "ruta": "erp.cliente.vista.crear",
-                        "url": null,
-                        "nivel": 3,
-                        "permiso": "cliente.crear",
+                        "permiso": "cliente.lista",
                         "submenus": []
                     }
                 ]
@@ -173,7 +164,7 @@
         "url": null,
         "icono": "fa-solid fa-city",
         "nivel": 1,
-        "permiso": "unidad-negocio.ver",
+        "permiso": "modulo-negocio.ver",
         "submenus": [
             {
                 "id": 39,

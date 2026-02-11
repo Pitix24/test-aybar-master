@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class EnvioCavaliSolicitud extends Model
 {
     /** @use HasFactory<\Database\Factories\EnvioCavaliSolicitudFactory> */
-    use HasFactory;
+    protected $table = 'envio_cavali_solicitud';
 }

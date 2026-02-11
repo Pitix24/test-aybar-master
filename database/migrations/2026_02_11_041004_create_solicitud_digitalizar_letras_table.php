@@ -17,6 +17,8 @@ return new class extends Migration {
             $table->foreignId('proyecto_id')->constrained('proyectos')->cascadeOnDelete();
             $table->foreignId('cliente_id')->nullable()->constrained('users')->nullOnDelete(); //user_id
 
+            $table->foreignId('estado_solicitud_digitalizar_letra_id')->default(1)->constrained('estado_solicitud_digitalizar_letras')->onDelete('restrict');
+
             // Identidad de la cuota
             $table->string('lote_completo')->nullable();
             $table->string('codigo_cuota')->unique();
@@ -32,12 +34,6 @@ return new class extends Migration {
             $table->string('codigo_venta')->nullable();
             $table->string('fecha_vencimiento')->nullable();
             $table->string('importe_cuota')->nullable();
-
-            $table->enum('estado_cavali', [
-                'pendiente',
-                'enviado',
-                'observado',
-            ])->default('pendiente');
 
             $table->timestamps();
             $table->softDeletes();

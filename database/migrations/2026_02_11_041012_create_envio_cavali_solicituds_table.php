@@ -23,7 +23,6 @@ return new class extends Migration {
 
             $table->timestamps();
 
-            // 🔹 Evita duplicar solicitudes dentro del mismo envío
             $table->unique(
                 ['envios_cavali_id', 'solicitud_digitalizar_letras_id'],
                 'envio_cavali_solicitud_unique'

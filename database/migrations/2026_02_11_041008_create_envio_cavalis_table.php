@@ -19,12 +19,7 @@ return new class extends Migration {
                 ->constrained('unidad_negocios')
                 ->cascadeOnDelete();
 
-            $table->enum('estado', [
-                'pendiente',
-                'enviado',
-                'observado',
-                'aceptado',
-            ])->default('pendiente');
+            $table->foreignId('estado_solicitud_digitalizar_letra_id')->default(1)->constrained('estado_solicitud_digitalizar_letras')->onDelete('restrict');
 
             $table->timestamp('enviado_at')->nullable();
             $table->string('archivo_zip')->nullable();
