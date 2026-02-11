@@ -13,7 +13,7 @@ class EvidenciaPago extends Model
 
     protected $fillable = [
         'solicitud_evidencia_pago_id',
-        'estado_evidencia_pago_id',
+        'estado_solicitud_evidencia_pago_id',
         'path',
         'url',
         'extension',
@@ -37,6 +37,6 @@ class EvidenciaPago extends Model
 
     public function estado()
     {
-        return $this->belongsTo(EstadoSolicitudEvidenciaPago::class, 'estado_evidencia_pago_id');
+        return $this->belongsTo(EstadoSolicitudEvidenciaPago::class, 'estado_solicitud_evidencia_pago_id');
     }
 }

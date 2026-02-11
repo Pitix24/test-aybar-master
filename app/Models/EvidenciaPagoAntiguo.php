@@ -42,7 +42,7 @@ class EvidenciaPagoAntiguo extends Model
 
     public function estado()
     {
-        return $this->belongsTo(EstadoSolicitudEvidenciaPago::class, 'estado_evidencia_pago_id');
+        return $this->belongsTo(EstadoSolicitudEvidenciaPago::class, 'estado_solicitud_evidencia_pago_id');
     }
 
     public function gestor()

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SolicitudEvidenciaPago extends Model
 {
@@ -15,7 +16,7 @@ class SolicitudEvidenciaPago extends Model
         'proyecto_id',
         'cliente_id',
         'gestor_id',
-        'estado_evidencia_pago_id',
+        'estado_solicitud_evidencia_pago_id',
 
         'razon_social',
         'nombre_proyecto',
@@ -68,7 +69,7 @@ class SolicitudEvidenciaPago extends Model
 
     public function estado()
     {
-        return $this->belongsTo(EstadoSolicitudEvidenciaPago::class, 'estado_evidencia_pago_id');
+        return $this->belongsTo(EstadoSolicitudEvidenciaPago::class, 'estado_solicitud_evidencia_pago_id');
     }
 
     public function gestor()
@@ -89,7 +90,7 @@ class SolicitudEvidenciaPago extends Model
 
     public function getEstaAprobadaAttribute(): bool
     {
-        return $this->estado_evidencia_pago_id ===
+        return $this->estado_solicitud_evidencia_pago_id ===
             EstadoSolicitudEvidenciaPago::id(EstadoSolicitudEvidenciaPago::APROBADO);
     }
 

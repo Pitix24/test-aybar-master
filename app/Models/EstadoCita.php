@@ -18,6 +18,15 @@ class EstadoCita extends Model
         'activo',
     ];
 
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
+    public static function id(string $nombre): ?int
+    {
+        return static::where('nombre', $nombre)->value('id');
+    }
+
     public function citas()
     {
         return $this->hasMany(Cita::class, 'estado_cita_id');

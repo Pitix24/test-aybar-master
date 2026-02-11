@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreignId('proyecto_id')->constrained('proyectos')->cascadeOnDelete();
             $table->foreignId('cliente_id')->nullable()->constrained('users')->nullOnDelete(); //user_id
 
-            $table->foreignId('estado_solicitud_digitalizar_letra_id')->default(1)->constrained('estado_solicitud_digitalizar_letras')->onDelete('restrict');
+            $table->foreignId('estado_solicitud_digitalizar_letra_id')->default(1)->constrained('estado_solicitud_digitalizar_letras', indexName: 'sdl_estado_sdl_fk')->onDelete('restrict');
 
             // Identidad de la cuota
             $table->string('lote_completo')->nullable();
@@ -39,7 +39,7 @@ return new class extends Migration {
             $table->softDeletes();
 
             $table->index(
-                ['unidad_negocio_id', 'estado_cavali'],
+                ['unidad_negocio_id', 'estado_solicitud_digitalizar_letra_id'],
                 'idx_sdl_unidad_estado'
             );
         });

@@ -13,7 +13,7 @@ class EnvioCavali extends Model
     protected $fillable = [
         'fecha_corte',
         'unidad_negocio_id',
-        'estado',
+        'estado_solicitud_digitalizar_letra_id',
         'enviado_at',
         'archivo_zip',
     ];
@@ -22,6 +22,11 @@ class EnvioCavali extends Model
         'fecha_corte' => 'date',
         'enviado_at' => 'datetime',
     ];
+
+    public function estado()
+    {
+        return $this->belongsTo(EstadoSolicitudDigitalizarLetra::class, 'estado_solicitud_digitalizar_letra_id');
+    }
 
     public function unidadNegocio()
     {
@@ -32,7 +37,7 @@ class EnvioCavali extends Model
     {
         return $this->belongsToMany(
             SolicitudDigitalizarLetra::class,
-            'envio_cavali_solicitud',
+            'envio_cavali_solicituds',
             'envios_cavali_id',
             'solicitud_digitalizar_letras_id'
         );

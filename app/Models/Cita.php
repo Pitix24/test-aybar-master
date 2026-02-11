@@ -127,22 +127,22 @@ class Cita extends Model
 
     protected static function booted()
     {
-        static::creating(function ($ticket) {
+        static::creating(function ($cita) {
             if (auth()->check()) {
-                $ticket->created_by = auth()->id();
+                $cita->created_by = auth()->id();
             }
         });
 
-        static::updating(function ($ticket) {
+        static::updating(function ($cita) {
             if (auth()->check()) {
-                $ticket->updated_by = auth()->id();
+                $cita->updated_by = auth()->id();
             }
         });
 
-        static::deleting(function ($ticket) {
+        static::deleting(function ($cita) {
             if (auth()->check()) {
-                $ticket->deleted_by = auth()->id();
-                $ticket->saveQuietly();
+                $cita->deleted_by = auth()->id();
+                $cita->saveQuietly();
             }
         });
     }
