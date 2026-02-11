@@ -24,4 +24,9 @@ class Sede extends Model
     {
         return $this->belongsToMany(Area::class)->withTimestamps();
     }
+
+    public function citas()
+    {
+        return $this->hasMany(Cita::class);
+    }
 }

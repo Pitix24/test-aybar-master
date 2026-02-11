@@ -18,8 +18,8 @@ class EstadoCita extends Model
         'activo',
     ];
 
-    public function tickets()
+    public function citas()
     {
-        return $this->hasMany(Ticket::class);
+        return $this->hasMany(Cita::class, 'estado_cita_id');
     }
 }
