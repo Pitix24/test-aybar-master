@@ -1,0 +1,351 @@
+/* Componente Calendario - Outlook Look & Feel */
+
+.g_calendario_contenedor {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    min-height: 600px;
+}
+
+/* Cabecera personalizada */
+.cabecera_control {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.control_navegacion {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.control_periodo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    min-width: 200px;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+.control_periodo small {
+    display: block;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: -5px;
+}
+
+/* Grupo Segmentado (Tabs de Outlook) */
+.g_grupo_segmentado {
+    display: inline-flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.g_grupo_segmentado button {
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.g_grupo_segmentado button:hover {
+    color: #1e293b;
+}
+
+.g_grupo_segmentado button.activo {
+    background: #fff;
+    color: var(--primary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Vista Mes Grid */
+.g_calendario_grid_mes {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #e2e8f0;
+    gap: 1px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.g_calendario_cabecera_semana {
+    background: #f8fafc;
+    padding: 10px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.g_calendario_celda_mes {
+    background: #fff;
+    min-height: 120px;
+    padding: 8px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.g_calendario_celda_mes:hover {
+    background: #f8fafc;
+}
+
+.g_calendario_celda_mes.hoy {
+    background: #fffbeb;
+}
+
+.g_calendario_celda_mes.vacio {
+    background: #f1f5f9;
+    cursor: default;
+}
+
+.g_calendario_celda_mes .dia_numero {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.g_calendario_celda_mes.hoy .dia_numero {
+    background: var(--primary);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.celda_eventos {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.g_calendario_evento_pildora {
+    background: #f8fafc;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+.g_calendario_evento_pildora .hora {
+    font-weight: 700;
+    color: #64748b;
+}
+
+.g_calendario_evento_pildora .titulo {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Vista Semana */
+.g_calendario_grid_semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+}
+
+.g_calendario_columna_semana {
+    border-right: 1px solid #f1f5f9;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.g_calendario_columna_semana:hover {
+    background: #fcfdfe;
+}
+
+.g_calendario_columna_semana.hoy {
+    background: #fffbeb;
+}
+
+.columna_cabecera {
+    padding: 15px 10px;
+    text-align: center;
+    border-bottom: 3px solid transparent;
+}
+
+.g_calendario_columna_semana.hoy .columna_cabecera {
+    border-bottom-color: var(--primary);
+}
+
+.columna_cabecera .dia_nombre {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.columna_cabecera .dia_numero {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.columna_contenido {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.g_calendario_evento_card {
+    background: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.card_hora {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.card_titulo {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+    margin: 2px 0;
+}
+
+.card_meta {
+    font-size: 0.65rem;
+    color: #94a3b8;
+}
+
+/* Vista Día (Timeline) */
+.g_calendario_view_dia {
+    background: #fff;
+}
+
+.g_calendario_timeline_fila {
+    display: flex;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.timeline_hora {
+    width: 80px;
+    padding: 20px 10px;
+    text-align: right;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    position: relative;
+}
+
+.timeline_hora span {
+    position: relative;
+    top: -10px;
+}
+
+.timeline_contenido {
+    flex: 1;
+    border-left: 1px solid #f1f5f9;
+    padding: 10px;
+    background: #fff;
+}
+
+.g_calendario_evento_detalle {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 5px;
+}
+
+.evento_titulo {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 5px 0;
+}
+
+.evento_tiempo {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.evento_metadata {
+    display: flex;
+    gap: 20px;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.evento_metadata i {
+    margin-right: 5px;
+}
+
+/* Vista Año */
+.g_calendario_grid_anio {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 30px;
+}
+
+.g_calendario_bloque_anio {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.bloque_cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.bloque_mes {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #1e293b;
+    text-transform: capitalize;
+}
+
+.bloque_contenido {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 1200px) {
+    .g_calendario_grid_anio { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .g_calendario_grid_anio { grid-template-columns: repeat(2, 1fr); }
+    .g_calendario_grid_mes, .g_calendario_grid_semana { grid-template-columns: repeat(1, 1fr); }
+    .cabecera_control { flex-direction: column; align-items: flex-start; gap: 10px; }
+}

@@ -3,8 +3,8 @@
 namespace App\Livewire\Cita\Cita;
 
 use App\Models\Cita;
-use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use Carbon\Carbon;
 
 #[Layout('layouts.erp.layout-erp')]
@@ -41,6 +41,28 @@ class CitaCalendario extends Component
     public function irHoy()
     {
         $this->fechaActual = Carbon::now();
+        $this->vista = 'dia';
+        $this->loadEventos();
+    }
+
+    public function irAlMes($mes)
+    {
+        $this->fechaActual->setMonth($mes);
+        $this->vista = 'mes';
+        $this->loadEventos();
+    }
+
+    public function irAlDiaDeMes($dia)
+    {
+        $this->fechaActual->setDay($dia);
+        $this->vista = 'dia';
+        $this->loadEventos();
+    }
+
+    public function irAlDiaDeSemana($fechaStr)
+    {
+        $this->fechaActual = Carbon::parse($fechaStr);
+        $this->vista = 'dia';
         $this->loadEventos();
     }
 
@@ -50,14 +72,14 @@ class CitaCalendario extends Component
             'mes' => $this->fechaActual->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY),
             'semana' => $this->fechaActual->copy()->startOfWeek(Carbon::MONDAY),
             'dia' => $this->fechaActual->copy()->startOfDay(),
-            default => $this->fechaActual->copy()->startOfMonth(),
+            'anio' => $this->fechaActual->copy()->startOfYear(),
         };
 
         $fin = match ($this->vista) {
             'mes' => $this->fechaActual->copy()->endOfMonth()->endOfWeek(Carbon::SUNDAY),
             'semana' => $this->fechaActual->copy()->endOfWeek(Carbon::SUNDAY),
             'dia' => $this->fechaActual->copy()->endOfDay(),
-            default => $this->fechaActual->copy()->endOfMonth(),
+            'anio' => $this->fechaActual->copy()->endOfYear(),
         };
 
         $this->eventos = Cita::with(['cliente', 'sede', 'motivo', 'area', 'estado'])
@@ -71,7 +93,7 @@ class CitaCalendario extends Component
                 'color' => $cita->area?->color ?? '#64748b',
                 'cliente' => $cita->nombres,
                 'sede' => $cita->sede?->nombre,
-                'estado' => $cita->estado?->nombre,
+                'estado' => $cita->estado, // Objeto completo para usar color/nombre en dia.blade
                 'date' => $cita->fecha_inicio?->toDateString(),
                 'time' => $cita->fecha_inicio?->format('H:i'),
                 'end_time' => $cita->fecha_fin?->format('H:i'),
