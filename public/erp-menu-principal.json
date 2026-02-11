@@ -1,6 +1,6 @@
 [
     {
-        "id": 50,
+        "id": 1,
         "nombre": "Módulo Sistema",
         "ruta": null,
         "url": null,
@@ -98,7 +98,7 @@
         ]
     },
     {
-        "id": 48,
+        "id": 2,
         "nombre": "Módulo Usuarios",
         "ruta": null,
         "url": null,
@@ -167,7 +167,7 @@
         ]
     },
     {
-        "id": 49,
+        "id": 3,
         "nombre": "Módulo Negocio",
         "ruta": null,
         "url": null,
@@ -323,7 +323,7 @@
         ]
     },
     {
-        "id": 14,
+        "id": 4,
         "nombre": "Módulo ATC",
         "ruta": null,
         "url": null,
@@ -508,7 +508,7 @@
         ]
     },
     {
-        "id": 14,
+        "id": 5,
         "nombre": "Módulo Cita",
         "ruta": null,
         "url": null,
@@ -611,6 +611,138 @@
                 "icono": "fa-solid fa-calendar-check",
                 "nivel": 2,
                 "permiso": "calendario.ver",
+                "submenus": []
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "nombre": "Módulo Backoffice",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-file-invoice-dollar",
+        "nivel": 1,
+        "permiso": "backoffice.ver",
+        "submenus": [
+            {
+                "id": 44,
+                "nombre": "Estados evidencias",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "permiso": "estado-evidencia-pago.ver",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.estado-evidencia-pago.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "estado-evidencia-pago.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.estado-evidencia-pago.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "estado-evidencia-pago.crear",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 43,
+                "nombre": "Evidencia pago(Portal)",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-lightbulb",
+                "nivel": 2,
+                "permiso": "solicitud-evidencia-pago.ver",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.solicitud-evidencia-pago.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "solicitud-evidencia-pago.ver",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 43,
+                "nombre": "Evidencia pago(Stock)",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-regular fa-image",
+                "nivel": 2,
+                "permiso": "evidencia-pago.ver",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.evidencia-pago-antiguo.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "evidencia-pago-antiguo.ver",
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "nombre": "Módulo Letras",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-pen-nib",
+        "nivel": 1,
+        "permiso": "backoffice.ver",
+        "submenus": [
+            {
+                "id": 44,
+                "nombre": "Solicitud letras",
+                "ruta": "erp.solicitud-letra.vista.todo",
+                "url": null,
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "permiso": "solicitud-letra.ver",
+                "submenus": []
+            },
+            {
+                "id": 43,
+                "nombre": "Envios letras",
+                "ruta": "erp.envio-letra.vista.todo",
+                "url": null,
+                "icono": "fa-solid fa-file-invoice-dollar",
+                "nivel": 2,
+                "permiso": "envio-letra.ver",
+                "submenus": []
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "nombre": "Módulo Reportes",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-pen-nib",
+        "nivel": 1,
+        "permiso": "reporte.ver",
+        "submenus": [
+            {
+                "id": 44,
+                "nombre": "Reporte clientes",
+                "ruta": "erp.reporte-cliente.vista.todo",
+                "url": null,
+                "icono": "fa-solid fa-users",
+                "nivel": 2,
+                "permiso": "reporte-cliente.ver",
                 "submenus": []
             }
         ]

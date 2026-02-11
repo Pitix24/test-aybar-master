@@ -5,9 +5,6 @@ use App\Livewire\Erp\Area\AreaEditar;
 use App\Livewire\Erp\Area\AreaLista;
 use App\Livewire\Erp\Area\AreaSolicitud;
 use App\Livewire\Erp\Area\AreaUser;
-use App\Livewire\Erp\Direccion\DireccionCrear;
-use App\Livewire\Erp\Direccion\DireccionEditar;
-use App\Livewire\Erp\Direccion\DireccionLista;
 use App\Livewire\Erp\GrupoProyecto\GrupoProyectoCrear;
 use App\Livewire\Erp\GrupoProyecto\GrupoProyectoEditar;
 use App\Livewire\Erp\GrupoProyecto\GrupoProyectoLista;
@@ -26,14 +23,6 @@ use Illuminate\Support\Facades\Route;
 //Route::get('/', InicioLivewire::class)->name('home');
 
 Route::get('/perfil', InicioLivewire::class)->name('home');
-
-Route::group(['middleware' => ['permission:direccion.ver']], function () {
-    Route::prefix('direccion')->name('direccion.vista.')->group(function () {
-        Route::get('/', DireccionLista::class)->name('todo');
-        Route::get('/crear', DireccionCrear::class)->middleware('permission:direccion.crear')->name('crear');
-        Route::get('/editar/{id}', DireccionEditar::class)->middleware('permission:direccion.editar')->name('editar');
-    });
-});
 
 Route::group(['middleware' => ['permission:unidad-negocio.ver']], function () {
     Route::prefix('unidad-negocio')->name('unidad-negocio.vista.')->group(function () {
@@ -80,4 +69,6 @@ Route::group(['middleware' => ['permission:area.ver']], function () {
 require __DIR__ . '/atc.php';
 require __DIR__ . '/cita.php';
 require __DIR__ . '/sistema.php';
-require __DIR__ . '/users.php';
+require __DIR__ . '/usuario.php';
+require __DIR__ . '/letra.php';
+require __DIR__ . '/backoffice.php';

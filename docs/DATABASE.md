@@ -164,30 +164,25 @@ php artisan make:livewire backoffice.evidencia-pago.evidencia-pago-editar --clas
 
 php artisan make:model SolicitudEvidenciaPagoEmail -mfsc
 php artisan make:livewire backoffice.solicitud-evidencia-pago-email.solicitud-evidencia-pago-email-lista --class
-php artisan make:livewire backoffice.solicitud-evidencia-pago-email.solicitud-evidencia-pago-email-crear --class
 php artisan make:livewire backoffice.solicitud-evidencia-pago-email.solicitud-evidencia-pago-email-editar --class
 
 php artisan make:model EvidenciaPagoAntiguo -mfsc
 php artisan make:livewire backoffice.evidencia-pago-antiguo.evidencia-pago-antiguo-lista --class
-php artisan make:livewire backoffice.evidencia-pago-antiguo.evidencia-pago-antiguo-crear --class
 php artisan make:livewire backoffice.evidencia-pago-antiguo.evidencia-pago-antiguo-editar --class
 
 php artisan make:model EstadoSolicitudDigitalizarLetra -mfsc
-php artisan make:livewire backoffice.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-lista --class
-php artisan make:livewire backoffice.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-crear --class
-php artisan make:livewire backoffice.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-editar --class
+php artisan make:livewire letras.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-lista --class
+php artisan make:livewire letras.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-crear --class
+php artisan make:livewire letras.estado-solicitud-digitalizar-letra.estado-solicitud-digitalizar-letra-editar --class
 
 php artisan make:model SolicitudDigitalizarLetra -mfsc
-php artisan make:livewire cavali.solicitud-digitalizar-letra.solicitud-digitalizar-letra-lista --class
-php artisan make:livewire cavali.solicitud-digitalizar-letra.solicitud-digitalizar-letra-crear --class
-php artisan make:livewire cavali.solicitud-digitalizar-letra.solicitud-digitalizar-letra-editar --class
+php artisan make:livewire letras.solicitud-digitalizar-letra.solicitud-digitalizar-letra-lista --class
+php artisan make:livewire letras.solicitud-digitalizar-letra.solicitud-digitalizar-letra-editar --class
 
 php artisan make:model EnvioCavali -mfsc
-php artisan make:livewire cavali.envios-cavali.envios-cavali-lista --class
-php artisan make:livewire cavali.envios-cavali.envios-cavali-crear --class
-php artisan make:livewire cavali.envios-cavali.envios-cavali-editar --class
+php artisan make:livewire letras.envios-cavali.envios-cavali-lista --class
+php artisan make:livewire letras.envios-cavali.envios-cavali-editar --class
 
 php artisan make:model EnvioCavaliSolicitud -mfsc
-php artisan make:livewire cavali.envio-cavali-solicitud.envio-cavali-solicitud-lista --class
-php artisan make:livewire cavali.envio-cavali-solicitud.envio-cavali-solicitud-crear --class
-php artisan make:livewire cavali.envio-cavali-solicitud.envio-cavali-solicitud-editar --class
+php artisan make:livewire letras.envio-cavali-solicitud.envio-cavali-solicitud-lista --class
+php artisan make:livewire letras.envio-cavali-solicitud.envio-cavali-solicitud-editar --class

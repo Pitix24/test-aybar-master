@@ -34,3 +34,37 @@ Route::group(['middleware' => ['permission:menu.ver']], function () {
         Route::get('/editar/{id}', MenuEditar::class)->middleware('permission:menu.editar')->name('editar');
     });
 });
+
+/*
+--------------------------------------------------------------------------
+PERMISOS DEL SISTEMA
+--------------------------------------------------------------------------
+Convención: recurso.accion
+
+ROL
+1. rol.navegacion
+2. rol.lista
+3. rol.crear
+4. rol.ver
+5. rol.editar
+6. rol.eliminar
+7. rol.exportar
+
+PERMISO
+1. permiso.navegacion
+2. permiso.lista
+3. permiso.crear
+4. permiso.ver
+5. permiso.editar
+6. permiso.eliminar
+7. permiso.exportar
+
+MENÚ
+1. menu.navegacion
+2. menu.lista
+3. menu.crear
+4. menu.ver
+5. menu.editar
+6. menu.eliminar
+7. menu.exportar
+*/

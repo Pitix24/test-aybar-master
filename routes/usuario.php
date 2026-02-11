@@ -24,3 +24,29 @@ Route::group(['middleware' => ['permission:cliente.ver']], function () {
         Route::get('/editar/{id}', ClienteEditar::class)->middleware('permission:cliente.editar')->name('editar');
     });
 });
+
+/*
+--------------------------------------------------------------------------
+PERMISOS DEL USUARIO
+--------------------------------------------------------------------------
+Convención: recurso.accion
+
+ADMIN
+1. admin.navegacion
+2. admin.lista
+3. admin.crear
+4. admin.ver
+5. admin.editar
+6. admin.eliminar
+7. admin.exportar
+8. admin.cambiar-clave
+
+CLIENTE
+1. cliente.navegacion
+2. cliente.lista
+3. cliente.crear
+4. cliente.ver
+5. cliente.editar
+6. cliente.exportar
+
+*/
