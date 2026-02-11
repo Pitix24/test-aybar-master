@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,7 +12,17 @@ return new class extends Migration
     {
         Schema::create('cita_emails', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('cita_id')->constrained()->onDelete('cascade');
+            $table->foreignId('emisor_id')->nullable()->constrained('users')->nullOnDelete(); // Admin
+            $table->foreignId('receptor_id')->nullable()->constrained('users')->nullOnDelete(); // Cliente
+
+            $table->string('asunto');
+            $table->longText('mensaje');
+            $table->timestamp('enviado_at');
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

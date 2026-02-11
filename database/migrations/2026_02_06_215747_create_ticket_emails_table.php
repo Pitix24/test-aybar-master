@@ -19,6 +19,7 @@ return new class extends Migration {
 
             $table->string('asunto');
             $table->longText('mensaje');
+            $table->timestamp('enviado_at');
 
             $table->timestamps();
             $table->softDeletes();

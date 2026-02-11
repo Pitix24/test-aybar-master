@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,7 +12,22 @@ return new class extends Migration
     {
         Schema::create('envio_cavali_solicituds', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('envios_cavali_id')
+                ->constrained('envio_cavalis', indexName: 'env_cavali_sol_env_fk')
+                ->cascadeOnDelete();
+
+            $table->foreignId('solicitud_digitalizar_letras_id')
+                ->constrained('solicitud_digitalizar_letras', indexName: 'env_cavali_sol_dig_fk')
+                ->cascadeOnDelete();
+
             $table->timestamps();
+
+            // 🔹 Evita duplicar solicitudes dentro del mismo envío
+            $table->unique(
+                ['envios_cavali_id', 'solicitud_digitalizar_letras_id'],
+                'envio_cavali_solicitud_unique'
+            );
         });
     }
 
