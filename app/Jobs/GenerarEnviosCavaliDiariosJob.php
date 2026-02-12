@@ -8,6 +8,7 @@ use App\Models\UnidadNegocio;
 use App\Models\EstadoSolicitudDigitalizarLetra;
 use App\Exports\CavaliExport;
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,12 +30,14 @@ class GenerarEnviosCavaliDiariosJob implements ShouldQueue
         $idEstadoEnviado = EstadoSolicitudDigitalizarLetra::id(EstadoSolicitudDigitalizarLetra::ENVIADO);
 
         UnidadNegocio::query()->each(function ($unidad) use ($fecha, $idEstadoPendiente, $idEstadoEnviado) {
+            DB::beginTransaction();
             try {
                 $solicitudes = SolicitudDigitalizarLetra::where('unidad_negocio_id', $unidad->id)
                     ->where('estado_solicitud_digitalizar_letra_id', $idEstadoPendiente)
                     ->get();
 
                 if ($solicitudes->isEmpty()) {
+                    DB::rollBack();
                     Log::channel('cavali')->info('JOB CAVALI: No hay solicitudes pendientes', [
                         'unidad_negocio_id' => $unidad->id,
                         'razon_social' => $unidad->razon_social,
@@ -76,11 +79,11 @@ class GenerarEnviosCavaliDiariosJob implements ShouldQueue
                 );
 
                 // Verificar que el archivo se generó correctamente
-                if (!\Storage::disk('local')->exists($path)) {
+                if (!Storage::disk('local')->exists($path)) {
                     throw new \Exception("No se pudo generar el archivo Excel en: {$path}");
                 }
 
-                $fileSize = \Storage::disk('local')->size($path);
+                $fileSize = Storage::disk('local')->size($path);
                 Log::channel('cavali')->info('JOB CAVALI: excel generado exitosamente', [
                     'path' => storage_path('app/' . $path),
                     'size' => $fileSize . ' bytes',
@@ -111,20 +114,23 @@ class GenerarEnviosCavaliDiariosJob implements ShouldQueue
                     }
                 );
 
+                DB::commit();
+
                 Log::channel('cavali')->info('JOB CAVALI: Proceso completado exitosamente', [
                     'envio_id' => $envio->id,
                     'unidad_negocio' => $unidad->razon_social,
                 ]);
             } catch (\Exception $e) {
+                DB::rollBack();
+
                 Log::channel('cavali')->error('JOB CAVALI: Error al procesar envío', [
                     'unidad_negocio_id' => $unidad->id,
                     'razon_social' => $unidad->razon_social,
                     'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
                     'trace' => $e->getTraceAsString(),
                 ]);
-
-                // Opcional: Notificar al administrador del error
-                // Mail::to('admin@aybarsac.com')->send(new CavaliErrorNotification($e, $unidad));
             }
         });
     }

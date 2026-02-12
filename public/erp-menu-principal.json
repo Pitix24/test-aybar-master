@@ -713,7 +713,7 @@
         "url": null,
         "icono": "fa-solid fa-pen-nib",
         "nivel": 1,
-        "permiso": "backoffice.ver",
+        "permiso": "modulo-letras.ver",
         "submenus": [
             {
                 "id": 44,
@@ -722,7 +722,7 @@
                 "url": null,
                 "icono": "fa-solid fa-lock-open",
                 "nivel": 2,
-                "permiso": "estado-solicitud-digitalizar-letra.ver",
+                "permiso": "estado-solicitud-digitalizar-letra.navegacion",
                 "submenus": [
                     {
                         "id": 111,
@@ -757,11 +757,11 @@
             {
                 "id": 46,
                 "nombre": "Envios letras",
-                "ruta": "erp.envio-cavali-solicitud.vista.todo",
+                "ruta": "erp.envio-cavali.vista.todo",
                 "url": null,
                 "icono": "fa-solid fa-file-invoice-dollar",
                 "nivel": 2,
-                "permiso": "envio-cavali-solicitud.ver",
+                "permiso": "envio-cavali.ver",
                 "submenus": []
             }
         ]

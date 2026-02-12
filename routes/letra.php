@@ -1,12 +1,13 @@
 <?php
 
 
-use App\Livewire\Letra\EnvioCavaliSolicitud\EnvioCavaliSolicitudEditar;
-use App\Livewire\Letra\EnvioCavaliSolicitud\EnvioCavaliSolicitudLista;
 use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraCrear;
 use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraEditar;
 use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;
+use App\Livewire\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraEditar;
 use App\Livewire\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraLista;
+use App\Livewire\Letras\EnvioCavali\EnvioCavaliDetalle;
+use App\Livewire\Letras\EnvioCavali\EnvioCavaliLista;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-letras.ver']], function () {
@@ -21,13 +22,14 @@ Route::group(['middleware' => ['permission:modulo-letras.ver']], function () {
     Route::group(['middleware' => ['permission:solicitud-digitalizar-letra.navegacion']], function () {
         Route::prefix('solicitar-letra-digital')->name('solicitar-letra-digital.vista.')->group(function () {
             Route::get('/', SolicitudDigitalizarLetraLista::class)->middleware('permission:solicitud-digitalizar-letra.ver')->name('todo');
+            Route::get('/editar/{id}', SolicitudDigitalizarLetraEditar::class)->middleware('permission:solicitud-digitalizar-letra.editar')->name('editar');
         });
     });
 
-    Route::group(['middleware' => ['permission:envio-cavali-solicitud.navegacion']], function () {
-        Route::prefix('envio-cavali-solicitud')->name('envio-cavali-solicitud.vista.')->group(function () {
-            Route::get('/', EnvioCavaliSolicitudLista::class)->middleware('permission:envio-cavali-solicitud.ver')->name('todo');
-            Route::get('/editar/{id}', EnvioCavaliSolicitudEditar::class)->middleware('permission:envio-cavali-solicitud.editar')->name('editar');
+    Route::group(['middleware' => ['permission:envio-cavali.navegacion']], function () {
+        Route::prefix('envio-cavali')->name('envio-cavali.vista.')->group(function () {
+            Route::get('/', EnvioCavaliLista::class)->middleware('permission:envio-cavali.ver')->name('todo');
+            Route::get('/detalle/{id}', EnvioCavaliDetalle::class)->middleware('permission:envio-cavali.detalle')->name('detalle');
         });
     });
 });

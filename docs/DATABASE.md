@@ -184,9 +184,5 @@ php artisan make:livewire letras.solicitud-digitalizar-letra.solicitud-digitaliz
 php artisan make:livewire letras.solicitud-digitalizar-letra.solicitud-digitalizar-letra-editar --class
 
 php artisan make:model EnvioCavali -mfsc
-php artisan make:livewire letras.envios-cavali.envios-cavali-lista --class
-php artisan make:livewire letras.envios-cavali.envios-cavali-editar --class
-
-php artisan make:model EnvioCavaliSolicitud -mfsc
-php artisan make:livewire letras.envio-cavali-solicitud.envio-cavali-solicitud-lista --class
-php artisan make:livewire letras.envio-cavali-solicitud.envio-cavali-solicitud-editar --class
+php artisan make:livewire letras.envio-cavali.envio-cavali-lista --class
+php artisan make:livewire letras.envio-cavali.envio-cavali-detalle --class
