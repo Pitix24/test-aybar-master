@@ -285,7 +285,7 @@ class MigracionAybarCorp2Seeder extends Seeder
             ");*/
 
             //MODULO BACKOFFICE
-            $this->command->info('Migrando Módulo Backoffice...');
+            /*$this->command->info('Migrando Módulo Backoffice...');
 
             DB::statement("
                 INSERT INTO {$dbDestino}.estado_solicitud_evidencia_pagos (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
@@ -363,7 +363,7 @@ class MigracionAybarCorp2Seeder extends Seeder
     INNER JOIN {$dbDestino}.solicitud_evidencia_pagos s 
         ON s.id = c2.solicitud_evidencia_pago_id
     WHERE c1.id IS NULL
-");
+");*/
 
             /*DB::statement("
                 INSERT INTO {$dbDestino}.evidencia_pago_antiguos (
@@ -388,34 +388,34 @@ class MigracionAybarCorp2Seeder extends Seeder
             ");*/
 
             //MODULO LETRAS
-            /*$this->command->info('Migrando Módulo Letras...');
+            $this->command->info('Migrando Módulo Letras...');
 
             DB::statement("
-                INSERT INTO aybar.estado_solicitud_digitalizar_letras (id, nombre, color, icono, activo, created_at, updated_at)
-                VALUES (1, 'OBSERVADO', NULL, NULL, 1, NOW(), NOW()),
-                       (2, 'PENDIENTE', NULL, NULL, 1, NOW(), NOW()),
-                       (3, 'RECHAZADO', NULL, NULL, 1, NOW(), NOW()),
-                       (4, 'APROBADO', NULL, NULL, 1, NOW(), NOW())
+                INSERT INTO {$dbDestino}.estado_solicitud_digitalizar_letras (id, nombre, color, icono, activo, created_at, updated_at)
+                VALUES (1, 'PENDIENTE', NULL, NULL, 1, NOW(), NOW()),
+                       (2, 'RECHAZADO', NULL, NULL, 1, NOW(), NOW()),
+                       (3, 'APROBADO', NULL, NULL, 1, NOW(), NOW()),
+                       (4, 'ENVIADO', NULL, NULL, 1, NOW(), NOW())
                 ON DUPLICATE KEY UPDATE nombre = VALUES(nombre)
             ");
 
             DB::statement("
-                INSERT INTO aybar.solicitud_digitalizar_letras (
+                INSERT INTO {$dbDestino}.solicitud_digitalizar_letras (
                     id, unidad_negocio_id, proyecto_id, cliente_id, lote_completo, 
                     codigo_cuota, razon_social, nombre_proyecto, etapa, manzana, 
                     lote, codigo_cliente, numero_cuota, codigo_venta, fecha_vencimiento, 
-                    importe_cuota, estado_cavali, created_at, updated_at, deleted_at
+                    importe_cuota, created_at, updated_at, deleted_at
                 )
                 SELECT s2.id, s2.unidad_negocio_id, s2.proyecto_id, s2.cliente_id, s2.lote_completo,
                     s2.codigo_cuota, s2.razon_social, s2.nombre_proyecto, s2.etapa, s2.manzana,
                     s2.lote, s2.codigo_cliente, s2.numero_cuota, s2.codigo_venta, s2.fecha_vencimiento,
-                    s2.importe_cuota, s2.estado_cavali, s2.created_at, s2.updated_at, s2.deleted_at
-                FROM aybarcorp2.solicitud_digitalizar_letras s2
-                LEFT JOIN aybar.solicitud_digitalizar_letras s1 ON s1.id = s2.id
+                    s2.importe_cuota, s2.created_at, s2.updated_at, s2.deleted_at
+                FROM {$dbOrigen}.solicitud_digitalizar_letras s2
+                LEFT JOIN {$dbDestino}.solicitud_digitalizar_letras s1 ON s1.id = s2.id
                 WHERE s1.id IS NULL
             ");
 
-            $this->command->info('✓ ¡Migración completada con éxito!');*/
+            $this->command->info('✓ ¡Migración completada con éxito!');
         });
     }
 }

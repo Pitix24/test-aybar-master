@@ -1,8 +1,11 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
+use App\Jobs\GenerarEnviosCavaliDiariosJob;
+use App\Jobs\TestSchedulerJob;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// 🧪 JOB DE PRUEBA: Se ejecuta cada minuto para verificar que el scheduler funciona
+Schedule::job(new TestSchedulerJob)->everyMinute();
+
+// Ejecutar el job de envíos CAVALI diarios al final del día (23:55)
+Schedule::job(new GenerarEnviosCavaliDiariosJob)->dailyAt('23:55');

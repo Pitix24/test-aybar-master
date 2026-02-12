@@ -25,6 +25,7 @@ class EstadoSolicitudDigitalizarLetra extends Model
     public const PENDIENTE = 'PENDIENTE';
     public const RECHAZADO = 'RECHAZADO';
     public const APROBADO = 'APROBADO';
+    public const ENVIADO = 'ENVIADO';
 
     public function solicitudes()
     {
