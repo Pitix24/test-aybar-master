@@ -3,7 +3,7 @@
         <span>
             <i class="fa-solid fa-address-card"></i>
             Perfil
-            @if (auth()->user()->necesitaActualizarDatosPersonales() || auth()->user()->necesitaActualizarDirecciones())
+            @if (auth()->user()->necesitaActualizarDatosPersonales() || auth()->user()->necesitaActualizarDireccion())
                 <span class="g_menu_badge warning">Actualiza</span>
             @endif
         </span>

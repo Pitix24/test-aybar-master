@@ -41,4 +41,14 @@ return [
         'password' => env('SLIN_PASSWORD'),
     ],
 
+    'canvia' => [
+        'url' => env('CANVIA_SOAP_URL'),
+        'user' => env('CANVIA_SOAP_USER'),
+        'password' => env('CANVIA_SOAP_PASSWORD'),
+    ],
+
+    'aybar_slin' => [
+        'url' => env('AYBAR_SLIN_URL', 'https://aybarcorp.com/slin'),
+    ],
+
 ];

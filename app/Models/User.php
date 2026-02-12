@@ -107,7 +107,7 @@ class User extends Authenticatable
 
     public function necesitaActualizarDatosPersonales(): bool
     {
-        return empty(optional($this->cliente)->telefono_principal);
+        return empty(optional($this->perfilCliente)->telefono_principal);
     }
 
     public function necesitaActualizarDireccion(): bool
