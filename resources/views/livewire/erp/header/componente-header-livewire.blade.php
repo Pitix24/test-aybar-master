@@ -4,6 +4,7 @@
     </span>
 
     <div class="header_menu" x-data="{ menuAbierto: null }" @keydown.escape.window="menuAbierto = null">
+        <div>Fecha y Hora</div>
         <!-- Dropdown Tema -->
         <div class="header_dropdown_wrapper" x-data="{ 
             get open() { return menuAbierto === 'tema' }, 

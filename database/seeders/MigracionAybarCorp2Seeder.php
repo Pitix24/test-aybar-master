@@ -12,13 +12,16 @@ class MigracionAybarCorp2Seeder extends Seeder
      */
     public function run(): void
     {
-        DB::transaction(function () {
+        $dbDestino = 'aybar';
+        $dbOrigen = 'aybarcorp';
+
+        DB::transaction(function () use ($dbDestino, $dbOrigen) {
 
             /* --- MODULO USUARIO --- */
             $this->command->info('Migrando Módulo Usuario...');
 
             DB::statement("
-                INSERT INTO aybar.users (
+                INSERT INTO {$dbDestino}.users (
                     id, name, email, email_verified_at, password, must_change_password, 
                     password_changed_at, profile_photo_path, rol, politica_uno, 
                     politica_dos, activo, remember_token, created_at, updated_at, deleted_at
@@ -26,54 +29,54 @@ class MigracionAybarCorp2Seeder extends Seeder
                 SELECT u.id, u.name, u.email, u.email_verified_at, u.password, u.must_change_password,
                     u.password_changed_at, u.profile_photo_path, u.rol, u.politica_uno,
                     u.politica_dos, u.activo, u.remember_token, u.created_at, u.updated_at, u.deleted_at
-                FROM aybarcorp2.users u
-                LEFT JOIN aybar.users au ON au.id = u.id
+                FROM {$dbOrigen}.users u
+                LEFT JOIN {$dbDestino}.users au ON au.id = u.id
                 WHERE au.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.model_has_roles (role_id, model_type, model_id)
+                INSERT INTO {$dbDestino}.model_has_roles (role_id, model_type, model_id)
                 SELECT 1, 'App\\Models\\User', u.id
-                FROM aybar.users u
+                FROM {$dbDestino}.users u
                 WHERE u.rol = 'admin'
                     AND NOT EXISTS (
-                        SELECT 1 FROM aybar.model_has_roles m 
+                        SELECT 1 FROM {$dbDestino}.model_has_roles m 
                         WHERE m.model_id = u.id AND m.role_id = 1 AND m.model_type = 'App\\Models\\User'
                     )
             ");
 
             DB::statement("
-                INSERT INTO aybar.clientes (
+                INSERT INTO {$dbDestino}.clientes (
                     id, user_id, nombre, email, dni, telefono_principal, 
                     telefono_alternativo, created_at, updated_at, deleted_at
                 )
                 SELECT c.id, c.user_id, c.nombre, c.email, c.dni, c.telefono_principal,
                     c.telefono_alternativo, c.created_at, c.updated_at, c.deleted_at
-                FROM aybarcorp2.clientes c
-                INNER JOIN aybarcorp2.users u ON u.id = c.user_id
-                LEFT JOIN aybar.clientes ac ON ac.id = c.id
+                FROM {$dbOrigen}.clientes c
+                INNER JOIN {$dbOrigen}.users u ON u.id = c.user_id
+                LEFT JOIN {$dbDestino}.clientes ac ON ac.id = c.id
                 WHERE u.rol = 'cliente' AND ac.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.direccions (
+                INSERT INTO {$dbDestino}.direccions (
                     id, user_id, region_id, provincia_id, distrito_id, direccion, 
                     direccion_numero, opcional, codigo_postal, referencia, created_at, updated_at
                 )
                 SELECT d.id, d.user_id, d.region_id, d.provincia_id, d.distrito_id, d.direccion,
                     d.direccion_numero, d.opcional, d.codigo_postal, d.instrucciones AS referencia,
                     d.created_at, d.updated_at
-                FROM aybarcorp2.direccions d
-                INNER JOIN aybarcorp2.users u ON u.id = d.user_id
-                LEFT JOIN aybar.direccions ad ON ad.id = d.id
+                FROM {$dbOrigen}.direccions d
+                INNER JOIN {$dbOrigen}.users u ON u.id = d.user_id
+                LEFT JOIN {$dbDestino}.direccions ad ON ad.id = d.id
                 WHERE u.rol = 'cliente' AND ad.id IS NULL
             ");
 
             //MODULO NEGOCIO
-            /*$this->command->info('Migrando Módulo Negocio...');
+            $this->command->info('Migrando Módulo Negocio...');
 
             DB::statement("
-                INSERT INTO aybar.unidad_negocios (
+                INSERT INTO {$dbDestino}.unidad_negocios (
                     id, nombre, razon_social, ruc, slin_id, cavali_girador_tipo_documento,
                     cavali_girador_documento, cavali_girador_nombre, cavali_girador_apellido,
                     cavali_girador_email, cavali_girador_telefono, created_at, updated_at, deleted_at
@@ -81,47 +84,47 @@ class MigracionAybarCorp2Seeder extends Seeder
                 SELECT id, nombre, razon_social, ruc, slin_id, cavali_girador_tipo_documento,
                     cavali_girador_documento, cavali_girador_nombre, cavali_girador_apellido,
                     cavali_girador_email, cavali_girador_telefono, created_at, updated_at, deleted_at
-                FROM aybarcorp2.unidad_negocios
+                FROM {$dbOrigen}.unidad_negocios
             ");
 
             DB::statement("
-                INSERT INTO aybar.grupo_proyectos (id, nombre, activo, created_at, updated_at, deleted_at)
-                SELECT id, nombre, activo, created_at, updated_at, deleted_at FROM aybarcorp2.grupo_proyectos
+                INSERT INTO {$dbDestino}.grupo_proyectos (id, nombre, activo, created_at, updated_at, deleted_at)
+                SELECT id, nombre, activo, created_at, updated_at, deleted_at FROM {$dbOrigen}.grupo_proyectos
             ");
 
             DB::statement("
-                INSERT INTO aybar.proyectos (
+                INSERT INTO {$dbDestino}.proyectos (
                     id, unidad_negocio_id, grupo_proyecto_id, nombre, slin_id, activo, 
                     created_at, updated_at, deleted_at
                 )
                 SELECT p.id, p.unidad_negocio_id, p.grupo_proyecto_id, p.nombre, p.slin_id, p.activo,
                     p.created_at, p.updated_at, p.deleted_at
-                FROM aybarcorp2.proyectos p
-                LEFT JOIN aybar.proyectos ap ON ap.id = p.id
+                FROM {$dbOrigen}.proyectos p
+                LEFT JOIN {$dbDestino}.proyectos ap ON ap.id = p.id
                 WHERE ap.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.areas (
+                INSERT INTO {$dbDestino}.areas (
                     id, nombre, email_buzon, color, icono, activo, created_at, updated_at, deleted_at
                 )
                 SELECT a.id, a.nombre, a.email_buzon, a.color, a.icono, a.activo, 
                     a.created_at, a.updated_at, a.deleted_at
-                FROM aybarcorp2.areas a
-                LEFT JOIN aybar.areas aa ON aa.id = a.id
+                FROM {$dbOrigen}.areas a
+                LEFT JOIN {$dbDestino}.areas aa ON aa.id = a.id
                 WHERE aa.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.area_user (id, area_id, user_id, is_principal, created_at, updated_at)
+                INSERT INTO {$dbDestino}.area_user (id, area_id, user_id, is_principal, created_at, updated_at)
                 SELECT au.id, au.area_id, au.user_id, au.is_principal, au.created_at, au.updated_at
-                FROM aybarcorp2.area_user au
-                LEFT JOIN aybar.area_user a2 ON a2.id = au.id
+                FROM {$dbOrigen}.area_user au
+                LEFT JOIN {$dbDestino}.area_user a2 ON a2.id = au.id
                 WHERE a2.id IS NULL
             ");
 
             //MODULO ATC
-            $this->command->info('Migrando Módulo ATC...');
+            /*$this->command->info('Migrando Módulo ATC...');
 
             DB::statement("
                 INSERT INTO aybar.tipo_solicituds (id, nombre, tiempo_solucion, activo, created_at, updated_at, deleted_at)
@@ -279,21 +282,21 @@ class MigracionAybarCorp2Seeder extends Seeder
                 FROM aybarcorp2.citas c
                 LEFT JOIN aybar.citas cc ON cc.id = c.id
                 WHERE cc.id IS NULL
-            ");
+            ");*/
 
             //MODULO BACKOFFICE
             $this->command->info('Migrando Módulo Backoffice...');
 
             DB::statement("
-                INSERT INTO aybar.estado_evidencia_pagos (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
+                INSERT INTO {$dbDestino}.estado_solicitud_evidencia_pagos (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
                 SELECT e2.id, e2.nombre, e2.color, e2.icono, e2.activo, e2.created_at, e2.updated_at, e2.deleted_at
-                FROM aybarcorp2.estado_evidencia_pagos e2
-                LEFT JOIN aybar.estado_evidencia_pagos e1 ON e1.id = e2.id
+                FROM {$dbOrigen}.estado_evidencia_pagos e2
+                LEFT JOIN {$dbDestino}.estado_solicitud_evidencia_pagos e1 ON e1.id = e2.id
                 WHERE e1.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.solicitud_evidencia_pagos (
+                INSERT INTO {$dbDestino}.solicitud_evidencia_pagos (
                     id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, 
                     estado_evidencia_pago_id, lote_completo, codigo_cuota, razon_social, 
                     nombre_proyecto, etapa, manzana, lote, codigo_cliente, numero_cuota, 
@@ -312,13 +315,13 @@ class MigracionAybarCorp2Seeder extends Seeder
                     s2.usuario_valida_id, 
                     CASE WHEN CAST(s2.fecha_validacion AS CHAR) = '0000-00-00 00:00:00' THEN NULL ELSE s2.fecha_validacion END,
                     s2.created_by, s2.updated_by, s2.deleted_by, s2.created_at, s2.updated_at, s2.deleted_at
-                FROM aybarcorp2.solicitud_evidencia_pagos s2
-                LEFT JOIN aybar.solicitud_evidencia_pagos s1 ON s1.id = s2.id
+                FROM {$dbOrigen}.solicitud_evidencia_pagos s2
+                LEFT JOIN {$dbDestino}.solicitud_evidencia_pagos s1 ON s1.id = s2.id
                 WHERE s1.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.evidencia_pagos (
+                INSERT INTO {$dbDestino}.evidencia_pagos (
                     id, solicitud_evidencia_pago_id, estado_evidencia_pago_id, path, 
                     url, extension, numero_operacion, banco, monto, fecha, es_reenvio, 
                     slin_respuesta, observacion, created_at, updated_at, deleted_at
@@ -326,25 +329,25 @@ class MigracionAybarCorp2Seeder extends Seeder
                 SELECT e2.id, e2.solicitud_evidencia_pago_id, e2.estado_evidencia_pago_id, e2.path,
                     e2.url, e2.extension, e2.numero_operacion, e2.banco, e2.monto, e2.fecha,
                     e2.es_reenvio, e2.slin_respuesta, e2.observacion, e2.created_at, e2.updated_at, e2.deleted_at
-                FROM aybarcorp2.evidencia_pagos e2
-                LEFT JOIN aybar.evidencia_pagos e1 ON e1.id = e2.id
-                INNER JOIN aybar.solicitud_evidencia_pagos s ON s.id = e2.solicitud_evidencia_pago_id
+                FROM {$dbOrigen}.evidencia_pagos e2
+                LEFT JOIN {$dbDestino}.evidencia_pagos e1 ON e1.id = e2.id
+                INNER JOIN {$dbDestino}.solicitud_evidencia_pagos s ON s.id = e2.solicitud_evidencia_pago_id
                 WHERE e1.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.solicitud_evidencia_pago_emails (
+                INSERT INTO {$dbDestino}.solicitud_evidencia_pago_emails (
                     id, solicitud_evidencia_pago_id, mensaje, enviado_at, created_at, updated_at
                 )
                 SELECT c2.id, c2.solicitud_evidencia_pago_id, c2.mensaje, c2.enviado_at, c2.created_at, c2.updated_at
-                FROM aybarcorp2.correo_evidencia_pagos c2
-                LEFT JOIN aybar.solicitud_evidencia_pago_emails c1 ON c1.id = c2.id
-                INNER JOIN aybar.solicitud_evidencia_pagos s ON s.id = c2.solicitud_evidencia_pago_id
+                FROM {$dbOrigen}.correo_evidencia_pagos c2
+                LEFT JOIN {$dbDestino}.solicitud_evidencia_pago_emails c1 ON c1.id = c2.id
+                INNER JOIN {$dbDestino}.solicitud_evidencia_pagos s ON s.id = c2.solicitud_evidencia_pago_id
                 WHERE c1.id IS NULL
             ");
 
-            DB::statement("
-                INSERT INTO aybar.evidencia_pago_antiguos (
+            /*DB::statement("
+                INSERT INTO {$dbDestino}.evidencia_pago_antiguos (
                     id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, imagen_url, 
                     operacion_numero, operacion_hora, `union`, cuota_fija, monto, pago_de, 
                     codigo_cuenta, nombre_archivo, moneda, medio_pago, fecha_deposito, 
@@ -360,13 +363,13 @@ class MigracionAybarCorp2Seeder extends Seeder
                     e2.codigo_cliente, e2.nombres_cliente, e2.razon_social, e2.proyecto_nombre,
                     e2.etapa, e2.lote, e2.numero_cuota, e2.gestor, e2.fecha_registro, e2.usuario_valida_id,
                     e2.validador, e2.fecha_validacion, e2.created_by, e2.updated_by, e2.deleted_by, e2.created_at, e2.updated_at
-                FROM aybarcorp2.evidencia_pago_antiguos e2
-                LEFT JOIN aybar.evidencia_pago_antiguos e1 ON e1.id = e2.id
+                FROM {$dbOrigen}.evidencia_pago_antiguos e2
+                LEFT JOIN {$dbDestino}.evidencia_pago_antiguos e1 ON e1.id = e2.id
                 WHERE e1.id IS NULL
-            ");
+            ");*/
 
             //MODULO LETRAS
-            $this->command->info('Migrando Módulo Letras...');
+            /*$this->command->info('Migrando Módulo Letras...');
 
             DB::statement("
                 INSERT INTO aybar.estado_solicitud_digitalizar_letras (id, nombre, color, icono, activo, created_at, updated_at)
