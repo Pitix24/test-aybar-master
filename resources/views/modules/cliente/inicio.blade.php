@@ -5,6 +5,8 @@
 @section('contenidoCliente')
 
     <div class="g_gap_pagina">
-        <h2>perfil cliente</h2>
+        @livewire('cliente.perfil.perfil-ver')
+        @livewire('cliente.perfil.direccion-editar')
+        @livewire('cliente.perfil.cuenta-editar')
     </div>
 @endsection

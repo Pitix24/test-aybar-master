@@ -186,3 +186,14 @@ php artisan make:livewire letras.solicitud-digitalizar-letra.solicitud-digitaliz
 php artisan make:model EnvioCavali -mfsc
 php artisan make:livewire letras.envio-cavali.envio-cavali-lista --class
 php artisan make:livewire letras.envio-cavali.envio-cavali-detalle --class
+
+php artisan make:livewire cliente.perfil.perfil-ver --class
+php artisan make:livewire cliente.perfil.direccion-editar --class
+php artisan make:livewire cliente.perfil.cuenta-editar --class
+
+php artisan make:livewire cliente.lote.lote-todo --class
+php artisan make:livewire cliente.lote.estado-cuenta-ver --class
+php artisan make:livewire cliente.lote.adjuntar-voucher-pago --class
+php artisan make:livewire cliente.lote.aceptar-digitalizar-letra --class
+
+php artisan make:livewire cliente.tutorial.tutorial-todo --class
