@@ -3,8 +3,13 @@
         <i class="fa-solid fa-bars"></i>
     </span>
 
+    <!-- Fecha y Hora -->
+    <div class="header_date_time" x-data="reloj()" x-init="actualizar()">
+        <span class="header_date" x-text="fecha"></span>
+        <span class="header_time" x-text="hora"></span>
+    </div>
+
     <div class="header_menu" x-data="{ menuAbierto: null }" @keydown.escape.window="menuAbierto = null">
-        <div>Fecha y Hora</div>
         <!-- Dropdown Tema -->
         <div class="header_dropdown_wrapper" x-data="{ 
             get open() { return menuAbierto === 'tema' }, 

@@ -22,4 +22,36 @@ document.addEventListener('alpine:init', () => {
             localStorage.setItem('theme', this.theme);
         }
     }));
+
+    Alpine.data('reloj', () => ({
+        fecha: '',
+        hora: '',
+
+        actualizar() {
+            const formateroFecha = new Intl.DateTimeFormat('es-PE', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            const formateroHora = new Intl.DateTimeFormat('es-PE', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+
+            const tick = () => {
+                const ahora = new Date();
+                let fechaFormateada = formateroFecha.format(ahora);
+                // Capitalizar primera letra
+                this.fecha = fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1);
+                this.hora = formateroHora.format(ahora);
+            };
+
+            tick();
+            setInterval(tick, 1000);
+        }
+    }));
 });

@@ -22,8 +22,27 @@
 .header_menu {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
     margin-left: auto;
+}
+
+.header_date_time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+.header_date {
+    font-size: 0.75rem;
+    color: var(--color-placeholder);
+    text-transform: capitalize;
+}
+
+.header_time {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-texto-primario);
 }
 
 .header_profile_info {
@@ -71,5 +90,9 @@
 
     .layout_menu_hamburguesa_celular {
         display: block;
+    }
+
+    .header_profile_info {
+        display: none;
     }
 }
