@@ -57,6 +57,9 @@ class SolicitudEvidenciaPagoLista extends Component
     public $cantidad_evidencias = '';
 
     #[Url]
+    public $cantidad_correos = '';
+
+    #[Url]
     public $perPage = 20;
 
     public $estados = [];
@@ -107,6 +110,7 @@ class SolicitudEvidenciaPagoLista extends Component
                 'tiene_validacion',
                 'es_asbanc',
                 'cantidad_evidencias',
+                'cantidad_correos',
                 'perPage'
             ])
         ) {
@@ -128,6 +132,7 @@ class SolicitudEvidenciaPagoLista extends Component
             'tiene_validacion',
             'es_asbanc',
             'cantidad_evidencias',
+            'cantidad_correos',
         ]);
         $this->perPage = 20;
         $this->resetPage();
@@ -160,7 +165,7 @@ class SolicitudEvidenciaPagoLista extends Component
     {
         $query = SolicitudEvidenciaPago::query()
             ->with(['unidadNegocio', 'proyecto', 'userCliente.perfilCliente', 'estado', 'gestor'])
-            ->withCount('evidencias')
+            ->withCount(['evidencias', 'correos'])
             ->when($this->buscar, function ($q) {
                 $buscar = $this->buscar;
                 $q->where(function ($sub) use ($buscar) {
@@ -223,6 +228,9 @@ class SolicitudEvidenciaPagoLista extends Component
         $items = $query->when($this->cantidad_evidencias !== '', function ($q) {
             $q->has('evidencias', '=', $this->cantidad_evidencias);
         })
+            ->when($this->cantidad_correos !== '', function ($q) {
+                $q->has('correos', '=', $this->cantidad_correos);
+            })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 

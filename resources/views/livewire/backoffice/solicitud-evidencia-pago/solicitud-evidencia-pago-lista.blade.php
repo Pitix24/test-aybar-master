@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, gestor_id, fecha_inicio, fecha_fin, tipo_cierre, tiene_validacion, es_asbanc, cantidad_evidencias, resetFiltros, exportExcel"
+        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, gestor_id, fecha_inicio, fecha_fin, tipo_cierre, tiene_validacion, es_asbanc, cantidad_evidencias, cantidad_correos, resetFiltros, exportExcel"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -107,6 +107,17 @@
                         @endfor
                     </select>
                 </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Cant. Emails</label>
+                    <select wire:model.live="cantidad_correos">
+                        <option value="">TODOS</option>
+                        <option value="0">SIN EMAILS</option>
+                        @for ($i = 1; $i <= 10; $i++)
+                            <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'EMAIL' : 'EMAILS' }}</option>
+                        @endfor
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -152,6 +163,7 @@
                         <th class="g_celda_centro">Lt</th>
                         <th class="g_celda_centro">Cuota</th>
                         <th class="g_celda_centro">Evid.</th>
+                        <th class="g_celda_centro">Emails</th>
                         <th>Cliente</th>
                         <th>DNI</th>
                         <th class="g_celda_centro">Estado</th>
@@ -174,8 +186,14 @@
                             <td class="g_celda_centro">{{ $item->lote }}</td>
                             <td class="g_celda_centro">{{ $item->numero_cuota }}</td>
                             <td class="g_celda_centro">
-                                <span class="g_badge {{ $item->evidencias_count > 0 ? 'g_badge_primary' : 'g_badge_light' }}">
+                                <span
+                                    class="g_badge {{ $item->evidencias_count > 0 ? 'g_badge_primary' : 'g_badge_light' }}">
                                     {{ $item->evidencias_count }}
+                                </span>
+                            </td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge {{ $item->correos_count > 0 ? 'g_badge_info' : 'g_badge_light' }}">
+                                    {{ $item->correos_count }}
                                 </span>
                             </td>
                             <td class="g_resaltar g_resumir">{{ $item->userCliente?->name ?? '—' }}</td>
