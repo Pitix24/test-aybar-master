@@ -1,11 +1,13 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="buscar, activo, resetFiltros, gotoPage" message="Cargando..." />
+    <x-loading-overlay wire:loading
+        wire:target="buscar, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
+        message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Gestión de Menú ERP</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('menu-crear')
+            @can('menu.crear')
                 <a href="{{ route('erp.menu.vista.crear') }}" class="g_boton g_boton_primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
@@ -15,9 +17,9 @@
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_6">
+                <div class="g_margin_bottom_10 g_columna_3">
                     <label>Nombre del Ítem</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Buscar por nombre o ID...">
+                    <input type="text" wire:model.live.debounce.1300ms="buscar">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_3">
@@ -28,17 +30,40 @@
                         <option value="0">Inactivos</option>
                     </select>
                 </div>
-
-                <div class="g_columna_3 g_fila_final">
-                    <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                        Limpiar <i class="fa-solid fa-rotate-left"></i>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 
     <div class="g_panel">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
+                @can('menu.exportar')
+                    <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                        wire:target="exportExcel">
+                        <span wire:loading.remove wire:target="exportExcel">Excel <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcel">Exportando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
+            <div class="g_tabla_cabecera_filtro formulario">
+                <div>
+                    <label>Mostrar</label>
+                    <select wire:model.live="perPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="g_contenedor_tabla">
             <table class="g_tabla">
                 <thead>
@@ -71,6 +96,11 @@
                 <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay ítems registrados en el menú.' }}
                 </p>
                 <i class="fa-regular fa-face-grin-wink"></i>
+            </div>
+        @else
+            <div class="g_paginacion">
+                Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
+                de {{ $items->total() }} registros
             </div>
         @endif
     </div>

@@ -28,13 +28,15 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
-                    wire:target="exportExcel">
-                    <span wire:loading.remove wire:target="exportExcel">Excel <i
-                            class="fa-regular fa-file-excel"></i></span>
-                    <span wire:loading wire:target="exportExcel">Exportando... <i
-                            class="fa-solid fa-spinner fa-spin"></i></span>
-                </button>
+                @can('permiso.exportar')
+                    <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                        wire:target="exportExcel">
+                        <span wire:loading.remove wire:target="exportExcel">Excel <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcel">Exportando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
 
                 <button wire:click="resetFiltros" class="g_boton g_boton_danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>

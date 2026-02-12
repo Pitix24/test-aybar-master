@@ -10,6 +10,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Title;
 
+use App\Exports\MenuExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
 #[Title('Gestión de Menú')]
@@ -38,6 +41,16 @@ class MenuLista extends Component
         $this->reset(['buscar', 'activo']);
         $this->perPage = 50;
         $this->resetPage();
+    }
+
+    public function exportExcel()
+    {
+        abort_unless(auth()->user()->can('menu.exportar'), 403);
+
+        return Excel::download(
+            new MenuExport($this->buscar, $this->activo, $this->perPage, $this->getPage()),
+            'menu_erp_' . now()->format('Y-m-d_H-i') . '.xlsx'
+        );
     }
 
     public function render()

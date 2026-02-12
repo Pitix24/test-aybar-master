@@ -7,8 +7,10 @@
         <h2>Usuarios Admin</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.admin.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('admin.crear')
+                <a href="{{ route('erp.admin.vista.crear') }}" class="g_boton g_boton_primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
         </div>
     </div>
 
@@ -45,13 +47,15 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
-                    wire:target="exportExcel">
-                    <span wire:loading.remove wire:target="exportExcel">Excel <i
-                            class="fa-regular fa-file-excel"></i></span>
-                    <span wire:loading wire:target="exportExcel">Exportando... <i
-                            class="fa-solid fa-spinner fa-spin"></i></span>
-                </button>
+                @can('admin.exportar')
+                    <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                        wire:target="exportExcel">
+                        <span wire:loading.remove wire:target="exportExcel">Excel <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcel">Exportando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
 
                 <button wire:click="resetFiltros" class="g_boton g_boton_danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
@@ -104,10 +108,12 @@
                                 @endif
                             </td>
                             <td class="g_celda_acciones g_celda_centro centro">
-                                <a href="{{ route('erp.admin.vista.editar', $item->id) }}" class="g_accion_editar"
-                                    title="Editar">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
+                                @can('admin.editar')
+                                    <a href="{{ route('erp.admin.vista.editar', $item->id) }}" class="g_accion_editar"
+                                        title="Editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

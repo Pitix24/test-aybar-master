@@ -41,6 +41,7 @@ class RolesYPermisosSeeder extends Seeder
                 'menu.crear',//ok
                 'menu.editar',//ok
                 'menu.eliminar',//ok
+                'menu.exportar',//ok
             ],
             'Módulo Usuario' => [
                 'modulo-usuarios.ver',
