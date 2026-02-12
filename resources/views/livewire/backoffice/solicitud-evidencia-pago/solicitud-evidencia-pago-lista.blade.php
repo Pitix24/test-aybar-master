@@ -1,16 +1,10 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, admin, fecha_inicio, fecha_fin, tipo_cierre, tiene_validacion, es_asbanc, resetFiltros, exportExcel, gotoPage, nextPage, previousPage"
+        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, gestor_id, fecha_inicio, fecha_fin, tipo_cierre, tiene_validacion, es_asbanc, resetFiltros, exportExcel"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Validación de evidencia de pago portal cliente</h2>
-
-        <div class="cabecera_titulo_botones">
-            <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
-            </button>
-        </div>
     </div>
 
     <div class="g_panel">
@@ -25,7 +19,7 @@
                     <label>Empresa </label>
                     <select wire:model.live="unidad_negocio_id">
                         <option value="">TODOS</option>
-                        @foreach ($empresas as $empresa)
+                        @foreach ($unidades_negocios as $empresa)
                             <option value="{{ $empresa->id }}">{{ $empresa->nombre }}</option>
                         @endforeach
                     </select>
@@ -43,8 +37,8 @@
 
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Gestor</label>
-                    <select wire:model.live="admin">
-                        <option value="">Todos</option>
+                    <select wire:model.live="gestor_id">
+                        <option value="">TODOS</option>
                         <option value="sin_asignar">FALTA ASIGNAR</option>
                         @foreach ($usuarios_admin as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -114,14 +108,21 @@
                     <span wire:loading wire:target="exportExcel">Exportando... <i
                             class="fa-solid fa-spinner fa-spin"></i></span>
                 </button>
+
+                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
+                </button>
             </div>
 
             <div class="g_tabla_cabecera_filtro formulario">
-                <select wire:model.live="perPage">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+                <div>
+                    <label>Mostrar</label>
+                    <select wire:model.live="perPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -131,45 +132,45 @@
                     <tr>
                         <th class="g_celda_centro">Nº</th>
                         <th>Gestor</th>
-                        <th>Razón S.</th>
+                        <th>Empresa</th>
                         <th>Proyecto</th>
-                        <th>Etapa</th>
-                        <th>Mz.</th>
-                        <th>Lt.</th>
-                        <th>N° Cuota</th>
+                        <th class="g_celda_centro">Etapa</th>
+                        <th class="g_celda_centro">Mz</th>
+                        <th class="g_celda_centro">Lt</th>
+                        <th class="g_celda_centro">Cuota</th>
                         <th>Cliente</th>
                         <th>DNI</th>
+                        <th class="g_celda_centro">Estado</th>
                         <th>Fecha</th>
-                        <th>Estado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach ($evidencias as $index => $item)
+                    @foreach ($items as $index => $item)
                         <tr>
-                            <td class="g_celda_centro">{{ $evidencias->firstItem() + $index }}</td>
-                            <td class="g_resaltar g_resumir">
+                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_negrita g_resumir">
                                 {{ $item->gestor?->name ?? 'Falta asignar' }}
                             </td>
-                            <td class="g_resumir">{{ $item->unidadNegocio?->nombre ?? '—' }}</td>
-                            <td class="g_resumir">{{ $item->proyecto?->nombre ?? '—' }}</td>
-                            <td class="g_resumir">{{ $item->etapa }}</td>
-                            <td class="g_resumir">{{ $item->manzana }}</td>
-                            <td class="g_resumir">{{ $item->lote }}</td>
-                            <td class="g_resumir">{{ $item->numero_cuota }}</td>
+                            <td class="g_resumir g_inferior">{{ $item->unidadNegocio?->nombre ?? '—' }}</td>
+                            <td class="g_resumir g_inferior">{{ $item->proyecto?->nombre ?? '—' }}</td>
+                            <td class="g_celda_centro">{{ $item->etapa }}</td>
+                            <td class="g_celda_centro">{{ $item->manzana }}</td>
+                            <td class="g_celda_centro">{{ $item->lote }}</td>
+                            <td class="g_celda_centro">{{ $item->numero_cuota }}</td>
                             <td class="g_resaltar g_resumir">{{ $item->userCliente?->name ?? '—' }}</td>
-                            <td> {{ $item->userCliente?->perfilCliente?->dni ?? '—' }}</td>
-                            <td>{{ $item->created_at->format('Y-m-d H:i') }}</td>
-                            <td>
+                            <td class="g_resaltar">{{ $item->userCliente?->perfilCliente?->dni ?? '—' }}</td>
+                            <td class="g_celda_centro">
                                 @if($item->estado)
-                                    <span style="color: {{ $item->estado->color }};">
-                                        <i class="{{ $item->estado->icono }}"></i> {{ $item->estado->nombre }}
+                                    <span class="g_badge g_badge_soft" style="color: {{ $item->estado->color }};">
+                                        {{ $item->estado->nombre }}
                                     </span>
                                 @else
-                                    <span class="g_badge">S/E</span>
+                                    <span class="g_badge g_badge_light">S/E</span>
                                 @endif
                             </td>
+                            <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
                             <td class="g_celda_acciones g_celda_centro">
                                 <a href="{{ route('erp.solicitud-evidencia-pago.vista.editar', $item->id) }}"
                                     class="g_accion_editar" title="Editar">
@@ -182,21 +183,21 @@
             </table>
         </div>
 
-        @if ($evidencias->hasPages())
+        @if ($items->hasPages())
             <div class="g_paginacion">
-                {{ $evidencias->links('vendor.pagination.default-livewire') }}
+                {{ $items->links('vendor.pagination.default-livewire') }}
             </div>
         @endif
 
-        @if ($evidencias->isEmpty())
+        @if ($items->isEmpty())
             <div class="g_vacio">
-                <p>No se encontraron resultados.</p>
+                <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay items disponibles.' }}</p>
                 <i class="fa-regular fa-face-grin-wink"></i>
             </div>
         @else
             <div class="g_paginacion">
-                Mostrando {{ $evidencias->firstItem() ?? 0 }} – {{ $evidencias->lastItem() ?? 0 }}
-                de {{ $evidencias->total() }} registros
+                Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
+                de {{ $items->total() }} registros
             </div>
         @endif
     </div>

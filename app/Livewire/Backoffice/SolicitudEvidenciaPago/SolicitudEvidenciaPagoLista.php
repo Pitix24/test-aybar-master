@@ -17,7 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SolicitudEvidenciaPagoExport;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Solicitudes de Evidencia de Pago')]
 class SolicitudEvidenciaPagoLista extends Component
 {
@@ -25,9 +25,6 @@ class SolicitudEvidenciaPagoLista extends Component
 
     #[Url(as: 'q')]
     public $buscar = '';
-
-    #[Url]
-    public $perPage = 20;
 
     #[Url]
     public $estado_id = '';
@@ -39,7 +36,7 @@ class SolicitudEvidenciaPagoLista extends Component
     public $proyecto_id = '';
 
     #[Url]
-    public $admin = '';
+    public $gestor_id = '';
 
     #[Url]
     public $fecha_inicio = '';
@@ -56,6 +53,42 @@ class SolicitudEvidenciaPagoLista extends Component
     #[Url]
     public $es_asbanc = '';
 
+    #[Url]
+    public $perPage = 20;
+
+    public $estados = [];
+    public $unidades_negocios = [];
+    public $proyectos = [];
+    public $usuarios_admin = [];
+
+    public function mount()
+    {
+        $this->estados = EstadoSolicitudEvidenciaPago::all();
+        $this->unidades_negocios = UnidadNegocio::all();
+        $this->usuarios_admin = User::role(['asesor-atc', 'supervisor-atc'])->get();
+
+        if ($this->unidad_negocio_id) {
+            $this->loadProyectos();
+        }
+    }
+
+    public function updatedUnidadNegocioId($value)
+    {
+        $this->proyecto_id = '';
+        $this->proyectos = [];
+
+        if ($value) {
+            $this->loadProyectos();
+        }
+    }
+
+    public function loadProyectos()
+    {
+        if (!is_null($this->unidad_negocio_id)) {
+            $this->proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)->get();
+        }
+    }
+
     public function updated($property)
     {
         if (
@@ -64,7 +97,7 @@ class SolicitudEvidenciaPagoLista extends Component
                 'estado_id',
                 'unidad_negocio_id',
                 'proyecto_id',
-                'admin',
+                'gestor_id',
                 'fecha_inicio',
                 'fecha_fin',
                 'tipo_cierre',
@@ -80,11 +113,11 @@ class SolicitudEvidenciaPagoLista extends Component
     public function resetFiltros()
     {
         $this->reset([
+            'buscar',
             'estado_id',
             'unidad_negocio_id',
             'proyecto_id',
-            'buscar',
-            'admin',
+            'gestor_id',
             'fecha_inicio',
             'fecha_fin',
             'tipo_cierre',
@@ -98,12 +131,13 @@ class SolicitudEvidenciaPagoLista extends Component
     public function exportExcel()
     {
         abort_unless(auth()->user()->can('solicitud-evidencia-pago.exportar'), 403);
+
         return Excel::download(
             new SolicitudEvidenciaPagoExport(
                 $this->buscar,
                 $this->unidad_negocio_id,
                 $this->proyecto_id,
-                $this->admin,
+                $this->gestor_id,
                 $this->estado_id,
                 $this->fecha_inicio,
                 $this->fecha_fin,
@@ -119,7 +153,7 @@ class SolicitudEvidenciaPagoLista extends Component
 
     public function render()
     {
-        $evidencias = SolicitudEvidenciaPago::query()
+        $items = SolicitudEvidenciaPago::query()
             ->with(['unidadNegocio', 'proyecto', 'userCliente.perfilCliente', 'estado', 'gestor'])
             ->when($this->buscar, function ($q) {
                 $buscar = $this->buscar;
@@ -136,11 +170,11 @@ class SolicitudEvidenciaPagoLista extends Component
             ->when($this->estado_id, function ($q) {
                 $q->where('estado_solicitud_evidencia_pago_id', $this->estado_id);
             })
-            ->when($this->admin, function ($q) {
-                if ($this->admin === 'sin_asignar') {
+            ->when($this->gestor_id, function ($q) {
+                if ($this->gestor_id === 'sin_asignar') {
                     $q->whereNull('gestor_id');
                 } else {
-                    $q->where('gestor_id', $this->admin);
+                    $q->where('gestor_id', $this->gestor_id);
                 }
             })
             ->when($this->unidad_negocio_id, function ($q) {
@@ -182,18 +216,7 @@ class SolicitudEvidenciaPagoLista extends Component
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
-        $estados = EstadoSolicitudEvidenciaPago::all();
-        $empresas = UnidadNegocio::all();
-        $proyectos = Proyecto::all();
-        $usuarios_admin = User::role(['asesor-atc', 'supervisor-atc'])->get();
-
-        return view('livewire.backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-lista', [
-            'evidencias' => $evidencias,
-            'estados' => $estados,
-            'empresas' => $empresas,
-            'proyectos' => $proyectos,
-            'usuarios_admin' => $usuarios_admin,
-        ]);
+        return view('livewire.backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-lista', compact('items'));
     }
 
     public function placeholder()
