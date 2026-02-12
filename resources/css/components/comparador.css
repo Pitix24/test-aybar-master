@@ -1,0 +1,71 @@
+.g_comparador_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.g_comparador_fila {
+    display: grid;
+    grid-template-columns: 80px 140px 1fr 120px 150px 80px;
+    align-items: center;
+    padding: 12px 15px;
+    background: var(--color-blanco, #fff);
+    border-radius: 8px;
+    border: 1px solid var(--color-light-border, #e2e8f0);
+    transition: all 0.2s ease;
+}
+
+.g_comparador_header {
+    background: var(--color-light, #fafafa);
+    border: none;
+    font-weight: 600;
+    color: var(--color-negro, #333);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.g_comparador_referencia {
+    background: #f0f7ff;
+    /* Un azul muy suave para resaltar la referencia */
+    border: 2px solid var(--color-primario, #02424E);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.g_comparador_separador {
+    text-align: center;
+    position: relative;
+    margin: 20px 0 10px;
+    padding: 10px;
+}
+
+.g_comparador_separador::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: var(--color-light-border, #e2e8f0);
+    z-index: 1;
+}
+
+.g_comparador_separador span {
+    position: relative;
+    z-index: 2;
+    background: var(--color-fondo-panel, #fff);
+    padding: 0 15px;
+    font-size: 0.8rem;
+    color: #98a4ae;
+    font-weight: 500;
+}
+
+.g_fila_activa {
+    background: #f0f7ff !important;
+    border-color: var(--color-primario) !important;
+    transform: translateX(5px);
+}

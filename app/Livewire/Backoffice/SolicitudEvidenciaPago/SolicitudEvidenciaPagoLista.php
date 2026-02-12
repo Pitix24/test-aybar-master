@@ -54,6 +54,9 @@ class SolicitudEvidenciaPagoLista extends Component
     public $es_asbanc = '';
 
     #[Url]
+    public $cantidad_evidencias = '';
+
+    #[Url]
     public $perPage = 20;
 
     public $estados = [];
@@ -103,6 +106,7 @@ class SolicitudEvidenciaPagoLista extends Component
                 'tipo_cierre',
                 'tiene_validacion',
                 'es_asbanc',
+                'cantidad_evidencias',
                 'perPage'
             ])
         ) {
@@ -123,6 +127,7 @@ class SolicitudEvidenciaPagoLista extends Component
             'tipo_cierre',
             'tiene_validacion',
             'es_asbanc',
+            'cantidad_evidencias',
         ]);
         $this->perPage = 20;
         $this->resetPage();
@@ -153,8 +158,9 @@ class SolicitudEvidenciaPagoLista extends Component
 
     public function render()
     {
-        $items = SolicitudEvidenciaPago::query()
+        $query = SolicitudEvidenciaPago::query()
             ->with(['unidadNegocio', 'proyecto', 'userCliente.perfilCliente', 'estado', 'gestor'])
+            ->withCount('evidencias')
             ->when($this->buscar, function ($q) {
                 $buscar = $this->buscar;
                 $q->where(function ($sub) use ($buscar) {
@@ -212,7 +218,11 @@ class SolicitudEvidenciaPagoLista extends Component
                 if ($this->es_asbanc === 'no') {
                     $q->where('slin_asbanc', false);
                 }
-            })
+            });
+
+        $items = $query->when($this->cantidad_evidencias !== '', function ($q) {
+            $q->has('evidencias', '=', $this->cantidad_evidencias);
+        })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
