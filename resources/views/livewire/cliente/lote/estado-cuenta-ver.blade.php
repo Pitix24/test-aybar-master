@@ -28,19 +28,19 @@
             <div class="g_fila">
                 <div class="g_columna_3">
                     <label>Precio Venta</label>
-                    <p class="g_negrita">S/ {{ $estado_cuenta['Venta'] ?? '0.00' }}</p>
+                    <p class="g_negrita">S/ {{ number_format((float) str_replace(',', '', $estado_cuenta['Venta'] ?? 0), 2) }}</p>
                 </div>
                 <div class="g_columna_3">
                     <label>Inicial</label>
-                    <p>S/ {{ $estado_cuenta['Inicial'] ?? '0.00' }}</p>
+                    <p>S/ {{ number_format((float) str_replace(',', '', $estado_cuenta['Inicial'] ?? 0), 2) }}</p>
                 </div>
                 <div class="g_columna_3">
                     <label>Financiado</label>
-                    <p class="g_texto_info">S/ {{ $estado_cuenta['ImporteFinanciado'] ?? '0.00' }}</p>
+                    <p class="g_texto_info">S/ {{ number_format((float) str_replace(',', '', $estado_cuenta['ImporteFinanciado'] ?? 0), 2) }}</p>
                 </div>
                 <div class="g_columna_3">
                     <label>Amortizado</label>
-                    <p class="g_texto_success">S/ {{ $estado_cuenta['importe_amortizado'] ?? '0.00' }}</p>
+                    <p class="g_texto_success">S/ {{ number_format((float) str_replace(',', '', $estado_cuenta['importe_amortizado'] ?? 0), 2) }}</p>
                 </div>
             </div>
 
@@ -80,8 +80,8 @@
                         <tr wire:key="cuota-row-{{ $item['idCuota'] }}">
                             <td class="g_celda_centro g_negrita">{{ $item['NroCuota'] ?? '-' }}</td>
                             <td class="g_inferior">{{ $item['FecVencimiento'] ?? '-' }}</td>
-                            <td class="g_celda_derecha g_negrita">S/ {{ number_format($item['Cuota'] ?? 0, 2) }}</td>
-                            <td class="g_celda_derecha g_texto_success">S/ {{ number_format($item['CuotaPagada'] ?? 0, 2) }}</td>
+                            <td class="g_celda_derecha g_negrita">S/ {{ number_format((float) str_replace(',', '', $item['Cuota'] ?? 0), 2) }}</td>
+                            <td class="g_celda_derecha g_texto_success">S/ {{ number_format((float) str_replace(',', '', $item['CuotaPagada'] ?? 0), 2) }}</td>
                             <td class="g_celda_centro">
                                 @if ($item['EvidPago'])
                                     <span class="g_badge g_badge_soft g_badge_success">
@@ -157,7 +157,7 @@
                     @livewire('cliente.lote.adjuntar-voucher-pago', [
                         'cuota' => $cuota,
                         'lote' => $lote
-                    ], key: 'modal-adjuntar-' . ($cuota['idCuota'] ?? 'new'))
+                    ], 'modal-adjuntar-' . ($cuota['idCuota'] ?? 'new'))
                 </div>
             </div>
         </div>
@@ -178,7 +178,7 @@
                     @livewire('cliente.lote.aceptar-digitalizar-letra', [
                         'cuota' => $cuotaCavali,
                         'lote' => $lote
-                    ], key: 'modal-cavali-' . ($cuotaCavali['idCuota'] ?? 'new'))
+                    ], 'modal-cavali-' . ($cuotaCavali['idCuota'] ?? 'new'))
                 </div>
             </div>
         </div>

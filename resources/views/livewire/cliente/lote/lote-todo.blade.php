@@ -65,7 +65,7 @@
             @livewire('cliente.lote.estado-cuenta-ver', [
                 'lote' => $lote_select,
                 'estado_cuenta' => $cronograma_estado_cuenta
-            ], key: 'cronograma-estado-' . ($lote_select['id_recaudo'] ?? $lote_select['id_cliente']))
+            ], 'cronograma-estado-' . ($lote_select['id_recaudo'] ?? $lote_select['id_cliente']))
         </div>
     @endif
 

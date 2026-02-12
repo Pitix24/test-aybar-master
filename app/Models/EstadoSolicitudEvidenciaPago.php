@@ -41,7 +41,7 @@ class EstadoSolicitudEvidenciaPago extends Model
         return $this->hasMany(EvidenciaPagoAntiguo::class);
     }
 
-    public static function id(string $nombre): int
+    public static function id(string $nombre): ?int
     {
         return static::where('nombre', $nombre)->value('id');
     }

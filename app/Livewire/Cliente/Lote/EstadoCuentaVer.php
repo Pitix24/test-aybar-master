@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Cliente\Lote;
 
-use App\Models\EstadoEvidenciaPago;
+use App\Models\EstadoSolicitudEvidenciaPago;
 use App\Models\SolicitudEvidenciaPago;
 use App\Models\SolicitudDigitalizarLetra;
 use Livewire\Attributes\On;
@@ -41,14 +41,14 @@ class EstadoCuentaVer extends Component
     #[On('actualizarCronograma')]
     public function loadComprobantesYActualizarCronograma()
     {
-        $rechazadoId = EstadoEvidenciaPago::id(EstadoEvidenciaPago::RECHAZADO);
+        $rechazadoId = EstadoSolicitudEvidenciaPago::id(EstadoSolicitudEvidenciaPago::RECHAZADO);
 
         $comprobantes = SolicitudEvidenciaPago::query()
             ->whereIn('codigo_cuota', collect($this->detalle)->pluck('idCuota'))
             ->withCount([
                 'evidencias',
                 'evidencias as evidencias_rechazadas_count' => function ($q) use ($rechazadoId) {
-                    $q->where('estado_evidencia_pago_id', $rechazadoId);
+                    $q->where('estado_solicitud_evidencia_pago_id', $rechazadoId ?? 0);
                 },
             ])
             ->get()
