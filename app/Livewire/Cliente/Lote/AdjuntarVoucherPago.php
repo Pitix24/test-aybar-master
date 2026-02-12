@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Cliente\Lote;
 
+use App\Models\EstadoSolicitudEvidenciaPago;
 use App\Models\EvidenciaPago;
 use App\Models\Proyecto;
 use App\Models\SolicitudEvidenciaPago;
@@ -202,7 +203,7 @@ NO agregues explicación ni texto adicional. Solo JSON.",
                     'unidad_negocio_id' => $this->unidad_negocio_id,
                     'proyecto_id' => $this->proyecto_id,
                     'cliente_id' => Auth::id(),
-                    'estado_evidencia_pago_id' => 1,
+                    'estado_solicitud_evidencia_pago_id' => EstadoSolicitudEvidenciaPago::id(EstadoSolicitudEvidenciaPago::PENDIENTE) ?? 1,
 
                     'razon_social' => $this->lote["razon_social"] ?? null,
                     'nombre_proyecto' => $this->lote["descripcion"] ?? null,
@@ -239,7 +240,7 @@ NO agregues explicación ni texto adicional. Solo JSON.",
 
             EvidenciaPago::create([
                 'solicitud_evidencia_pago_id' => $solicitud->id,
-                'estado_evidencia_pago_id' => 1,
+                'estado_solicitud_evidencia_pago_id' => EstadoSolicitudEvidenciaPago::id(EstadoSolicitudEvidenciaPago::PENDIENTE) ?? 1,
 
                 'path' => $ruta,
                 'url' => Storage::url($ruta),

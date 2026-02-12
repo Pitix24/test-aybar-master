@@ -8,6 +8,7 @@ use App\Models\SolicitudDigitalizarLetra;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Proyecto;
+use App\Models\EstadoSolicitudDigitalizarLetra;
 use Illuminate\Support\Facades\Log;
 use League\Config\Exception\ValidationException;
 
@@ -83,6 +84,7 @@ class AceptarDigitalizarLetra extends Component
                     'unidad_negocio_id' => $this->unidad_negocio_id,
                     'proyecto_id' => $this->proyecto_id,
                     'cliente_id' => $cliente->user_id,
+                    'estado_solicitud_digitalizar_letra_id' => EstadoSolicitudDigitalizarLetra::id(EstadoSolicitudDigitalizarLetra::PENDIENTE) ?? 1,
 
                     'razon_social' => $this->lote['razon_social'] ?? null,
                     'nombre_proyecto' => $this->lote['descripcion'] ?? null,
