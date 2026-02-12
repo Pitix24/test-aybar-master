@@ -124,64 +124,64 @@ class MigracionAybarCorp2Seeder extends Seeder
             ");
 
             //MODULO ATC
-            /*$this->command->info('Migrando Módulo ATC...');
+            $this->command->info('Migrando Módulo ATC...');
 
             DB::statement("
-                INSERT INTO aybar.tipo_solicituds (id, nombre, tiempo_solucion, activo, created_at, updated_at, deleted_at)
+                INSERT INTO {$dbDestino}.tipo_solicituds (id, nombre, tiempo_solucion, activo, created_at, updated_at, deleted_at)
                 SELECT ts.id, ts.nombre, ts.tiempo_solucion, ts.activo, ts.created_at, ts.updated_at, ts.deleted_at
-                FROM aybarcorp2.tipo_solicituds ts
-                LEFT JOIN aybar.tipo_solicituds ats ON ats.id = ts.id
+                FROM {$dbOrigen}.tipo_solicituds ts
+                LEFT JOIN {$dbDestino}.tipo_solicituds ats ON ats.id = ts.id
                 WHERE ats.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.sub_tipo_solicituds (
+                INSERT INTO {$dbDestino}.sub_tipo_solicituds (
                     id, tipo_solicitud_id, nombre, tiempo_solucion, activo, created_at, updated_at, deleted_at
                 )
                 SELECT sts.id, sts.tipo_solicitud_id, sts.nombre, sts.tiempo_solucion, sts.activo,
                     sts.created_at, sts.updated_at, sts.deleted_at
-                FROM aybarcorp2.sub_tipo_solicituds sts
-                LEFT JOIN aybar.sub_tipo_solicituds asts ON asts.id = sts.id
+                FROM {$dbOrigen}.sub_tipo_solicituds sts
+                LEFT JOIN {$dbDestino}.sub_tipo_solicituds asts ON asts.id = sts.id
                 WHERE asts.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.area_tipo_solicitud (id, area_id, tipo_solicitud_id, created_at, updated_at)
+                INSERT INTO {$dbDestino}.area_tipo_solicitud (id, area_id, tipo_solicitud_id, created_at, updated_at)
                 SELECT ats.id, ats.area_id, ats.tipo_solicitud_id, ats.created_at, ats.updated_at
-                FROM aybarcorp2.area_tipo_solicitud ats
-                LEFT JOIN aybar.area_tipo_solicitud a2 ON a2.id = ats.id
+                FROM {$dbOrigen}.area_tipo_solicitud ats
+                LEFT JOIN {$dbDestino}.area_tipo_solicitud a2 ON a2.id = ats.id
                 WHERE a2.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.estado_tickets (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
+                INSERT INTO {$dbDestino}.estado_tickets (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
                 SELECT etc.id, etc.nombre, etc.color, etc.icono, etc.activo, etc.created_at, etc.updated_at, etc.deleted_at
-                FROM aybarcorp2.estado_tickets etc
-                LEFT JOIN aybar.estado_tickets aet ON aet.id = etc.id
+                FROM {$dbOrigen}.estado_tickets etc
+                LEFT JOIN {$dbDestino}.estado_tickets aet ON aet.id = etc.id
                 WHERE aet.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.prioridad_tickets (
+                INSERT INTO {$dbDestino}.prioridad_tickets (
                     id, nombre, tiempo_permitido, color, icono, activo, created_at, updated_at, deleted_at
                 )
                 SELECT ptc.id, ptc.nombre, ptc.tiempo_permitido, ptc.color, ptc.icono, ptc.activo,
                     ptc.created_at, ptc.updated_at, ptc.deleted_at
-                FROM aybarcorp2.prioridad_tickets ptc
-                LEFT JOIN aybar.prioridad_tickets pta ON pta.id = ptc.id
+                FROM {$dbOrigen}.prioridad_tickets ptc
+                LEFT JOIN {$dbDestino}.prioridad_tickets pta ON pta.id = ptc.id
                 WHERE pta.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.canals (id, nombre, activo, created_at, updated_at, deleted_at)
+                INSERT INTO {$dbDestino}.canals (id, nombre, activo, created_at, updated_at, deleted_at)
                 SELECT c2.id, c2.nombre, c2.activo, c2.created_at, c2.updated_at, c2.deleted_at
-                FROM aybarcorp2.canals c2
-                LEFT JOIN aybar.canals c1 ON c1.id = c2.id
+                FROM {$dbOrigen}.canals c2
+                LEFT JOIN {$dbDestino}.canals c1 ON c1.id = c2.id
                 WHERE c1.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.tickets (
+                INSERT INTO {$dbDestino}.tickets (
                     id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, area_id, 
                     ticket_padre_id, tipo_solicitud_id, sub_tipo_solicitud_id, canal_id, 
                     estado_ticket_id, prioridad_ticket_id, asunto_inicial, descripcion_inicial, 
@@ -195,13 +195,13 @@ class MigracionAybarCorp2Seeder extends Seeder
                     t.lotes, t.asunto_respuesta, t.descripcion_respuesta, t.dni, t.nombres, t.email,
                     t.celular, t.direccion, t.origen, t.usuario_valida_id, t.fecha_validacion,
                     t.created_by, t.updated_by, t.deleted_by, t.created_at, t.updated_at, t.deleted_at
-                FROM aybarcorp2.tickets t
-                LEFT JOIN aybar.tickets at ON at.id = t.id
+                FROM {$dbOrigen}.tickets t
+                LEFT JOIN {$dbDestino}.tickets at ON at.id = t.id
                 WHERE at.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.ticket_archivos (
+                INSERT INTO {$dbDestino}.ticket_archivos (
                     id, archivable_type, archivable_id, user_id, nombre_original, 
                     path, url, titulo, descripcion, extension, size, mime_type, 
                     created_at, updated_at, deleted_at
@@ -210,62 +210,62 @@ class MigracionAybarCorp2Seeder extends Seeder
                     COALESCE(a.titulo, a.path) AS nombre_original, a.path, a.url, a.titulo, 
                     a.descripcion, COALESCE(a.extension, '') AS extension, 0 AS size, 
                     'application/octet-stream' AS mime_type, a.created_at, a.updated_at, a.deleted_at
-                FROM aybarcorp2.archivos a
+                FROM {$dbOrigen}.archivos a
             ");
 
             DB::statement("
-                INSERT INTO aybar.ticket_historials (id, ticket_id, user_id, accion, detalle, created_at, updated_at)
+                INSERT INTO {$dbDestino}.ticket_historials (id, ticket_id, user_id, accion, detalle, created_at, updated_at)
                 SELECT th.id, th.ticket_id, th.user_id, th.accion, th.detalle, th.created_at, th.updated_at
-                FROM aybarcorp2.ticket_historials th
-                LEFT JOIN aybar.ticket_historials ath ON ath.id = th.id
+                FROM {$dbOrigen}.ticket_historials th
+                LEFT JOIN {$dbDestino}.ticket_historials ath ON ath.id = th.id
                 WHERE th.deleted_at IS NULL AND ath.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.ticket_derivados (
+                INSERT INTO {$dbDestino}.ticket_derivados (
                     id, ticket_id, de_area_id, a_area_id, usuario_deriva_id, 
                     usuario_recibe_id, motivo, created_at, updated_at, deleted_at
                 )
                 SELECT td.id, td.ticket_id, td.de_area_id, td.a_area_id, td.usuario_deriva_id,
                     td.usuario_recibe_id, td.motivo, td.created_at, td.updated_at, td.deleted_at
-                FROM aybarcorp2.ticket_derivados td
-                LEFT JOIN aybar.ticket_derivados atd ON atd.id = td.id
+                FROM {$dbOrigen}.ticket_derivados td
+                LEFT JOIN {$dbDestino}.ticket_derivados atd ON atd.id = td.id
                 WHERE atd.id IS NULL
             ");
 
             //MODULO CITAS
             $this->command->info('Migrando Módulo Citas...');
 
-            DB::statement("DROP TABLE IF EXISTS aybar.clientes_2");
-            DB::statement("CREATE TABLE aybar.clientes_2 LIKE aybarcorp2.clientes_2");
-            DB::statement("INSERT INTO aybar.clientes_2 SELECT * FROM aybarcorp2.clientes_2");
+            DB::statement("DROP TABLE IF EXISTS {$dbDestino}.clientes_2");
+            DB::statement("CREATE TABLE {$dbDestino}.clientes_2 LIKE {$dbOrigen}.clientes_2");
+            DB::statement("INSERT INTO {$dbDestino}.clientes_2 SELECT * FROM {$dbOrigen}.clientes_2");
 
             DB::statement("
-                INSERT INTO aybar.motivo_citas (id, nombre, activo, created_at, updated_at, deleted_at)
+                INSERT INTO {$dbDestino}.motivo_citas (id, nombre, activo, created_at, updated_at, deleted_at)
                 SELECT mc.id, mc.nombre, mc.activo, mc.created_at, mc.updated_at, mc.deleted_at
-                FROM aybarcorp2.motivo_citas mc
-                LEFT JOIN aybar.motivo_citas mc2 ON mc2.id = mc.id
+                FROM {$dbOrigen}.motivo_citas mc
+                LEFT JOIN {$dbDestino}.motivo_citas mc2 ON mc2.id = mc.id
                 WHERE mc2.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.estado_citas (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
+                INSERT INTO {$dbDestino}.estado_citas (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
                 SELECT ec.id, ec.nombre, ec.color, ec.icono, ec.activo, ec.created_at, ec.updated_at, ec.deleted_at
-                FROM aybarcorp2.estado_citas ec
-                LEFT JOIN aybar.estado_citas ec2 ON ec2.id = ec.id
+                FROM {$dbOrigen}.estado_citas ec
+                LEFT JOIN {$dbDestino}.estado_citas ec2 ON ec2.id = ec.id
                 WHERE ec2.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.sedes (id, nombre, direccion, activo, created_at, updated_at, deleted_at)
+                INSERT INTO {$dbDestino}.sedes (id, nombre, direccion, activo, created_at, updated_at, deleted_at)
                 SELECT s.id, s.nombre, s.direccion, s.activo, s.created_at, s.updated_at, s.deleted_at
-                FROM aybarcorp2.sedes s
-                LEFT JOIN aybar.sedes sc ON sc.id = s.id
+                FROM {$dbOrigen}.sedes s
+                LEFT JOIN {$dbDestino}.sedes sc ON sc.id = s.id
                 WHERE sc.id IS NULL
             ");
 
             DB::statement("
-                INSERT INTO aybar.citas (
+                INSERT INTO {$dbDestino}.citas (
                     id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, area_id, 
                     ticket_id, usuario_crea_id, sede_id, motivo_cita_id, estado_cita_id, 
                     fecha_inicio, fecha_fin, fecha_cierre, asunto_solicitud, descripcion_solicitud, 
@@ -279,13 +279,13 @@ class MigracionAybarCorp2Seeder extends Seeder
                     c.asunto_respuesta, c.descripcion_respuesta, c.dni, c.nombres, c.origen,
                     c.usuario_valida_id, c.fecha_validacion, c.created_by, c.updated_by, c.deleted_by,
                     c.created_at, c.updated_at, c.deleted_at
-                FROM aybarcorp2.citas c
-                LEFT JOIN aybar.citas cc ON cc.id = c.id
+                FROM {$dbOrigen}.citas c
+                LEFT JOIN {$dbDestino}.citas cc ON cc.id = c.id
                 WHERE cc.id IS NULL
-            ");*/
+            ");
 
             //MODULO BACKOFFICE
-            /*$this->command->info('Migrando Módulo Backoffice...');
+            $this->command->info('Migrando Módulo Backoffice...');
 
             DB::statement("
                 INSERT INTO {$dbDestino}.estado_solicitud_evidencia_pagos (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
@@ -363,7 +363,7 @@ class MigracionAybarCorp2Seeder extends Seeder
     INNER JOIN {$dbDestino}.solicitud_evidencia_pagos s 
         ON s.id = c2.solicitud_evidencia_pago_id
     WHERE c1.id IS NULL
-");*/
+");
 
             /*DB::statement("
                 INSERT INTO {$dbDestino}.evidencia_pago_antiguos (
