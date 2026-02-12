@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'slin' => [
+        'url' => env('SLIN_URL'),
+        'user' => env('SLIN_USER'),
+        'password' => env('SLIN_PASSWORD'),
+    ],
+
 ];

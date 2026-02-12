@@ -3,7 +3,6 @@
 use App\Livewire\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoCrear;
 use App\Livewire\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoEditar;
 use App\Livewire\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoLista;
-use App\Livewire\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoCrear;
 use App\Livewire\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoEditar;
 use App\Livewire\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoLista;
 use App\Livewire\Backoffice\EvidenciaPagoAntiguo\EvidenciaPagoAntiguoEditar;
@@ -22,7 +21,6 @@ Route::group(['middleware' => ['permission:modulo-backoffice.ver']], function ()
     Route::group(['middleware' => ['permission:solicitud-evidencia-pago.navegacion']], function () {
         Route::prefix('solicitud-evidencia-pago')->name('solicitud-evidencia-pago.vista.')->group(function () {
             Route::get('/', SolicitudEvidenciaPagoLista::class)->middleware('permission:solicitud-evidencia-pago.ver')->name('todo');
-            Route::get('/crear', SolicitudEvidenciaPagoCrear::class)->middleware('permission:solicitud-evidencia-pago.crear')->name('crear');
             Route::get('/editar/{id}', SolicitudEvidenciaPagoEditar::class)->middleware('permission:solicitud-evidencia-pago.editar')->name('editar');
         });
     });
