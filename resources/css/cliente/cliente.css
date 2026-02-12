@@ -1,0 +1,10 @@
+@import "../components/modal.css";
+@import "../components/spinner.css";
+@import "../components/tabla-cabecera.css";
+@import "../components/tabla.css";
+
+@import "./layout.css";
+@import "./components/header.css";
+@import "./reportes/cronograma.css";
+@import "./paginas/procesar-imagen.css";
+@import "./paginas/tutorial.css";

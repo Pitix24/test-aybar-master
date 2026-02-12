@@ -1,0 +1,36 @@
+.cronograma_contenedor .tabla_info,
+.cronograma_contenedor .tabla_detalle {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cronograma_contenedor .tabla_info td {
+    border: 1px solid #e0e6eb;
+    padding: 6px 10px;
+}
+
+.cronograma_contenedor .tabla_info .label {
+    font-weight: bold;
+    background: #f0f0f0;
+    width: 25%;
+}
+
+.cronograma_contenedor .tabla_info .valor {    
+    font-weight: bold;
+}
+
+.cronograma_contenedor .tabla_info .grande {
+    text-align: center;
+}
+
+.cronograma_contenedor .tabla_detalle th {
+    background: #004c62;
+    color: #fff;
+    padding: 6px;
+}
+
+.cronograma_contenedor .tabla_detalle td {
+    border: 1px solid #e0e6eb;
+    padding: 6px;
+    text-align: center;
+}

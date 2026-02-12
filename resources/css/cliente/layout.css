@@ -1,0 +1,33 @@
+.layout_cliente {
+    background-color: var(--color-fondo-cuaternario);
+}
+
+.layout_cliente .grid_layout_cliente {
+    display: flex;
+    gap: 40px;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.layout_cliente .contenedor_nav_links {
+    flex: 0 0 300px;
+}
+
+.layout_cliente .contenido_pagina {
+    flex: 1;
+}
+
+@media (max-width: 1024px) {
+    .layout_cliente .grid_layout_cliente {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .layout_cliente .contenedor_nav_links {
+        display: none;
+    }
+
+    .layout_cliente .contenido_pagina {
+        width: 100%;
+    }
+}

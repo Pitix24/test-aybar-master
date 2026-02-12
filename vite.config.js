@@ -12,6 +12,8 @@ export default defineConfig({
                 'resources/js/erp/erp.js',
                 "resources/css/web/web.css",
                 "resources/js/web/web.js",
+                "resources/css/cliente/cliente.css",
+                "resources/js/cliente/cliente.js",
             ],
             refresh: true,
         }),

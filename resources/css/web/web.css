@@ -22,3 +22,5 @@
 @import "./components/footer.css";
 
 @import "./sesion/ingresar.css";
+
+@import "./../cliente/cliente.css";
