@@ -1,14 +1,14 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, unidad_negocio_id, proyecto_id, resetFiltros, gotoPage, nextPage, previousPage"
+        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, fecha_inicio, fecha_fin, resetFiltros, exportExcel"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Solicitudes de letras digitales portal cliente</h2>
+        <h2>Solicitudes de Letras Digitales</h2>
 
         <div class="cabecera_titulo_botones">
-            <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
+            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
         </div>
     </div>
@@ -16,30 +16,49 @@
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_4">
-                    <label>Cliente/DNI/Nombres</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" id="buscar" name="buscar"
-                        placeholder="Buscar...">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Buscar Cliente/Cuota</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Buscar...">
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_4">
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Empresa</label>
                     <select wire:model.live="unidad_negocio_id">
-                        <option value="">TODAS</option>
-                        @foreach ($empresas as $empresa)
+                        <option value="">Todos</option>
+                        @foreach ($unidades_negocios as $empresa)
                             <option value="{{ $empresa->id }}">{{ $empresa->nombre }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_4">
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Proyecto</label>
                     <select wire:model.live="proyecto_id">
-                        <option value="">TODOS</option>
+                        <option value="">Todos</option>
                         @foreach ($proyectos as $proyecto)
                             <option value="{{ $proyecto->id }}">{{ $proyecto->nombre }}</option>
                         @endforeach
                     </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado</label>
+                    <select wire:model.live="estado_id">
+                        <option value="">Todos</option>
+                        @foreach ($estados as $estado)
+                            <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha Inicio</label>
+                    <input type="date" wire:model.live="fecha_inicio">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha Fin</label>
+                    <input type="date" wire:model.live="fecha_fin">
                 </div>
             </div>
         </div>
@@ -47,12 +66,29 @@
 
     <div class="g_panel">
         <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
+                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                    wire:target="exportExcel">
+                    <span wire:loading.remove wire:target="exportExcel">Excel <i
+                            class="fa-regular fa-file-excel"></i></span>
+                    <span wire:loading wire:target="exportExcel">Exportando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+
+                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
             <div class="g_tabla_cabecera_filtro formulario">
-                <select wire:model.live="perPage">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+                <div>
+                    <label>Mostrar</label>
+                    <select wire:model.live="perPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -61,31 +97,51 @@
                 <thead>
                     <tr>
                         <th class="g_celda_centro">Nº</th>
-                        <th>Razón S.</th>
+                        <th>Empresa</th>
                         <th>Proyecto</th>
                         <th>Etapa</th>
-                        <th>Mz.</th>
-                        <th>Lt.</th>
+                        <th>Mz. / Lt.</th>
                         <th>N° Cuota</th>
+                        <th>Código</th>
                         <th>Cliente</th>
                         <th>DNI</th>
+                        <th class="g_celda_centro">Estado</th>
                         <th>Fecha</th>
+                        <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     @foreach ($items as $index => $item)
-                        <tr>
+                        <tr wire:key="item-{{ $item->id }}">
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
                             <td class="g_resumir">{{ $item->unidadNegocio?->nombre ?? '—' }}</td>
                             <td class="g_resumir">{{ $item->proyecto?->nombre ?? '—' }}</td>
-                            <td class="g_resumir">{{ $item->etapa }}</td>
-                            <td class="g_resumir">{{ $item->manzana }}</td>
-                            <td class="g_resumir">{{ $item->lote }}</td>
-                            <td class="g_resumir">{{ $item->numero_cuota }}</td>
+                            <td class="g_resumir g_inferior">{{ $item->etapa }}</td>
+                            <td class="g_resumir">{{ $item->manzana }} / {{ $item->lote }}</td>
+                            <td class="g_celda_centro">{{ $item->numero_cuota }}</td>
+                            <td class="g_negrita g_resumir">{{ $item->codigo_cuota }}</td>
                             <td class="g_resaltar g_resumir">{{ $item->userCliente?->name ?? '—' }}</td>
                             <td> {{ $item->userCliente?->perfilCliente?->dni ?? '—' }}</td>
-                            <td>{{ $item->created_at->format('Y-m-d H:i') }}</td>
+                            <td class="g_celda_centro">
+                                @if ($item->estado)
+                                    <span class="g_badge g_badge_soft" style="color: {{ $item->estado->color ?? '#666' }}">
+                                        @if($item->estado->icono) <i class="{{ $item->estado->icono }}"></i> @endif
+                                        {{ $item->estado->nombre }}
+                                    </span>
+                                @else
+                                    <span class="g_badge g_badge_light">Pendiente</span>
+                                @endif
+                            </td>
+                            <td class="g_inferior g_celda_centro">{{ $item->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="g_celda_acciones g_celda_centro">
+                                @can('solicitud-digitalizar-letra.editar')
+                                    <a href="{{ route('erp.solicitar-letra-digital.vista.editar', $item->id) }}"
+                                        class="g_accion_editar" title="Editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                @endcan
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -100,7 +156,7 @@
 
         @if ($items->isEmpty())
             <div class="g_vacio">
-                <p>No se encontraron solicitudes.</p>
+                <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay solicitudes disponibles.' }}</p>
                 <i class="fa-regular fa-face-grin-wink"></i>
             </div>
         @else

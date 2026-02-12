@@ -6,8 +6,8 @@ use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitaliza
 use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;
 use App\Livewire\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraEditar;
 use App\Livewire\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraLista;
-use App\Livewire\Letras\EnvioCavali\EnvioCavaliDetalle;
-use App\Livewire\Letras\EnvioCavali\EnvioCavaliLista;
+use App\Livewire\Letra\EnvioCavali\EnvioCavaliDetalle;
+use App\Livewire\Letra\EnvioCavali\EnvioCavaliLista;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-letras.ver']], function () {

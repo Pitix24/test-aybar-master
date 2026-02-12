@@ -1,14 +1,14 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, estado, unidad_negocio_id, resetFiltros, gotoPage, nextPage, previousPage"
+        wire:target="buscar, perPage, estado, unidad_negocio_id, resetFiltros, exportCavali"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Envíos CAVALI</h2>
+        <h2>Listado de Envíos CAVALI</h2>
 
         <div class="cabecera_titulo_botones">
-            <button wire:click="resetFiltros" class="g_boton g_boton_danger">
-                Refresh Filtros <i class="fa-solid fa-rotate-left"></i>
+            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
         </div>
     </div>
@@ -17,28 +17,28 @@
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_4">
-                    <label>Buscar (Fecha/Empresa)</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" id="buscar" name="buscar" placeholder="Ej: 2026-01-29">
-                </div>
-
-                <div class="g_margin_bottom_10 g_columna_4">
-                    <label>Estado</label>
-                    <select wire:model.live="estado">
-                        <option value="">TODOS</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="enviado">Enviado</option>
-                        <option value="observado">Observado</option>
-                        <option value="aceptado">Aceptado</option>
-                    </select>
+                    <label>Buscar (Fecha Y-m-d / Empresa)</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Buscar...">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Unidad de Negocio</label>
                     <select wire:model.live="unidad_negocio_id">
-                        <option value="">TODAS</option>
-                        @foreach ($unidadesNegocio as $unidad)
+                        <option value="">Todas</option>
+                        @foreach ($unidades_negocios as $unidad)
                             <option value="{{ $unidad->id }}">{{ $unidad->nombre }}</option>
                         @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_4">
+                    <label>Estado</label>
+                    <select wire:model.live="estado">
+                        <option value="">Todos</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="enviado">Enviado</option>
+                        <option value="observado">Observado</option>
+                        <option value="aceptado">Aceptado</option>
                     </select>
                 </div>
             </div>
@@ -47,12 +47,21 @@
 
     <div class="g_panel">
         <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
+                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
             <div class="g_tabla_cabecera_filtro formulario">
-                <select wire:model.live="perPage">
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+                <div>
+                    <label>Mostrar</label>
+                    <select wire:model.live="perPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -63,8 +72,8 @@
                         <th class="g_celda_centro">Nº</th>
                         <th>Fecha Corte</th>
                         <th>Unidad de Negocio</th>
-                        <th>Estado</th>
-                        <th class="g_celda_centro">Solicitudes</th>
+                        <th class="g_celda_centro">Solicit.</th>
+                        <th class="g_celda_centro">Estado</th>
                         <th>Fecha Envío</th>
                         <th>Archivo</th>
                         <th class="g_celda_centro">Acciones</th>
@@ -73,11 +82,14 @@
 
                 <tbody>
                     @foreach ($items as $index => $item)
-                        <tr>
+                        <tr wire:key="envio-{{ $item->id }}">
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
-                            <td class="g_negrita">{{ $item->fecha_corte->format('d/m/Y') }}</td>
+                            <td class="g_negrita g_inferior">{{ $item->fecha_corte->format('d/m/Y') }}</td>
                             <td class="g_resumir">{{ $item->unidadNegocio?->nombre ?? '—' }}</td>
-                            <td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge g_badge_light">{{ $item->solicitudes_count }}</span>
+                            </td>
+                            <td class="g_celda_centro">
                                 @php
                                     $badgeClass = match ($item->estado) {
                                         'pendiente' => 'g_badge_warning',
@@ -87,13 +99,18 @@
                                         default => 'g_badge_secondary'
                                     };
                                 @endphp
-                                <span class="g_badge {{ $badgeClass }}">{{ ucfirst($item->estado ?? 'pendiente') }}</span>
+                                <span class="g_badge g_badge_soft {{ $badgeClass }}">{{ ucfirst($item->estado ?? 'pendiente') }}</span>
                             </td>
-                            <td class="g_celda_centro g_negrita">{{ $item->solicitudes_count }}</td>
-                            <td>{{ $item->enviado_at?->format('d/m/Y H:i') ?? '—' }}</td>
-                            <td class="g_resumir">{{ $item->archivo_nombre ?? '—' }}</td>
+                            <td class="g_inferior">{{ $item->enviado_at?->format('d/m/Y H:i') ?? '—' }}</td>
+                            <td class="g_resumir g_inferior">{{ $item->archivo_nombre ?? '—' }}</td>
                             <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.envio-cavali-solicitud.vista.editar', $item->id) }}"
+                                @can('envio-cavali-solicitud.exportar')
+                                    <button wire:click="exportCavali({{ $item->id }})" class="g_accion_excel" title="Cavali Excel">
+                                        <i class="fa-regular fa-file-excel"></i>
+                                    </button>
+                                @endcan
+
+                                <a href="{{ route('erp.envio-cavali.vista.detalle', $item->id) }}"
                                     class="g_accion_editar" title="Ver Detalle">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
@@ -112,7 +129,7 @@
 
         @if ($items->isEmpty())
             <div class="g_vacio">
-                <p>No se encontraron envíos.</p>
+                <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay envíos disponibles.' }}</p>
                 <i class="fa-regular fa-face-grin-wink"></i>
             </div>
         @else
