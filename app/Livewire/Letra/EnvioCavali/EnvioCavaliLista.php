@@ -27,28 +27,30 @@ class EnvioCavaliLista extends Component
     public $perPage = 20;
 
     #[Url]
-    public $estado = '';
+    public $estado_id = '';
 
     #[Url]
     public $unidad_negocio_id = '';
 
+    public $estados = [];
     public $unidades_negocios = [];
 
     public function mount()
     {
+        $this->estados = \App\Models\EstadoSolicitudDigitalizarLetra::all();
         $this->unidades_negocios = UnidadNegocio::orderBy('nombre')->get();
     }
 
     public function updated($property)
     {
-        if (in_array($property, ['buscar', 'estado', 'unidad_negocio_id', 'perPage'])) {
+        if (in_array($property, ['buscar', 'estado_id', 'unidad_negocio_id', 'perPage'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'estado', 'unidad_negocio_id']);
+        $this->reset(['buscar', 'estado_id', 'unidad_negocio_id']);
         $this->perPage = 20;
         $this->resetPage();
     }
@@ -66,7 +68,7 @@ class EnvioCavaliLista extends Component
     public function render()
     {
         $items = EnvioCavali::query()
-            ->with(['unidadNegocio', 'solicitudes'])
+            ->with(['unidadNegocio', 'solicitudes', 'estado'])
             ->withCount('solicitudes')
             ->when($this->buscar, function ($q) {
                 $buscar = $this->buscar;
@@ -78,7 +80,7 @@ class EnvioCavaliLista extends Component
                         });
                 });
             })
-            ->when($this->estado, fn($q) => $q->where('estado', $this->estado))
+            ->when($this->estado_id, fn($q) => $q->where('estado_solicitud_digitalizar_letra_id', $this->estado_id))
             ->when($this->unidad_negocio_id, fn($q) => $q->where('unidad_negocio_id', $this->unidad_negocio_id))
             ->orderBy('fecha_corte', 'desc')
             ->paginate($this->perPage);

@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, estado, unidad_negocio_id, resetFiltros, exportCavali"
+        wire:target="buscar, perPage, estado_id, unidad_negocio_id, resetFiltros, exportCavali"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -33,12 +33,11 @@
 
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Estado</label>
-                    <select wire:model.live="estado">
+                    <select wire:model.live="estado_id">
                         <option value="">Todos</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="enviado">Enviado</option>
-                        <option value="observado">Observado</option>
-                        <option value="aceptado">Aceptado</option>
+                        @foreach ($estados as $estado)
+                            <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -90,16 +89,14 @@
                                 <span class="g_badge g_badge_light">{{ $item->solicitudes_count }}</span>
                             </td>
                             <td class="g_celda_centro">
-                                @php
-                                    $badgeClass = match ($item->estado) {
-                                        'pendiente' => 'g_badge_warning',
-                                        'enviado' => 'g_badge_info',
-                                        'observado' => 'g_badge_danger',
-                                        'aceptado' => 'g_badge_success',
-                                        default => 'g_badge_secondary'
-                                    };
-                                @endphp
-                                <span class="g_badge g_badge_soft {{ $badgeClass }}">{{ ucfirst($item->estado ?? 'pendiente') }}</span>
+                                @if ($item->estado)
+                                    <span class="g_badge g_badge_soft" style="color: {{ $item->estado->color ?? '#666' }}">
+                                        @if($item->estado->icono) <i class="{{ $item->estado->icono }}"></i> @endif
+                                        {{ $item->estado->nombre }}
+                                    </span>
+                                @else
+                                    <span class="g_badge g_badge_light">Pendiente</span>
+                                @endif
                             </td>
                             <td class="g_inferior">{{ $item->enviado_at?->format('d/m/Y H:i') ?? '—' }}</td>
                             <td class="g_resumir g_inferior">{{ $item->archivo_nombre ?? '—' }}</td>

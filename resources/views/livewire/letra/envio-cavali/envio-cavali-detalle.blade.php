@@ -31,17 +31,14 @@
                 <div class="g_columna_3">
                     <label>Estado</label>
                     <p>
-                        @php
-                            $badgeClass = match ($envio->estado) {
-                                'pendiente' => 'g_badge_warning',
-                                'enviado' => 'g_badge_info',
-                                'observado' => 'g_badge_danger',
-                                'aceptado' => 'g_badge_success',
-                                default => 'g_badge_secondary',
-                            };
-                        @endphp
-                        <span
-                            class="g_badge g_badge_soft {{ $badgeClass }}">{{ ucfirst($envio->estado ?? 'pendiente') }}</span>
+                        @if ($envio->estado)
+                            <span class="g_badge g_badge_soft" style="color: {{ $envio->estado->color ?? '#666' }}">
+                                @if($envio->estado->icono) <i class="{{ $envio->estado->icono }}"></i> @endif
+                                {{ $envio->estado->nombre }}
+                            </span>
+                        @else
+                            <span class="g_badge g_badge_light">Pendiente</span>
+                        @endif
                     </p>
                 </div>
             </div>
