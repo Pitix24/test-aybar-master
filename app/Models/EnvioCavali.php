@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class EnvioCavali extends Model
 {
     /** @use HasFactory<\Database\Factories\EnvioCavaliFactory> */
-    protected $table = 'envios_cavali';
+    protected $table = 'envios_cavalis';
 
     protected $fillable = [
         'fecha_corte',
@@ -37,7 +37,7 @@ class EnvioCavali extends Model
     {
         return $this->belongsToMany(
             SolicitudDigitalizarLetra::class,
-            'envio_cavali_solicitud',
+            'envio_cavali_solicituds',
             'envios_cavali_id',
             'solicitud_digitalizar_letras_id'
         );

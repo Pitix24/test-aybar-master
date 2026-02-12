@@ -10,11 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('envio_cavali_solicitud', function (Blueprint $table) {
+        Schema::create('envio_cavali_solicituds', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('envios_cavali_id')
-                ->constrained('envios_cavali', indexName: 'env_cavali_sol_env_fk')
+                ->constrained('envios_cavalis', indexName: 'env_cavali_sol_env_fk')
                 ->cascadeOnDelete();
 
             $table->foreignId('solicitud_digitalizar_letras_id')
@@ -35,6 +35,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('envio_cavali_solicitud');
+        Schema::dropIfExists('envio_cavali_solicituds');
     }
 };

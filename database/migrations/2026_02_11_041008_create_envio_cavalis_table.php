@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('envios_cavali', function (Blueprint $table) {
+        Schema::create('envios_cavalis', function (Blueprint $table) {
             $table->id();
 
             $table->date('fecha_corte');
@@ -39,6 +39,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('envios_cavali');
+        Schema::dropIfExists('envios_cavalis');
     }
 };

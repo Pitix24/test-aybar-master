@@ -1,4 +1,5 @@
 php artisan db :seed
+/*MODULO USUARIO*/
 INSERT INTO aybar.users (
         id,
         name,
@@ -107,6 +108,7 @@ FROM aybarcorp2.direccions d
     LEFT JOIN aybar.direccions ad ON ad.id = d.id
 WHERE u.rol = 'cliente'
     AND ad.id IS NULL;
+/*MODULO NEGOCIO*/
 INSERT INTO aybar.unidad_negocios (
         id,
         nombre,
@@ -173,7 +175,7 @@ SELECT p.id,
     p.created_at,
     p.updated_at,
     p.deleted_at
-FROM aybarcorp.proyectos p
+FROM aybarcorp2.proyectos p
     LEFT JOIN aybar.proyectos ap ON ap.id = p.id
 WHERE ap.id IS NULL;
 INSERT INTO aybar.areas (
@@ -196,7 +198,7 @@ SELECT a.id,
     a.created_at,
     a.updated_at,
     a.deleted_at
-FROM aybarcorp.areas a
+FROM aybarcorp2.areas a
     LEFT JOIN aybar.areas aa ON aa.id = a.id
 WHERE aa.id IS NULL;
 INSERT INTO aybar.area_user (
@@ -216,6 +218,7 @@ SELECT au.id,
 FROM aybarcorp2.area_user au
     LEFT JOIN aybar.area_user a2 ON a2.id = au.id
 WHERE a2.id IS NULL;
+/*MODULO ATC*/
 INSERT INTO aybar.tipo_solicituds (
         id,
         nombre,
@@ -846,6 +849,20 @@ FROM aybarcorp2.evidencia_pago_antiguos e2
     LEFT JOIN aybar.users u3 ON u3.id = e2.usuario_valida_id
     LEFT JOIN aybar.estado_evidencia_pagos est ON est.id = e2.estado_evidencia_pago_id
 WHERE e1.id IS NULL;
+/*MODULO LETRAS*/
+INSERT INTO aybar.estado_solicitud_digitalizar_letras (
+        id,
+        nombre,
+        color,
+        icono,
+        activo,
+        created_at,
+        updated_at
+    )
+VALUES (1, 'OBSERVADO', NULL, NULL, 1, NOW(), NOW()),
+    (2, 'PENDIENTE', NULL, NULL, 1, NOW(), NOW()),
+    (3, 'RECHAZADO', NULL, NULL, 1, NOW(), NOW()),
+    (4, 'APROBADO', NULL, NULL, 1, NOW(), NOW());
 INSERT INTO aybar.solicitud_digitalizar_letras (
         id,
         unidad_negocio_id,
