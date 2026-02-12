@@ -194,69 +194,95 @@
             <div class="g_panel">
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-code-compare"></i> Comparador de Transacciones</h4>
 
-                <div class="g_comparador_contenedor">
-                    <div class="g_comparador_fila g_comparador_header">
-                        <div>Origen</div>
-                        <div>Fecha Operación</div>
-                        <div>N° Operación</div>
-                        <div>Monto</div>
-                        <div>Estado</div>
-                        <div>Acción</div>
-                    </div>
-
-                    <div class="g_comparador_fila g_comparador_referencia" title="Datos registrados en el ERP">
-                        <div>ERP</div>
-                        <div>{{ $solicitud->fecha_operacion ?? '—' }}</div>
-                        <div>{{ $solicitud->slin_numero_operacion ?? '—' }}</div>
-                        <div>
-                            S/ {{ number_format($solicitud->monto_operacion ?? 0, 2) }}
-                        </div>
-                        <div>
-                            <span class="g_badge {{ $solicitud->slin_asbanc ? 'g_badge_success' : 'g_badge_danger' }}">
-                                {{ $solicitud->slin_asbanc ? 'ES ASBANC' : 'NO ASBANC' }}
-                            </span>
-                        </div>
-                        <div>
-                            <i class="fa-solid fa-anchor" title="Dato de referencia"></i>
-                        </div>
-                    </div>
-
-                    <div class="g_comparador_separador">
-                        <span>Evidencias Recibidas del Cliente</span>
-                    </div>
-
-                    @foreach ($solicitud->evidencias as $evidencia)
-                        <div
-                            class="g_comparador_fila {{ $evidenciaSeleccionadaId == $evidencia->id ? 'g_fila_activa' : '' }}">
-                            <div>
-                                <span class="g_badge g_badge_light">#{{ $loop->iteration }}</span>
-                            </div>
-                            <div>{{ $evidencia->fecha ?? '—' }}</div>
-                            <div>{{ $evidencia->numero_operacion ?? '—' }}</div>
-                            <div>
-                                S/ {{ number_format($evidencia->monto, 2) }}
-                            </div>
-                            <div>
-                                @if ($evidencia->estado)
-                                    <span class="g_badge g_badge_soft" style="color: {{ $evidencia->estado->color }}">
-                                        <i class="{{ $evidencia->estado->icono }}"></i>
-                                        {{ $evidencia->estado->nombre }}
+                <div class="g_contenedor_tabla">
+                    <table class="g_tabla">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Origen</th>
+                                <th style="width: 150px;">Fecha Operación</th>
+                                <th>N° Operación</th>
+                                <th style="width: 150px;">Monto</th>
+                                <th style="width: 180px;">Estado ERP</th>
+                                <th style="width: 80px;" class="g_celda_centro">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                style="background-color: var(--color-light); border-left: 4px solid var(--color-primario);">
+                                <td class="g_negrita g_resaltar">ERP</td>
+                                <td>{{ $solicitud->fecha_operacion ?? '—' }}</td>
+                                <td class="g_negrita">{{ $solicitud->slin_numero_operacion ?? '—' }}</td>
+                                <td class="g_negrita" style="color: var(--color-primario);">
+                                    S/ {{ number_format($solicitud->monto_operacion ?? 0, 2) }}
+                                </td>
+                                <td>
+                                    <span
+                                        class="g_badge {{ $solicitud->slin_asbanc ? 'g_badge_success' : 'g_badge_danger' }}">
+                                        {{ $solicitud->slin_asbanc ? 'ES ASBANC' : 'NO ASBANC' }}
                                     </span>
-                                @else
-                                    <span class="g_badge g_badge_light">Pendiente</span>
-                                @endif
-                            </div>
-                            <div>
-                                <div class="g_comparador_acciones">
-                                    <button wire:click="seleccionarEvidencia({{ $evidencia->id }})"
-                                        class="g_accion_ver {{ $evidenciaSeleccionadaId == $evidencia->id ? 'active' : '' }}"
-                                        title="Seleccionar para comparar">
-                                        <i class="fa-solid fa-magnifying-glass-chart"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
+                                </td>
+                                <td class="g_celda_centro">
+                                    <i class="fa-solid fa-anchor" title="Dato de referencia"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="g_comparador_separador">
+                    <span>Evidencias Recibidas del Cliente</span>
+                </div>
+
+                <div class="g_contenedor_tabla">
+                    <table class="g_tabla">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;" class="g_celda_centro">Ref.</th>
+                                <th style="width: 150px;">Fecha Evidencia</th>
+                                <th>N° Operación</th>
+                                <th style="width: 150px;">Monto</th>
+                                <th style="width: 180px;">Estado</th>
+                                <th style="width: 80px;" class="g_celda_centro">Comparar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($solicitud->evidencias as $evidencia)
+                                <tr class="{{ $evidenciaSeleccionadaId == $evidencia->id ? 'g_fila_seleccionada' : '' }}">
+                                    <td class="g_celda_centro">
+                                        <span class="g_badge g_badge_light">#{{ $loop->iteration }}</span>
+                                    </td>
+                                    <td>{{ $evidencia->fecha ?? '—' }}</td>
+                                    <td>{{ $evidencia->numero_operacion ?? '—' }}</td>
+                                    <td class="g_negrita">
+                                        S/ {{ number_format($evidencia->monto, 2) }}
+                                        @if(isset($solicitud->monto_operacion) && $evidencia->monto != $solicitud->monto_operacion)
+                                            <i class="fa-solid fa-triangle-exclamation" style="color: red;"
+                                                title="El monto no coincide con el ERP"></i>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($evidencia->estado)
+                                            <span class="g_badge g_badge_soft" style="color: {{ $evidencia->estado->color }}">
+                                                <i class="{{ $evidencia->estado->icono }}"></i>
+                                                {{ $evidencia->estado->nombre }}
+                                            </span>
+                                        @else
+                                            <span class="g_badge g_badge_light">Pendiente</span>
+                                        @endif
+                                    </td>
+                                    <td class="g_celda_centro">
+                                        <div class="g_comparador_acciones">
+                                            <button wire:click="seleccionarEvidencia({{ $evidencia->id }})"
+                                                class="g_accion_ver {{ $evidenciaSeleccionadaId == $evidencia->id ? 'active' : '' }}"
+                                                title="Seleccionar para comparar">
+                                                <i class="fa-solid fa-magnifying-glass-chart"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
