@@ -3,8 +3,10 @@
         <h2>Crear Rol</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('rol.ver')
+                <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
             <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
@@ -85,19 +87,23 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="store">
-                            <span wire:loading.remove wire:target="store">
-                                <i class="fa-solid fa-save"></i> Guardar
-                            </span>
-                            <span wire:loading wire:target="store">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                            </span>
-                        </button>
+                        @can('rol.crear')
+                            <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                                wire:target="store">
+                                <span wire:loading.remove wire:target="store">
+                                    <i class="fa-solid fa-save"></i> Guardar
+                                </span>
+                                <span wire:loading wire:target="store">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('rol.ver')
+                            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_cancelar">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>

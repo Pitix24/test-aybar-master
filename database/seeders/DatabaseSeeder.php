@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
             RolesYPermisosSeeder::class,
             MenuSeeder::class,
 
-            UserSeeder::class,
-            /*UnidadNegocioSeeder::class,
+            /*UserSeeder::class,
+            UnidadNegocioSeeder::class,
             SedesYAreasSeeder::class,
             GrupoProyectoSeeder::class,
             ProyectoSeeder::class,

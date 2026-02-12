@@ -38,7 +38,7 @@
         @endif
     </td>
     <td class="g_celda_acciones g_celda_centro centro">
-        @can('menu-editar')
+        @can('menu.editar')
             <a href="{{ route('erp.menu.vista.editar', $item->id) }}" class="g_accion_editar" title="Editar">
                 <i class="fa-solid fa-pencil"></i>
             </a>

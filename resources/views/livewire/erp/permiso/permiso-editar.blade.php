@@ -3,15 +3,21 @@
         <h2>Editar Permiso</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('permiso.ver')
+                <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton g_boton_light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
-            <a href="{{ route('erp.permiso.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('permiso.crear')
+                <a href="{{ route('erp.permiso.vista.crear') }}" class="g_boton g_boton_primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_danger" onclick="confirmarEliminarPermiso()">
-                Eliminar <i class="fa-solid fa-trash-can"></i>
-            </button>
+            @can('permiso.eliminar')
+                <button type="button" class="g_boton g_boton_danger" onclick="confirmarEliminarPermiso()">
+                    Eliminar <i class="fa-solid fa-trash-can"></i>
+                </button>
+            @endcan
 
             <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
@@ -49,19 +55,23 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="update">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-save"></i> Actualizar
-                            </span>
-                            <span wire:loading wire:target="update">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
-                        </button>
+                        @can('permiso.editar')
+                            <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                                wire:target="update">
+                                <span wire:loading.remove wire:target="update">
+                                    <i class="fa-solid fa-save"></i> Actualizar
+                                </span>
+                                <span wire:loading wire:target="update">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('permiso.ver')
+                            <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton g_boton_cancelar">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>

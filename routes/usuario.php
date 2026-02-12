@@ -12,20 +12,22 @@ use App\Livewire\Erp\ClienteAntiguo\ClienteAntiguoLista;
 use App\Livewire\Erp\ClienteAntiguo\ClienteAntiguoCrear;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => ['permission:admin.navegacion']], function () {
-    Route::prefix('admin')->name('admin.vista.')->group(function () {
-        Route::get('/', AdminLista::class)->middleware('permission:admin.lista')->name('todo');
-        Route::get('/crear', AdminCrear::class)->middleware('permission:admin.crear')->name('crear');
-        Route::get('/editar/{id}', AdminEditar::class)->middleware('permission:admin.editar')->name('editar');
+Route::group(['middleware' => ['permission:modulo-usuarios.ver']], function () {
+    Route::group(['middleware' => ['permission:admin.navegacion']], function () {
+        Route::prefix('admin')->name('admin.vista.')->group(function () {
+            Route::get('/', AdminLista::class)->middleware('permission:admin.ver')->name('todo');
+            Route::get('/crear', AdminCrear::class)->middleware('permission:admin.crear')->name('crear');
+            Route::get('/editar/{id}', AdminEditar::class)->middleware('permission:admin.editar')->name('editar');
+        });
     });
-});
 
-Route::group(['middleware' => ['permission:cliente.navegacion']], function () {
-    Route::prefix('cliente')->name('cliente.vista.')->group(function () {
-        Route::get('/', ClienteLista::class)->middleware('permission:cliente.lista')->name('todo');
-        Route::get('/crear', ClienteCrear::class)->middleware('permission:cliente.crear')->name('crear');
-        Route::get('/editar/{id}', ClienteEditar::class)->middleware('permission:cliente.editar')->name('editar');
-        Route::get('/consultar/{dni?}', ClienteConsultar::class)->middleware('permission:cliente.consultar')->name('consultar');
+    Route::group(['middleware' => ['permission:cliente.navegacion']], function () {
+        Route::prefix('cliente')->name('cliente.vista.')->group(function () {
+            Route::get('/', ClienteLista::class)->middleware('permission:cliente.ver')->name('todo');
+            Route::get('/crear', ClienteCrear::class)->middleware('permission:cliente.crear')->name('crear');
+            Route::get('/editar/{id}', ClienteEditar::class)->middleware('permission:cliente.editar')->name('editar');
+            Route::get('/consultar/{dni?}', ClienteConsultar::class)->middleware('permission:cliente.consultar')->name('consultar');
+        });
     });
 });
 
@@ -45,20 +47,19 @@ MODULO
 
 ADMIN
 1. admin.navegacion
-2. admin.lista
+2. admin.ver
 3. admin.crear
-4. admin.ver
-5. admin.editar
-6. admin.eliminar
-7. admin.exportar
-8. admin.cambiar-clave
+4. admin.editar
+5. admin.eliminar
+6. admin.exportar
+7. admin.cambiar-clave
 
 CLIENTE
 1. cliente.navegacion
-2. cliente.lista
+2. cliente.ver
 3. cliente.crear
-4. cliente.ver
-5. cliente.editar
-6. cliente.exportar
+4. cliente.editar
+5. cliente.exportar
+6. cliente.consultar
 
 */

@@ -76,10 +76,12 @@
                             </td>
 
                             <td class="g_celda_acciones g_celda_centro centro">
-                                <a href="{{ route('erp.rol.vista.editar', $item->id) }}" class="g_accion_editar"
-                                    title="Editar">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
+                                @can('rol.editar')
+                                    <a href="{{ route('erp.rol.vista.editar', $item->id) }}" class="g_accion_editar"
+                                        title="Editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

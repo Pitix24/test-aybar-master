@@ -23,7 +23,7 @@
                         "ruta": "erp.rol.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "rol.lista",
+                        "permiso": "rol.ver",
                         "submenus": []
                     },
                     {
@@ -52,7 +52,7 @@
                         "ruta": "erp.permiso.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "permiso.lista",
+                        "permiso": "permiso.ver",
                         "submenus": []
                     },
                     {
@@ -81,7 +81,7 @@
                         "ruta": "erp.menu.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "menu.lista",
+                        "permiso": "menu.ver",
                         "submenus": []
                     },
                     {
@@ -121,7 +121,7 @@
                         "ruta": "erp.admin.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "admin.lista",
+                        "permiso": "admin.ver",
                         "submenus": []
                     },
                     {
@@ -150,7 +150,7 @@
                         "ruta": "erp.cliente.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "cliente.lista",
+                        "permiso": "cliente.ver",
                         "submenus": []
                     },
                     {
@@ -179,7 +179,7 @@
                         "ruta": "erp.cliente-antiguo.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "cliente-antiguo.lista",
+                        "permiso": "cliente-antiguo.ver",
                         "submenus": []
                     }
                 ]
@@ -621,7 +621,7 @@
                 "url": null,
                 "icono": "fa-solid fa-calendar-check",
                 "nivel": 2,
-                "permiso": "calendario.ver",
+                "permiso": "cita.ver",
                 "submenus": []
             }
         ]
@@ -751,7 +751,7 @@
                 "url": null,
                 "icono": "fa-solid fa-lock-open",
                 "nivel": 2,
-                "permiso": "solicitud-letra.ver",
+                "permiso": "solicitud-digitalizar-letra.ver",
                 "submenus": []
             },
             {
@@ -761,7 +761,7 @@
                 "url": null,
                 "icono": "fa-solid fa-file-invoice-dollar",
                 "nivel": 2,
-                "permiso": "envio-letra.ver",
+                "permiso": "envio-cavali-solicitud.ver",
                 "submenus": []
             }
         ]

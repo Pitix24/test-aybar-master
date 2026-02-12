@@ -3,16 +3,22 @@
         <h2>Editar Rol</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('rol.ver')
+                <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
-            <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('rol.crear')
+                <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton g_boton_primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
 
             @if($role->name !== 'super-admin')
-                <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarRol()">
-                    Eliminar <i class="fa-solid fa-trash-can"></i>
-                </button>
+                @can('rol.eliminar')
+                    <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarRol()">
+                        Eliminar <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                @endcan
             @endif
 
             <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
@@ -94,19 +100,23 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="update">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-save"></i> Actualizar
-                            </span>
-                            <span wire:loading wire:target="update">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
-                        </button>
+                        @can('rol.editar')
+                            <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                                wire:target="update">
+                                <span wire:loading.remove wire:target="update">
+                                    <i class="fa-solid fa-save"></i> Actualizar
+                                </span>
+                                <span wire:loading wire:target="update">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('rol.ver')
+                            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_cancelar">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>

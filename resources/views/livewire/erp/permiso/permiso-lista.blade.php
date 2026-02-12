@@ -7,8 +7,10 @@
         <h2>Lista de Permisos</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.permiso.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('permiso.crear')
+                <a href="{{ route('erp.permiso.vista.crear') }}" class="g_boton g_boton_primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
         </div>
     </div>
 
@@ -76,10 +78,12 @@
                             </td>
 
                             <td class="g_celda_acciones g_celda_centro centro">
-                                <a href="{{ route('erp.permiso.vista.editar', $item->id) }}" class="g_accion_editar"
-                                    title="Editar">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
+                                @can('permiso.editar')
+                                    <a href="{{ route('erp.permiso.vista.editar', $item->id) }}" class="g_accion_editar"
+                                        title="Editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

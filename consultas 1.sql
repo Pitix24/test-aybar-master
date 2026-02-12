@@ -1,5 +1,6 @@
 php artisan db :seed
 INSERT INTO aybar.users (
+        id,
         name,
         email,
         email_verified_at,
@@ -16,20 +17,8 @@ INSERT INTO aybar.users (
         updated_at,
         deleted_at
     )
-INSERT INTO aybar.model_has_roles (role_id, model_type, model_id)
-SELECT 1,
-    'App\\Models\\User',
-    u.id
-FROM aybar.users u
-WHERE u.rol = 'admin'
-    AND NOT EXISTS (
-        SELECT 1
-        FROM aybar.model_has_roles m
-        WHERE m.model_id = u.id
-            AND m.role_id = 1
-            AND m.model_type = 'App\\Models\\User'
-    );
-SELECT u.name,
+SELECT u.id,
+    u.name,
     u.email,
     u.email_verified_at,
     u.password,
@@ -44,9 +33,22 @@ SELECT u.name,
     u.created_at,
     u.updated_at,
     u.deleted_at
-FROM aybarcorp.users u
-    LEFT JOIN aybar.users au ON au.email = u.email
+FROM aybarcorp2.users u
+    LEFT JOIN aybar.users au ON au.id = u.id
 WHERE au.id IS NULL;
+INSERT INTO aybar.model_has_roles (role_id, model_type, model_id)
+SELECT 1,
+    'App\\Models\\User',
+    u.id
+FROM aybar.users u
+WHERE u.rol = 'admin'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM aybar.model_has_roles m
+        WHERE m.model_id = u.id
+            AND m.role_id = 1
+            AND m.model_type = 'App\\Models\\User'
+    );
 INSERT INTO aybar.clientes (
         id,
         user_id,
@@ -69,12 +71,13 @@ SELECT c.id,
     c.created_at,
     c.updated_at,
     c.deleted_at
-FROM aybarcorp.clientes c
-    INNER JOIN aybarcorp.users u ON u.id = c.user_id
+FROM aybarcorp2.clientes c
+    INNER JOIN aybarcorp2.users u ON u.id = c.user_id
     LEFT JOIN aybar.clientes ac ON ac.id = c.id
 WHERE u.rol = 'cliente'
     AND ac.id IS NULL;
 INSERT INTO aybar.direccions (
+        id,
         user_id,
         region_id,
         provincia_id,
@@ -87,7 +90,8 @@ INSERT INTO aybar.direccions (
         created_at,
         updated_at
     )
-SELECT d.user_id,
+SELECT d.id,
+    d.user_id,
     d.region_id,
     d.provincia_id,
     d.distrito_id,
@@ -98,9 +102,11 @@ SELECT d.user_id,
     d.instrucciones AS referencia,
     d.created_at,
     d.updated_at
-FROM aybarcorp.direccions d
-    INNER JOIN aybarcorp.users u ON u.id = d.user_id
-WHERE u.rol = 'cliente';
+FROM aybarcorp2.direccions d
+    INNER JOIN aybarcorp2.users u ON u.id = d.user_id
+    LEFT JOIN aybar.direccions ad ON ad.id = d.id
+WHERE u.rol = 'cliente'
+    AND ad.id IS NULL;
 INSERT INTO aybar.unidad_negocios (
         id,
         nombre,
