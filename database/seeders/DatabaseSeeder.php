@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
             RegionSeeder::class,
             ProvinciaSeeder::class,
             DistritoSeeder::class,
-            RolesYPermisosSeeder::class,
-            MenuSeeder::class,
+            //RolesYPermisosSeeder::class,
+            //MenuSeeder::class,
 
             /*UserSeeder::class,
             UnidadNegocioSeeder::class,

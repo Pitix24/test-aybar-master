@@ -298,7 +298,7 @@ class MigracionAybarCorp2Seeder extends Seeder
             DB::statement("
                 INSERT INTO {$dbDestino}.solicitud_evidencia_pagos (
                     id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, 
-                    estado_evidencia_pago_id, lote_completo, codigo_cuota, razon_social, 
+                    estado_solicitud_evidencia_pago_id, lote_completo, codigo_cuota, razon_social, 
                     nombre_proyecto, etapa, manzana, lote, codigo_cliente, numero_cuota, 
                     transaccion_id, fecha_operacion, fecha_vencimiento, monto_operacion, 
                     slin_monto, slin_penalidad, slin_numero_operacion, comprobante, 
@@ -322,7 +322,7 @@ class MigracionAybarCorp2Seeder extends Seeder
 
             DB::statement("
                 INSERT INTO {$dbDestino}.evidencia_pagos (
-                    id, solicitud_evidencia_pago_id, estado_evidencia_pago_id, path, 
+                    id, solicitud_evidencia_pago_id, estado_solicitud_evidencia_pago_id, path, 
                     url, extension, numero_operacion, banco, monto, fecha, es_reenvio, 
                     slin_respuesta, observacion, created_at, updated_at, deleted_at
                 )
@@ -336,15 +336,34 @@ class MigracionAybarCorp2Seeder extends Seeder
             ");
 
             DB::statement("
-                INSERT INTO {$dbDestino}.solicitud_evidencia_pago_emails (
-                    id, solicitud_evidencia_pago_id, mensaje, enviado_at, created_at, updated_at
-                )
-                SELECT c2.id, c2.solicitud_evidencia_pago_id, c2.mensaje, c2.enviado_at, c2.created_at, c2.updated_at
-                FROM {$dbOrigen}.correo_evidencia_pagos c2
-                LEFT JOIN {$dbDestino}.solicitud_evidencia_pago_emails c1 ON c1.id = c2.id
-                INNER JOIN {$dbDestino}.solicitud_evidencia_pagos s ON s.id = c2.solicitud_evidencia_pago_id
-                WHERE c1.id IS NULL
-            ");
+    INSERT INTO {$dbDestino}.solicitud_evidencia_pago_emails (
+        id,
+        solicitud_evidencia_pago_id,
+        emisor_id,
+        receptor_id,
+        asunto,
+        mensaje,
+        enviado_at,
+        created_at,
+        updated_at
+    )
+    SELECT 
+        c2.id,
+        c2.solicitud_evidencia_pago_id,
+        NULL AS emisor_id,
+        NULL AS receptor_id,
+        'Migración automática' AS asunto,
+        COALESCE(c2.mensaje, '') AS mensaje,
+        c2.enviado_at,
+        c2.created_at,
+        c2.updated_at
+    FROM {$dbOrigen}.correo_evidencia_pagos c2
+    LEFT JOIN {$dbDestino}.solicitud_evidencia_pago_emails c1 
+        ON c1.id = c2.id
+    INNER JOIN {$dbDestino}.solicitud_evidencia_pagos s 
+        ON s.id = c2.solicitud_evidencia_pago_id
+    WHERE c1.id IS NULL
+");
 
             /*DB::statement("
                 INSERT INTO {$dbDestino}.evidencia_pago_antiguos (
