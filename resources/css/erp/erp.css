@@ -39,7 +39,7 @@
 @import "../components/profile.css";
 @import "../components/dropzone.css";
 @import "../components/calendario.css";
-
+@import "../components/modal.css";
 /* ================================
 COMPONENTS ERP
 ================================ */
@@ -47,3 +47,8 @@ COMPONENTS ERP
 @import "./components/dropdown.css";
 @import "./components/menu.css";
 @import "./components/sub-menu.css";
+
+/* ================================
+MODULO CLIENTE
+================================ */
+@import "../cliente/reportes/cronograma.css";

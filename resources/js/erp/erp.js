@@ -1,5 +1,6 @@
 import "./menu-principal.js";
 import "../components/alertas.js";
+import "../components/abrir-url.js";
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('themeSwitcher', () => ({
