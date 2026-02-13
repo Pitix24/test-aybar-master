@@ -338,7 +338,7 @@ class TicketCrear extends Component
         $this->selectedParticipants = array_diff($this->selectedParticipants, [$userId]);
     }
 
-    public function store()
+    public function store($confirmado = false)
     {
         abort_unless(auth()->user()->can('ticket.crear'), 403);
 
@@ -347,6 +347,12 @@ class TicketCrear extends Component
         } catch (ValidationException $e) {
             $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Faltan campos obligatorios.']);
             throw $e;
+        }
+
+        // Validación de contacto sugerida por el usuario
+        if (!$confirmado && (empty($this->email) || empty($this->celular))) {
+            $this->dispatch('confirmarTicketSinDatos');
+            return;
         }
 
         try {

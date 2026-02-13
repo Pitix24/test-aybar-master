@@ -476,4 +476,25 @@
             @endif
         </div>
     </div>
+
+    @script
+    <script>
+        $wire.on('confirmarTicketSinDatos', () => {
+            Swal.fire({
+                title: '¿Continuar sin datos?',
+                text: "Estás creando un ticket sin email o celular, ¿deseas continuar?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, continuar',
+                cancelButtonText: 'No, completar datos'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $wire.store(true);
+                }
+            });
+        });
+    </script>
+    @endscript
 </div>
