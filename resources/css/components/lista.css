@@ -1,0 +1,29 @@
+.g_evidencia_meta_list {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.g_evidencia_meta_item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+}
+
+.g_evidencia_meta_item:last-child {
+    border-bottom: none;
+}
+
+.g_evidencia_meta_label {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.g_evidencia_meta_value {
+    color: #1e293b;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+}

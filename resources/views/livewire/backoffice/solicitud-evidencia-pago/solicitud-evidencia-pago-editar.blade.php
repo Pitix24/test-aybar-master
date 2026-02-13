@@ -312,78 +312,90 @@
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-magnifying-glass"></i> Evidencia seleccionada</h4>
 
                 @if ($evidenciaSeleccionada)
-                    <div class="g_centrar_elemento g_margin_bottom_20"
-                        style="background: var(--g_color_light); padding: 10px; border-radius: 12px;">
-                        <a href="{{ $evidenciaSeleccionada->url }}" target="_blank" class="g_contenedor_img_zoom">
-                            <img src="{{ $evidenciaSeleccionada->url }}" alt="Comprobante"
-                                style="max-height: 450px; width: 100%; object-fit: contain; border-radius: 8px; box-shadow: var(--g_shadow);">
-                        </a>
-                    </div>
+                    <div class="g_evidencia_visor_panel">
+                        <!-- 1. Visualización Principal -->
+                        <div class="g_evidencia_previa">
+                            <a href="{{ $evidenciaSeleccionada->url }}" target="_blank" title="Ver original">
+                                <img src="{{ $evidenciaSeleccionada->url }}" alt="Comprobante de Pago">
+                            </a>
+                        </div>
 
-                    <div class="g_margin_bottom_10"
-                        style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
-                        <span class="g_badge {{ $solicitud->slin_asbanc ? 'g_badge_success' : 'g_badge_dark' }}">
-                            Asbanc: {{ $solicitud->slin_asbanc ? 'SÍ' : 'NO' }}
-                        </span>
+                        <!-- 2. Badges de Estado -->
+                        <div class="g_margin_bottom_10" style="display: flex; gap: 8px;">
+                            <span class="g_badge {{ $solicitud->slin_asbanc ? 'g_badge_success' : 'g_badge_dark' }}">
+                                <i class="fa-solid fa-building-columns"></i> Asbanc: {{ $solicitud->slin_asbanc ? 'SÍ' : 'NO' }}
+                            </span>
 
-                        <span class="g_badge {{ $solicitud->slin_evidencia ? 'g_badge_primary' : 'g_badge_light' }}">
-                            Validado: {{ $solicitud->slin_evidencia ? 'SÍ' : 'NO' }}
-                        </span>
-                    </div>
+                            <span class="g_badge {{ $solicitud->slin_evidencia ? 'g_badge_primary' : 'g_badge_light' }}">
+                                <i class="fa-solid {{ $solicitud->slin_evidencia ? 'fa-check-double' : 'fa-hourglass-half' }}"></i> 
+                                Validado: {{ $solicitud->slin_evidencia ? 'SÍ' : 'NO' }}
+                            </span>
+                        </div>
 
-                    <div class="g_panel_parrafo g_inferior"
-                        style="background: var(--g_color_soft_primary); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                        <p><strong>Lote:</strong> {{ $solicitud->lote_completo ?? '—' }}</p>
-                        <p><strong>Cliente:</strong> {{ $solicitud->codigo_cliente ?? '—' }}</p>
-                        <p><strong>Transacción:</strong> {{ $solicitud->transaccion_id ?? '—' }}</p>
-                    </div>
+                        <!-- 3. Metadatos de la Solicitud -->
+                        <div class="g_evidencia_meta_list">
+                            <div class="g_evidencia_meta_item">
+                                <span class="g_evidencia_meta_label">Lote</span>
+                                <span class="g_evidencia_meta_value">{{ $solicitud->lote_completo ?? '—' }}</span>
+                            </div>
+                            <div class="g_evidencia_meta_item">
+                                <span class="g_evidencia_meta_label">Cliente</span>
+                                <span class="g_evidencia_meta_value">{{ $solicitud->codigo_cliente ?? '—' }}</span>
+                            </div>
+                            <div class="g_evidencia_meta_item" style="flex-direction: column; gap: 4px;">
+                                <span class="g_evidencia_meta_label">ID Transacción</span>
+                                <span class="g_evidencia_meta_value" style="font-size: 10px; word-break: break-all;">{{ $solicitud->transaccion_id ?? '—' }}</span>
+                            </div>
+                        </div>
 
-                    <div class="formulario">
-                        @if ($solicitud->slin_asbanc)
-                            @if ($solicitud->fecha_validacion && $solicitud->slin_evidencia)
-                                <div class="g_margin_bottom_10">
-                                    <label>Fecha Validación</label>
-                                    <input type="text" disabled value="{{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}">
-                                </div>
-
-                                <div class="g_margin_bottom_10">
-                                    <label>Respuesta Slin</label>
-                                    <textarea disabled rows="2">{{ $solicitud->slin_respuesta }}</textarea>
-                                </div>
+                        <!-- 4. Área de Acciones / Resultados -->
+                        <div class="formulario">
+                            @if ($solicitud->slin_asbanc)
+                                @if ($solicitud->fecha_validacion && $solicitud->slin_evidencia)
+                                    <div class="g_evidencia_status_box g_evidencia_status_success">
+                                        <span class="g_evidencia_status_label">Validación Digital EXITOSA</span>
+                                        <p><strong>Fecha:</strong> {{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}</p>
+                                        <p style="margin-top: 5px; font-size: 12px;"><strong>Respuesta:</strong> {{ $solicitud->slin_respuesta }}</p>
+                                    </div>
+                                @else
+                                    <div class="formulario_botones">
+                                        <button wire:click="enviarSlin" class="g_boton g_boton_guardar" style="width: 100%;"
+                                            wire:loading.attr="disabled" wire:target="enviarSlin">
+                                            <span wire:loading.remove wire:target="enviarSlin">
+                                                VALIDAR CON SLIN <i class="fa-solid fa-paper-plane"></i>
+                                            </span>
+                                            <span wire:loading wire:target="enviarSlin">
+                                                Enviando a Slin... <i class="fa-solid fa-spinner fa-spin"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                @endif
                             @else
-                                <div class="formulario_botones">
-                                    <button wire:click="enviarSlin" class="g_boton g_boton_primary" style="width: 100%;"
-                                        wire:loading.attr="disabled" wire:target="enviarSlin">
-                                        <span wire:loading.remove wire:target="enviarSlin">Validar con Slin <i
-                                                class="fa-solid fa-paper-plane"></i></span>
-                                        <span wire:loading wire:target="enviarSlin">Enviando... <i
-                                                class="fa-solid fa-spinner fa-spin"></i></span>
-                                    </button>
-                                </div>
+                                @if ($solicitud->fecha_validacion)
+                                    <div class="g_evidencia_status_box g_evidencia_status_info">
+                                        <span class="g_evidencia_status_label">Validación MANUAL</span>
+                                        <p><strong>Aprobado el:</strong> {{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}</p>
+                                    </div>
+                                @else
+                                    <div class="formulario_botones">
+                                        <button wire:click="cerrarManual" class="g_boton g_boton_guardar" style="width: 100%;"
+                                            wire:loading.attr="disabled" wire:target="cerrarManual">
+                                            <span wire:loading.remove wire:target="cerrarManual">
+                                                CIERRE MANUAL <i class="fa-solid fa-lock"></i>
+                                            </span>
+                                            <span wire:loading wire:target="cerrarManual">
+                                                Procesando... <i class="fa-solid fa-spinner fa-spin"></i>
+                                            </span>
+                                        </button>
+                                    </div>
+                                @endif
                             @endif
-                        @else
-                            @if ($solicitud->fecha_validacion)
-                                <div class="g_margin_bottom_10">
-                                    <label>Fecha Validación</label>
-                                    <input type="text" disabled value="{{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}">
-                                </div>
-                            @else
-                                <div class="formulario_botones">
-                                    <button wire:click="cerrarManual" class="g_boton g_boton_secondary" style="width: 100%;"
-                                        wire:loading.attr="disabled" wire:target="cerrarManual">
-                                        <span wire:loading.remove wire:target="cerrarManual">Cierre Manual <i
-                                                class="fa-solid fa-lock"></i></span>
-                                        <span wire:loading wire:target="cerrarManual">Procesando... <i
-                                                class="fa-solid fa-spinner fa-spin"></i></span>
-                                    </button>
-                                </div>
-                            @endif
-                        @endif
+                        </div>
                     </div>
                 @else
-                    <div class="g_vacio">
-                        <i class="fa-solid fa-arrow-left-long fa-bounce"></i>
-                        <p>Seleccione una evidencia de la lista para gestionarla.</p>
+                    <div class="g_vacio" style="height: 300px;">
+                        <i class="fa-solid fa-hand-pointer fa-bounce" style="font-size: 40px; color: #cbd5e1; margin-bottom: 20px;"></i>
+                        <p style="color: #64748b; font-weight: 500;">Seleccione una evidencia de la lista para gestionarla.</p>
                     </div>
                 @endif
             </div>

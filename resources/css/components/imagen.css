@@ -1,0 +1,35 @@
+/* Previsualización de evidencia en paneles laterales */
+.g_evidencia_visor_panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.g_evidencia_previa {
+    background: #f1f5f9;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.g_evidencia_previa img {
+    max-height: 380px;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background: white;
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+}
+
+.g_evidencia_previa img:hover {
+    transform: scale(1.02);
+}

@@ -21,18 +21,20 @@
 
     <div x-show="activeTab === 'enviar'" x-transition class="g_tab_content">
         <div class="formulario">
-            <p class="g_resaltado_info" style="font-size: 13px; margin-bottom: 10px;">
-                <i class="fa-solid fa-info-circle"></i> Esta opción solo envía el correo informativo al cliente,
-                <strong>no cambia</strong> el estado de la solicitud.
+            <p class="g_resaltado info">
+                <i class="fa-solid fa-info-circle"></i>
+                <span>
+                    Esta opción solo envía el correo informativo al cliente,
+                    <strong>no cambia</strong> el estado de la solicitud.
+                </span>
             </p>
             <div class="g_margin_bottom_10">
                 <label>Mensaje para el cliente</label>
-                <textarea wire:model.live="mensaje_correo" rows="5"
-                    placeholder="Escribe el mensaje informativo..."></textarea>
+                <textarea wire:model.live="mensaje_correo" rows="5"></textarea>
                 @error('mensaje_correo') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
             <div class="formulario_botones">
-                <button type="button" wire:click="enviarCorreo(false)" class="g_boton g_boton_primary">
+                <button type="button" wire:click="enviarCorreo(false)" class="g_boton g_boton_guardar">
                     Enviar Solo Correo <i class="fa-solid fa-envelope"></i>
                 </button>
             </div>
@@ -42,25 +44,25 @@
     <div x-show="activeTab === 'enviar_y_cambiar_estado'" x-transition class="g_tab_content">
         <div class="formulario">
             @if($evidenciaSeleccionada)
-                <div class="g_alerta_warning" style="margin-bottom: 15px;">
+                <p class="g_resaltado warning">
                     <i class="fa-solid fa-triangle-exclamation"></i>
-                    <strong>Atención:</strong> Se enviará el correo y se marcará como <strong>RECHAZADA</strong> la
-                    evidencia #{{ $evidenciaSeleccionada->numero_operacion }} y la solicitud entera.
-                </div>
+                    <span><strong>Atención:</strong> Se enviará el correo y se marcará como <strong>RECHAZADA</strong> la
+                        evidencia #{{ $evidenciaSeleccionada->numero_operacion }} y la solicitud entera.</span>
+                </p>
+
                 <div class="g_margin_bottom_10">
                     <label>Motivo del Rechazo (mensaje para el cliente)</label>
-                    <textarea wire:model.live="mensaje_correo" rows="5"
-                        placeholder="Escribe detalladamente por qué se rechaza el pago..."></textarea>
+                    <textarea wire:model.live="mensaje_correo" rows="5"></textarea>
                     @error('mensaje_correo') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
                 <div class="formulario_botones">
-                    <button type="button" wire:click="enviarCorreo(true)" class="g_boton g_boton_danger">
+                    <button type="button" wire:click="enviarCorreo(true)" class="g_boton g_boton_guardar">
                         Enviar y Rechazar Solicitud <i class="fa-solid fa-ban"></i>
                     </button>
                 </div>
             @else
-                <div class="g_vacio" style="padding: 20px;">
-                    <i class="fa-solid fa-hand-pointer fa-bounce"></i>
+                <div class="g_vacio">
+                    <i class="fa-regular fa-face-grin-wink"></i>
                     <p>Debe seleccionar una evidencia de la lista de la izquierda para poder usar esta funcionalidad.</p>
                 </div>
             @endif
@@ -88,7 +90,12 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="g_celda_vacia">No hay registros de correos enviados.</td>
+                            <td colspan="4">
+                                <div class="g_vacio">
+                                    <i class="fa-regular fa-face-grin-wink"></i>
+                                    <p>No hay registros de correos enviados.</p>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>

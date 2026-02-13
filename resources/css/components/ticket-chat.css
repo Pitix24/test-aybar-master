@@ -245,18 +245,6 @@
     cursor: not-allowed;
 }
 
-/* ESTADO VACÍO */
-.g_vacio {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #94a3b8;
-    padding: 40px;
-}
-
 /* RESPONSIVE */
 @media (max-width: 500px) {
     .g_chat_drawer {
