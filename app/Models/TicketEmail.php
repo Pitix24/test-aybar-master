@@ -17,6 +17,11 @@ class TicketEmail extends Model
         'receptor_id',
         'asunto',
         'mensaje',
+        'enviado_at',
+    ];
+
+    protected $casts = [
+        'enviado_at' => 'datetime',
     ];
 
     public function ticket()

@@ -61,7 +61,11 @@ class TicketEmail extends Component
             $this->dispatch('alertaLivewire', ['title' => 'Enviado', 'text' => 'El correo ha sido enviado correctamente al cliente.']);
         } catch (\Exception $e) {
             Log::error('Error TicketEmail@enviar: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo enviar el correo. Revise la configuración de servidor de correo.']);
+            Log::error($e->getTraceAsString());
+            $this->dispatch('alertaLivewire', [
+                'title' => 'Error de Envío',
+                'text' => 'Hubo un problema técnico: ' . $e->getMessage()
+            ]);
         }
     }
 
