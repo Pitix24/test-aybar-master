@@ -6,9 +6,14 @@ use App\Models\Direccion;
 use App\Models\Region;
 use App\Models\Distrito;
 use App\Models\Provincia;
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Lazy;
+use Livewire\Component;
 
+#[Lazy]
 class DireccionEditar extends Component
 {
     public ?Direccion $direccion_seleccionada = null;
@@ -21,29 +26,13 @@ class DireccionEditar extends Component
     public $provincia_id;
     public $distrito_id;
 
-    public $recibe_nombres;
-    public $recibe_celular;
     public $direccion;
     public $direccion_numero;
     public $codigo_postal;
     public $opcional;
-    public $instrucciones;
+    public $referencia;
 
     public $origen = '';
-
-    protected function rules()
-    {
-        return [
-            'recibe_nombres' => 'nullable|string',
-            'recibe_celular' => 'nullable|string',
-            'region_id' => 'required|integer',
-            'provincia_id' => 'required|integer',
-            'distrito_id' => 'required|integer',
-            'direccion' => 'required|string',
-            'direccion_numero' => 'required|string',
-            'codigo_postal' => 'required|string',
-        ];
-    }
 
     public function mount($origen = null)
     {
@@ -64,13 +53,11 @@ class DireccionEditar extends Component
     {
         $dir = $this->direccion_seleccionada;
 
-        $this->recibe_nombres = $dir->recibe_nombres;
-        $this->recibe_celular = $dir->recibe_celular;
         $this->direccion = $dir->direccion;
         $this->direccion_numero = $dir->direccion_numero;
         $this->codigo_postal = $dir->codigo_postal;
         $this->opcional = $dir->opcional;
-        $this->instrucciones = $dir->instrucciones;
+        $this->referencia = $dir->referencia;
 
         $this->region_id = $dir->region_id;
         $this->provincia_id = $dir->provincia_id;
@@ -85,31 +72,78 @@ class DireccionEditar extends Component
         }
     }
 
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName, $this->rules(), [], $this->validationAttributes());
+    }
+
+    protected function rules()
+    {
+        return [
+            'region_id' => 'required|integer',
+            'provincia_id' => 'required|integer',
+            'distrito_id' => 'required|integer',
+            'direccion' => 'required|string|max:255',
+            'direccion_numero' => 'required|string|max:50',
+            'codigo_postal' => 'required|string|max:10',
+            'opcional' => 'nullable|string|max:255',
+            'referencia' => 'nullable|string|max:500',
+        ];
+    }
+
+    protected function validationAttributes()
+    {
+        return [
+            'region_id' => 'departamento',
+            'provincia_id' => 'provincia',
+            'distrito_id' => 'distrito',
+            'direccion' => 'dirección',
+            'direccion_numero' => 'número',
+            'codigo_postal' => 'código postal',
+            'opcional' => 'información opcional',
+            'referencia' => 'referencia',
+        ];
+    }
+
     public function saveDireccion()
     {
-        $this->validate();
-
-        if (!$this->direccion_seleccionada) {
-            $this->direccion_seleccionada = new Direccion();
-            $this->direccion_seleccionada->user_id = Auth::id();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            session()->flash('error', 'Verifique los errores de los campos resaltados.');
+            throw $e;
         }
 
-        $this->direccion_seleccionada->fill([
-            'recibe_nombres' => $this->recibe_nombres,
-            'recibe_celular' => $this->recibe_celular,
-            'direccion' => $this->direccion,
-            'direccion_numero' => $this->direccion_numero,
-            'codigo_postal' => $this->codigo_postal,
-            'opcional' => $this->opcional,
-            'instrucciones' => $this->instrucciones,
-            'region_id' => $this->region_id,
-            'provincia_id' => $this->provincia_id,
-            'distrito_id' => $this->distrito_id,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $this->direccion_seleccionada->save();
+            if (!$this->direccion_seleccionada) {
+                $this->direccion_seleccionada = new Direccion();
+                $this->direccion_seleccionada->user_id = Auth::id();
+            }
 
-        session()->flash('success', 'Dirección actualizado correctamente.');
+            $this->direccion_seleccionada->fill([
+                'region_id' => $this->region_id,
+                'provincia_id' => $this->provincia_id,
+                'distrito_id' => $this->distrito_id,
+                'direccion' => $this->direccion,
+                'direccion_numero' => $this->direccion_numero,
+                'opcional' => $this->opcional,
+                'codigo_postal' => $this->codigo_postal,
+                'referencia' => $this->referencia,
+            ]);
+
+            $this->direccion_seleccionada->save();
+
+            DB::commit();
+
+            session()->flash('success', 'Dirección actualizada correctamente.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al actualizar dirección: ' . $e->getMessage());
+            session()->flash('error', 'No se pudo actualizar la dirección. Intente nuevamente.');
+            return;
+        }
     }
 
     public function updatedRegionId()
@@ -137,5 +171,12 @@ class DireccionEditar extends Component
     public function render()
     {
         return view('livewire.cliente.perfil.direccion-editar');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }

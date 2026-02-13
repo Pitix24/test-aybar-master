@@ -1,8 +1,22 @@
 <div class="g_panel">
     @if (session()->has('success'))
-        <div class="g_alerta_succes">
+        <div class="g_alerta success g_margin_bottom_20">
             <i class="fa-solid fa-circle-check"></i>
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="g_alerta error g_margin_bottom_20">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if (session()->has('info'))
+        <div class="g_alerta info g_margin_bottom_20">
+            <i class="fa-solid fa-circle-info"></i>
+            {{ session('info') }}
         </div>
     @endif
 
@@ -25,29 +39,34 @@
         <div class="g_fila">
             <div class="g_margin_top_20 g_columna_4">
                 <label for="dni">DNI</label>
-                <input type="text" wire:model="dni" name="dni" id="dni" autocomplete="off" readonly disabled>
-                @error('dni')
-                    <span class="mensaje_error">{{ $message }}</span>
-                @enderror
+                <input type="text" id="dni" value="{{ $cliente->dni }}" autocomplete="off" readonly disabled>
             </div>
 
             <div class="g_margin_top_20 g_columna_4">
                 <label for="email">Email</label>
-                <input type="email" wire:model="email" name="email" id="email" autocomplete="email" readonly disabled>
+                <input type="email" id="email" value="{{ $cliente->email }}" autocomplete="email" readonly disabled>
             </div>
 
             <div class="g_margin_top_20 g_columna_4">
                 <label for="telefono_principal">Celular</label>
-                <input type="text" wire:model="telefono_principal" name="telefono_principal" id="telefono_principal"
-                    autocomplete="tel">
+                <input type="text" id="telefono_principal" wire:model.blur="telefono_principal"
+                    class="@error('telefono_principal') input-error @enderror" autocomplete="tel">
                 @error('telefono_principal')
-                    <span class="mensaje_error">{{ $message }}</span>
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
         </div>
 
         <div class="g_margin_top_20 formulario_botones">
-            <button type="submit" class="guardar">Confirma tus datos</button>
+            <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                wire:target="actualizarDatos">
+                <span wire:loading.remove wire:target="actualizarDatos">
+                    Confirmar Celular
+                </span>
+                <span wire:loading wire:target="actualizarDatos">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                </span>
+            </button>
         </div>
     </form>
 </div>
