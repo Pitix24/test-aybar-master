@@ -1,4 +1,5 @@
 <div class="g_panel" x-data="{ activeTab: 'enviar' }">
+    <x-loading-overlay wire:loading wire:target="nuevosArchivos, quitarArchivo, enviar" message="Procesando... " />
 
     <div class="g_tab_navegacion">
         <div class="g_tab_botones">
@@ -13,7 +14,6 @@
             </button>
         </div>
     </div>
-
 
     <div x-show="activeTab === 'enviar'" x-transition class="g_tab_content">
         <div class="formulario">
@@ -51,7 +51,7 @@
                 <div class="contenedor_dropzone"
                     onclick="if(event.target.closest('.dropzone_remove_button')) return; document.getElementById('emailFileUpload').click()">
                     @if($nuevosArchivos)
-                        <div style="width: 100%; display: grid; gap: 10px; margin-bottom: 10px;">
+                        <div>
                             @foreach($nuevosArchivos as $index => $tempFile)
                                 <div class="dropzone_item">
                                     @php
@@ -64,8 +64,7 @@
                                             default => 'fa-file'
                                         };
                                     @endphp
-                                    <i class="fa-solid {{ $icon }}"
-                                        style="font-size: 1.2rem !important; color: var(--primary);"></i>
+                                    <i class="fa-solid {{ $icon }}"></i>
                                     <span
                                         title="{{ $tempFile->getClientOriginalName() }}">{{ $tempFile->getClientOriginalName() }}</span>
                                     <button type="button" wire:click.stop="quitarArchivo({{ $index }})"
@@ -75,32 +74,22 @@
                                 </div>
                             @endforeach
                         </div>
-                        <p style="font-size: 12px; color: var(--primary); font-weight: 600;"><i
-                                class="fa-solid fa-plus"></i> Añadir más archivos</p>
+                        <p class="dropzone_add_more"><i class="fa-solid fa-plus"></i> Añadir más archivos</p>
                     @else
                         <i class="fa-solid fa-cloud-arrow-up"></i>
                         <p>Haz clic para cargar adjuntos</p>
-                        <small style="color: #94a3b8;">Formatos permitidos: PDF, DOCX, XLSX, JPG, PNG (Máx. 10MB)</small>
                     @endif
-
-                    <div wire:loading wire:target="nuevosArchivos" class="g_resaltado info"
-                        style="width: 100%; margin-top: 10px;">
-                        <i class="fa-solid fa-spinner fa-spin"></i>
-                        <span>Procesando archivos seleccionados...</span>
-                    </div>
                 </div>
 
                 @error('nuevosArchivos.*') <p class="mensaje_error">{{ $message }}</p> @enderror
+                <p class="leyenda">Formatos permitidos: PDF, DOCX, XLSX, JPG, PNG (Máx. 10MB)</p>
             </div>
 
             <div class="formulario_botones">
                 <button class="g_boton g_boton_guardar" wire:click="enviar" wire:loading.attr="disabled"
                     @if(!$ticket->email) disabled @endif>
-                    <span wire:loading.remove wire:target="enviar">
+                    <span>
                         <i class="fa-solid fa-paper-plane"></i> Enviar Correo ahora
-                    </span>
-                    <span wire:loading wire:target="enviar">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Procesando envío...
                     </span>
                 </button>
             </div>
