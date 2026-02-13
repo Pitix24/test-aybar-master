@@ -59,7 +59,7 @@
                     </button>
                 </div>
                 <div class="g_tabla_cabecera_botones">
-                    <button wire:click="descargarPDFestadoCuenta" class="g_boton g_boton_excel" wire:loading.attr="disabled" wire:target="descargarPDFestadoCuenta">
+                    <button wire:click="descargarPDFestadoCuenta" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="descargarPDFestadoCuenta">
                         <span wire:loading.remove wire:target="descargarPDFestadoCuenta">
                             <i class="fa-solid fa-file-pdf"></i> ESTADO CUENTA
                         </span>
@@ -68,7 +68,7 @@
                         </span>
                     </button>
 
-                    <button wire:click="descargarPDFcronograma" class="g_boton g_boton_excel" style="background-color: #6366f1;" wire:loading.attr="disabled" wire:target="descargarPDFcronograma">
+                    <button wire:click="descargarPDFcronograma" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="descargarPDFcronograma">
                         <span wire:loading.remove wire:target="descargarPDFcronograma">
                             <i class="fa-solid fa-calendar-days"></i> CRONOGRAMA
                         </span>
