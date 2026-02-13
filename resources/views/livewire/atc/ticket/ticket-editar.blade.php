@@ -328,6 +328,10 @@
                     </a>
                 </div>
             </form>
+
+            <div>
+                @livewire('atc.ticket.ticket-email', ['ticket' => $ticket])
+            </div>
         </div>
 
         <div class="g_columna_4 g_gap_pagina">
