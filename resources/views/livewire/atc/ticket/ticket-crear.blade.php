@@ -495,6 +495,29 @@
                 }
             });
         });
+
+        $wire.on('preguntarModoLotes', () => {
+            Swal.fire({
+                title: '¿Cómo deseas crear los tickets?',
+                text: "Has seleccionado múltiples lotes. ¿Deseas un solo ticket para todos o tickets independientes?",
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                denyButtonColor: '#0dcaf0',
+                confirmButtonText: '<i class="fa-solid fa-layer-group"></i> Todos Juntos',
+                denyButtonText: '<i class="fa-solid fa-clone"></i> Por Separado',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Modo Juntos: $confirmado = true, $modoLote = 'juntos'
+                    $wire.store(true, 'juntos');
+                } else if (result.isDenied) {
+                    // Modo Separados: $confirmado = true, $modoLote = 'separados'
+                    $wire.store(true, 'separados');
+                }
+            });
+        });
     </script>
     @endscript
 </div>

@@ -338,7 +338,7 @@ class TicketCrear extends Component
         $this->selectedParticipants = array_diff($this->selectedParticipants, [$userId]);
     }
 
-    public function store($confirmado = false)
+    public function store($confirmado = false, $modoLote = null)
     {
         abort_unless(auth()->user()->can('ticket.crear'), 403);
 
@@ -349,9 +349,15 @@ class TicketCrear extends Component
             throw $e;
         }
 
-        // Validación de contacto sugerida por el usuario
+        // 1. Validación de contacto (Prioridad 1)
         if (!$confirmado && (empty($this->email) || empty($this->celular))) {
             $this->dispatch('confirmarTicketSinDatos');
+            return;
+        }
+
+        // 2. Preguntar por lotes si hay más de uno y no se ha decidido el modo (Prioridad 2)
+        if (count($this->lotes_agregados) > 1 && is_null($modoLote)) {
+            $this->dispatch('preguntarModoLotes');
             return;
         }
 
@@ -360,44 +366,63 @@ class TicketCrear extends Component
 
             $estadoAbiertoId = EstadoTicket::id(EstadoTicket::NUEVO);
 
-            $ticket = Ticket::create([
-                'unidad_negocio_id' => $this->unidad_negocio_id,
-                'proyecto_id' => $this->proyecto_id,
-                'cliente_id' => $this->cliente_id ?: null,
-                'area_id' => $this->area_id,
-                'ticket_padre_id' => $this->ticket_padre_id,
-                'tipo_solicitud_id' => $this->tipo_solicitud_id,
-                'sub_tipo_solicitud_id' => $this->sub_tipo_solicitud_id ?: null,
-                'canal_id' => $this->canal_id,
-                'estado_ticket_id' => $estadoAbiertoId,
-                'prioridad_ticket_id' => $this->prioridad_ticket_id,
-                'gestor_id' => $this->gestor_id ?: null,
-                'asunto_inicial' => $this->asunto_inicial,
-                'descripcion_inicial' => $this->descripcion_inicial,
-                'dni' => $this->dni,
-                'nombres' => $this->nombres,
-                'email' => $this->email,
-                'celular' => $this->celular,
-                'origen' => $this->origen,
-                'lotes' => $this->lotes_agregados,
-                'created_by' => auth()->id(),
-            ]);
+            // Definimos cómo iterar según el modo elegido o la cantidad de lotes
+            // Si el modo es 'separados', creamos uno por cada lote.
+            // Si el modo es 'juntos' o solo hay 0-1 lote, creamos solo uno.
+            $lotesIterar = ($modoLote === 'separados' && count($this->lotes_agregados) > 1)
+                ? $this->lotes_agregados
+                : [null];
 
-            if (!empty($this->selectedParticipants)) {
-                $ticket->usuariosParticipantes()->sync($this->selectedParticipants);
+            foreach ($lotesIterar as $loteIndividual) {
+                // Si estamos en modo separados, asignamos solo ese lote.
+                // Si estamos en modo juntos (o solo hay uno), asignamos todo el array.
+                $lotesParaTicket = $loteIndividual ? [$loteIndividual] : $this->lotes_agregados;
+
+                $ticket = Ticket::create([
+                    'unidad_negocio_id' => $this->unidad_negocio_id,
+                    'proyecto_id' => $this->proyecto_id,
+                    'cliente_id' => $this->cliente_id ?: null,
+                    'area_id' => $this->area_id,
+                    'ticket_padre_id' => $this->ticket_padre_id,
+                    'tipo_solicitud_id' => $this->tipo_solicitud_id,
+                    'sub_tipo_solicitud_id' => $this->sub_tipo_solicitud_id ?: null,
+                    'canal_id' => $this->canal_id,
+                    'estado_ticket_id' => $estadoAbiertoId,
+                    'prioridad_ticket_id' => $this->prioridad_ticket_id,
+                    'gestor_id' => $this->gestor_id ?: null,
+                    'asunto_inicial' => $this->asunto_inicial,
+                    'descripcion_inicial' => $this->descripcion_inicial,
+                    'dni' => $this->dni,
+                    'nombres' => $this->nombres,
+                    'email' => $this->email,
+                    'celular' => $this->celular,
+                    'origen' => $this->origen,
+                    'lotes' => $lotesParaTicket,
+                    'created_by' => auth()->id(),
+                ]);
+
+                if (!empty($this->selectedParticipants)) {
+                    $ticket->usuariosParticipantes()->sync($this->selectedParticipants);
+                }
+
+                // Historial
+                TicketHistorial::create([
+                    'ticket_id' => $ticket->id,
+                    'user_id' => auth()->id(),
+                    'accion' => 'Creación',
+                    'detalle' => 'Ticket creado con estado: ' . $ticket->estado?->nombre,
+                ]);
             }
-
-            // Historial
-            TicketHistorial::create([
-                'ticket_id' => $ticket->id,
-                'user_id' => auth()->id(),
-                'accion' => 'Creación',
-                'detalle' => 'Ticket creado con estado: ' . $ticket->estado?->nombre,
-            ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'El ticket ha sido generado correctamente.']);
+            $mensaje = ($modoLote === 'separados' && count($this->lotes_agregados) > 1)
+                ? 'Se han generado ' . count($this->lotes_agregados) . ' tickets (separados por lote).'
+                : (count($this->lotes_agregados) > 1
+                    ? 'Se ha generado 1 ticket con todos los lotes agrupados.'
+                    : 'El ticket ha sido generado correctamente.');
+
+            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => $mensaje]);
             return redirect()->route('erp.ticket.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
