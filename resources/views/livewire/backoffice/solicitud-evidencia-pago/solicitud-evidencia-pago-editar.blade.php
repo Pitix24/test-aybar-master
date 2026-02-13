@@ -290,66 +290,10 @@
                 </div>
             </div>
 
-            <div class="g_panel" x-data="{ activeTab: 'enviar' }">
-                <div class="g_tab_navegacion">
-                    <div class="g_tab_botones">
-                        <button type="button" @click="activeTab = 'enviar'"
-                            :class="activeTab === 'enviar' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
-                            <i class="fa-solid fa-paper-plane"></i> Enviar Observación
-                        </button>
-
-                        <button type="button" @click="activeTab = 'historial'"
-                            :class="activeTab === 'historial' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
-                            <i class="fa-solid fa-clock-rotate-left"></i> Historial de Correos
-                        </button>
-                    </div>
-                </div>
-
-                <div x-show="activeTab === 'enviar'" x-transition class="g_tab_content">
-                    <div class="formulario">
-                        <div class="g_margin_bottom_10">
-                            <label>Mensaje para el cliente</label>
-                            <textarea wire:model.live="mensaje_correo" rows="6"
-                                placeholder="Escribe el motivo del rechazo u observación... El cliente recibirá un correo con estos detalles."></textarea>
-                            @error('mensaje_correo') <p class="mensaje_error">{{ $message }}</p> @enderror
-                        </div>
-                        <div class="formulario_botones">
-                            <button type="button" wire:click="enviarCorreo" class="g_boton g_boton_primary">
-                                Enviar Correo <i class="fa-solid fa-envelope"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div x-show="activeTab === 'historial'" x-transition class="g_tab_content">
-                    <div class="g_contenedor_tabla">
-                        <table class="g_tabla">
-                            <thead>
-                                <tr>
-                                    <th>Fecha Envío</th>
-                                    <th>Gestor</th>
-                                    <th>Asunto</th>
-                                    <th>Mensaje Corto</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($solicitud->correos as $cor)
-                                    <tr>
-                                        <td class="g_negrita g_inferior">{{ $cor->enviado_at->format('d/m H:i') }}</td>
-                                        <td><small>{{ $cor->emisor->name ?? 'Sistema' }}</small></td>
-                                        <td><span class="g_badge g_badge_light">{{ $cor->asunto }}</span></td>
-                                        <td class="g_resumir" title="{{ $cor->mensaje }}">{{ $cor->mensaje }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="g_celda_vacia">No hay registros de correos enviados.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            @livewire('backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-email', [
+                'solicitud' => $solicitud,
+                'evidenciaId' => $evidenciaSeleccionadaId
+            ])
         </div>
 
         <div class="g_columna_4 g_gap_pagina g_columna_invertir">

@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -35,9 +35,6 @@ class SolicitudEvidenciaPagoEditar extends Component
     public $gestor_id;
     public $estado_id;
     public $observacion;
-
-    // Email
-    public $mensaje_correo;
 
     // Catálogos
     public $unidades_negocios = [];
@@ -58,6 +55,13 @@ class SolicitudEvidenciaPagoEditar extends Component
             'estado_id' => 'required|exists:estado_solicitud_evidencia_pagos,id',
             'observacion' => 'nullable|string',
         ];
+    }
+
+    #[On('solicitudActualizada')]
+    public function refreshSolicitud()
+    {
+        $this->solicitud->refresh();
+        $this->estado_id = $this->solicitud->estado_solicitud_evidencia_pago_id;
     }
 
     public function mount($id)
@@ -255,45 +259,6 @@ class SolicitudEvidenciaPagoEditar extends Component
         } catch (\Exception $e) {
             Log::error('Error SolicitudEvidenciaPagoEditar@cerrarManual: ' . $e->getMessage());
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo realizar el cierre manual.']);
-        }
-    }
-
-    public function enviarCorreo()
-    {
-        abort_unless(auth()->user()->can('solicitud-evidencia-pago.editar'), 403);
-
-        $this->validate([
-            'mensaje_correo' => 'required|min:10',
-        ]);
-
-        $emailDestino = $this->solicitud->userCliente->email ?? null;
-
-        if (!$emailDestino || !filter_var($emailDestino, FILTER_VALIDATE_EMAIL)) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'El cliente no tiene un correo válido registrado.']);
-            return;
-        }
-
-        try {
-            // Enviar correo
-            Mail::to($emailDestino)->send(new EvidenciaPagoObservacionMail($emailDestino, $this->solicitud, $this->mensaje_correo));
-
-            // Registrar en base de datos
-            SolicitudEvidenciaPagoEmail::create([
-                'solicitud_evidencia_pago_id' => $this->solicitud->id,
-                'emisor_id' => auth()->id(),
-                'receptor_id' => $this->solicitud->cliente_id,
-                'asunto' => 'Observación de Evidencia de Pago',
-                'mensaje' => $this->mensaje_correo,
-                'enviado_at' => now(),
-            ]);
-
-            $this->mensaje_correo = '';
-            $this->solicitud->refresh();
-
-            $this->dispatch('alertaLivewire', ['title' => 'Enviado', 'text' => 'El correo ha sido enviado y registrado.']);
-        } catch (\Exception $e) {
-            Log::error('Error SolicitudEvidenciaPagoEditar@enviarCorreo: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo enviar el correo.']);
         }
     }
 
