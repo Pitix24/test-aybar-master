@@ -170,6 +170,8 @@ php artisan make:model SolicitudEvidenciaPagoEmail -mfsc
 php artisan make:livewire backoffice.solicitud-evidencia-pago-email.solicitud-evidencia-pago-email-lista --class
 php artisan make:livewire backoffice.solicitud-evidencia-pago-email.solicitud-evidencia-pago-email-editar --class
 
+php artisan make:model SolicitudEvidenciaMensaje -mfsc
+
 php artisan make:model EvidenciaPagoAntiguo -mfsc
 php artisan make:livewire backoffice.evidencia-pago-antiguo.evidencia-pago-antiguo-lista --class
 php artisan make:livewire backoffice.evidencia-pago-antiguo.evidencia-pago-antiguo-editar --class

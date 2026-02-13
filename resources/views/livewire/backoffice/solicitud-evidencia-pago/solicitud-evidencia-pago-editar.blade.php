@@ -10,6 +10,10 @@
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
+            <button type="button" class="g_boton g_boton_info" wire:click="$dispatch('toggleChat')">
+                Chat <i class="fa-solid fa-comments"></i>
+            </button>
+
             <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
@@ -440,5 +444,6 @@
                 @endif
             </div>
         </div>
+        @livewire('backoffice.solicitud-evidencia-pago.solicitud-evidencia-chat', ['solicitud' => $solicitud])
     </div>
 </div>

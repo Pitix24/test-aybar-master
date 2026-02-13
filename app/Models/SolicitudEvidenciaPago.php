@@ -82,6 +82,11 @@ class SolicitudEvidenciaPago extends Model
         return $this->hasMany(EvidenciaPago::class);
     }
 
+    public function mensajes()
+    {
+        return $this->hasMany(SolicitudEvidenciaMensaje::class);
+    }
+
     public function correos()
     {
         return $this->hasMany(SolicitudEvidenciaPagoEmail::class)
