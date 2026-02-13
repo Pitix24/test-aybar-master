@@ -5,7 +5,7 @@
 
     <div class="g_panel">
         <div class="g_panel_titulo">
-            <h2><i class="fa-solid fa-house-laptop"></i> Mis Proyectos</h2>
+            <h2>Mis proyectos</h2>
         </div>
 
         @if (session()->has('error'))
@@ -24,10 +24,9 @@
 
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_columna_6">
-                    <label for="razon_social_id">Selecciona una Razón Social para ver tus lotes</label>
+                <div class="g_columna_4">
                     <select wire:model.live="razon_social_id" id="razon_social_id" class="g_input">
-                        <option value="" selected>Seleccione una opción...</option>
+                        <option value="" selected>Seleccione Razón Social</option>
                         @foreach ($razones_sociales as $empresa)
                             <option value="{{ $empresa['id_empresa'] }}">
                                 {{ $empresa['razon_social'] }}
@@ -75,11 +74,11 @@
                 <table class="g_tabla">
                     <thead>
                         <tr>
-                            <th class="g_celda_centro">Nro. Cliente</th>
-                            <th>Proyecto / Descripción</th>
+                            <th>Codigo cliente</th>
+                            <th>Proyecto</th>
                             <th class="g_celda_centro">Mz.</th>
                             <th class="g_celda_centro">Lt.</th>
-                            <th class="g_celda_centro">Acciones</th>
+                            <th class="g_celda_centro"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,8 +86,7 @@
                             <tr>
                                 <td colspan="5">
                                     <div class="g_vacio">
-                                        <p>Por favor, selecciona una razón social para visualizar tus lotes activos.</p>
-                                        <i class="fa-solid fa-arrow-up"></i>
+                                        Por favor, selecciona una razón social para visualizar tus lotes activos.
                                     </div>
                                 </td>
                             </tr>
@@ -96,8 +94,7 @@
                             <tr>
                                 <td colspan="5">
                                     <div class="g_vacio">
-                                        <p>No se encontraron lotes vinculados a esta razón social.</p>
-                                        <i class="fa-regular fa-face-frown"></i>
+                                        No se encontraron lotes para esta razón social.
                                     </div>
                                 </td>
                             </tr>
@@ -109,9 +106,9 @@
                                     <td class="g_celda_centro">{{ $lote['id_manzana'] ?? '-' }}</td>
                                     <td class="g_celda_centro">{{ $lote['id_lote'] ?? '-' }}</td>
                                     <td class="g_celda_centro">
-                                        <button class="g_boton g_boton_info g_boton_sm"
+                                        <button class="g_boton g_boton_guardar"
                                             wire:click="verCronogramaEstadoCuenta({{ json_encode($lote) }})">
-                                            <i class="fas fa-calendar-alt"></i> Ver Detalle
+                                            <i class="fas fa-calendar-alt"></i> Cronograma
                                         </button>
                                     </td>
                                 </tr>

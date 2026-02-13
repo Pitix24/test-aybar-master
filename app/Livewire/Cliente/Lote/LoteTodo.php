@@ -6,7 +6,9 @@ use App\Services\AybarSlinService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class LoteTodo extends Component
 {
     public $cliente_encontrado = null;
@@ -17,9 +19,6 @@ class LoteTodo extends Component
 
     public $lotes = null;
     public $lote_select = null;
-
-    public $cronograma = [];
-    public $estado_cuenta = [];
     public $cronograma_estado_cuenta = [];
 
     public ?string $vista = null;
@@ -100,8 +99,6 @@ class LoteTodo extends Component
     public function cerrarVista()
     {
         $this->lote_select = null;
-        $this->cronograma = [];
-        $this->estado_cuenta = [];
         $this->cronograma_estado_cuenta = [];
         $this->vista = null;
     }
@@ -132,7 +129,7 @@ class LoteTodo extends Component
 
         $pdf = Pdf::loadView('pdf.estado-cuenta', [
             'estado_cuenta' => $this->cronograma_estado_cuenta,
-        ])->setPaper('a4', 'landscape'); // 🔥 HORIZONTAL
+        ])->setPaper('a4', 'landscape');
 
         return response()->streamDownload(
             fn() => print ($pdf->output()),
@@ -143,5 +140,12 @@ class LoteTodo extends Component
     public function render()
     {
         return view('livewire.cliente.lote.lote-todo');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }
