@@ -69,8 +69,8 @@ class SolicitudEvidenciaPagoLista extends Component
 
     public function mount()
     {
-        $this->estados = EstadoSolicitudEvidenciaPago::all();
-        $this->unidades_negocios = UnidadNegocio::all();
+        $this->estados = EstadoSolicitudEvidenciaPago::where('activo', true)->get();
+        $this->unidades_negocios = UnidadNegocio::where('activo', true)->get();
         $this->usuarios_admin = User::role(['asesor-atc', 'supervisor-atc'])->get();
 
         if ($this->unidad_negocio_id) {
@@ -90,7 +90,7 @@ class SolicitudEvidenciaPagoLista extends Component
 
     public function loadProyectos()
     {
-        if (!is_null($this->unidad_negocio_id)) {
+        if ($this->unidad_negocio_id) {
             $this->proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)->get();
         }
     }
@@ -154,6 +154,8 @@ class SolicitudEvidenciaPagoLista extends Component
                 $this->tipo_cierre,
                 $this->tiene_validacion,
                 $this->es_asbanc,
+                $this->cantidad_evidencias,
+                $this->cantidad_correos,
                 $this->perPage,
                 $this->getPage()
             ),

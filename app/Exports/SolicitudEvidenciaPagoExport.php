@@ -19,6 +19,8 @@ class SolicitudEvidenciaPagoExport implements FromCollection, WithHeadings, Shou
     protected $tipo_cierre;
     protected $tiene_validacion;
     protected $es_asbanc;
+    protected $cantidad_evidencias;
+    protected $cantidad_correos;
     protected $perPage;
     protected $page;
 
@@ -33,8 +35,10 @@ class SolicitudEvidenciaPagoExport implements FromCollection, WithHeadings, Shou
         $tipo_cierre,
         $tiene_validacion,
         $es_asbanc,
-        $perPage,
-        $page
+        $cantidad_evidencias = null,
+        $cantidad_correos = null,
+        $perPage = 20,
+        $page = 1
     ) {
         $this->buscar = $buscar;
         $this->unidad_negocio_id = $unidad_negocio_id;
@@ -46,6 +50,8 @@ class SolicitudEvidenciaPagoExport implements FromCollection, WithHeadings, Shou
         $this->tipo_cierre = $tipo_cierre;
         $this->tiene_validacion = $tiene_validacion;
         $this->es_asbanc = $es_asbanc;
+        $this->cantidad_evidencias = $cantidad_evidencias;
+        $this->cantidad_correos = $cantidad_correos;
         $this->perPage = $perPage;
         $this->page = $page;
     }
@@ -112,6 +118,12 @@ class SolicitudEvidenciaPagoExport implements FromCollection, WithHeadings, Shou
                     $q->where('slin_asbanc', false);
                 }
             })
+            ->when($this->cantidad_evidencias !== '' && !is_null($this->cantidad_evidencias), function ($q) {
+                $q->has('evidencias', '=', $this->cantidad_evidencias);
+            })
+            ->when($this->cantidad_correos !== '' && !is_null($this->cantidad_correos), function ($q) {
+                $q->has('correos', '=', $this->cantidad_correos);
+            })
             ->orderBy('created_at', 'desc')
             ->skip(($this->page - 1) * $this->perPage)
             ->take($this->perPage)
@@ -141,7 +153,7 @@ class SolicitudEvidenciaPagoExport implements FromCollection, WithHeadings, Shou
             'N°',
             'ID',
             'Gestor',
-            'Razón Social',
+            'Unidad de Negocio',
             'Proyecto',
             'Etapa',
             'Mz.',

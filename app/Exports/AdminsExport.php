@@ -44,7 +44,9 @@ class AdminsExport implements FromCollection, WithHeadings, ShouldAutoSize
                 $q->where('activo', $this->activo);
             })
             ->latest()
-            ->paginate($this->perPage, ['*'], 'page', $this->page)
+            ->skip(($this->page - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get()
             ->map(function ($item, $index) {
                 return [
                     $index + 1,

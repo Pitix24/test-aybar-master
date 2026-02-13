@@ -2,19 +2,14 @@
 
 namespace App\Livewire\Backoffice\SolicitudEvidenciaPago;
 
-use App\Mail\EvidenciaPagoObservacionMail;
 use App\Models\EstadoSolicitudEvidenciaPago;
-use App\Models\EvidenciaPago;
 use App\Models\Proyecto;
 use App\Models\SolicitudEvidenciaPago;
-use App\Models\SolicitudEvidenciaPagoEmail;
 use App\Models\UnidadNegocio;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;

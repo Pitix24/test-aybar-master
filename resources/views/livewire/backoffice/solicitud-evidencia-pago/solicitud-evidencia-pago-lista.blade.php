@@ -18,7 +18,7 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Empresa </label>
                     <select wire:model.live="unidad_negocio_id">
-                        <option value="">TODOS</option>
+                        <option value="">Todos</option>
                         @foreach ($unidades_negocios as $empresa)
                             <option value="{{ $empresa->id }}">{{ $empresa->nombre }}</option>
                         @endforeach
@@ -28,7 +28,7 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Proyecto </label>
                     <select wire:model.live="proyecto_id">
-                        <option value="">TODOS</option>
+                        <option value="">Todos</option>
                         @foreach ($proyectos as $proyecto)
                             <option value="{{ $proyecto->id }}">{{ $proyecto->nombre }}</option>
                         @endforeach
@@ -38,7 +38,7 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Gestor</label>
                     <select wire:model.live="gestor_id">
-                        <option value="">TODOS</option>
+                        <option value="">Todos</option>
                         <option value="sin_asignar">FALTA ASIGNAR</option>
                         @foreach ($usuarios_admin as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -49,7 +49,7 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Estado </label>
                     <select wire:model.live="estado_id">
-                        <option value="">TODOS</option>
+                        <option value="">Todos</option>
                         @foreach ($estados as $estadoItem)
                             <option value="{{ $estadoItem->id }}">{{ $estadoItem->nombre }}</option>
                         @endforeach
@@ -71,27 +71,27 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Tipo de cierre</label>
                     <select wire:model.live="tipo_cierre">
-                        <option value="">TODOS</option>
-                        <option value="api">CERRADO CON API</option>
-                        <option value="manual">CERRADO MANUAL</option>
+                        <option value="">Todos</option>
+                        <option value="api">Cerrado con API</option>
+                        <option value="manual">Cerrado manual</option>
                     </select>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>¿Tiene fecha validación?</label>
                     <select wire:model.live="tiene_validacion">
-                        <option value="">TODOS</option>
-                        <option value="si">SÍ</option>
-                        <option value="no">NO</option>
+                        <option value="">Todos</option>
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
                     </select>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>¿SLIN Asbanc?</label>
                     <select wire:model.live="es_asbanc">
-                        <option value="">TODOS</option>
-                        <option value="si">SÍ</option>
-                        <option value="no">NO</option>
+                        <option value="">Todos</option>
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
                     </select>
                 </div>
             </div>
@@ -100,10 +100,10 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Cant. Evidencias</label>
                     <select wire:model.live="cantidad_evidencias">
-                        <option value="">TODOS</option>
-                        <option value="0">SIN EVIDENCIAS</option>
+                        <option value="">Todos</option>
+                        <option value="0">Sin evidencias</option>
                         @for ($i = 1; $i <= 10; $i++)
-                            <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'EVIDENCIA' : 'EVIDENCIAS' }}</option>
+                            <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'Evidencia' : 'Evidencias' }}</option>
                         @endfor
                     </select>
                 </div>
@@ -111,10 +111,10 @@
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Cant. Emails</label>
                     <select wire:model.live="cantidad_correos">
-                        <option value="">TODOS</option>
-                        <option value="0">SIN EMAILS</option>
+                        <option value="">Todos</option>
+                        <option value="0">Sin emails</option>
                         @for ($i = 1; $i <= 10; $i++)
-                            <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'EMAIL' : 'EMAILS' }}</option>
+                            <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'Email' : 'Emails' }}</option>
                         @endfor
                     </select>
                 </div>
