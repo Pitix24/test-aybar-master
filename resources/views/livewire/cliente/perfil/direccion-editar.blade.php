@@ -1,8 +1,22 @@
 <div class="g_panel">
     @if (session()->has('success'))
-        <div class="g_alerta_succes">
+        <div class="g_alerta success g_margin_bottom_20">
             <i class="fa-solid fa-circle-check"></i>
             {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="g_alerta error g_margin_bottom_20">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if (session()->has('info'))
+        <div class="g_alerta info g_margin_bottom_20">
+            <i class="fa-solid fa-circle-info"></i>
+            {{ session('info') }}
         </div>
     @endif
 
@@ -15,42 +29,45 @@
             <div class="g_margin_top_20 g_columna_4">
                 <label for="region_id">Departamento <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
-                <select wire:model.live="region_id" id="region_id" name="region_id">
+                <select wire:model.live="region_id" id="region_id" name="region_id"
+                    class="@error('region_id') input-error @enderror">
                     <option value="">Selecciona</option>
                     @foreach ($departamentos as $departamento)
                         <option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>
                     @endforeach
                 </select>
                 @error('region_id')
-                    <span class="mensaje_error">{{ $message }}</span>
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="g_margin_top_20 g_columna_4">
                 <label for="provincia_id">Provincia <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
-                <select wire:model.live="provincia_id" id="provincia_id" name="provincia_id">
+                <select wire:model.live="provincia_id" id="provincia_id" name="provincia_id"
+                    class="@error('provincia_id') input-error @enderror">
                     <option value="">Selecciona</option>
                     @foreach ($provincias as $provincia)
                         <option value="{{ $provincia->id }}">{{ $provincia->nombre }}</option>
                     @endforeach
                 </select>
                 @error('provincia_id')
-                    <span class="mensaje_error">{{ $message }}</span>
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="g_margin_top_20 g_columna_4">
                 <label for="distrito_id">Distrito <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
-                <select wire:model.live="distrito_id" id="distrito_id" name="distrito_id">
+                <select wire:model.live="distrito_id" id="distrito_id" name="distrito_id"
+                    class="@error('distrito_id') input-error @enderror">
                     <option value="">Selecciona</option>
                     @foreach ($distritos as $distrito)
                         <option value="{{ $distrito->id }}">{{ $distrito->nombre }}</option>
                     @endforeach
                 </select>
                 @error('distrito_id')
-                    <span class="mensaje_error">{{ $message }}</span>
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
         </div>
@@ -59,18 +76,20 @@
             <div class="g_margin_top_20 g_columna_6">
                 <label for="direccion">Avenida / Calle / Jirón <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
-                <input type="text" wire:model.live="direccion" id="direccion" name="direccion">
+                <input type="text" wire:model.blur="direccion" id="direccion" name="direccion"
+                    class="@error('direccion') input-error @enderror" autocomplete="off">
                 @error('direccion')
-                    <span class="mensaje_error">{{ $message }}</span>
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="g_margin_top_20 g_columna_6">
                 <label for="direccion_numero">Número <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
-                <input type="text" wire:model.live="direccion_numero" id="direccion_numero" name="direccion_numero">
+                <input type="text" wire:model.blur="direccion_numero" id="direccion_numero" name="direccion_numero"
+                    class="@error('direccion_numero') input-error @enderror" autocomplete="off">
                 @error('direccion_numero')
-                    <span class="mensaje_error">{{ $message }}</span>
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
         </div>
@@ -78,37 +97,45 @@
         <div class="g_fila">
             <div class="g_margin_top_20 g_columna_6">
                 <label for="opcional">Dpto. / Interior / Piso / Lote</label>
-                <input type="text" wire:model.live="opcional" id="opcional" name="opcional"
-                    placeholder="Ejem: Casa 1 piso, lote 15.">
+                <input type="text" wire:model.blur="opcional" id="opcional" name="opcional"
+                    class="@error('opcional') input-error @enderror" placeholder="Ejem: Casa 1 piso, lote 15."
+                    autocomplete="off">
                 @error('opcional')
-                    <span class="mensaje_error">{{ $message }}</span>
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="g_margin_top_20 g_columna_6">
                 <label for="codigo_postal">Código postal <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
-                <input type="text" wire:model.live="codigo_postal" id="codigo_postal" name="codigo_postal">
+                <input type="text" wire:model.blur="codigo_postal" id="codigo_postal" name="codigo_postal"
+                    class="@error('codigo_postal') input-error @enderror" autocomplete="off">
                 @error('codigo_postal')
-                    <span class="mensaje_error">{{ $message }}</span>
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
         </div>
 
         <div class="g_fila">
             <div class="g_margin_top_20 g_columna_12">
-                <label for="instrucciones">Referencia de la ubicación</label>
-                <textarea id="instrucciones" name="instrucciones" wire:model.live="instrucciones" rows="3"
-                    placeholder="Referencia..."></textarea>
-                @error('instrucciones')
-                    <span class="mensaje_error">{{ $message }}</span>
+                <label for="referencia">Referencia de la ubicación</label>
+                <textarea id="referencia" name="referencia" wire:model.blur="referencia" rows="3"
+                    class="@error('referencia') input-error @enderror" placeholder="Referencia..."></textarea>
+                @error('referencia')
+                    <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
         </div>
 
         <div class="g_margin_top_20 formulario_botones">
-            <button wire:click="saveDireccion" class="guardar">
-                {{ $direccion_seleccionada ? 'Guardar Cambios' : 'Guardar Dirección' }}
+            <button wire:click="saveDireccion" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                wire:target="saveDireccion">
+                <span wire:loading.remove wire:target="saveDireccion">
+                    {{ $direccion_seleccionada ? 'Guardar Cambios' : 'Guardar Dirección' }}
+                </span>
+                <span wire:loading wire:target="saveDireccion">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                </span>
             </button>
         </div>
     </div>

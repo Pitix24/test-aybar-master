@@ -1,3 +1,7 @@
+.cronograma_contenedor {
+    font-size: 13px;
+}
+
 .cronograma_contenedor .tabla_info,
 .cronograma_contenedor .tabla_detalle {
     width: 100%;
@@ -15,7 +19,7 @@
     width: 25%;
 }
 
-.cronograma_contenedor .tabla_info .valor {    
+.cronograma_contenedor .tabla_info .valor {
     font-weight: bold;
 }
 

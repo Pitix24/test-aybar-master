@@ -10,6 +10,16 @@
         <i class="fa-solid fa-chevron-right"></i>
     </a>
 
+    <a href="{{ route('cliente.lote') }}" class="">
+        <span><i class="fa-solid fa-border-all"></i> Mis Proyectos</span>
+        <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
+    <a href="{{ route('cliente.tutorial') }}" class="">
+        <span><i class="fa-solid fa-circle-play"></i> Tutoriales</span>
+        <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit">
