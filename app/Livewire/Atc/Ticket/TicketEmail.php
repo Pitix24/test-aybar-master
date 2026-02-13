@@ -26,6 +26,12 @@ class TicketEmail extends Component
         $this->asunto = "Información sobre su Ticket #{$ticket->id}";
     }
 
+    public function quitarArchivo($index)
+    {
+        unset($this->nuevosArchivos[$index]);
+        $this->nuevosArchivos = array_values($this->nuevosArchivos);
+    }
+
     public function enviar()
     {
         abort_unless(auth()->user()->can('ticket.editar'), 403);
@@ -104,6 +110,11 @@ class TicketEmail extends Component
 
     public function render()
     {
-        return view('livewire.atc.ticket.ticket-email');
+        return view('livewire.atc.ticket.ticket-email', [
+            'correos' => TicketEmailModel::where('ticket_id', $this->ticket->id)
+                ->with('emisor')
+                ->latest()
+                ->get()
+        ]);
     }
 }

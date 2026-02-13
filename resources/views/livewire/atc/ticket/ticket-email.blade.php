@@ -43,25 +43,53 @@
                 @error('mensaje') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
 
-            <div class="g_margin_bottom_10">
-                <label><i class="fa-solid fa-cloud-arrow-up"></i> Cargar nuevos adjuntos para el correo:</label>
-                <input type="file" wire:model="nuevosArchivos" multiple class="g_boton g_boton_light"
-                    style="width: 100%; border: 1px dashed #ccc; padding: 10px;">
-                <div wire:loading wire:target="nuevosArchivos" class="g_negrita"
-                    style="color: var(--color-primary); font-size: 12px; margin-top: 5px;">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Procesando archivos...
+            <div class="g_margin_bottom_20">
+                <label><i class="fa-solid fa-paperclip"></i> Archivos Adjuntos:</label>
+
+                <input type="file" id="emailFileUpload" wire:model="nuevosArchivos" multiple style="display: none;">
+
+                <div class="contenedor_dropzone"
+                    onclick="if(event.target.closest('.dropzone_remove_button')) return; document.getElementById('emailFileUpload').click()">
+                    @if($nuevosArchivos)
+                        <div style="width: 100%; display: grid; gap: 10px; margin-bottom: 10px;">
+                            @foreach($nuevosArchivos as $index => $tempFile)
+                                <div class="dropzone_item">
+                                    @php
+                                        $ext = strtolower($tempFile->getClientOriginalExtension());
+                                        $icon = match ($ext) {
+                                            'pdf' => 'fa-file-pdf',
+                                            'docx', 'doc' => 'fa-file-word',
+                                            'xlsx', 'xls' => 'fa-file-excel',
+                                            'jpg', 'jpeg', 'png' => 'fa-file-image',
+                                            default => 'fa-file'
+                                        };
+                                    @endphp
+                                    <i class="fa-solid {{ $icon }}"
+                                        style="font-size: 1.2rem !important; color: var(--primary);"></i>
+                                    <span
+                                        title="{{ $tempFile->getClientOriginalName() }}">{{ $tempFile->getClientOriginalName() }}</span>
+                                    <button type="button" wire:click.stop="quitarArchivo({{ $index }})"
+                                        class="dropzone_remove_button">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                        <p style="font-size: 12px; color: var(--primary); font-weight: 600;"><i
+                                class="fa-solid fa-plus"></i> Añadir más archivos</p>
+                    @else
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Haz clic para cargar adjuntos</p>
+                        <small style="color: #94a3b8;">Formatos permitidos: PDF, DOCX, XLSX, JPG, PNG (Máx. 10MB)</small>
+                    @endif
+
+                    <div wire:loading wire:target="nuevosArchivos" class="g_resaltado info"
+                        style="width: 100%; margin-top: 10px;">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Procesando archivos seleccionados...</span>
+                    </div>
                 </div>
 
-                @if($nuevosArchivos)
-                    <div style="margin-top: 10px; font-size: 12px; color: #555;">
-                        <strong>Archivos listos para enviar:</strong>
-                        <ul style="margin: 5px 0; padding-left: 20px;">
-                            @foreach($nuevosArchivos as $tempFile)
-                                <li>{{ $tempFile->getClientOriginalName() }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
                 @error('nuevosArchivos.*') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
 
