@@ -76,6 +76,15 @@
                             <i class="fa-solid fa-spinner fa-spin"></i> Generando...
                         </span>
                     </button>
+
+                    <button wire:click="descargarPDFletras" class="g_boton g_boton_guardar" wire:loading.attr="disabled" wire:target="descargarPDFletras">
+                        <span wire:loading.remove wire:target="descargarPDFletras">
+                            <i class="fa-solid fa-calendar-days"></i> LETRAS
+                        </span>
+                        <span wire:loading wire:target="descargarPDFletras">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Generando...
+                        </span>
+                    </button>
                 </div>
             </div>
 

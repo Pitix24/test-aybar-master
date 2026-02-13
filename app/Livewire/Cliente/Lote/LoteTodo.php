@@ -165,6 +165,69 @@ class LoteTodo extends Component
         }
     }
 
+    public function descargarPDFletras(AybarSlinService $slinService, \App\Services\CavaliService $cavaliService)
+    {
+        if (!$this->lote_select || empty($this->cronograma_estado_cuenta)) {
+            session()->flash('error', 'Debe seleccionar un lote con información válida.');
+            return;
+        }
+
+        try {
+            $cuotas = $this->cronograma_estado_cuenta['Cuotas'] ?? [];
+            $cuotasConLetra = collect($cuotas)->filter(fn($c) => !empty($c['NroCavali']) && ($c['SaldoPendiente'] ?? 0) <= 0);
+
+            if ($cuotasConLetra->isEmpty()) {
+                session()->flash('info', 'No se encontraron letras pagadas con número de Cavali para consolidar.');
+                return;
+            }
+
+            $pdfCombinado = new \setasign\Fpdi\Fpdi();
+            $letrasEncontradas = 0;
+
+            foreach ($cuotasConLetra as $cuota) {
+                try {
+                    $respuesta = $cavaliService->obtenerConstanciaCancelacion($cuota['NroCavali']);
+
+                    if (!empty($respuesta['base64']) && ($respuesta['codigo'] ?? null) === '001') {
+                        $pdfContenido = base64_decode($respuesta['base64']);
+
+                        // Guardamos temporalmente para que FPDI pueda leerlo
+                        $tempFile = tempnam(sys_get_temp_dir(), 'letra_');
+                        file_put_contents($tempFile, $pdfContenido);
+
+                        $pageCount = $pdfCombinado->setSourceFile($tempFile);
+                        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                            $templateId = $pdfCombinado->importPage($pageNo);
+                            $size = $pdfCombinado->getTemplateSize($templateId);
+                            $pdfCombinado->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                            $pdfCombinado->useTemplate($templateId);
+                        }
+
+                        unlink($tempFile);
+                        $letrasEncontradas++;
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Error al obtener letra {$cuota['NroCavali']}: " . $e->getMessage());
+                    // Continuamos con la siguiente letra si una falla
+                }
+            }
+
+            if ($letrasEncontradas === 0) {
+                session()->flash('error', 'No se pudieron descargar las constancias desde el servicio externo.');
+                return;
+            }
+
+            return response()->streamDownload(
+                fn() => print ($pdfCombinado->Output('S')),
+                'letras-consolidadas-' . ($this->lote_select['id_recaudo'] ?? 'lote') . '.pdf'
+            );
+
+        } catch (\Exception $e) {
+            Log::error('Error en descargarPDFletras: ' . $e->getMessage());
+            session()->flash('error', 'Ocurrió un error al generar el consolidado de letras.');
+        }
+    }
+
     public function render()
     {
         return view('livewire.cliente.lote.lote-todo');
