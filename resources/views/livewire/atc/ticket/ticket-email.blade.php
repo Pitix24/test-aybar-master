@@ -31,29 +31,7 @@
         </div>
 
         <div class="g_margin_bottom_10">
-            <label><i class="fa-solid fa-paperclip"></i> Adjuntar archivos del Ticket:</label>
-            <div
-                style="max-height: 200px; overflow-y: auto; background: var(--fondo-gris); padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-                @forelse($archivosCompatibles as $archivo)
-                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                        <input type="checkbox" wire:model="selectedAttachments" value="{{ $archivo->id }}"
-                            id="file-email-{{ $archivo->id }}" style="margin-right: 10px;">
-                        <label for="file-email-{{ $archivo->id }}"
-                            style="font-size: 13px; cursor: pointer; color: var(--texto-color);">
-                            {{ $archivo->nombre_original }}
-                            <span style="color: #888; font-size: 11px;">({{ number_format($archivo->size / 1024, 2) }}
-                                KB)</span>
-                        </label>
-                    </div>
-                @empty
-                    <p style="font-size: 12px; color: #666; font-style: italic;">No hay archivos cargados en este ticket
-                        para adjuntar.</p>
-                @endforelse
-            </div>
-        </div>
-
-        <div class="g_margin_bottom_10">
-            <label><i class="fa-solid fa-cloud-arrow-up"></i> Cargar nuevos adjuntos:</label>
+            <label><i class="fa-solid fa-cloud-arrow-up"></i> Cargar nuevos adjuntos para el correo:</label>
             <input type="file" wire:model="nuevosArchivos" multiple class="g_boton g_boton_light"
                 style="width: 100%; border: 1px dashed #ccc; padding: 10px;">
             <div wire:loading wire:target="nuevosArchivos" class="g_negrita"
@@ -63,7 +41,7 @@
 
             @if($nuevosArchivos)
                 <div style="margin-top: 10px; font-size: 12px; color: #555;">
-                    <strong>Archivos seleccionados:</strong>
+                    <strong>Archivos listos para enviar:</strong>
                     <ul style="margin: 5px 0; padding-left: 20px;">
                         @foreach($nuevosArchivos as $tempFile)
                             <li>{{ $tempFile->getClientOriginalName() }}</li>

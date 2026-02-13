@@ -338,7 +338,7 @@ class TicketCrear extends Component
         $this->selectedParticipants = array_diff($this->selectedParticipants, [$userId]);
     }
 
-    public function store($confirmado = false, $modoLote = null)
+    public function store($confirmado = false)
     {
         abort_unless(auth()->user()->can('ticket.crear'), 403);
 
@@ -349,15 +349,9 @@ class TicketCrear extends Component
             throw $e;
         }
 
-        // 1. Validación de contacto (Prioridad 1)
+        // 1. Validación de contacto
         if (!$confirmado && (empty($this->email) || empty($this->celular))) {
             $this->dispatch('confirmarTicketSinDatos');
-            return;
-        }
-
-        // 2. Preguntar por lotes si hay más de uno y no se ha decidido el modo (Prioridad 2)
-        if (count($this->lotes_agregados) > 1 && is_null($modoLote)) {
-            $this->dispatch('preguntarModoLotes');
             return;
         }
 
@@ -366,16 +360,12 @@ class TicketCrear extends Component
 
             $estadoAbiertoId = EstadoTicket::id(EstadoTicket::NUEVO);
 
-            // Definimos cómo iterar según el modo elegido o la cantidad de lotes
-            // Si el modo es 'separados', creamos uno por cada lote.
-            // Si el modo es 'juntos' o solo hay 0-1 lote, creamos solo uno.
-            $lotesIterar = ($modoLote === 'separados' && count($this->lotes_agregados) > 1)
-                ? $this->lotes_agregados
-                : [null];
+            // Siempre generamos tickets separados por lote si hay más de uno.
+            $lotesIterar = count($this->lotes_agregados) > 1 ? $this->lotes_agregados : [null];
 
             foreach ($lotesIterar as $loteIndividual) {
-                // Si estamos en modo separados, asignamos solo ese lote.
-                // Si estamos en modo juntos (o solo hay uno), asignamos todo el array.
+                // Si hay varios, $loteIndividual es el lote actual.
+                // Si hay 0 o 1, $lotesParaTicket será el array original (que tendrá 0 o 1 item).
                 $lotesParaTicket = $loteIndividual ? [$loteIndividual] : $this->lotes_agregados;
 
                 $ticket = Ticket::create([
@@ -405,7 +395,6 @@ class TicketCrear extends Component
                     $ticket->usuariosParticipantes()->sync($this->selectedParticipants);
                 }
 
-                // Historial
                 TicketHistorial::create([
                     'ticket_id' => $ticket->id,
                     'user_id' => auth()->id(),
@@ -416,11 +405,9 @@ class TicketCrear extends Component
 
             DB::commit();
 
-            $mensaje = ($modoLote === 'separados' && count($this->lotes_agregados) > 1)
-                ? 'Se han generado ' . count($this->lotes_agregados) . ' tickets (separados por lote).'
-                : (count($this->lotes_agregados) > 1
-                    ? 'Se ha generado 1 ticket con todos los lotes agrupados.'
-                    : 'El ticket ha sido generado correctamente.');
+            $mensaje = count($lotesIterar) > 1
+                ? 'Se han generado ' . count($lotesIterar) . ' tickets (separados por lote).'
+                : 'El ticket ha sido generado correctamente.';
 
             $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => $mensaje]);
             return redirect()->route('erp.ticket.vista.todo');
