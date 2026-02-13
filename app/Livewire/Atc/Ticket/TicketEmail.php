@@ -10,12 +10,17 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
+use Livewire\WithFileUploads;
+
 class TicketEmail extends Component
 {
+    use WithFileUploads;
+
     public Ticket $ticket;
     public $asunto = '';
     public $mensaje = '';
     public $selectedAttachments = [];
+    public $nuevosArchivos = [];
 
     public function mount(Ticket $ticket)
     {
@@ -31,6 +36,7 @@ class TicketEmail extends Component
             'asunto' => 'required|min:5|max:200',
             'mensaje' => 'required|min:10',
             'selectedAttachments' => 'nullable|array',
+            'nuevosArchivos.*' => 'nullable|file|max:10240', // 10MB c/u
         ]);
 
         $emailDestino = $this->ticket->email;
@@ -41,11 +47,39 @@ class TicketEmail extends Component
         }
 
         try {
-            // Obtener modelos de archivos para adjuntar
-            $archivosAdjuntar = TicketArchivo::whereIn('id', $this->selectedAttachments)->get();
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $archivosAdjuntarOriginal = [];
+
+            // 1. Archivos existentes seleccionados
+            if (!empty($this->selectedAttachments)) {
+                $archivosAdjuntarOriginal = TicketArchivo::whereIn('id', $this->selectedAttachments)->get()->all();
+            }
+
+            // 2. Procesar nuevos archivos cargados (se guardan en el ticket también)
+            if (!empty($this->nuevosArchivos)) {
+                foreach ($this->nuevosArchivos as $file) {
+                    $path = $file->store('tickets/' . $this->ticket->id . '/emails', 'public');
+
+                    $nuevoArchivo = TicketArchivo::create([
+                        'archivable_type' => Ticket::class,
+                        'archivable_id' => $this->ticket->id,
+                        'user_id' => auth()->id(),
+                        'nombre_original' => $file->getClientOriginalName(),
+                        'path' => $path,
+                        'url' => \Illuminate\Support\Facades\Storage::url($path),
+                        'descripcion' => 'Adjunto enviado por email: ' . $this->asunto,
+                        'extension' => $file->getClientOriginalExtension(),
+                        'size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType(),
+                    ]);
+
+                    $archivosAdjuntarOriginal[] = $nuevoArchivo;
+                }
+            }
 
             // Enviar correo
-            Mail::to($emailDestino)->send(new TicketComunicacionMail($this->ticket, $this->asunto, $this->mensaje, $archivosAdjuntar->all()));
+            Mail::to($emailDestino)->send(new TicketComunicacionMail($this->ticket, $this->asunto, $this->mensaje, $archivosAdjuntarOriginal));
 
             // Registrar en base de datos
             TicketEmailModel::create([
@@ -57,9 +91,16 @@ class TicketEmail extends Component
                 'enviado_at' => now(),
             ]);
 
-            $this->reset(['mensaje', 'selectedAttachments']);
+            \Illuminate\Support\Facades\DB::commit();
+
+            $this->reset(['mensaje', 'selectedAttachments', 'nuevosArchivos']);
             $this->dispatch('alertaLivewire', ['title' => 'Enviado', 'text' => 'El correo ha sido enviado correctamente al cliente.']);
+
+            // Emitir evento para refrescar la lista de archivos si fuera necesario
+            $this->dispatch('archivoSubido');
+
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
             Log::error('Error TicketEmail@enviar: ' . $e->getMessage());
             Log::error($e->getTraceAsString());
             $this->dispatch('alertaLivewire', [
