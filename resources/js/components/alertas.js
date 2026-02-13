@@ -59,7 +59,7 @@ Livewire.on("alertaLivewire", (data) => {
         payload.showConfirmButton !== undefined
             ? payload.showConfirmButton
             : errorTitles.includes(payload.title) ||
-              warningTitles.includes(payload.title);
+            warningTitles.includes(payload.title);
 
     // 3. Regla UX: si hay confirmación, no hay timer
     if (showConfirmButton === true) {
@@ -75,8 +75,3 @@ Livewire.on("alertaLivewire", (data) => {
     });
 });
 
-Livewire.on("abrirUrlLivewire", (url) => {
-    if (!url) return;
-
-    window.open(url, "_blank");
-});
