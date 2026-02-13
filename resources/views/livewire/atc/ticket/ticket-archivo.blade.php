@@ -21,7 +21,7 @@
                     <i class="fa-solid {{ $icons[$ext] ?? 'fa-file' }}"></i>
                     <span>{{ $archivo->getClientOriginalName() }}</span>
 
-                    <button type="button" wire:click="$set('archivo', null)" class="remove_button">
+                    <button type="button" wire:click="$set('archivo', null)" class="dropzone_remove_button">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -39,7 +39,7 @@
             <div class="g_margin_bottom_10">
                 <label for="descripcion_archivo">Descripción del archivo <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
-                <textarea wire:model="descripcion_archivo" id="descripcion_archivo" class="g_input" rows="2"></textarea>
+                <textarea wire:model="descripcion_archivo" id="descripcion_archivo" rows="2"></textarea>
                 @error('descripcion_archivo')
                     <p class="mensaje_error">{{ $message }}</p>
                 @enderror
@@ -70,7 +70,7 @@
                     <tr wire:key="file-{{ $file->id }}">
                         <td>
                             <div class="g_negrita">{{ $file->descripcion }}</div>
-                            <div style="font-size: 11px; color: #666;">{{ $file->nombre_original }}</div>
+                            <div>{{ $file->nombre_original }}</div>
                         </td>
                         <td class="g_celda_acciones g_celda_centro">
                             <a href="{{ $file->url }}" target="_blank" class="g_accion_editar" title="Ver">
@@ -84,7 +84,12 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="2" class="g_celda_vacia">No hay archivos.</td>
+                        <td colspan="2">
+                            <div class="g_vacio">
+                                <i class="fa-regular fa-face-grin-wink"></i>
+                                <p>No hay archivos.</p>
+                            </div>
+                        </td>
                     </tr>
                 @endforelse
             </tbody>

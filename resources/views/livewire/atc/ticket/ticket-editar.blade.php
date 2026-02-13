@@ -31,7 +31,7 @@
     </div>
 
     <div class="g_fila">
-        <div class="g_columna_8">
+        <div class="g_columna_8 g_gap_pagina">
             <form wire:submit="update" class="formulario g_panel" x-data="{ activeTab: 'general' }">
                 <div class="g_tab_navegacion">
                     <div class="g_tab_botones">

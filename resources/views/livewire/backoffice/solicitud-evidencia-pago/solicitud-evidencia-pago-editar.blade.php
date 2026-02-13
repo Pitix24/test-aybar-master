@@ -48,7 +48,7 @@
                                 <label>Empresa</label>
                                 <select wire:model.live="unidad_negocio_id"
                                     class="@error('unidad_negocio_id') input-error @enderror">
-                                    <option value="">Seleccionar...</option>
+                                    <option value="">Seleccione...</option>
                                     @foreach($unidades_negocios as $un)
                                         <option value="{{ $un->id }}">{{ $un->nombre }}</option>
                                     @endforeach
@@ -60,7 +60,7 @@
                                 <label>Proyecto</label>
                                 <select wire:model.live="proyecto_id"
                                     class="@error('proyecto_id') input-error @enderror">
-                                    <option value="">Seleccionar...</option>
+                                    <option value="">Seleccione...</option>
                                     @foreach($proyectos as $pr)
                                         <option value="{{ $pr->id }}">{{ $pr->nombre }}</option>
                                     @endforeach
@@ -71,7 +71,7 @@
                             <div class="g_margin_bottom_10 g_columna_3">
                                 <label>Gestor Asignado</label>
                                 <select wire:model.live="gestor_id" class="@error('gestor_id') input-error @enderror">
-                                    <option value="">Sin asignar</option>
+                                    <option value="">Seleccione...</option>
                                     @foreach($gestores as $ge)
                                         <option value="{{ $ge->id }}">{{ $ge->name }}</option>
                                     @endforeach
@@ -82,7 +82,7 @@
                             <div class="g_margin_bottom_10 g_columna_3">
                                 <label>Estado Actual</label>
                                 <select wire:model.live="estado_id" class="@error('estado_id') input-error @enderror">
-                                    <option value="">Seleccionar...</option>
+                                    <option value="">Seleccione...</option>
                                     @foreach($estados as $es)
                                         <option value="{{ $es->id }}">{{ $es->nombre }}</option>
                                     @endforeach
@@ -211,12 +211,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                style="background-color: var(--color-light); border-left: 4px solid var(--color-primario);">
+                            <tr class="g_fila_seleccionada">
                                 <td class="g_negrita g_resaltar">ERP</td>
                                 <td>{{ $solicitud->fecha_operacion ?? '—' }}</td>
                                 <td class="g_negrita">{{ $solicitud->slin_numero_operacion ?? '—' }}</td>
-                                <td class="g_negrita" style="color: var(--color-primario);">
+                                <td class="g_negrita">
                                     S/ {{ number_format($solicitud->monto_operacion ?? 0, 2) }}
                                 </td>
                                 <td>
@@ -313,16 +312,14 @@
 
                 @if ($evidenciaSeleccionada)
                     <div class="g_evidencia_visor_panel">
-                        <!-- 1. Visualización Principal -->
                         <div class="g_evidencia_previa">
                             <a href="{{ $evidenciaSeleccionada->url }}" target="_blank" title="Ver original">
                                 <img src="{{ $evidenciaSeleccionada->url }}" alt="Comprobante de Pago">
                             </a>
                         </div>
 
-                        <!-- 2. Badges de Estado -->
-                        <div class="g_margin_bottom_10" style="display: flex; gap: 8px;">
-                            <span class="g_badge {{ $solicitud->slin_asbanc ? 'g_badge_success' : 'g_badge_dark' }}">
+                        <div class="g_margin_bottom_10">
+                            <span class="g_badge {{ $solicitud->slin_asbanc ? 'g_badge_success' : 'g_badge_light' }}">
                                 <i class="fa-solid fa-building-columns"></i> Asbanc: {{ $solicitud->slin_asbanc ? 'SÍ' : 'NO' }}
                             </span>
 
@@ -332,7 +329,6 @@
                             </span>
                         </div>
 
-                        <!-- 3. Metadatos de la Solicitud -->
                         <div class="g_evidencia_meta_list">
                             <div class="g_evidencia_meta_item">
                                 <span class="g_evidencia_meta_label">Lote</span>
@@ -342,13 +338,12 @@
                                 <span class="g_evidencia_meta_label">Cliente</span>
                                 <span class="g_evidencia_meta_value">{{ $solicitud->codigo_cliente ?? '—' }}</span>
                             </div>
-                            <div class="g_evidencia_meta_item" style="flex-direction: column; gap: 4px;">
+                            <div class="g_evidencia_meta_item">
                                 <span class="g_evidencia_meta_label">ID Transacción</span>
-                                <span class="g_evidencia_meta_value" style="font-size: 10px; word-break: break-all;">{{ $solicitud->transaccion_id ?? '—' }}</span>
+                                <span class="g_evidencia_meta_value">{{ $solicitud->transaccion_id ?? '—' }}</span>
                             </div>
                         </div>
 
-                        <!-- 4. Área de Acciones / Resultados -->
                         <div class="formulario">
                             @if ($solicitud->slin_asbanc)
                                 @if ($solicitud->fecha_validacion && $solicitud->slin_evidencia)
@@ -393,10 +388,10 @@
                         </div>
                     </div>
                 @else
-                    <div class="g_vacio" style="height: 300px;">
-                        <i class="fa-solid fa-hand-pointer fa-bounce" style="font-size: 40px; color: #cbd5e1; margin-bottom: 20px;"></i>
-                        <p style="color: #64748b; font-weight: 500;">Seleccione una evidencia de la lista para gestionarla.</p>
-                    </div>
+                <div class="g_vacio" style="height: 300px;">
+                    <i class="fa-solid fa-hand-pointer fa-bounce" style="font-size: 30px"></i>
+                    <p>Seleccione una evidencia de la lista para gestionarla.</p>
+                </div>
                 @endif
             </div>
         </div>
