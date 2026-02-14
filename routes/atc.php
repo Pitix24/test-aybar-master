@@ -1,23 +1,23 @@
 <?php
-use App\Livewire\Atc\Canal\CanalCrear;
-use App\Livewire\Atc\Canal\CanalEditar;
-use App\Livewire\Atc\Canal\CanalLista;
-use App\Livewire\Atc\EstadoTicket\EstadoTicketCrear;
-use App\Livewire\Atc\EstadoTicket\EstadoTicketEditar;
-use App\Livewire\Atc\EstadoTicket\EstadoTicketLista;
-use App\Livewire\Atc\PrioridadTicket\PrioridadTicketCrear;
-use App\Livewire\Atc\PrioridadTicket\PrioridadTicketEditar;
-use App\Livewire\Atc\PrioridadTicket\PrioridadTicketLista;
-use App\Livewire\Atc\SubTipoSolicitud\SubTipoSolicitudCrear;
-use App\Livewire\Atc\SubTipoSolicitud\SubTipoSolicitudEditar;
-use App\Livewire\Atc\SubTipoSolicitud\SubTipoSolicitudLista;
-use App\Livewire\Atc\Ticket\TicketCrear;
-use App\Livewire\Atc\Ticket\TicketDerivar;
-use App\Livewire\Atc\Ticket\TicketEditar;
-use App\Livewire\Atc\Ticket\TicketLista;
-use App\Livewire\Atc\TipoSolicitud\TipoSolicitudCrear;
-use App\Livewire\Atc\TipoSolicitud\TipoSolicitudEditar;
-use App\Livewire\Atc\TipoSolicitud\TipoSolicitudLista;
+use App\Livewire\Erp\Atc\Canal\CanalCrear;
+use App\Livewire\Erp\Atc\Canal\CanalEditar;
+use App\Livewire\Erp\Atc\Canal\CanalLista;
+use App\Livewire\Erp\Atc\EstadoTicket\EstadoTicketCrear;
+use App\Livewire\Erp\Atc\EstadoTicket\EstadoTicketEditar;
+use App\Livewire\Erp\Atc\EstadoTicket\EstadoTicketLista;
+use App\Livewire\Erp\Atc\PrioridadTicket\PrioridadTicketCrear;
+use App\Livewire\Erp\Atc\PrioridadTicket\PrioridadTicketEditar;
+use App\Livewire\Erp\Atc\PrioridadTicket\PrioridadTicketLista;
+use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudCrear;
+use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudEditar;
+use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudLista;
+use App\Livewire\Erp\Atc\Ticket\TicketCrear;
+use App\Livewire\Erp\Atc\Ticket\TicketDerivar;
+use App\Livewire\Erp\Atc\Ticket\TicketEditar;
+use App\Livewire\Erp\Atc\Ticket\TicketLista;
+use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudCrear;
+use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudEditar;
+use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudLista;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {

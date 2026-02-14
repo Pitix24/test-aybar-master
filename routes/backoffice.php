@@ -1,12 +1,12 @@
 <?php
 
-use App\Livewire\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoCrear;
-use App\Livewire\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoEditar;
-use App\Livewire\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoLista;
-use App\Livewire\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoEditar;
-use App\Livewire\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoLista;
-use App\Livewire\Backoffice\EvidenciaPagoAntiguo\EvidenciaPagoAntiguoEditar;
-use App\Livewire\Backoffice\EvidenciaPagoAntiguo\EvidenciaPagoAntiguoLista;
+use App\Livewire\Erp\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoCrear;
+use App\Livewire\Erp\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoEditar;
+use App\Livewire\Erp\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoLista;
+use App\Livewire\Erp\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoEditar;
+use App\Livewire\Erp\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoLista;
+use App\Livewire\Erp\Backoffice\EvidenciaPagoAntiguo\EvidenciaPagoAntiguoEditar;
+use App\Livewire\Erp\Backoffice\EvidenciaPagoAntiguo\EvidenciaPagoAntiguoLista;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-backoffice.ver']], function () {

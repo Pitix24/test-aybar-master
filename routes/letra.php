@@ -1,13 +1,13 @@
 <?php
 
 
-use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraCrear;
-use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraEditar;
-use App\Livewire\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;
-use App\Livewire\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraEditar;
-use App\Livewire\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraLista;
-use App\Livewire\Letra\EnvioCavali\EnvioCavaliDetalle;
-use App\Livewire\Letra\EnvioCavali\EnvioCavaliLista;
+use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraCrear;
+use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraEditar;
+use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;
+use App\Livewire\Erp\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraEditar;
+use App\Livewire\Erp\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraLista;
+use App\Livewire\Erp\Letra\EnvioCavali\EnvioCavaliDetalle;
+use App\Livewire\Erp\Letra\EnvioCavali\EnvioCavaliLista;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-letras.ver']], function () {

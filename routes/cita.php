@@ -1,14 +1,14 @@
 <?php
-use App\Livewire\Cita\Cita\CitaCalendario;
-use App\Livewire\Cita\EstadoCita\EstadoCitaCrear;
-use App\Livewire\Cita\EstadoCita\EstadoCitaEditar;
-use App\Livewire\Cita\EstadoCita\EstadoCitaLista;
-use App\Livewire\Cita\MotivoCita\MotivoCitaCrear;
-use App\Livewire\Cita\MotivoCita\MotivoCitaEditar;
-use App\Livewire\Cita\MotivoCita\MotivoCitaLista;
-use App\Livewire\Cita\Cita\CitaCrear;
-use App\Livewire\Cita\Cita\CitaEditar;
-use App\Livewire\Cita\Cita\CitaLista;
+use App\Livewire\Erp\Cita\Cita\CitaCalendario;
+use App\Livewire\Erp\Cita\EstadoCita\EstadoCitaCrear;
+use App\Livewire\Erp\Cita\EstadoCita\EstadoCitaEditar;
+use App\Livewire\Erp\Cita\EstadoCita\EstadoCitaLista;
+use App\Livewire\Erp\Cita\MotivoCita\MotivoCitaCrear;
+use App\Livewire\Erp\Cita\MotivoCita\MotivoCitaEditar;
+use App\Livewire\Erp\Cita\MotivoCita\MotivoCitaLista;
+use App\Livewire\Erp\Cita\Cita\CitaCrear;
+use App\Livewire\Erp\Cita\Cita\CitaEditar;
+use App\Livewire\Erp\Cita\Cita\CitaLista;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-cita.ver']], function () {

@@ -1,14 +1,14 @@
 <?php
 
-use App\Livewire\Erp\Permiso\PermisoCrear;
-use App\Livewire\Erp\Permiso\PermisoEditar;
-use App\Livewire\Erp\Permiso\PermisoLista;
-use App\Livewire\Erp\Rol\RolCrear;
-use App\Livewire\Erp\Rol\RolEditar;
-use App\Livewire\Erp\Rol\RolLista;
-use App\Livewire\Erp\Menu\MenuCrear;
-use App\Livewire\Erp\Menu\MenuEditar;
-use App\Livewire\Erp\Menu\MenuLista;
+use App\Livewire\Erp\Sistema\Permiso\PermisoCrear;
+use App\Livewire\Erp\Sistema\Permiso\PermisoEditar;
+use App\Livewire\Erp\Sistema\Permiso\PermisoLista;
+use App\Livewire\Erp\Sistema\Rol\RolCrear;
+use App\Livewire\Erp\Sistema\Rol\RolEditar;
+use App\Livewire\Erp\Sistema\Rol\RolLista;
+use App\Livewire\Erp\Sistema\Menu\MenuCrear;
+use App\Livewire\Erp\Sistema\Menu\MenuEditar;
+use App\Livewire\Erp\Sistema\Menu\MenuLista;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-sistema.ver']], function () {

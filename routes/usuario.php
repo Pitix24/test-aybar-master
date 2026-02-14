@@ -1,15 +1,15 @@
 <?php
 
-use App\Livewire\Erp\Cliente\ClienteConsultar;
-use App\Livewire\Erp\Cliente\ClienteCrear;
-use App\Livewire\Erp\Cliente\ClienteEditar;
-use App\Livewire\Erp\Cliente\ClienteLista;
+use App\Livewire\Erp\Usuario\Cliente\ClienteConsultar;
+use App\Livewire\Erp\Usuario\Cliente\ClienteCrear;
+use App\Livewire\Erp\Usuario\Cliente\ClienteEditar;
+use App\Livewire\Erp\Usuario\Cliente\ClienteLista;
 
-use App\Livewire\Erp\Admin\AdminCrear;
-use App\Livewire\Erp\Admin\AdminEditar;
-use App\Livewire\Erp\Admin\AdminLista;
-use App\Livewire\Erp\ClienteAntiguo\ClienteAntiguoLista;
-use App\Livewire\Erp\ClienteAntiguo\ClienteAntiguoCrear;
+use App\Livewire\Erp\Usuario\Admin\AdminCrear;
+use App\Livewire\Erp\Usuario\Admin\AdminEditar;
+use App\Livewire\Erp\Usuario\Admin\AdminLista;
+use App\Livewire\Erp\Usuario\ClienteAntiguo\ClienteAntiguoLista;
+use App\Livewire\Erp\Usuario\ClienteAntiguo\ClienteAntiguoCrear;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-usuarios.ver']], function () {
