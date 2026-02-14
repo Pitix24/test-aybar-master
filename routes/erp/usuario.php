@@ -4,7 +4,6 @@ use App\Livewire\Erp\Usuario\Cliente\ClienteConsultar;
 use App\Livewire\Erp\Usuario\Cliente\ClienteCrear;
 use App\Livewire\Erp\Usuario\Cliente\ClienteEditar;
 use App\Livewire\Erp\Usuario\Cliente\ClienteLista;
-
 use App\Livewire\Erp\Usuario\Admin\AdminCrear;
 use App\Livewire\Erp\Usuario\Admin\AdminEditar;
 use App\Livewire\Erp\Usuario\Admin\AdminLista;

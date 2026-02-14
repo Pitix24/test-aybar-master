@@ -21,7 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware(['web', 'auth', 'check.admin'])
                 ->prefix('erp')
                 ->name('erp.')
-                ->group(base_path('routes/erp.php'));
+                ->group(function () {
+                    foreach (glob(base_path('routes/erp/*.php')) as $file) {
+                        require $file;
+                    }
+                });
 
             Route::middleware(['web', 'verified', 'auth', 'check.cliente'])
                 ->prefix('cliente')
