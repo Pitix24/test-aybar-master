@@ -1,0 +1,46 @@
+/* ==========================================================================
+   PRINT STYLES
+   Optimización para cuando el usuario necesite imprimir reportes o la web.
+   ========================================================================== */
+
+@media print {
+
+    /* Ocultar elementos innecesarios */
+    header,
+    footer,
+    nav,
+    aside,
+    .no-print,
+    .btn,
+    .botones-accion {
+        display: none !important;
+    }
+
+    /* Forzar fondo blanco y texto negro para ahorrar tinta */
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 10pt;
+    }
+
+    /* Evitar que los paneles se corten a la mitad en el papel */
+    .panel,
+    .card,
+    table,
+    tr {
+        page-break-inside: avoid;
+    }
+
+    /* Expandir el contenido al 100% */
+    main,
+    .container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Mostrar URLs de los enlaces junto al texto */
+    /* a:after {
+        content: " (" attr(href) ")";
+    } */
+}

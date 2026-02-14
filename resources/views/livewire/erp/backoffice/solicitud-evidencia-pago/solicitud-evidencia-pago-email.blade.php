@@ -21,7 +21,7 @@
 
     <div x-show="activeTab === 'enviar'" x-transition class="g_tab_content">
         <div class="formulario">
-            <p class="g_resaltado info">
+            <p class="g_resaltado_indicacion info">
                 <i class="fa-solid fa-info-circle"></i>
                 <span>
                     Esta opción solo envía el correo informativo al cliente,
@@ -44,7 +44,7 @@
     <div x-show="activeTab === 'enviar_y_cambiar_estado'" x-transition class="g_tab_content">
         <div class="formulario">
             @if($evidenciaSeleccionada)
-                <p class="g_resaltado warning">
+                <p class="g_resaltado_indicacion warning">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <span><strong>Atención:</strong> Se enviará el correo y se marcará como <strong>RECHAZADA</strong> la
                         evidencia #{{ $evidenciaSeleccionada->numero_operacion }} y la solicitud entera.</span>

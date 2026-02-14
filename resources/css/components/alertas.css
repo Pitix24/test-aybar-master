@@ -2,12 +2,15 @@
 .g_alerta {
     padding: 12px 16px;
     border-radius: 6px;
-    font-size: 15px;
-    font-weight: 500;
+    font-weight: var(--fw-medium);
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: var(--fs-subtitulo);
+    font-size: var(--fs-alerta);
+}
+
+.g_alerta i {
+    font-size: var(--fs-alerta);
 }
 
 .g_alerta.success {
@@ -28,89 +31,89 @@
     color: blue;
 }
 
-.g_alerta i {
-    font-size: var(--fs-subtitulo);
-}
-
 /* ALERTA CAJA */
-.g_evidencia_status_box {
+.g_resaltado_caja {
     padding: 12px;
     border-radius: 10px;
-    font-size: 13px;
+    font-size: var(--fs-alerta);
 }
 
-.g_evidencia_status_success {
+.g_resaltado_caja .g_resaltado_caja_titulo {
+    display: block;
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-alerta);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    opacity: 0.8;
+}
+
+.g_resaltado_caja strong {
+    font-weight: var(--fw-bold);
+}
+
+.g_resaltado_caja.success {
     background: #ecfdf5;
     border: 1px solid #a7f3d0;
     color: #065f46;
 }
 
-.g_evidencia_status_info {
+.g_resaltado_caja.info {
     background: #f0f9ff;
     border: 1px solid #bae6fd;
     color: #075985;
 }
 
-.g_evidencia_status_label {
-    display: block;
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 11px;
-    margin-bottom: 4px;
-    opacity: 0.8;
-}
-
 /*ALERTA RESALTADO*/
-.g_resaltado {
+.g_resaltado_indicacion {
     display: flex;
     align-items: flex-start;
     gap: 10px;
     line-height: 1.5;
-    font-size: 13px;
+    font-size: var(--fs-alerta);
     border: 1px solid transparent;
 }
 
-.g_resaltado i {
-    font-size: 16px;
+.g_resaltado_indicacion i {
+    font-size: var(--fs-alerta);
     margin-top: 2px;
 }
 
-.g_resaltado strong {
-    font-weight: 600;
+.g_resaltado_indicacion strong {
+    font-weight: var(--fw-semibold);
 }
 
-.g_resaltado.info {
+.g_resaltado_indicacion.info {
     color: #0369a1;
 }
 
-.g_resaltado.info i {
+.g_resaltado_indicacion.info i {
     color: #0ea5e9;
 }
 
-.g_resaltado.info strong {
+.g_resaltado_indicacion.info strong {
     color: #0c4a6e;
 }
 
-.g_resaltado.warning {
+.g_resaltado_indicacion.warning {
     color: #92400e;
 }
 
-.g_resaltado.warning i {
+.g_resaltado_indicacion.warning i {
     color: #f59e0b;
 }
 
-.g_resaltado.warning strong {
+.g_resaltado_indicacion.warning strong {
     color: #78350f;
 }
 
-.g_resaltado.error {
+.g_resaltado_indicacion.error {
     color: #b91c1c;
 }
 
-.g_resaltado.error i {
+.g_resaltado_indicacion.error i {
     color: #ef4444;
 }
 
-.g_resaltado.error strong {
+.g_resaltado_indicacion.error strong {
     color: #7f1d1d;
 }

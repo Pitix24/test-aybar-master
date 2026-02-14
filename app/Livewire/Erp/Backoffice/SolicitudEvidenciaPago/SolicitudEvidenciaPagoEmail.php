@@ -58,14 +58,12 @@ class SolicitudEvidenciaPagoEmail extends Component
 
                 $estadoRechazadoId = EstadoSolicitudEvidenciaPago::id(EstadoSolicitudEvidenciaPago::RECHAZADO);
 
-                // Actualizar Solicitud
                 $this->solicitud->update([
                     'estado_solicitud_evidencia_pago_id' => $estadoRechazadoId,
                     'usuario_valida_id' => auth()->id(),
                     'fecha_validacion' => now(),
                 ]);
 
-                // Actualizar Evidencia Específica
                 $evidencia = EvidenciaPago::find($this->evidenciaId);
                 if ($evidencia) {
                     $evidencia->update([
@@ -75,10 +73,8 @@ class SolicitudEvidenciaPagoEmail extends Component
                 }
             }
 
-            // Enviar correo
             Mail::to($emailDestino)->send(new EvidenciaPagoObservacionMail($emailDestino, $this->solicitud, $this->mensaje_correo));
 
-            // Registrar en base de datos
             SolicitudEvidenciaPagoEmailModel::create([
                 'solicitud_evidencia_pago_id' => $this->solicitud->id,
                 'emisor_id' => auth()->id(),
@@ -97,7 +93,7 @@ class SolicitudEvidenciaPagoEmail extends Component
             $this->dispatch('alertaLivewire', ['title' => 'Enviado', 'text' => $msgSuccess]);
 
             if ($cambiarEstado) {
-                $this->dispatch('solicitudActualizada'); // Notificar al padre para refrescar si es necesario
+                $this->dispatch('solicitudActualizada');
             }
 
         } catch (\Exception $e) {

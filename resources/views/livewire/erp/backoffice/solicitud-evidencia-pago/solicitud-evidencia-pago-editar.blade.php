@@ -220,7 +220,7 @@
                                 </td>
                                 <td>
                                     <span
-                                        class="g_badge {{ $solicitud->slin_asbanc ? 'g_badge_success' : 'g_badge_danger' }}">
+                                        class="g_badge {{ $solicitud->slin_asbanc ? 'success' : 'danger' }}">
                                         {{ $solicitud->slin_asbanc ? 'ES ASBANC' : 'NO ASBANC' }}
                                     </span>
                                 </td>
@@ -252,7 +252,7 @@
                             @foreach ($solicitud->evidencias as $evidencia)
                                 <tr class="{{ $evidenciaSeleccionadaId == $evidencia->id ? 'g_fila_seleccionada' : '' }}">
                                     <td class="g_celda_centro">
-                                        <span class="g_badge g_badge_light">#{{ $loop->iteration }}</span>
+                                        <span class="g_badge light">#{{ $loop->iteration }}</span>
                                     </td>
                                     <td>{{ $evidencia->fecha ?? '—' }}</td>
                                     <td>{{ $evidencia->numero_operacion ?? '—' }}</td>
@@ -270,7 +270,7 @@
                                                 {{ $evidencia->estado->nombre }}
                                             </span>
                                         @else
-                                            <span class="g_badge g_badge_light">Pendiente</span>
+                                            <span class="g_badge light">Pendiente</span>
                                         @endif
                                     </td>
                                     <td class="g_celda_centro">
@@ -289,7 +289,7 @@
                 </div>
             </div>
 
-            @livewire('backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-email', [
+            @livewire('erp.backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-email', [
                 'solicitud' => $solicitud,
                 'evidenciaId' => $evidenciaSeleccionadaId
             ])
@@ -319,11 +319,11 @@
                         </div>
 
                         <div class="g_margin_bottom_10">
-                            <span class="g_badge {{ $solicitud->slin_asbanc ? 'g_badge_success' : 'g_badge_light' }}">
+                            <span class="g_badge {{ $solicitud->slin_asbanc ? 'success' : 'light' }}">
                                 <i class="fa-solid fa-building-columns"></i> Asbanc: {{ $solicitud->slin_asbanc ? 'SÍ' : 'NO' }}
                             </span>
 
-                            <span class="g_badge {{ $solicitud->slin_evidencia ? 'g_badge_primary' : 'g_badge_light' }}">
+                            <span class="g_badge {{ $solicitud->slin_evidencia ? 'primary' : 'light' }}">
                                 <i class="fa-solid {{ $solicitud->slin_evidencia ? 'fa-check-double' : 'fa-hourglass-half' }}"></i> 
                                 Validado: {{ $solicitud->slin_evidencia ? 'SÍ' : 'NO' }}
                             </span>
@@ -347,10 +347,10 @@
                         <div class="formulario">
                             @if ($solicitud->slin_asbanc)
                                 @if ($solicitud->fecha_validacion && $solicitud->slin_evidencia)
-                                    <div class="g_evidencia_status_box g_evidencia_status_success">
-                                        <span class="g_evidencia_status_label">Validación Digital EXITOSA</span>
+                                    <div class="g_resaltado_caja success">
+                                        <span class="g_resaltado_caja_titulo">Validación Digital EXITOSA</span>
                                         <p><strong>Fecha:</strong> {{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}</p>
-                                        <p style="margin-top: 5px; font-size: 12px;"><strong>Respuesta:</strong> {{ $solicitud->slin_respuesta }}</p>
+                                        <p><strong>Respuesta:</strong> {{ $solicitud->slin_respuesta }}</p>
                                     </div>
                                 @else
                                     <div class="formulario_botones">
@@ -367,8 +367,8 @@
                                 @endif
                             @else
                                 @if ($solicitud->fecha_validacion)
-                                    <div class="g_evidencia_status_box g_evidencia_status_info">
-                                        <span class="g_evidencia_status_label">Validación MANUAL</span>
+                                    <div class="g_resaltado_caja info">
+                                        <span class="g_resaltado_caja_titulo">Validación MANUAL</span>
                                         <p><strong>Aprobado el:</strong> {{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}</p>
                                     </div>
                                 @else
@@ -395,6 +395,6 @@
                 @endif
             </div>
         </div>
-        @livewire('backoffice.solicitud-evidencia-pago.solicitud-evidencia-chat', ['solicitud' => $solicitud])
+        @livewire('erp.backoffice.solicitud-evidencia-pago.solicitud-evidencia-chat', ['solicitud' => $solicitud])
     </div>
 </div>

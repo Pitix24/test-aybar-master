@@ -30,6 +30,8 @@
     --fs-titulo: 1rem;
     --fs-subtitulo: 0.855rem;
     --fs-parrafo: 0.755rem;
+    --fs-alerta: 0.755rem;
+    --fs-lista: 0.755rem;
 
     /* Font weights */
     --fw-regular: 400;

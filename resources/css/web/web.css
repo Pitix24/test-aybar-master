@@ -7,6 +7,9 @@
 @import "../core/variables.css";
 @import "../core/globales.css";
 @import "../core/rejilla.css";
+@import "../core/animations.css";
+@import "../core/utilities.css";
+@import "../core/print.css";
 
 @import "./layout.css";
 

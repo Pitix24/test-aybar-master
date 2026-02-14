@@ -1,0 +1,96 @@
+/* ==========================================================================
+   UTILITIES
+   Clases atómicas para ajustes rápidos sin escribir CSS personalizado.
+   ========================================================================== */
+
+/* Layout Flexbox */
+.u-flex {
+    display: flex;
+}
+
+.u-flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.u-flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.u-flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.u-items-center {
+    align-items: center;
+}
+
+.u-justify-center {
+    justify-content: center;
+}
+
+/* Spacing Gap */
+.u-gap-4 {
+    gap: 4px;
+}
+
+.u-gap-8 {
+    gap: 8px;
+}
+
+.u-gap-16 {
+    gap: 16px;
+}
+
+.u-gap-24 {
+    gap: 24px;
+}
+
+/* Display & Visibility */
+.u-hidden {
+    display: none !important;
+}
+
+.u-block {
+    display: block;
+}
+
+.u-inline-block {
+    display: inline-block;
+}
+
+/* Text Alignment */
+.u-text-left {
+    text-align: left;
+}
+
+.u-text-center {
+    text-align: center;
+}
+
+.u-text-right {
+    text-align: right;
+}
+
+/* Padding & Margin (Muestras, puedes expandir según necesidad) */
+.u-p-0 {
+    padding: 0 !important;
+}
+
+.u-m-0 {
+    margin: 0 !important;
+}
+
+/* Cursor */
+.u-pointer {
+    cursor: pointer;
+}
+
+/* Box Shadow Premium */
+.u-shadow-soft {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}

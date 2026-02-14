@@ -1,0 +1,67 @@
+/* ==========================================================================
+   ANIMATIONS
+   Micro-interacciones y transiciones globales para una sensación premium.
+   ========================================================================== */
+
+:root {
+    --transicion-suave: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transicion-rapida: all 0.15s ease-in-out;
+}
+
+/* Fades */
+.anim-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Slide Up (Ideal para modales o tarjetas) */
+.anim-slide-up {
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover Scale */
+.hover-scale {
+    transition: var(--transicion-suave);
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+/* Skeleton Loading Animation */
+.skeleton {
+    background: linear-gradient(90deg, var(--color-light-border) 25%, var(--color-gris) 50%, var(--color-light-border) 75%);
+    background-size: 200% 100%;
+    animation: skeletonLoading 1.5s infinite;
+}
+
+@keyframes skeletonLoading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
