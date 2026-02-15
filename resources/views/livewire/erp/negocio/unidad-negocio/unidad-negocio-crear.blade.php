@@ -215,9 +215,9 @@
                         @endcan
 
                         @can('unidad-negocio.lista')
-                            <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton cancelar">
+                            <button type="button" class="g_boton cancelar" onclick="history.back()">
                                 <i class="fa-solid fa-times"></i> Cancelar
-                            </a>
+                            </button>
                         @endcan
                     </div>
                 </div>

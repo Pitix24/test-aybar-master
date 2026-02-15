@@ -23,9 +23,17 @@ class SedeCrear extends Component
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:sedes,nombre',
-            'direccion' => 'nullable|string',
+            'nombre' => 'required|string|max:255|unique:sedes,nombre',
+            'direccion' => 'nullable|string|max:500',
             'activo' => 'required|boolean',
+        ];
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre de la sede',
+            'direccion' => 'dirección',
         ];
     }
 
@@ -36,11 +44,16 @@ class SedeCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('sede.crear'), 403);
+        $this->authorize('sede.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -49,19 +62,32 @@ class SedeCrear extends Component
 
             Sede::create([
                 'nombre' => $this->nombre,
-                'direccion' => $this->direccion,
+                'direccion' => $this->direccion ?: null,
                 'activo' => $this->activo,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Creado',
+                'text' => 'La sede se guardó correctamente.'
+            ]);
+
             return redirect()->route('erp.sede.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear sede: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+            Log::channel('negocio')->error("[SEDE] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo completar la operación.'
+            ]);
         }
     }
 

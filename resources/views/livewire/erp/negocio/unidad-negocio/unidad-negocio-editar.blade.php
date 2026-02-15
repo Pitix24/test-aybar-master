@@ -209,18 +209,22 @@
                     </div>
 
                     <div class="formulario_botones g_tab_form_buttons">
-                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-save"></i> Actualizar
-                            </span>
-                            <span wire:loading wire:target="update">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
-                        </button>
+                        @can('unidad-negocio.editar')
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                                <span wire:loading.remove wire:target="update">
+                                    <i class="fa-solid fa-save"></i> Actualizar
+                                </span>
+                                <span wire:loading wire:target="update">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <button type="button" class="g_boton cancelar" onclick="history.back()">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </button>
+                        @can('unidad-negocio.lista')
+                            <button type="button" class="g_boton cancelar" onclick="history.back()">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>

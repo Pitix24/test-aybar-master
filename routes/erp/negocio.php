@@ -14,6 +14,7 @@ use App\Livewire\Erp\Negocio\Proyecto\ProyectoLista;
 use App\Livewire\Erp\Negocio\Sede\SedeCrear;
 use App\Livewire\Erp\Negocio\Sede\SedeEditar;
 use App\Livewire\Erp\Negocio\Sede\SedeLista;
+use App\Livewire\Erp\Negocio\Sede\SedeVer;
 use App\Livewire\Erp\Negocio\UnidadNegocio\UnidadNegocioCrear;
 use App\Livewire\Erp\Negocio\UnidadNegocio\UnidadNegocioEditar;
 use App\Livewire\Erp\Negocio\UnidadNegocio\UnidadNegocioLista;
@@ -48,7 +49,8 @@ Route::group(['middleware' => ['permission:modulo-negocio.ver']], function () {
 
     Route::group(['middleware' => ['permission:sede.navegacion']], function () {
         Route::prefix('sede')->name('sede.vista.')->group(function () {
-            Route::get('/', SedeLista::class)->middleware('permission:sede.ver')->name('todo');
+            Route::get('/', SedeLista::class)->middleware('permission:sede.lista')->name('todo');
+            Route::get('/ver/{id}', SedeVer::class)->middleware('permission:sede.ver')->name('ver');
             Route::get('/crear', SedeCrear::class)->middleware('permission:sede.crear')->name('crear');
             Route::get('/editar/{id}', SedeEditar::class)->middleware('permission:sede.editar')->name('editar');
         });

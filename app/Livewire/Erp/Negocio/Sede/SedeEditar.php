@@ -17,28 +17,35 @@ use Livewire\Attributes\Title;
 #[Title('Editar Sede')]
 class SedeEditar extends Component
 {
-    public Sede $sede;
+    public Sede $sede_model;
 
-    public $nombre;
-    public $direccion;
+    public $nombre = '';
+    public $direccion = '';
     public $activo = false;
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:sedes,nombre,' . $this->sede->id,
-            'direccion' => 'nullable|string',
+            'nombre' => 'required|string|max:255|unique:sedes,nombre,' . $this->sede_model->id,
+            'direccion' => 'nullable|string|max:500',
             'activo' => 'required|boolean',
+        ];
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre de la sede',
+            'direccion' => 'dirección',
         ];
     }
 
     public function mount($id)
     {
-        $this->sede = Sede::findOrFail($id);
-
-        $this->nombre = $this->sede->nombre;
-        $this->direccion = $this->sede->direccion;
-        $this->activo = $this->sede->activo;
+        $this->sede_model = Sede::findOrFail($id);
+        $this->nombre = $this->sede_model->nombre;
+        $this->direccion = $this->sede_model->direccion;
+        $this->activo = (bool) $this->sede_model->activo;
     }
 
     public function updated($propertyName)
@@ -48,52 +55,88 @@ class SedeEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('sede.editar'), 403);
+        $this->authorize('sede.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->sede->update([
+            $this->sede_model->update([
                 'nombre' => $this->nombre,
-                'direccion' => $this->direccion,
+                'direccion' => $this->direccion ?: null,
                 'activo' => $this->activo,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Actualizado',
+                'text' => 'La sede se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar sede: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('negocio')->error("[SEDE] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->sede_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo completar la operación.'
+            ]);
         }
     }
 
     #[On('eliminarSedeOn')]
     public function eliminarSedeOn()
     {
-        abort_unless(auth()->user()->can('sede.eliminar'), 403);
+        $this->authorize('sede.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->sede->delete();
+            $id = $this->sede_model->id;
+            $nombre = $this->sede_model->nombre;
+
+            $this->sede_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Eliminado',
+                'text' => 'Se eliminó correctamente.'
+            ]);
+
             return redirect()->route('erp.sede.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar sede: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('negocio')->error("[SEDE] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $id ?? null,
+                'nombre' => $nombre ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar.'
+            ]);
         }
     }
 

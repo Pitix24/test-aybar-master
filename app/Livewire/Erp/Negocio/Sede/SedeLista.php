@@ -9,7 +9,7 @@ use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\SedeExport;
+use App\Exports\Negocio\SedeExport;
 use Livewire\Attributes\Title;
 
 #[Lazy]
@@ -26,39 +26,57 @@ class SedeLista extends Component
     public $activo = '';
 
     #[Url]
+    public $desde = '';
+
+    #[Url]
+    public $hasta = '';
+
+    #[Url]
     public $perPage = 20;
 
     public function updated($property)
     {
-        if (
-            in_array($property, [
-                'buscar',
-                'activo',
-                'perPage'
-            ])
-        ) {
+        if (in_array($property, ['buscar', 'activo', 'desde', 'hasta', 'perPage'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'activo']);
+        $this->reset(['buscar', 'activo', 'desde', 'hasta']);
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('sede.exportar'), 403);
+        $this->authorize('sede.exportar-filtro');
+
         return Excel::download(
             new SedeExport(
-                $this->buscar,
-                $this->activo,
-                $this->perPage,
-                $this->getPage()
+                buscar: $this->buscar,
+                activo: $this->activo,
+                perPage: $this->perPage,
+                page: $this->getPage(),
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: false
             ),
-            'sedes.xlsx'
+            'sedes_filtradas_' . now()->format('Y-m-d_H-i') . '.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('sede.exportar-todo');
+
+        return Excel::download(
+            new SedeExport(
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: true
+            ),
+            'sedes_completas_' . now()->format('Y-m-d_H-i') . '.xlsx'
         );
     }
 
@@ -66,15 +84,20 @@ class SedeLista extends Component
     {
         $items = Sede::query()
             ->when($this->buscar !== '', function ($q) {
-                $q->where('nombre', 'like', "%{$this->buscar}%")
-                    ->orWhere('direccion', 'like', "%{$this->buscar}%")
-                    ->orWhere('id', $this->buscar);
+                $q->where(function ($sub) {
+                    $sub->where('nombre', 'like', "%{$this->buscar}%")
+                        ->orWhere('direccion', 'like', "%{$this->buscar}%");
+
+                    if (is_numeric($this->buscar)) {
+                        $sub->orWhere('id', (int) $this->buscar);
+                    }
+                });
             })
-            ->when(
-                $this->activo !== '',
-                fn($q) =>
-                $q->where('activo', $this->activo)
-            )
+            ->when($this->activo !== '', function ($q) {
+                $q->where('activo', $this->activo);
+            })
+            ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
             ->latest()
             ->paginate($this->perPage);
 

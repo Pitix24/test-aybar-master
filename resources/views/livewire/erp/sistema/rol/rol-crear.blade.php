@@ -100,9 +100,9 @@
                         @endcan
 
                         @can('rol.lista')
-                            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton cancelar">
+                            <button type="button" class="g_boton cancelar" onclick="history.back()">
                                 <i class="fa-solid fa-times"></i> Cancelar
-                            </a>
+                            </button>
                         @endcan
                     </div>
                 </div>
