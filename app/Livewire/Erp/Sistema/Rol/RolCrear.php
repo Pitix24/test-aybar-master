@@ -30,6 +30,14 @@ class RolCrear extends Component
         ];
     }
 
+    public function validationAttributes()
+    {
+        return [
+            'name' => 'nombre del rol',
+            'permissions' => 'permisos',
+        ];
+    }
+
     public function updated($propertyName)
     {
         if ($propertyName === 'name') {
@@ -40,11 +48,16 @@ class RolCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('rol.crear'), 403);
+        $this->authorize('rol.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -62,13 +75,40 @@ class RolCrear extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardo correctamente.']);
+            Log::channel('roles')->info('Rol creado exitosamente', [
+                'usuario_id' => auth()->id(),
+                'usuario_nombre' => auth()->user()->name,
+                'rol_id' => $role->id,
+                'rol_nombre' => $role->name,
+                'permisos' => $this->permissions,
+                'ip' => request()->ip()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Creado',
+                'text' => 'El rol se guardó correctamente.'
+            ]);
+
             return redirect()->route('erp.rol.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear rol: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+
+            Log::channel('roles')->error('Error al crear rol', [
+                'usuario_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'datos' => [
+                    'name' => $this->name,
+                    'permissions' => $this->permissions
+                ]
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo crear el rol. Intente nuevamente.'
+            ]);
         }
     }
 

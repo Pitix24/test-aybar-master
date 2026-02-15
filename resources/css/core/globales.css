@@ -68,25 +68,6 @@
     max-width: 200px;
 }
 
-/* ESTADOS Y COLORES RÁPIDOS */
-.g_activo {
-    color: #36c76c;
-    font-weight: 600;
-}
-
-.g_desactivado {
-    color: #ff6692;
-    font-weight: 600;
-}
-
-.g_info {
-    color: #46caeb;
-}
-
-.g_error {
-    color: #ff6692;
-}
-
 .g_contenedor_columna {
     margin-top: 70px;
     display: flex;

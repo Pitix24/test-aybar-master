@@ -13,6 +13,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Title;
+use Illuminate\Validation\Rule;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
@@ -26,9 +27,20 @@ class RolEditar extends Component
     protected function rules()
     {
         return [
-            'name' => 'required|unique:roles,name,' . $this->role->id,
+            'name' => [
+                'required',
+                Rule::unique('roles', 'name')->ignore($this->role->id),
+            ],
             'permissions' => 'nullable|array',
             'permissions.*' => 'exists:permissions,name',
+        ];
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'name' => 'nombre del rol',
+            'permissions' => 'permisos',
         ];
     }
 
@@ -49,11 +61,16 @@ class RolEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('rol.editar'), 403);
+        $this->authorize('rol.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -68,36 +85,83 @@ class RolEditar extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizo correctamente.']);
+            Log::channel('roles')->info('Rol actualizado exitosamente', [
+                'usuario_id' => auth()->id(),
+                'rol_id' => $this->role->id,
+                'rol_nombre' => $this->role->name,
+                'permisos' => $this->permissions,
+                'ip' => request()->ip()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Actualizado',
+                'text' => 'El rol se actualizó correctamente.'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar rol: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+
+            Log::channel('roles')->error('Error al actualizar rol', [
+                'usuario_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'rol_id' => $this->role->id
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el rol. Intente nuevamente.'
+            ]);
         }
     }
 
     #[On('eliminarRolOn')]
     public function eliminarRolOn()
     {
-        abort_unless(auth()->user()->can('rol.eliminar'), 403);
+        $this->authorize('rol.eliminar');
+
         try {
             if ($this->role->name === 'super-admin') {
-                $this->dispatch('alertaLivewire', ['title' => 'Acción Protegida', 'text' => 'No puedes eliminar el rol super-admin.']);
+                $this->dispatch('alertaLivewire', [
+                    'type' => 'warning',
+                    'title' => 'Acción Protegida',
+                    'text' => 'No puedes eliminar el rol super-admin.'
+                ]);
                 return;
             }
 
             DB::beginTransaction();
+            $rolNombre = $this->role->name;
             $this->role->delete();
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se elimino correctamente.']);
+            Log::channel('roles')->info('Rol eliminado', [
+                'usuario_id' => auth()->id(),
+                'rol_nombre' => $rolNombre,
+                'ip' => request()->ip()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Eliminado',
+                'text' => 'El rol se eliminó correctamente.'
+            ]);
+
             return redirect()->route('erp.rol.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar rol: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+
+            Log::channel('roles')->error('Error al eliminar rol', [
+                'usuario_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'rol_id' => $this->role->id
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el rol. Intente nuevamente.'
+            ]);
         }
     }
 

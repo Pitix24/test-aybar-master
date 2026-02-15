@@ -13,7 +13,7 @@ class MigracionAybarCorp2Seeder extends Seeder
     public function run(): void
     {
         $dbDestino = 'aybar';
-        $dbOrigen = 'aybarcorp2';
+        $dbOrigen = 'aybarcorp';
 
         DB::transaction(function () use ($dbDestino, $dbOrigen) {
 

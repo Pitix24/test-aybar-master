@@ -130,6 +130,13 @@ return [
             'days' => 30,
         ],
 
+        'roles' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/roles.log'),
+            'level' => 'info',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

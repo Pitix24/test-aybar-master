@@ -4,12 +4,12 @@
 
         <div class="cabecera_titulo_botones">
             @can('rol.ver')
-                <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_light">
+                <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
             @can('rol.crear')
-                <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton g_boton_primary">
+                <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
@@ -21,7 +21,7 @@
                 @endcan
             @endif
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -101,8 +101,7 @@
 
                     <div class="formulario_botones">
                         @can('rol.editar')
-                            <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                                wire:target="update">
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                                 <span wire:loading.remove wire:target="update">
                                     <i class="fa-solid fa-save"></i> Actualizar
                                 </span>
@@ -113,7 +112,7 @@
                         @endcan
 
                         @can('rol.ver')
-                            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton g_boton_cancelar">
+                            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton cancelar">
                                 <i class="fa-solid fa-times"></i> Cancelar
                             </a>
                         @endcan

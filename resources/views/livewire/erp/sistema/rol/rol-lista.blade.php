@@ -7,7 +7,7 @@
         <h2>Lista de Roles</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton g_boton_primary">
+            <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>
     </div>
@@ -27,7 +27,7 @@
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
                 @can('rol.exportar')
-                    <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                    <button wire:click="exportExcel" class="g_boton excel" wire:loading.attr="disabled"
                         wire:target="exportExcel">
                         <span wire:loading.remove wire:target="exportExcel">Excel <i
                                 class="fa-regular fa-file-excel"></i></span>
@@ -36,7 +36,7 @@
                     </button>
                 @endcan
 
-                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -72,14 +72,14 @@
                             <td class="g_resaltar">{{ $item->name }}</td>
                             <td>{{ $item->guard_name }}</td>
                             <td>
-                                <span class="g_badge g_badge_light">
+                                <span class="g_badge light">
                                     {{ $item->permissions_count ?? $item->permissions->count() }} permisos
                                 </span>
                             </td>
 
-                            <td class="g_celda_acciones g_celda_centro centro">
+                            <td class="g_celda_centro">
                                 @can('rol.editar')
-                                    <a href="{{ route('erp.rol.vista.editar', $item->id) }}" class="g_accion_editar"
+                                    <a href="{{ route('erp.rol.vista.editar', $item->id) }}" class="g_accion editar"
                                         title="Editar">
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>

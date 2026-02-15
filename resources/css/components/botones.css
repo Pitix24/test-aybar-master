@@ -1,7 +1,3 @@
-/* =========================================================================
-   COMPONENT: BOTONES (g_boton)
-   ========================================================================= */
-
 .g_boton {
     display: inline-flex;
     align-items: center;
@@ -28,78 +24,73 @@
     pointer-events: none;
 }
 
-/* VARIANTES PRINCIPALES */
-.g_boton_primary {
+.g_boton.primary {
     background-color: #635bff;
     color: white;
 }
 
-.g_boton_secondary {
+.g_boton.secondary {
     background-color: #16cdc7;
     color: white;
 }
 
-.g_boton_success {
+.g_boton.success {
     background-color: #36c76c;
     color: white;
 }
 
-.g_boton_danger {
+.g_boton.danger {
     background-color: #ff6692;
     color: white;
 }
 
-.g_boton_warning {
+.g_boton.warning {
     background-color: #f8c20a;
     color: white;
 }
 
-.g_boton_info {
+.g_boton.info {
     background-color: #46caeb;
     color: white;
 }
 
-.g_boton_light {
+.g_boton.light {
     background-color: #eff4fa;
     color: #1a1f36;
     border: 1px solid #e3e8ee;
 }
 
-.g_boton_dark {
+.g_boton.dark {
     background-color: #0a2540;
     color: white;
 }
 
-/* VARIANTES ESPECÍFICAS ERP */
-.g_boton_guardar {
+.g_boton.guardar {
     background-color: #02424e;
     color: white;
 }
 
-.g_boton_cancelar {
+.g_boton.cancelar {
     background-color: #ffa726;
     color: #02424e;
 }
 
-.g_boton_agregar {
+.g_boton.agregar {
     background-color: #dddbff;
     color: #02424e;
 }
 
-.g_boton_pdf {
+.g_boton.pdf {
     background-color: #ff6692;
     color: white;
 }
 
-.g_boton_excel {
+.g_boton.excel {
     background-color: #36c76c;
     color: white;
 }
 
-/* BOTONES DE ACCIÓN (PEQUEÑOS/ICONOS) */
-.g_accion_ver,
-.g_accion_editar,
-.g_accion_eliminar {
+.g_accion {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -113,27 +104,27 @@
     background: transparent;
 }
 
-.g_accion_ver {
+.g_accion.ver {
     color: #f8c20a;
 }
 
-.g_accion_ver:hover {
+.g_accion.ver:hover {
     background-color: #f8c20a15;
 }
 
-.g_accion_editar {
+.g_accion.editar {
     color: #46caeb;
 }
 
-.g_accion_editar:hover {
+.g_accion.editar:hover {
     background-color: #46caeb15;
 }
 
-.g_accion_eliminar {
+.g_accion.eliminar {
     color: #ff6692;
 }
 
-.g_accion_eliminar:hover {
+.g_accion.eliminar:hover {
     background-color: #ff669215;
 }
 
