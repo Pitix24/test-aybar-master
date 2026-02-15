@@ -11,6 +11,7 @@ use App\Livewire\Erp\Sistema\Rol\RolVer;
 use App\Livewire\Erp\Sistema\Menu\MenuCrear;
 use App\Livewire\Erp\Sistema\Menu\MenuEditar;
 use App\Livewire\Erp\Sistema\Menu\MenuLista;
+use App\Livewire\Erp\Sistema\Menu\MenuVer;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-sistema.ver']], function () {
@@ -35,6 +36,7 @@ Route::group(['middleware' => ['permission:modulo-sistema.ver']], function () {
     Route::group(['middleware' => ['permission:menu.navegacion']], function () {
         Route::prefix('menu')->name('menu.vista.')->group(function () {
             Route::get('/', MenuLista::class)->middleware('permission:menu.ver')->name('todo');
+            Route::get('/ver/{id}', MenuVer::class)->middleware('permission:menu.ver')->name('ver');
             Route::get('/crear', MenuCrear::class)->middleware('permission:menu.crear')->name('crear');
             Route::get('/editar/{id}', MenuEditar::class)->middleware('permission:menu.editar')->name('editar');
         });

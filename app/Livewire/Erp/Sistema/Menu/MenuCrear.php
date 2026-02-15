@@ -42,6 +42,21 @@ class MenuCrear extends Component
         ];
     }
 
+    public function validationAttributes()
+    {
+        return [
+            'parent_id' => 'menú padre',
+            'nombre' => 'nombre',
+            'ruta' => 'ruta (route name)',
+            'url' => 'URL externa',
+            'icono' => 'icono',
+            'nivel' => 'nivel',
+            'orden' => 'orden',
+            'permiso' => 'permiso requerido',
+            'activo' => 'estado',
+        ];
+    }
+
     public function updated($property)
     {
         $this->validateOnly($property);
@@ -71,27 +86,30 @@ class MenuCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('menu.crear'), 403);
+        $this->authorize('menu.crear');
 
         try {
             $this->validate();
             $this->normalizarRutas();
 
-            DB::transaction(function () {
-                Menu::create([
-                    'parent_id' => $this->parent_id,
-                    'nombre' => $this->nombre,
-                    'ruta' => $this->ruta,
-                    'url' => $this->url,
-                    'icono' => $this->icono,
-                    'nivel' => $this->nivel,
-                    'orden' => $this->orden,
-                    'permiso' => $this->permiso,
-                    'activo' => $this->activo,
-                ]);
-            });
+            DB::beginTransaction();
+
+            Menu::create([
+                'parent_id' => $this->parent_id,
+                'nombre' => $this->nombre,
+                'ruta' => $this->ruta,
+                'url' => $this->url,
+                'icono' => $this->icono,
+                'nivel' => $this->nivel,
+                'orden' => $this->orden,
+                'permiso' => $this->permiso,
+                'activo' => $this->activo,
+            ]);
+
+            DB::commit();
 
             $this->dispatch('alertaLivewire', [
+                'type' => 'success',
                 'title' => 'Creado',
                 'text' => 'El ítem del menú se creó correctamente.',
             ]);
@@ -99,10 +117,21 @@ class MenuCrear extends Component
             return redirect()->route('erp.menu.vista.todo');
 
         } catch (ValidationException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            Log::error('Error creando menú', ['error' => $e]);
             $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('menus')->error("[MENU] Error al crear menú: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
                 'title' => 'Error',
                 'text' => 'No se pudo crear el menú.',
             ]);
@@ -119,6 +148,8 @@ class MenuCrear extends Component
 
     public function placeholder()
     {
-        return '<x-placeholder />';
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }

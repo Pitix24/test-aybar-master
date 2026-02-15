@@ -13,33 +13,39 @@
                 </span>
                 @if($item->permiso)
                     <div class="g_celda_tags" style="margin-top: 4px;">
-                        <span class="g_badge g_badge_warning" style="font-size: 10px;">P: {{ $item->permiso }}</span>
+                        <span class="g_badge warning" style="font-size: 10px;">P: {{ $item->permiso }}</span>
                     </div>
                 @endif
             </div>
         </div>
     </td>
     <td>
-        <code style="font-size: 11px;">{{ $item->ruta }}</code>
+        <code style="font-size: 11px;">{{ $item->ruta ?? '-' }}</code>
         <br>
-        <span style="color: var(--color-neutral-400); font-size: 11px;">{{ $item->url }}</span>
+        <span style="color: var(--color-neutral-400); font-size: 11px;">{{ $item->url ?? '-' }}</span>
     </td>
     <td class="g_celda_centro">
-        <span class="g_badge g_badge_info">{{ $item->nivel }}</span>
+        <span class="g_badge info">{{ $item->nivel }}</span>
     </td>
     <td class="g_celda_centro">
         {{ $item->orden }}
     </td>
     <td class="g_celda_centro">
         @if($item->activo)
-            <span class="g_badge g_badge_success">Activo</span>
+            <span class="g_badge success">Activo</span>
         @else
-            <span class="g_badge g_badge_danger">Inactivo</span>
+            <span class="g_badge danger">Inactivo</span>
         @endif
     </td>
-    <td class="g_celda_acciones g_celda_centro centro">
+    <td class="g_celda_centro">
+        @can('menu.ver')
+            <a href="{{ route('erp.menu.vista.ver', $item->id) }}" class="g_accion ver" title="Ver">
+                <i class="fa-solid fa-eye"></i>
+            </a>
+        @endcan
+
         @can('menu.editar')
-            <a href="{{ route('erp.menu.vista.editar', $item->id) }}" class="g_accion_editar" title="Editar">
+            <a href="{{ route('erp.menu.vista.editar', $item->id) }}" class="g_accion editar" title="Editar">
                 <i class="fa-solid fa-pencil"></i>
             </a>
         @endcan
@@ -47,5 +53,5 @@
 </tr>
 
 @foreach ($item->submenus as $submenu)
-    @include('livewire.erp.menu.item-recursivo', ['item' => $submenu, 'espacio' => $espacio + 25])
+    @include('livewire.erp.sistema.menu.item-recursivo', ['item' => $submenu, 'espacio' => $espacio + 25])
 @endforeach

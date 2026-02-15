@@ -45,6 +45,21 @@ class MenuEditar extends Component
         ];
     }
 
+    public function validationAttributes()
+    {
+        return [
+            'parent_id' => 'menú padre',
+            'nombre' => 'nombre',
+            'ruta' => 'ruta (route name)',
+            'url' => 'URL externa',
+            'icono' => 'icono',
+            'nivel' => 'nivel',
+            'orden' => 'orden',
+            'permiso' => 'permiso requerido',
+            'activo' => 'estado',
+        ];
+    }
+
     public function mount($id)
     {
         $this->menu = Menu::findOrFail($id);
@@ -88,36 +103,51 @@ class MenuEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('menu.editar'), 403);
+        $this->authorize('menu.editar');
 
         try {
             $this->validate();
             $this->normalizarRutas();
 
-            DB::transaction(function () {
-                $this->menu->update([
-                    'parent_id' => $this->parent_id,
-                    'nombre' => $this->nombre,
-                    'ruta' => $this->ruta,
-                    'url' => $this->url,
-                    'icono' => $this->icono,
-                    'nivel' => $this->nivel,
-                    'orden' => $this->orden,
-                    'permiso' => $this->permiso,
-                    'activo' => $this->activo,
-                ]);
-            });
+            DB::beginTransaction();
+
+            $this->menu->update([
+                'parent_id' => $this->parent_id,
+                'nombre' => $this->nombre,
+                'ruta' => $this->ruta,
+                'url' => $this->url,
+                'icono' => $this->icono,
+                'nivel' => $this->nivel,
+                'orden' => $this->orden,
+                'permiso' => $this->permiso,
+                'activo' => $this->activo,
+            ]);
+
+            DB::commit();
 
             $this->dispatch('alertaLivewire', [
+                'type' => 'success',
                 'title' => 'Actualizado',
                 'text' => 'El ítem del menú se actualizó correctamente.',
             ]);
 
         } catch (ValidationException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            Log::error('Error actualizando menú', ['error' => $e]);
             $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('menus')->error("[MENU] Error al actualizar menú: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'menu_id' => $this->menu->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
                 'title' => 'Error',
                 'text' => 'No se pudo actualizar el menú.',
             ]);
@@ -127,23 +157,33 @@ class MenuEditar extends Component
     #[On('eliminarMenuOn')]
     public function eliminarMenuOn()
     {
-        abort_unless(auth()->user()->can('menu.eliminar'), 403);
+        $this->authorize('menu.eliminar');
 
         try {
-            DB::transaction(function () {
-                $this->menu->delete();
-            });
+            DB::beginTransaction();
+            $menuId = $this->menu->id;
+            $menuNombre = $this->menu->nombre;
+
+            $this->menu->delete();
+            DB::commit();
 
             $this->dispatch('alertaLivewire', [
+                'type' => 'success',
                 'title' => 'Eliminado',
                 'text' => 'El ítem del menú se eliminó correctamente.',
             ]);
 
             return redirect()->route('erp.menu.vista.todo');
 
-        } catch (\Throwable $e) {
-            Log::error('Error eliminando menú', ['error' => $e]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('menus')->error("[MENU] Error al eliminar menú: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'menu_id' => $this->menu->id,
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->dispatch('alertaLivewire', [
+                'type' => 'error',
                 'title' => 'Error',
                 'text' => 'No se pudo eliminar el menú.',
             ]);
@@ -152,18 +192,19 @@ class MenuEditar extends Component
 
     public function render()
     {
-        return view('livewire.erp.sistema.menu.menu-crear', [
+        return view('livewire.erp.sistema.menu.menu-editar', [
             'menusPadre' => Menu::where('nivel', '<', 4)
                 ->where('id', '!=', $this->menu->id)
                 ->orderBy('nombre')
                 ->get(),
             'allPermissions' => Permission::orderBy('name')->get(),
-            'editando' => true
         ]);
     }
 
     public function placeholder()
     {
-        return '<x-placeholder />';
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }

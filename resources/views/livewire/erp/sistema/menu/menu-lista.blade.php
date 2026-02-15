@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, activo, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
+        wire:target="buscar, activo, perPage, desde, hasta, resetFiltros, gotoPage, nextPage, previousPage, exportExcelFiltro, exportExcelTodo"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -8,7 +8,7 @@
 
         <div class="cabecera_titulo_botones">
             @can('menu.crear')
-                <a href="{{ route('erp.menu.vista.crear') }}" class="g_boton g_boton_primary">
+                <a href="{{ route('erp.menu.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
         </div>
@@ -17,12 +17,22 @@
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Nombre del Ítem</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar">
+                <div class="g_margin_bottom_10 g_columna_4">
+                    <label>Menú (Nombre o ID)</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Buscar...">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Desde</label>
+                    <input type="date" wire:model.live="desde">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Hasta</label>
+                    <input type="date" wire:model.live="hasta">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Estado</label>
                     <select wire:model.live="activo">
                         <option value="">Todos</option>
@@ -37,17 +47,27 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                @can('menu.exportar')
-                    <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
-                        wire:target="exportExcel">
-                        <span wire:loading.remove wire:target="exportExcel">Excel <i
+                @can('menu.exportar-filtro')
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                        wire:target="exportExcelFiltro">
+                        <span wire:loading.remove wire:target="exportExcelFiltro">Exportar Filtrados <i
                                 class="fa-regular fa-file-excel"></i></span>
-                        <span wire:loading wire:target="exportExcel">Exportando... <i
+                        <span wire:loading wire:target="exportExcelFiltro">Generando... <i
                                 class="fa-solid fa-spinner fa-spin"></i></span>
                     </button>
                 @endcan
 
-                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                @can('menu.exportar-todo')
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Exportar Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -79,7 +99,7 @@
 
                 <tbody>
                     @foreach ($items as $item)
-                        @include('livewire.erp.menu.item-recursivo', ['item' => $item, 'espacio' => 0])
+                        @include('livewire.erp.sistema.menu.item-recursivo', ['item' => $item, 'espacio' => 0])
                     @endforeach
                 </tbody>
             </table>
@@ -95,7 +115,7 @@
             <div class="g_vacio">
                 <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay ítems registrados en el menú.' }}
                 </p>
-                <i class="fa-regular fa-face-grin-wink"></i>
+                <i class="fa-regular fa-face-meh"></i>
             </div>
         @else
             <div class="g_paginacion">

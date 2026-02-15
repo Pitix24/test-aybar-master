@@ -1,29 +1,21 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="store" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>{{ isset($editando) ? 'Editar Ítem de Menú' : 'Crear Ítem de Menú' }}</h2>
+        <h2>Crear Ítem de Menú</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.menu.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('menu.ver')
+                <a href="{{ route('erp.menu.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
-            @if(isset($editando))
-                <a href="{{ route('erp.menu.vista.crear') }}" class="g_boton g_boton_primary">
-                    Crear <i class="fa-solid fa-square-plus"></i>
-                </a>
-
-                <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarMenu()">
-                    Eliminar <i class="fa-solid fa-trash-can"></i>
-                </button>
-            @endif
-
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
 
-    <form wire:submit="{{ isset($editando) ? 'update' : 'store' }}" class="formulario">
+    <form wire:submit="store" class="formulario">
         <div class="g_fila">
             <div class="g_columna_8">
                 <div class="g_panel" x-data="{ activeTab: 'general' }">
@@ -91,7 +83,7 @@
                                     <option value="">-- Sin Padre (Nivel 1) --</option>
                                     @foreach($menusPadre as $m)
                                         <option value="{{ $m->id }}">
-                                            {{ str_repeat('— ', $m->nivel - 1) }}{{ $m->nombre }}
+                                            {{ str_repeat('— ', $m->nivel - 1) }}{{$m->nombre}}
                                         </option>
                                     @endforeach
                                 </select>
@@ -182,46 +174,25 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="{{ isset($editando) ? 'update' : 'store' }}">
-                            <span wire:loading.remove wire:target="{{ isset($editando) ? 'update' : 'store' }}">
-                                <i class="fa-solid fa-save"></i> {{ isset($editando) ? 'Actualizar' : 'Guardar' }}
-                            </span>
-                            <span wire:loading wire:target="{{ isset($editando) ? 'update' : 'store' }}">
-                                <i class="fa-solid fa-spinner fa-spin"></i>
-                                {{ isset($editando) ? 'Actualizando...' : 'Guardando...' }}
-                            </span>
-                        </button>
+                        @can('menu.crear')
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
+                                <span wire:loading.remove wire:target="store">
+                                    <i class="fa-solid fa-save"></i> Crear
+                                </span>
+                                <span wire:loading wire:target="store">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.menu.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('menu.ver')
+                            <a href="{{ route('erp.menu.vista.todo') }}" class="g_boton cancelar">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>
         </div>
     </form>
-
-    @if(isset($editando))
-        @script
-        <script>
-            window.alertaEliminarMenu = function () {
-                Swal.fire({
-                    title: '¿Quieres eliminar este ítem?',
-                    text: "Se eliminarán también todos sus submenús. No podrás recuperar esta información.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: '¡Sí, eliminar!',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $wire.eliminarMenuOn();
-                    }
-                });
-            }
-        </script>
-        @endscript
-    @endif
 </div>
