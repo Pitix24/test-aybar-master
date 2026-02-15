@@ -25,12 +25,20 @@ class RolLista extends Component
     #[Url]
     public $perPage = 20;
 
+    #[Url]
+    public $desde = '';
+
+    #[Url]
+    public $hasta = '';
+
     public function updated($property)
     {
         if (
             in_array($property, [
                 'buscar',
-                'perPage'
+                'perPage',
+                'desde',
+                'hasta'
             ])
         ) {
             $this->resetPage();
@@ -39,27 +47,46 @@ class RolLista extends Component
 
     public function resetFiltros()
     {
-        $this->reset(['buscar']);
+        $this->reset(['buscar', 'desde', 'hasta']);
         $this->perPage = 20;
         $this->resetPage();
     }
 
     public function exportExcel()
     {
-        abort_unless(auth()->user()->can('rol.exportar'), 403);
+        $this->authorize('rol.exportar-filtro');
+
         return Excel::download(
             new RolesExport(
-                $this->buscar,
-                $this->perPage,
-                $this->getPage()
+                buscar: $this->buscar,
+                perPage: $this->perPage,
+                page: $this->getPage(),
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: false
             ),
-            'roles.xlsx'
+            'roles_filtrados.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('rol.exportar-todo');
+
+        return Excel::download(
+            new RolesExport(
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: true
+            ),
+            'roles_reporte_completo.xlsx'
         );
     }
 
     public function render()
     {
         $items = Role::query()
+            ->withCount('permissions')
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', "%{$this->buscar}%");
@@ -69,6 +96,8 @@ class RolLista extends Component
                     }
                 });
             })
+            ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
             ->orderBy('id', 'asc')
             ->paginate($this->perPage);
 

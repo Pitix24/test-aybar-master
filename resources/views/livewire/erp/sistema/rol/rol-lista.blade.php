@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
+        wire:target="buscar, perPage, desde, hasta, resetFiltros, gotoPage, nextPage, previousPage, exportExcel, exportExcelTodo"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -15,9 +15,17 @@
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Buscar rol</label>
+                <div class="g_margin_bottom_10 g_columna_4">
+                    <label>Rol(Nombre/ID)</label>
                     <input type="text" wire:model.live.debounce.1300ms="buscar">
+                </div>
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Desde</label>
+                    <input type="date" wire:model.live="desde">
+                </div>
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Hasta</label>
+                    <input type="date" wire:model.live="hasta">
                 </div>
             </div>
         </div>
@@ -29,9 +37,17 @@
                 @can('rol.exportar')
                     <button wire:click="exportExcel" class="g_boton excel" wire:loading.attr="disabled"
                         wire:target="exportExcel">
-                        <span wire:loading.remove wire:target="exportExcel">Excel <i
+                        <span wire:loading.remove wire:target="exportExcel">Filtrados <i
                                 class="fa-regular fa-file-excel"></i></span>
-                        <span wire:loading wire:target="exportExcel">Exportando... <i
+                        <span wire:loading wire:target="exportExcel">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Exportar Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
                                 class="fa-solid fa-spinner fa-spin"></i></span>
                     </button>
                 @endcan
@@ -73,7 +89,7 @@
                             <td>{{ $item->guard_name }}</td>
                             <td>
                                 <span class="g_badge light">
-                                    {{ $item->permissions_count ?? $item->permissions->count() }} permisos
+                                    {{ $item->permissions_count }} permisos
                                 </span>
                             </td>
 

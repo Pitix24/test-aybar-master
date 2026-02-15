@@ -51,7 +51,8 @@ ROL
 3. rol.crear
 4. rol.editar
 5. rol.eliminar
-6. rol.exportar
+6. rol.exportar-filtro
+7. rol.exportar-todo
 
 PERMISO
 1. permiso.navegacion
