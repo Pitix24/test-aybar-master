@@ -193,6 +193,13 @@ return [
             'days' => 14,
         ],
 
+        'proyecto' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/proyecto.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

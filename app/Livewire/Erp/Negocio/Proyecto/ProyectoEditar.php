@@ -7,49 +7,64 @@ use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
+use Illuminate\Validation\ValidationException;
 
 #[Lazy]
-#[Title('Editar Proyecto')]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Editar Proyecto')]
 class ProyectoEditar extends Component
 {
-    public Proyecto $proyecto;
+    public Proyecto $proyecto_model;
 
-    public $unidad_negocios, $unidad_negocio_id = "";
-    public $grupo_proyectos, $grupo_proyecto_id = "";
-
+    public $unidad_negocio_id;
+    public $grupo_proyecto_id;
     public $nombre;
     public $slin_id;
-    public $activo = false;
+    public $activo;
+
+    public $unidades = [];
+    public $grupos = [];
+
+    public function mount($id)
+    {
+        $this->authorize('proyecto.editar');
+        $this->proyecto_model = Proyecto::findOrFail($id);
+
+        $this->unidad_negocio_id = $this->proyecto_model->unidad_negocio_id;
+        $this->grupo_proyecto_id = $this->proyecto_model->grupo_proyecto_id;
+        $this->nombre = $this->proyecto_model->nombre;
+        $this->slin_id = $this->proyecto_model->slin_id;
+        $this->activo = (bool) $this->proyecto_model->activo;
+
+        $this->unidades = UnidadNegocio::select('id', 'nombre')->orderBy('nombre')->get();
+        $this->grupos = GrupoProyecto::select('id', 'nombre')->orderBy('nombre')->get();
+    }
+
     protected function rules()
     {
         return [
             'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
             'grupo_proyecto_id' => 'required|exists:grupo_proyectos,id',
-            'nombre' => 'required|unique:proyectos,nombre,' . $this->proyecto->id,
-            'slin_id' => 'nullable',
-            'activo' => 'required|boolean',
+            'nombre' => 'required|unique:proyectos,nombre,' . $this->proyecto_model->id,
+            'slin_id' => 'nullable|max:100',
+            'activo' => 'nullable|boolean',
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->proyecto = Proyecto::findOrFail($id);
-
-        $this->unidad_negocios = UnidadNegocio::all();
-        $this->grupo_proyectos = GrupoProyecto::all();
-
-        $this->unidad_negocio_id = $this->proyecto->unidad_negocio_id;
-        $this->grupo_proyecto_id = $this->proyecto->grupo_proyecto_id;
-        $this->nombre = $this->proyecto->nombre;
-        $this->slin_id = $this->proyecto->slin_id;
-        $this->activo = $this->proyecto->activo;
+        return [
+            'unidad_negocio_id' => 'unidad de negocio',
+            'grupo_proyecto_id' => 'grupo de proyecto',
+            'nombre' => 'nombre del proyecto',
+            'slin_id' => 'SLIN ID',
+            'activo' => 'estado',
+        ];
     }
 
     public function updated($propertyName)
@@ -59,54 +74,90 @@ class ProyectoEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('proyecto.editar'), 403);
+        $this->authorize('proyecto.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->proyecto->update([
+            $this->proyecto_model->update([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'grupo_proyecto_id' => $this->grupo_proyecto_id,
-                'nombre' => $this->nombre,
-                'slin_id' => $this->slin_id ?: null,
-                'activo' => $this->activo,
+                'nombre' => trim($this->nombre),
+                'slin_id' => $this->slin_id ? trim($this->slin_id) : null,
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'El proyecto se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar proyecto: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('proyecto')->error("[PROYECTO] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->proyecto_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el proyecto.'
+            ]);
         }
     }
 
     #[On('eliminarProyectoOn')]
     public function eliminarProyectoOn()
     {
-        abort_unless(auth()->user()->can('proyecto.eliminar'), 403);
+        $this->authorize('proyecto.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->proyecto->delete();
+            $nombre = $this->proyecto_model->nombre;
+            $id = $this->proyecto_model->id;
+            $this->proyecto_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "El proyecto '$nombre' ha sido eliminado."
+            ]);
+
             return redirect()->route('erp.proyecto.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar proyecto: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('proyecto')->error("[PROYECTO] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el proyecto.'
+            ]);
         }
     }
 

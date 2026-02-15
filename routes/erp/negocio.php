@@ -13,6 +13,7 @@ use App\Livewire\Erp\Negocio\GrupoProyecto\GrupoProyectoVer;
 use App\Livewire\Erp\Negocio\Proyecto\ProyectoCrear;
 use App\Livewire\Erp\Negocio\Proyecto\ProyectoEditar;
 use App\Livewire\Erp\Negocio\Proyecto\ProyectoLista;
+use App\Livewire\Erp\Negocio\Proyecto\ProyectoVer;
 use App\Livewire\Erp\Negocio\Sede\SedeCrear;
 use App\Livewire\Erp\Negocio\Sede\SedeEditar;
 use App\Livewire\Erp\Negocio\Sede\SedeLista;
@@ -44,7 +45,8 @@ Route::group(['middleware' => ['permission:modulo-negocio.ver']], function () {
 
     Route::group(['middleware' => ['permission:proyecto.navegacion']], function () {
         Route::prefix('proyecto')->name('proyecto.vista.')->group(function () {
-            Route::get('/', ProyectoLista::class)->middleware('permission:proyecto.ver')->name('todo');
+            Route::get('/', ProyectoLista::class)->middleware('permission:proyecto.lista')->name('todo');
+            Route::get('/ver/{id}', ProyectoVer::class)->middleware('permission:proyecto.ver')->name('ver');
             Route::get('/crear', ProyectoCrear::class)->middleware('permission:proyecto.crear')->name('crear');
             Route::get('/editar/{id}', ProyectoEditar::class)->middleware('permission:proyecto.editar')->name('editar');
         });
