@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports\Sistema;
 
 use Spatie\Permission\Models\Role;
 use Maatwebsite\Excel\Concerns\FromCollection;

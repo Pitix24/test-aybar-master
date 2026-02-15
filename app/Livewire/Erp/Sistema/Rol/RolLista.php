@@ -9,7 +9,7 @@ use Livewire\Attributes\Url;
 use Spatie\Permission\Models\Role;
 use Livewire\Attributes\Lazy;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\RolesExport;
+use App\Exports\Sistema\RolesExport;
 use Livewire\Attributes\Title;
 
 #[Lazy]

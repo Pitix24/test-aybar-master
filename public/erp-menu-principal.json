@@ -765,5 +765,45 @@
                 "submenus": []
             }
         ]
+    },
+    {
+        "id": 7,
+        "nombre": "Módulo Reportes",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-pen-nib",
+        "nivel": 1,
+        "permiso": "modulo-reporte.ver",
+        "submenus": [
+            {
+                "id": 11,
+                "nombre": "Modulo Sistema",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "permiso": "reporte-sistema.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Reporte Roles",
+                        "ruta": "erp.reporte.rol",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte.rol.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Reporte Permisos",
+                        "ruta": "erp.reporte.permiso",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte.permiso.ver",
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
     }
 ]
