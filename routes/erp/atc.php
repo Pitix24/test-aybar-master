@@ -11,6 +11,7 @@ use App\Livewire\Erp\Atc\PrioridadTicket\PrioridadTicketLista;
 use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudCrear;
 use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudEditar;
 use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudLista;
+use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudVer;
 use App\Livewire\Erp\Atc\Ticket\TicketCrear;
 use App\Livewire\Erp\Atc\Ticket\TicketDerivar;
 use App\Livewire\Erp\Atc\Ticket\TicketEditar;
@@ -18,6 +19,7 @@ use App\Livewire\Erp\Atc\Ticket\TicketLista;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudCrear;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudEditar;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudLista;
+use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudVer;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
@@ -25,7 +27,8 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('tipo-solicitud')
             ->name('tipo-solicitud.vista.')
             ->group(function () {
-                Route::get('/', TipoSolicitudLista::class)->middleware('permission:tipo-solicitud.ver')->name('todo');
+                Route::get('/', TipoSolicitudLista::class)->middleware('permission:tipo-solicitud.lista')->name('todo');
+                Route::get('/ver/{id}', TipoSolicitudVer::class)->middleware('permission:tipo-solicitud.ver')->name('ver');
                 Route::get('/crear', TipoSolicitudCrear::class)->middleware('permission:tipo-solicitud.crear')->name('crear');
                 Route::get('/editar/{id}', TipoSolicitudEditar::class)->middleware('permission:tipo-solicitud.editar')->name('editar');
             });
@@ -35,7 +38,8 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('sub-tipo-solicitud')
             ->name('sub-tipo-solicitud.vista.')
             ->group(function () {
-                Route::get('/', SubTipoSolicitudLista::class)->middleware('permission:sub-tipo-solicitud.ver')->name('todo');
+                Route::get('/', SubTipoSolicitudLista::class)->middleware('permission:sub-tipo-solicitud.lista')->name('todo');
+                Route::get('/ver/{id}', SubTipoSolicitudVer::class)->middleware('permission:sub-tipo-solicitud.ver')->name('ver');
                 Route::get('/crear', SubTipoSolicitudCrear::class)->middleware('permission:sub-tipo-solicitud.crear')->name('crear');
                 Route::get('/editar/{id}', SubTipoSolicitudEditar::class)->middleware('permission:sub-tipo-solicitud.editar')->name('editar');
             });
@@ -91,19 +95,23 @@ Convención: recurso.accion
 
 TIPO SOLICITUD
 1. tipo-solicitud.navegacion
-2. tipo-solicitud.ver
-3. tipo-solicitud.crear
-4. tipo-solicitud.editar
-5. tipo-solicitud.eliminar
-6. tipo-solicitud.exportar
+2. tipo-solicitud.lista
+3. tipo-solicitud.ver
+4. tipo-solicitud.crear
+5. tipo-solicitud.editar
+6. tipo-solicitud.eliminar
+7. tipo-solicitud.exportar-filtro
+8. tipo-solicitud.exportar-todo
 
 SUB TIPO SOLICITUD
 1. sub-tipo-solicitud.navegacion
-2. sub-tipo-solicitud.ver
-3. sub-tipo-solicitud.crear
-4. sub-tipo-solicitud.editar
-5. sub-tipo-solicitud.eliminar
-6. sub-tipo-solicitud.exportar
+2. sub-tipo-solicitud.lista
+3. sub-tipo-solicitud.ver
+4. sub-tipo-solicitud.crear
+5. sub-tipo-solicitud.editar
+6. sub-tipo-solicitud.eliminar
+7. sub-tipo-solicitud.exportar-filtro
+8. sub-tipo-solicitud.exportar-todo
 
 PRIORIDAD TICKET
 1. prioridad-ticket.navegacion

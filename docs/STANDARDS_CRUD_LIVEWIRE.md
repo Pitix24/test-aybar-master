@@ -58,12 +58,26 @@ ROL
 ### Autorización y Validación
 - Usar `$this->authorize('recurso.accion')` en cada método de acción.
 - Implementar `validationAttributes()` para mensajes de error amigables.
+- **Manejo de Validaciones**: Capturar `ValidationException` para despachar una alerta de advertencia antes de relanzar la excepción.
+    ```php
+    try {
+        $this->validate();
+    } catch (ValidationException $e) {
+        $this->dispatch('alertaLivewire', [
+            'type' => 'warning',
+            'title' => 'Advertencia',
+            'text' => 'Verifique los errores de los campos resaltados.'
+        ]);
+        throw $e;
+    }
+    ```
 - Usar `DB::beginTransaction()` y `commit()` en operaciones que alteren la base de datos.
 
 ### Feedback y Registro (Logging)
 - **Alertas**: Dispatcher `alertaLivewire` con `type`, `title` y `text`.
+    - Tipos: `success`, `warning`, `error`, `info`.
 - **Logs**: Usar canales específicos definidos en `config/logging.php`.
-- Prefijo obligatorio en logs: `[MODULO] Acción: mensaje`.
+- Prefijo obligatorio en logs: `[MODULO] Acción: mensaje`. Incluír `usuario_id`, `datos` (si aplica) y `trace` en el contexto del error.
 
 ## 4. Estándar de Vistas (Blade)
 

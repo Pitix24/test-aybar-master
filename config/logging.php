@@ -200,6 +200,20 @@ return [
             'days' => 14,
         ],
 
+        'tipo_solicitud' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/tipo_solicitud.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'sub_tipo_solicitud' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sub_tipo_solicitud.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

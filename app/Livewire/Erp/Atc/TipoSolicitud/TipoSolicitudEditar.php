@@ -18,17 +18,28 @@ use Livewire\Attributes\Title;
 #[Title('Editar Tipo de Solicitud')]
 class TipoSolicitudEditar extends Component
 {
-    public TipoSolicitud $tipoSolicitud;
+    public TipoSolicitud $tipo_model;
 
     public $nombre;
     public $tiempo_solucion;
-    public $activo = false;
+    public $activo;
     public $selectedAreas = [];
+
+    public function mount($id)
+    {
+        $this->authorize('tipo-solicitud.editar');
+        $this->tipo_model = TipoSolicitud::with('areas')->findOrFail($id);
+
+        $this->nombre = $this->tipo_model->nombre;
+        $this->tiempo_solucion = $this->tipo_model->tiempo_solucion;
+        $this->activo = (bool) $this->tipo_model->activo;
+        $this->selectedAreas = $this->tipo_model->areas->pluck('id')->toArray();
+    }
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:tipo_solicituds,nombre,' . $this->tipoSolicitud->id,
+            'nombre' => 'required|unique:tipo_solicituds,nombre,' . $this->tipo_model->id,
             'tiempo_solucion' => 'required|numeric|min:0',
             'activo' => 'required|boolean',
             'selectedAreas' => 'nullable|array',
@@ -36,14 +47,14 @@ class TipoSolicitudEditar extends Component
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->tipoSolicitud = TipoSolicitud::with('areas')->findOrFail($id);
-
-        $this->nombre = $this->tipoSolicitud->nombre;
-        $this->tiempo_solucion = $this->tipoSolicitud->tiempo_solucion;
-        $this->activo = $this->tipoSolicitud->activo;
-        $this->selectedAreas = $this->tipoSolicitud->areas->pluck('id')->toArray();
+        return [
+            'nombre' => 'nombre del tipo de solicitud',
+            'tiempo_solucion' => 'tiempo de solución',
+            'activo' => 'estado',
+            'selectedAreas' => 'áreas vinculadas',
+        ];
     }
 
     public function updated($propertyName)
@@ -53,60 +64,95 @@ class TipoSolicitudEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('tipo-solicitud.editar'), 403);
+        $this->authorize('tipo-solicitud.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->tipoSolicitud->update([
-                'nombre' => $this->nombre,
+            $this->tipo_model->update([
+                'nombre' => trim($this->nombre),
                 'tiempo_solucion' => $this->tiempo_solucion,
-                'activo' => $this->activo,
+                'activo' => $this->activo ?? false,
             ]);
 
-            $this->tipoSolicitud->areas()->sync($this->selectedAreas);
+            $this->tipo_model->areas()->sync($this->selectedAreas);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'El tipo de solicitud se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar tipo de solicitud: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('tipo_solicitud')->error("[TIPO SOLICITUD] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->tipo_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el tipo de solicitud.'
+            ]);
         }
     }
 
     #[On('eliminarTipoSolicitudOn')]
     public function eliminarTipoSolicitudOn()
     {
-        abort_unless(auth()->user()->can('tipo-solicitud.eliminar'), 403);
+        $this->authorize('tipo-solicitud.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->tipoSolicitud->delete();
+            $nombre = $this->tipo_model->nombre;
+            $this->tipo_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "El tipo de solicitud '$nombre' ha sido eliminado."
+            ]);
+
             return redirect()->route('erp.tipo-solicitud.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar tipo de solicitud: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('tipo_solicitud')->error("[TIPO SOLICITUD] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->tipo_model->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el tipo de solicitud.'
+            ]);
         }
     }
 
     public function render()
     {
-        $areas = Area::orderBy('nombre')->get();
+        $areas = Area::select('id', 'nombre')->orderBy('nombre')->get();
         return view('livewire.erp.atc.tipo-solicitud.tipo-solicitud-editar', compact('areas'));
     }
 

@@ -11,11 +11,11 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Title;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\SubTipoSolicitudExport;
+use App\Exports\Atc\SubTipoSolicitudExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
-#[Title('Sub Tipo de Solicitud')]
+#[Title('Sub Tipos de Solicitud')]
 class SubTipoSolicitudLista extends Component
 {
     use WithPagination;
@@ -32,6 +32,12 @@ class SubTipoSolicitudLista extends Component
     #[Url]
     public $perPage = 20;
 
+    #[Url]
+    public $desde = '';
+
+    #[Url]
+    public $hasta = '';
+
     public $tipos_solicitud = [];
 
     public function mount()
@@ -41,37 +47,48 @@ class SubTipoSolicitudLista extends Component
 
     public function updated($property)
     {
-        if (
-            in_array($property, [
-                'buscar',
-                'tipo_solicitud_id',
-                'activo',
-                'perPage'
-            ])
-        ) {
+        if (in_array($property, ['buscar', 'tipo_solicitud_id', 'activo', 'perPage', 'desde', 'hasta'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'tipo_solicitud_id', 'activo']);
+        $this->reset(['buscar', 'tipo_solicitud_id', 'activo', 'desde', 'hasta']);
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('sub-tipo-solicitud.exportar'), 403);
+        $this->authorize('sub-tipo-solicitud.exportar-filtro');
+
         return Excel::download(
             new SubTipoSolicitudExport(
-                $this->buscar,
-                $this->tipo_solicitud_id !== '' ? (int) $this->tipo_solicitud_id : null,
-                $this->activo,
-                $this->perPage,
-                $this->getPage()
+                buscar: $this->buscar,
+                tipo_solicitud_id: $this->tipo_solicitud_id,
+                activo: $this->activo,
+                perPage: $this->perPage,
+                page: $this->getPage(),
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: false
             ),
-            'sub-tipo-solicitudes.xlsx'
+            'sub_tipos_solicitud_filtrados_' . now()->format('Y-m-d_H-i') . '.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('sub-tipo-solicitud.exportar-todo');
+
+        return Excel::download(
+            new SubTipoSolicitudExport(
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: true
+            ),
+            'sub_tipos_solicitud_total_' . now()->format('Y-m-d_H-i') . '.xlsx'
         );
     }
 
@@ -80,20 +97,18 @@ class SubTipoSolicitudLista extends Component
         $items = SubTipoSolicitud::query()
             ->with(['tipoSolicitud:id,nombre'])
             ->when($this->buscar !== '', function ($q) {
-                $q->where('nombre', 'like', "%{$this->buscar}%")
-                    ->orWhere('id', $this->buscar);
+                $q->where(function ($sub) {
+                    $sub->where('nombre', 'like', "%{$this->buscar}%");
+                    if (is_numeric($this->buscar)) {
+                        $sub->orWhere('id', (int) $this->buscar);
+                    }
+                });
             })
-            ->when(
-                $this->tipo_solicitud_id !== '',
-                fn($q) =>
-                $q->where('tipo_solicitud_id', $this->tipo_solicitud_id)
-            )
-            ->when(
-                $this->activo !== '',
-                fn($q) =>
-                $q->where('activo', $this->activo)
-            )
-            ->latest()
+            ->when($this->tipo_solicitud_id !== '', fn($q) => $q->where('tipo_solicitud_id', $this->tipo_solicitud_id))
+            ->when($this->activo !== '', fn($q) => $q->where('activo', $this->activo))
+            ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
+            ->orderBy('id', 'desc')
             ->paginate($this->perPage);
 
         return view('livewire.erp.atc.sub-tipo-solicitud.sub-tipo-solicitud-lista', compact('items'));

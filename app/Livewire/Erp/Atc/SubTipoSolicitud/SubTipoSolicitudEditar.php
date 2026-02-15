@@ -18,34 +18,46 @@ use Livewire\Attributes\Title;
 #[Title('Editar Sub Tipo de Solicitud')]
 class SubTipoSolicitudEditar extends Component
 {
-    public SubTipoSolicitud $subTipoSolicitud;
+    public SubTipoSolicitud $sub_tipo_model;
 
-    public $tipos_solicitud;
     public $tipo_solicitud_id = "";
     public $nombre;
     public $tiempo_solucion;
-    public $activo = false;
+    public $activo;
+
+    public $tipos = [];
+
+    public function mount($id)
+    {
+        $this->authorize('sub-tipo-solicitud.editar');
+        $this->sub_tipo_model = SubTipoSolicitud::findOrFail($id);
+
+        $this->tipo_solicitud_id = $this->sub_tipo_model->tipo_solicitud_id;
+        $this->nombre = $this->sub_tipo_model->nombre;
+        $this->tiempo_solucion = $this->sub_tipo_model->tiempo_solucion;
+        $this->activo = (bool) $this->sub_tipo_model->activo;
+
+        $this->tipos = TipoSolicitud::select('id', 'nombre')->orderBy('nombre')->get();
+    }
 
     protected function rules()
     {
         return [
             'tipo_solicitud_id' => 'required|exists:tipo_solicituds,id',
-            'nombre' => 'required|unique:sub_tipo_solicituds,nombre,' . $this->subTipoSolicitud->id,
+            'nombre' => 'required|unique:sub_tipo_solicituds,nombre,' . $this->sub_tipo_model->id,
             'tiempo_solucion' => 'nullable|numeric|min:0',
             'activo' => 'required|boolean',
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->subTipoSolicitud = SubTipoSolicitud::findOrFail($id);
-
-        $this->tipos_solicitud = TipoSolicitud::where('activo', true)->get();
-
-        $this->tipo_solicitud_id = $this->subTipoSolicitud->tipo_solicitud_id;
-        $this->nombre = $this->subTipoSolicitud->nombre;
-        $this->tiempo_solucion = $this->subTipoSolicitud->tiempo_solucion;
-        $this->activo = $this->subTipoSolicitud->activo;
+        return [
+            'tipo_solicitud_id' => 'tipo de solicitud',
+            'nombre' => 'nombre del sub tipo de solicitud',
+            'tiempo_solucion' => 'tiempo de solución',
+            'activo' => 'estado',
+        ];
     }
 
     public function updated($propertyName)
@@ -55,53 +67,88 @@ class SubTipoSolicitudEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('sub-tipo-solicitud.editar'), 403);
+        $this->authorize('sub-tipo-solicitud.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->subTipoSolicitud->update([
+            $this->sub_tipo_model->update([
                 'tipo_solicitud_id' => $this->tipo_solicitud_id,
-                'nombre' => $this->nombre,
+                'nombre' => trim($this->nombre),
                 'tiempo_solucion' => $this->tiempo_solucion ?: null,
-                'activo' => $this->activo,
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'El sub tipo de solicitud se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar sub-tipo de solicitud: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('sub_tipo_solicitud')->error("[SUB TIPO SOLICITUD] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->sub_tipo_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el sub tipo de solicitud.'
+            ]);
         }
     }
 
     #[On('eliminarSubTipoSolicitudOn')]
     public function eliminarSubTipoSolicitudOn()
     {
-        abort_unless(auth()->user()->can('sub-tipo-solicitud.eliminar'), 403);
+        $this->authorize('sub-tipo-solicitud.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->subTipoSolicitud->delete();
+            $nombre = $this->sub_tipo_model->nombre;
+            $this->sub_tipo_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "El sub tipo de solicitud '$nombre' ha sido eliminado."
+            ]);
+
             return redirect()->route('erp.sub-tipo-solicitud.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar sub-tipo de solicitud: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('sub_tipo_solicitud')->error("[SUB TIPO SOLICITUD] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->sub_tipo_model->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el sub tipo de solicitud.'
+            ]);
         }
     }
 

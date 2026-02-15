@@ -33,6 +33,16 @@ class TipoSolicitudCrear extends Component
         ];
     }
 
+    protected function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre del tipo de solicitud',
+            'tiempo_solucion' => 'tiempo de solución',
+            'activo' => 'estado',
+            'selectedAreas' => 'áreas vinculadas',
+        ];
+    }
+
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
@@ -40,42 +50,61 @@ class TipoSolicitudCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('tipo-solicitud.crear'), 403);
+        $this->authorize('tipo-solicitud.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $tipoSolicitud = TipoSolicitud::create([
-                'nombre' => $this->nombre,
+            $nuevo = TipoSolicitud::create([
+                'nombre' => trim($this->nombre),
                 'tiempo_solucion' => $this->tiempo_solucion,
-                'activo' => $this->activo,
+                'activo' => $this->activo ?? false,
             ]);
 
             if (!empty($this->selectedAreas)) {
-                $tipoSolicitud->areas()->sync($this->selectedAreas);
+                $nuevo->areas()->sync($this->selectedAreas);
             }
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Éxito!',
+                'text' => 'Tipo de solicitud creado correctamente.'
+            ]);
+
             return redirect()->route('erp.tipo-solicitud.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear tipo de solicitud: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+            Log::channel('tipo_solicitud')->error("[TIPO SOLICITUD] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo crear el tipo de solicitud.'
+            ]);
         }
     }
 
     public function render()
     {
-        $areas = Area::orderBy('nombre')->get();
+        $areas = Area::select('id', 'nombre')->orderBy('nombre')->get();
         return view('livewire.erp.atc.tipo-solicitud.tipo-solicitud-crear', compact('areas'));
     }
 

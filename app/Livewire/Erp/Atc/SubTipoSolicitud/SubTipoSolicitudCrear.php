@@ -17,11 +17,12 @@ use Livewire\Attributes\Title;
 #[Title('Crear Sub Tipo de Solicitud')]
 class SubTipoSolicitudCrear extends Component
 {
-    public $tipos_solicitud;
     public $tipo_solicitud_id = "";
     public $nombre = '';
     public $tiempo_solucion = '';
     public $activo = true;
+
+    public $tipos = [];
 
     protected function rules()
     {
@@ -33,9 +34,19 @@ class SubTipoSolicitudCrear extends Component
         ];
     }
 
+    protected function validationAttributes()
+    {
+        return [
+            'tipo_solicitud_id' => 'tipo de solicitud',
+            'nombre' => 'nombre del sub tipo de solicitud',
+            'tiempo_solucion' => 'tiempo de solución',
+            'activo' => 'estado',
+        ];
+    }
+
     public function mount()
     {
-        $this->tipos_solicitud = TipoSolicitud::where('activo', true)->get();
+        $this->tipos = TipoSolicitud::select('id', 'nombre')->orderBy('nombre')->get();
     }
 
     public function updated($propertyName)
@@ -45,11 +56,16 @@ class SubTipoSolicitudCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('sub-tipo-solicitud.crear'), 403);
+        $this->authorize('sub-tipo-solicitud.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -58,20 +74,34 @@ class SubTipoSolicitudCrear extends Component
 
             SubTipoSolicitud::create([
                 'tipo_solicitud_id' => $this->tipo_solicitud_id,
-                'nombre' => $this->nombre,
+                'nombre' => trim($this->nombre),
                 'tiempo_solucion' => $this->tiempo_solucion ?: null,
-                'activo' => $this->activo,
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Éxito!',
+                'text' => 'Sub tipo de solicitud creado correctamente.'
+            ]);
+
             return redirect()->route('erp.sub-tipo-solicitud.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear sub-tipo de solicitud: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+            Log::channel('sub_tipo_solicitud')->error("[SUB TIPO SOLICITUD] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo crear el sub tipo de solicitud.'
+            ]);
         }
     }
 
