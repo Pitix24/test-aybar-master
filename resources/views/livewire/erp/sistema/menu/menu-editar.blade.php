@@ -52,7 +52,6 @@
                         </div>
                     </div>
 
-                    <!-- TAB: INFORMACIÓN GENERAL -->
                     <div x-show="activeTab === 'general'" x-transition class="g_tab_content">
 
                         <div class="g_margin_bottom_10">
@@ -107,13 +106,8 @@
                         <div class="g_fila">
                             <div class="g_columna_4 g_margin_bottom_10">
                                 <label for="icono">Icono (FontAwesome)</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <input type="text" id="icono" wire:model.live="icono"
-                                        class="@error('icono') input-error @enderror" autocomplete="off">
-                                    <div class="g_panel" style="padding: 10px; margin:0;">
-                                        <i class="{{ $icono ?: 'fa-solid fa-question' }} fa-lg"></i>
-                                    </div>
-                                </div>
+                                <input type="text" id="icono" wire:model.live="icono"
+                                    class="@error('icono') input-error @enderror" autocomplete="off">
                                 @error('icono')
                                     <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
@@ -130,8 +124,7 @@
 
                             <div class="g_columna_4 g_margin_bottom_10">
                                 <label for="nivel">Nivel (Auto)</label>
-                                <input type="text" id="nivel" wire:model="nivel" readonly
-                                    style="background: var(--color-neutral-100);">
+                                <input type="text" id="nivel" wire:model="nivel" readonly disabled>
                             </div>
                         </div>
                     </div>
@@ -143,8 +136,7 @@
                                 <label for="ruta">Ruta de Laravel (Route Name)</label>
                                 <input type="text" id="ruta" wire:model.blur="ruta"
                                     class="@error('ruta') input-error @enderror" autocomplete="off">
-                                <small style="color: var(--color-neutral-400);">Deja vacío si es un ítem
-                                    agrupador.</small>
+                                <p class="leyenda">Deja vacío si es un ítem agrupador (sin acción).</p>
                                 @error('ruta')
                                     <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
@@ -154,7 +146,7 @@
                                 <label for="url">URL Manual (Externa)</label>
                                 <input type="text" id="url" wire:model.blur="url"
                                     class="@error('url') input-error @enderror" autocomplete="off">
-                                <small style="color: var(--color-neutral-400);">Solo para enlaces externos.</small>
+                                <p class="leyenda">Solo para enlaces externos. No usar con Ruta.</p>
                                 @error('url')
                                     <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
@@ -174,6 +166,8 @@
                                         <option value="{{ $permission->name }}">{{ $permission->name }}</option>
                                     @endforeach
                                 </select>
+                                <p class="leyenda">Si se deja vacío, el ítem será visible para cualquier usuario
+                                    autenticado.</p>
                                 @error('permiso')
                                     <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
