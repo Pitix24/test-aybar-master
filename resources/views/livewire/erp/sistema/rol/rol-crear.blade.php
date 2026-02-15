@@ -1,5 +1,5 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="store, name" message="Procesando..." />
+    <x-loading-overlay wire:loading wire:target="store" message="Procesando..." />
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear Rol</h2>
 
