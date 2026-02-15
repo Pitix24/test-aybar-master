@@ -33,16 +33,6 @@
                         <label for="module">Módulo</label>
                         <input type="text" id="module" value="{{ $permission->module }}" readonly disabled>
                     </div>
-
-                    <div class="g_margin_bottom_10">
-                        <label>Guard</label>
-                        <input type="text" value="{{ $permission->guard_name }}" readonly disabled>
-                    </div>
-
-                    <div class="g_margin_bottom_10">
-                        <label>Fecha de Creación</label>
-                        <p>{{ $permission->created_at->format('d/m/Y H:i A') }}</p>
-                    </div>
                 </div>
             </div>
         </div>

@@ -18,8 +18,8 @@
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_4">
-                    <label>Buscar permiso</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Nombre o módulo...">
+                    <label>Permiso (Nombre o módulo)</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar">
                 </div>
                 <div class="g_margin_bottom_10 g_columna_3">
                     <label>Desde</label>
