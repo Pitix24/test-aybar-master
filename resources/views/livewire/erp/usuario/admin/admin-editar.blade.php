@@ -1,19 +1,27 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="update, updatePassword, eliminarAdminOn" message="Procesando..." />
+
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Editar Usuario Admin</h2>
+        <h2>Editar Usuario Administrativo</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('admin.ver')
+                <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
-            <a href="{{ route('erp.admin.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('admin.crear')
+                <a href="{{ route('erp.admin.vista.crear') }}" class="g_boton primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_danger" onclick="confirmarEliminarAdmin()">
-                Eliminar <i class="fa-solid fa-trash-can"></i>
-            </button>
+            @can('admin.eliminar')
+                <button type="button" class="g_boton danger" onclick="confirmarEliminarAdmin()">
+                    Eliminar <i class="fa-solid fa-trash-can"></i>
+                </button>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -36,7 +44,7 @@
                             </label>
 
                             <span class="g_switch-label">
-                                {{ $activo ? 'Activo' : 'Desactivado' }}
+                                {{ $activo ? 'Activo' : 'Inactivo' }}
                             </span>
 
                             @error('activo')
@@ -90,17 +98,18 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="update">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-save"></i> Actualizar General
-                            </span>
-                            <span wire:loading wire:target="update">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
-                        </button>
+                        @can('admin.editar')
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                                <span wire:loading.remove wire:target="update">
+                                    <i class="fa-solid fa-save"></i> Actualizar
+                                </span>
+                                <span wire:loading wire:target="update">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton g_boton_cancelar">
+                        <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton cancelar">
                             <i class="fa-solid fa-times"></i> Cancelar
                         </a>
                     </div>
@@ -108,34 +117,39 @@
             </form>
         </div>
 
-        <div class="g_columna_4">
-            <form wire:submit="updatePassword" class="formulario">
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Contraseña</h4>
+        @can('admin.cambiar-clave')
+            <div class="g_columna_4">
+                <form wire:submit="updatePassword" class="formulario">
+                    <div class="g_panel">
+                        <h4 class="g_panel_titulo">Seguridad</h4>
 
-                    <div class="g_margin_bottom_10">
-                        <label for="password">Nueva Contraseña</label>
-                        <input type="password" id="password" wire:model.blur="password"
-                            class="@error('password') input-error @enderror" autocomplete="off">
-                        @error('password')
-                            <p class="mensaje_error">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <div class="g_margin_bottom_10">
+                            <label for="password">Nueva Contraseña</label>
+                            <input type="password" id="password" wire:model.blur="password"
+                                class="@error('password') input-error @enderror" autocomplete="off">
+                            @error('password')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                            <p class="leyenda">Mínimo 8 caracteres</p>
+                        </div>
 
-                    <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="updatePassword">
-                            <span wire:loading.remove wire:target="updatePassword">
-                                <i class="fa-solid fa-key"></i> Cambiar Password
-                            </span>
-                            <span wire:loading wire:target="updatePassword">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
-                        </button>
+                        <div class="formulario_botones">
+
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled"
+                                wire:target="updatePassword">
+                                <span wire:loading.remove wire:target="updatePassword">
+                                    <i class="fa-solid fa-key"></i> Cambiar Contraseña
+                                </span>
+                                <span wire:loading wire:target="updatePassword">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Cambiando...
+                                </span>
+                            </button>
+
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        @endcan
     </div>
 
     @script
@@ -143,11 +157,11 @@
         window.confirmarEliminarAdmin = function () {
             Swal.fire({
                 title: '¿Quieres eliminar este usuario?',
-                text: "Esta acción no se puede deshacer.",
+                text: "Se perderán los roles asignados y el histórico asociado. Esta acción no se puede deshacer.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
                 confirmButtonText: '¡Sí, eliminar!',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {

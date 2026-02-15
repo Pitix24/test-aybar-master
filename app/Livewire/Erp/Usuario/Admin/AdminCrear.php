@@ -15,14 +15,14 @@ use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
-#[Title('Crear Usuario Admin')]
+#[Title('Crear Usuario Administrativo')]
 class AdminCrear extends Component
 {
     public $name;
     public $email;
     public $password;
     public $selected_roles = [];
-    public $activo = false;
+    public $activo = true;
 
     protected function rules()
     {
@@ -35,6 +35,17 @@ class AdminCrear extends Component
         ];
     }
 
+    protected function validationAttributes()
+    {
+        return [
+            'name' => 'nombre',
+            'email' => 'correo electrónico',
+            'password' => 'contraseña',
+            'selected_roles' => 'roles',
+            'activo' => 'estado',
+        ];
+    }
+
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
@@ -42,12 +53,16 @@ class AdminCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('admin.crear'), 403);
+        $this->authorize('admin.crear');
 
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Datos Incompletos',
+                'text' => 'Por favor, revise los campos marcados en rojo.'
+            ]);
             throw $e;
         }
 
@@ -66,12 +81,27 @@ class AdminCrear extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'El usuario se guardó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Éxito!',
+                'text' => 'El usuario ha sido creado correctamente.'
+            ]);
+
             return redirect()->route('erp.admin.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear usuario admin: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear el usuario.']);
+            Log::channel('usuarios')->error("[USUARIO] Error al crear usuario admin: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error Crítico',
+                'text' => 'No se pudo crear el usuario. Se ha registrado el incidente.'
+            ]);
         }
     }
 

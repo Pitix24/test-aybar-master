@@ -16,7 +16,7 @@ use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
-#[Title('Editar Usuario Admin')]
+#[Title('Editar Usuario Administrativo')]
 class AdminEditar extends Component
 {
     public User $user_model;
@@ -33,6 +33,17 @@ class AdminEditar extends Component
             'email' => 'required|email|unique:users,email,' . $this->user_model->id,
             'selected_roles' => 'required|array|min:1',
             'activo' => 'boolean',
+        ];
+    }
+
+    protected function validationAttributes()
+    {
+        return [
+            'name' => 'nombre',
+            'email' => 'correo electrónico',
+            'password' => 'contraseña',
+            'selected_roles' => 'roles',
+            'activo' => 'estado',
         ];
     }
 
@@ -56,12 +67,16 @@ class AdminEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('admin.editar'), 403);
+        $this->authorize('admin.editar');
 
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Datos Inválidos',
+                'text' => 'Verifique los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -78,22 +93,40 @@ class AdminEditar extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'El usuario se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'Los datos del usuario se han actualizado correctamente.'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar usuario admin: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar el usuario.']);
+            Log::channel('usuarios')->error("[USUARIO] Error al actualizar usuario admin: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->user_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el usuario.'
+            ]);
         }
     }
 
     public function updatePassword()
     {
-        abort_unless(auth()->user()->can('admin.editar'), 403);
+        $this->authorize('cambiar-clave');
 
         try {
             $this->validate(['password' => 'required|string|min:8']);
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'La contraseña debe tener al menos 8 caracteres.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Contraseña Inválida',
+                'text' => 'La contraseña debe tener al menos 8 caracteres.'
+            ]);
             throw $e;
         }
 
@@ -107,30 +140,62 @@ class AdminEditar extends Component
             DB::commit();
 
             $this->reset('password');
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'La contraseña se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Contraseña Cambiada!',
+                'text' => 'La contraseña se actualizó correctamente.'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar password admin: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar la contraseña.']);
+            Log::channel('usuarios')->error("[USUARIO] Error al actualizar password admin: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->user_model->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar la contraseña.'
+            ]);
         }
     }
 
     #[On('eliminarAdminOn')]
     public function eliminarAdminOn()
     {
-        abort_unless(auth()->user()->can('admin.eliminar'), 403);
+        $this->authorize('admin.eliminar');
+
+        $userId = $this->user_model->id;
+        $userName = $this->user_model->name;
 
         try {
             DB::beginTransaction();
             $this->user_model->delete();
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'El usuario fue eliminado.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Eliminado',
+                'text' => 'El usuario ha sido eliminado correctamente.'
+            ]);
+
             return redirect()->route('erp.admin.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar usuario admin: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar el usuario.']);
+            Log::channel('usuarios')->error("[USUARIO] Error al eliminar usuario admin: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $userId,
+                'nombre' => $userName,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el usuario.'
+            ]);
         }
     }
 

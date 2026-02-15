@@ -151,6 +151,13 @@ return [
             'days' => 14,
         ],
 
+        'usuarios' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/usuarios.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

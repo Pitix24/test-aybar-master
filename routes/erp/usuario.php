@@ -7,6 +7,7 @@ use App\Livewire\Erp\Usuario\Cliente\ClienteLista;
 use App\Livewire\Erp\Usuario\Admin\AdminCrear;
 use App\Livewire\Erp\Usuario\Admin\AdminEditar;
 use App\Livewire\Erp\Usuario\Admin\AdminLista;
+use App\Livewire\Erp\Usuario\Admin\AdminVer;
 use App\Livewire\Erp\Usuario\ClienteAntiguo\ClienteAntiguoLista;
 use App\Livewire\Erp\Usuario\ClienteAntiguo\ClienteAntiguoCrear;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,7 @@ Route::group(['middleware' => ['permission:modulo-usuarios.ver']], function () {
     Route::group(['middleware' => ['permission:admin.navegacion']], function () {
         Route::prefix('admin')->name('admin.vista.')->group(function () {
             Route::get('/', AdminLista::class)->middleware('permission:admin.ver')->name('todo');
+            Route::get('/ver/{id}', AdminVer::class)->middleware('permission:admin.ver')->name('ver');
             Route::get('/crear', AdminCrear::class)->middleware('permission:admin.crear')->name('crear');
             Route::get('/editar/{id}', AdminEditar::class)->middleware('permission:admin.editar')->name('editar');
         });
@@ -50,8 +52,9 @@ ADMIN
 3. admin.crear
 4. admin.editar
 5. admin.eliminar
-6. admin.exportar
-7. admin.cambiar-clave
+5. admin.cambiar-clave
+6. admin.exportar-filtro
+7. admin.exportar-todo
 
 CLIENTE
 1. cliente.navegacion
