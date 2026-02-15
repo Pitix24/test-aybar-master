@@ -19,11 +19,20 @@ class PermisoCrear extends Component
 {
     public $name;
     public $module;
+
     protected function rules()
     {
         return [
             'name' => 'required|string|unique:permissions,name',
             'module' => 'required|string|max:100',
+        ];
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'name' => 'nombre del permiso',
+            'module' => 'módulo',
         ];
     }
 
@@ -37,18 +46,23 @@ class PermisoCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('permiso.crear'), 403);
+        $this->authorize('permiso.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            Permission::create([
+            $permission = Permission::create([
                 'name' => $this->name,
                 'module' => trim($this->module),
                 'guard_name' => 'web',
@@ -56,12 +70,29 @@ class PermisoCrear extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'El permiso se guardó correctamente.']);
+            Log::channel('permissions')->info('Permiso creado', [
+                'usuario_id' => auth()->id(),
+                'permiso_id' => $permission->id,
+                'nombre' => $permission->name,
+                'modulo' => $permission->module,
+                'ip' => request()->ip(),
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Creado',
+                'text' => 'El permiso se guardó correctamente.'
+            ]);
+
             return redirect()->route('erp.permiso.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al crear permiso: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear el permiso.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo crear el permiso. Intente nuevamente.'
+            ]);
         }
     }
 

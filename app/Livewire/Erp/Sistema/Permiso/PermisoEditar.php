@@ -11,9 +11,11 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Editar Permiso')]
 class PermisoEditar extends Component
 {
     public Permission $permission;
@@ -25,6 +27,14 @@ class PermisoEditar extends Component
         return [
             'name' => 'required|string|unique:permissions,name,' . $this->permission->id,
             'module' => 'required|string|max:100',
+        ];
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'name' => 'nombre del permiso',
+            'module' => 'módulo',
         ];
     }
 
@@ -45,11 +55,16 @@ class PermisoEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('permiso.editar'), 403);
+        $this->authorize('permiso.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -63,29 +78,65 @@ class PermisoEditar extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'El permiso se actualizó correctamente.']);
+            Log::channel('permissions')->info('Permiso actualizado', [
+                'usuario_id' => auth()->id(),
+                'permiso_id' => $this->permission->id,
+                'nuevo_nombre' => $this->name,
+                'nuevo_modulo' => $this->module,
+                'ip' => request()->ip(),
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Actualizado',
+                'text' => 'El permiso se actualizó correctamente.'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al actualizar permiso: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar el permiso.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el permiso.'
+            ]);
         }
     }
 
     #[On('eliminarPermisoOn')]
     public function eliminarPermisoOn()
     {
-        abort_unless(auth()->user()->can('permiso.eliminar'), 403);
+        $this->authorize('permiso.eliminar');
+
         try {
             DB::beginTransaction();
+            $permisoId = $this->permission->id;
+            $permisoNombre = $this->permission->name;
+
             $this->permission->delete();
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'El permiso fue eliminado.']);
+            Log::channel('permissions')->info('Permiso eliminado', [
+                'usuario_id' => auth()->id(),
+                'permiso_id' => $permisoId,
+                'nombre' => $permisoNombre,
+                'ip' => request()->ip(),
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Eliminado',
+                'text' => 'El permiso fue eliminado.'
+            ]);
+
             return redirect()->route('erp.permiso.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al eliminar permiso: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar el permiso.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el permiso.'
+            ]);
         }
     }
 

@@ -137,6 +137,13 @@ return [
             'days' => 14,
         ],
 
+        'permissions' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/permissions.log'),
+            'level' => 'info',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

@@ -3,6 +3,7 @@
 use App\Livewire\Erp\Sistema\Permiso\PermisoCrear;
 use App\Livewire\Erp\Sistema\Permiso\PermisoEditar;
 use App\Livewire\Erp\Sistema\Permiso\PermisoLista;
+use App\Livewire\Erp\Sistema\Permiso\PermisoVer;
 use App\Livewire\Erp\Sistema\Rol\RolCrear;
 use App\Livewire\Erp\Sistema\Rol\RolEditar;
 use App\Livewire\Erp\Sistema\Rol\RolLista;
@@ -25,6 +26,7 @@ Route::group(['middleware' => ['permission:modulo-sistema.ver']], function () {
     Route::group(['middleware' => ['permission:permiso.navegacion']], function () {
         Route::prefix('permiso')->name('permiso.vista.')->group(function () {
             Route::get('/', PermisoLista::class)->middleware('permission:permiso.ver')->name('todo');
+            Route::get('/ver/{id}', PermisoVer::class)->middleware('permission:permiso.ver')->name('ver');
             Route::get('/crear', PermisoCrear::class)->middleware('permission:permiso.crear')->name('crear');
             Route::get('/editar/{id}', PermisoEditar::class)->middleware('permission:permiso.editar')->name('editar');
         });

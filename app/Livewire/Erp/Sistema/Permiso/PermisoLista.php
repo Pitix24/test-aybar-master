@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Erp\Sistema\Permiso;
 
-use App\Exports\PermisosExport;
+use App\Exports\Sistema\PermisosExport;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
@@ -25,12 +25,20 @@ class PermisoLista extends Component
     #[Url]
     public $perPage = 20;
 
+    #[Url]
+    public $desde = '';
+
+    #[Url]
+    public $hasta = '';
+
     public function updated($property)
     {
         if (
             in_array($property, [
                 'buscar',
-                'perPage'
+                'perPage',
+                'desde',
+                'hasta'
             ])
         ) {
             $this->resetPage();
@@ -39,21 +47,39 @@ class PermisoLista extends Component
 
     public function resetFiltros()
     {
-        $this->reset(['buscar']);
+        $this->reset(['buscar', 'desde', 'hasta']);
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('permiso.exportar'), 403);
+        $this->authorize('permiso.exportar-filtro');
+
         return Excel::download(
             new PermisosExport(
-                $this->buscar,
-                $this->perPage,
-                $this->getPage()
+                buscar: $this->buscar,
+                perPage: $this->perPage,
+                page: $this->getPage(),
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: false
             ),
-            'permisos.xlsx'
+            'permisos_filtrados.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('permiso.exportar-todo');
+
+        return Excel::download(
+            new PermisosExport(
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: true
+            ),
+            'permisos_reporte_completo.xlsx'
         );
     }
 
@@ -61,10 +87,14 @@ class PermisoLista extends Component
     {
         $items = Permission::query()
             ->when($this->buscar, function ($query) {
-                $query->where('name', 'like', '%' . $this->buscar . '%')
-                    ->orWhere('module', 'like', '%' . $this->buscar . '%');
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%' . $this->buscar . '%')
+                        ->orWhere('module', 'like', '%' . $this->buscar . '%');
+                });
             })
-            ->orderBy('created_at', 'desc')
+            ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
+            ->orderBy('id', 'asc')
             ->paginate($this->perPage);
 
         return view('livewire.erp.sistema.permiso.permiso-lista', compact('items'));

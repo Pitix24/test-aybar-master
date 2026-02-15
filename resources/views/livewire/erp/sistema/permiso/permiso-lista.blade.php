@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, resetFiltros, gotoPage, nextPage, previousPage, exportExcel"
+        wire:target="buscar, perPage, desde, hasta, resetFiltros, gotoPage, nextPage, previousPage, exportExcelFiltro, exportExcelTodo"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -8,7 +8,7 @@
 
         <div class="cabecera_titulo_botones">
             @can('permiso.crear')
-                <a href="{{ route('erp.permiso.vista.crear') }}" class="g_boton g_boton_primary">
+                <a href="{{ route('erp.permiso.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
         </div>
@@ -17,9 +17,17 @@
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_3">
+                <div class="g_margin_bottom_10 g_columna_4">
                     <label>Buscar permiso</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar">
+                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Nombre o módulo...">
+                </div>
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Desde</label>
+                    <input type="date" wire:model.live="desde">
+                </div>
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Hasta</label>
+                    <input type="date" wire:model.live="hasta">
                 </div>
             </div>
         </div>
@@ -28,17 +36,27 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                @can('permiso.exportar')
-                    <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
-                        wire:target="exportExcel">
-                        <span wire:loading.remove wire:target="exportExcel">Excel <i
+                @can('permiso.exportar-filtro')
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                        wire:target="exportExcelFiltro">
+                        <span wire:loading.remove wire:target="exportExcelFiltro">Exportar Filtrados <i
                                 class="fa-regular fa-file-excel"></i></span>
-                        <span wire:loading wire:target="exportExcel">Exportando... <i
+                        <span wire:loading wire:target="exportExcelFiltro">Generando... <i
                                 class="fa-solid fa-spinner fa-spin"></i></span>
                     </button>
                 @endcan
 
-                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                @can('permiso.exportar-todo')
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Exportar Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -74,14 +92,20 @@
                             <td class="g_resaltar">{{ $item->name }}</td>
                             <td>{{ $item->guard_name }}</td>
                             <td>
-                                <span class="g_badge g_badge_light">
+                                <span class="g_badge light">
                                     {{ $item->module ?? 'Sin Módulo' }}
                                 </span>
                             </td>
 
-                            <td class="g_celda_acciones g_celda_centro centro">
+                            <td class="g_celda_centro">
+                                @can('permiso.ver')
+                                    <a href="{{ route('erp.permiso.vista.ver', $item->id) }}" class="g_accion ver" title="Ver">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                @endcan
+
                                 @can('permiso.editar')
-                                    <a href="{{ route('erp.permiso.vista.editar', $item->id) }}" class="g_accion_editar"
+                                    <a href="{{ route('erp.permiso.vista.editar', $item->id) }}" class="g_accion editar"
                                         title="Editar">
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>
@@ -102,7 +126,7 @@
         @if ($items->isEmpty())
             <div class="g_vacio">
                 <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay items registrados.' }}</p>
-                <i class="fa-regular fa-face-grin-wink"></i>
+                <i class="fa-regular fa-face-meh"></i>
             </div>
         @else
             <div class="g_paginacion">

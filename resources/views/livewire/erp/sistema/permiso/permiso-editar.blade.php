@@ -1,25 +1,27 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="update, eliminarPermisoOn" message="Procesando..." />
+
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar Permiso</h2>
 
         <div class="cabecera_titulo_botones">
             @can('permiso.ver')
-                <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton g_boton_light">
+                <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
             @can('permiso.crear')
-                <a href="{{ route('erp.permiso.vista.crear') }}" class="g_boton g_boton_primary">
+                <a href="{{ route('erp.permiso.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
             @can('permiso.eliminar')
-                <button type="button" class="g_boton g_boton_danger" onclick="confirmarEliminarPermiso()">
+                <button type="button" class="g_boton danger" onclick="confirmarEliminarPermiso()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
                 </button>
             @endcan
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -30,19 +32,19 @@
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">General</h4>
 
-                    <div class=" g_margin_bottom_10">
+                    <div class="g_margin_bottom_10">
                         <label for="name">
                             Nombre del Permiso <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                         </label>
                         <input type="text" id="name" wire:model.blur="name" class="@error('name') input-error @enderror"
-                            autocomplete="off"">
+                            autocomplete="off">
                         @error('name')
-                            <p class=" mensaje_error">{{ $message }}</p>
+                            <p class="mensaje_error">{{ $message }}</p>
                         @enderror
-                        <p class="leyenda">Ej: rol-editar</p>
+                        <p class="leyenda">Ej: rol.editar</p>
                     </div>
 
-                    <div class=" g_margin_bottom_10">
+                    <div class="g_margin_bottom_10">
                         <label for="module">
                             Módulo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                         </label>
@@ -51,13 +53,11 @@
                         @error('module')
                             <p class="mensaje_error">{{ $message }}</p>
                         @enderror
-                        <p class="leyenda">Ej: Atención al Cliente</p>
                     </div>
 
                     <div class="formulario_botones">
                         @can('permiso.editar')
-                            <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                                wire:target="update">
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                                 <span wire:loading.remove wire:target="update">
                                     <i class="fa-solid fa-save"></i> Actualizar
                                 </span>
@@ -68,7 +68,7 @@
                         @endcan
 
                         @can('permiso.ver')
-                            <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton g_boton_cancelar">
+                            <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton cancelar">
                                 <i class="fa-solid fa-times"></i> Cancelar
                             </a>
                         @endcan
