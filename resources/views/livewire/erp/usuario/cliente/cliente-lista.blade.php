@@ -1,38 +1,47 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar,email,activo,verificado,tratamiento,politica,fecha_inicio,fecha_fin,perPage,resetFiltros,exportExcel"
+        wire:target="buscar, email, activo, verificado, tratamiento, politica, desde, hasta, perPage, resetFiltros, exportExcelFiltro, exportExcelTodo"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Clientes portal</h2>
+        <h2>Gestión de Clientes Portal</h2>
 
         <div class="cabecera_titulo_botones">
+            @can('cliente.crear')
+                <a href="{{ route('erp.cliente.vista.crear') }}" class="g_boton primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
         </div>
     </div>
 
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Cliente / Nombre / DNI</label>
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Cliente (Nombre o DNI)</label>
                     <input type="text" wire:model.live.debounce.1300ms="buscar">
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Email</label>
-                    <input type="text" wire:model.live.debounce.1300ms="email">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Desde</label>
+                    <input type="date" wire:model.live="desde">
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Hasta</label>
+                    <input type="date" wire:model.live="hasta">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Activo</label>
                     <select wire:model.live="activo">
                         <option value="">Todos</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
+                        <option value="1">Activos</option>
+                        <option value="0">Inactivos</option>
                     </select>
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Email verificado</label>
                     <select wire:model.live="verificado">
                         <option value="">Todos</option>
@@ -43,32 +52,27 @@
             </div>
 
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_3">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Email</label>
+                    <input type="text" wire:model.live.debounce.1300ms="email">
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Tratamiento D.P.</label>
                     <select wire:model.live="tratamiento">
                         <option value="">Todos</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
+                        <option value="1">Autorizado</option>
+                        <option value="0">No Autorizado</option>
                     </select>
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Política Comercial</label>
                     <select wire:model.live="politica">
                         <option value="">Todos</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
+                        <option value="1">Autorizado</option>
+                        <option value="0">No Autorizado</option>
                     </select>
-                </div>
-
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Fecha inicio</label>
-                    <input type="date" wire:model.live="fecha_inicio">
-                </div>
-
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Fecha fin</label>
-                    <input type="date" wire:model.live="fecha_fin">
                 </div>
             </div>
         </div>
@@ -77,17 +81,27 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
-                    wire:target="exportExcel">
-                    <span wire:loading.remove wire:target="exportExcel">
-                        Excel <i class="fa-regular fa-file-excel"></i>
-                    </span>
-                    <span wire:loading wire:target="exportExcel">
-                        Exportando... <i class="fa-solid fa-spinner fa-spin"></i>
-                    </span>
-                </button>
+                @can('cliente.exportar-filtro')
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                        wire:target="exportExcelFiltro">
+                        <span wire:loading.remove wire:target="exportExcelFiltro">Exportar Filtrados <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcelFiltro">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
 
-                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                @can('cliente.exportar-todo')
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Exportar Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -112,10 +126,10 @@
                         <th>Nombre</th>
                         <th>Email</th>
                         <th>DNI</th>
-                        <th>Fecha creación</th>
-                        <th class="g_celda_centro">Email verificado</th>
+                        <th class="g_celda_centro">F. Registro</th>
+                        <th class="g_celda_centro">Verificado</th>
                         <th class="g_celda_centro">Trat. D.P.</th>
-                        <th class="g_celda_centro">P. Comercial</th>
+                        <th class="g_celda_centro">P. Com.</th>
                         <th class="g_celda_centro">Estado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
@@ -127,42 +141,52 @@
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
                             <td class="g_resaltar">{{ $item->name }}</td>
                             <td>{{ $item->email }}</td>
-                            <td>{{ $item->cliente->dni ?? '-' }}</td>
-                            <td>{{ $item->created_at }}</td>
+                            <td class="g_resaltar">{{ $item->dni ?? '-' }}</td>
+                            <td class="g_celda_centro">
+                                {{ $item->created_at ? $item->created_at->format('d/m/Y H:i') : '-' }}
+                            </td>
 
                             <td class="g_celda_centro">
-                                @if($item->email_verified_at)
-                                    <span class="g_badge g_badge_success">Sí</span>
+                                @if ($item->email_verified_at)
+                                    <span class="g_badge info">Sí</span>
                                 @else
-                                    <span class="g_badge g_badge_danger">No</span>
+                                    <span class="g_badge danger">No</span>
                                 @endif
                             </td>
 
                             <td class="g_celda_centro">
-                                <span class="g_badge {{ $item->politica_uno ? 'g_badge_success' : 'g_badge_light' }}">
-                                    {{ $item->politica_uno ? 'SI' : 'NO' }}
+                                <span class="g_badge {{ $item->politica_uno ? 'info' : 'light' }}">
+                                    {{ $item->politica_uno ? 'SÍ' : 'NO' }}
                                 </span>
                             </td>
 
                             <td class="g_celda_centro">
-                                <span class="g_badge {{ $item->politica_dos ? 'g_badge_success' : 'g_badge_light' }}">
-                                    {{ $item->politica_dos ? 'SI' : 'NO' }}
+                                <span class="g_badge {{ $item->politica_dos ? 'info' : 'light' }}">
+                                    {{ $item->politica_dos ? 'SÍ' : 'NO' }}
                                 </span>
                             </td>
 
                             <td class="g_celda_centro">
-                                @if($item->activo)
-                                    <span class="g_badge g_badge_success">Activo</span>
+                                @if ($item->activo)
+                                    <span class="g_badge success">Activo</span>
                                 @else
-                                    <span class="g_badge g_badge_danger">Inactivo</span>
+                                    <span class="g_badge danger">Inactivo</span>
                                 @endif
                             </td>
 
-                            <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.cliente.vista.editar', $item) }}" class="g_accion_editar"
-                                    title="Editar">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
+                            <td class="g_celda_centro">
+                                @can('cliente.ver')
+                                    <a href="{{ route('erp.cliente.vista.ver', $item->id) }}" class="g_accion ver" title="Ver">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                @endcan
+
+                                @can('cliente.editar')
+                                    <a href="{{ route('erp.cliente.vista.editar', $item->id) }}" class="g_accion editar"
+                                        title="Editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach
@@ -180,11 +204,11 @@
             <div class="g_vacio">
                 <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay clientes registrados.' }}
                 </p>
-                <i class="fa-regular fa-face-grin-wink"></i>
+                <i class="fa-regular fa-face-meh"></i>
             </div>
         @else
             <div class="g_paginacion">
-                Mostrando {{ $items->firstItem() }} – {{ $items->lastItem() }}
+                Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
                 de {{ $items->total() }} registros
             </div>
         @endif

@@ -151,9 +151,16 @@ return [
             'days' => 14,
         ],
 
-        'usuarios' => [
+        'admins' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/usuarios.log'),
+            'path' => storage_path('logs/admins.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'clientes-portal' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/clientes-portal.log'),
             'level' => 'debug',
             'days' => 14,
         ],

@@ -100,7 +100,7 @@ class AdminEditar extends Component
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('usuarios')->error("[USUARIO] Error al actualizar usuario admin: " . $e->getMessage(), [
+            Log::channel('admins')->error("[USUARIO] Error al actualizar usuario admin: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'target_id' => $this->user_model->id,
                 'datos' => $this->all(),

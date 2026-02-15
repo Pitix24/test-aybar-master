@@ -3,7 +3,7 @@
 namespace App\Livewire\Erp\Usuario\Cliente;
 
 use App\Models\User;
-use App\Exports\ClientesExport;
+use App\Exports\Usuario\ClientesPortalExport;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
@@ -13,8 +13,8 @@ use Livewire\Attributes\Title;
 use Maatwebsite\Excel\Facades\Excel;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
-#[Title('Clientes')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
+#[Title('Clientes Portal')]
 class ClienteLista extends Component
 {
     use WithPagination;
@@ -38,17 +38,14 @@ class ClienteLista extends Component
     public $politica = '';
 
     #[Url]
-    public $fecha_inicio = '';
+    public $desde = '';
 
     #[Url]
-    public $fecha_fin = '';
+    public $hasta = '';
 
     #[Url]
     public $perPage = 20;
 
-    /**
-     * Reset de paginación centralizado
-     */
     public function updated($property)
     {
         if (
@@ -59,8 +56,8 @@ class ClienteLista extends Component
                 'verificado',
                 'tratamiento',
                 'politica',
-                'fecha_inicio',
-                'fecha_fin',
+                'desde',
+                'hasta',
                 'perPage',
             ])
         ) {
@@ -77,32 +74,47 @@ class ClienteLista extends Component
             'verificado',
             'tratamiento',
             'politica',
-            'fecha_inicio',
-            'fecha_fin',
+            'desde',
+            'hasta',
         ]);
 
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('admin.exportar'), 403);
+        $this->authorize('cliente.exportar-filtro');
 
         return Excel::download(
-            new ClientesWebExport(
-                $this->buscar,
-                $this->email,
-                $this->activo,
-                $this->verificado,
-                $this->tratamiento,
-                $this->politica,
-                $this->fecha_inicio,
-                $this->fecha_fin,
-                $this->perPage,
-                $this->getPage()
+            new ClientesPortalExport(
+                buscar: $this->buscar,
+                email: $this->email,
+                activo: $this->activo,
+                verificado: $this->verificado,
+                tratamiento: $this->tratamiento,
+                politica: $this->politica,
+                desde: $this->desde,
+                hasta: $this->hasta,
+                perPage: $this->perPage,
+                page: $this->getPage(),
+                todo: false
             ),
-            'clientes.xlsx'
+            'clientes_portal_filtrados_' . now()->format('Y-m-d_H-i') . '.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('cliente.exportar-todo');
+
+        return Excel::download(
+            new ClientesPortalExport(
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: true
+            ),
+            'clientes_portal_completos_' . now()->format('Y-m-d_H-i') . '.xlsx'
         );
     }
 
@@ -111,57 +123,24 @@ class ClienteLista extends Component
         $items = User::query()
             ->where('users.rol', 'cliente')
             ->leftJoin('clientes', 'clientes.user_id', '=', 'users.id')
-
             ->when($this->buscar !== '', function ($q) {
                 $q->where(function ($query) {
                     $query->where('users.name', 'like', "%{$this->buscar}%")
                         ->orWhere('clientes.dni', 'like', "%{$this->buscar}%");
                 });
             })
-
-            ->when(
-                $this->email !== '',
-                fn($q) =>
-                $q->where('users.email', 'like', "%{$this->email}%")
-            )
-
-            ->when(
-                $this->activo !== '',
-                fn($q) =>
-                $q->where('users.activo', $this->activo)
-            )
-
-            ->when(
-                $this->tratamiento !== '',
-                fn($q) =>
-                $q->where('users.politica_uno', $this->tratamiento)
-            )
-
-            ->when(
-                $this->politica !== '',
-                fn($q) =>
-                $q->where('users.politica_dos', $this->politica)
-            )
-
+            ->when($this->email !== '', fn($q) => $q->where('users.email', 'like', "%{$this->email}%"))
+            ->when($this->activo !== '', fn($q) => $q->where('users.activo', $this->activo))
+            ->when($this->tratamiento !== '', fn($q) => $q->where('users.politica_uno', $this->tratamiento))
+            ->when($this->politica !== '', fn($q) => $q->where('users.politica_dos', $this->politica))
             ->when($this->verificado !== '', function ($q) {
                 $this->verificado == '1'
                     ? $q->whereNotNull('users.email_verified_at')
                     : $q->whereNull('users.email_verified_at');
             })
-
-            ->when(
-                $this->fecha_inicio,
-                fn($q) =>
-                $q->whereDate('users.created_at', '>=', $this->fecha_inicio)
-            )
-
-            ->when(
-                $this->fecha_fin,
-                fn($q) =>
-                $q->whereDate('users.created_at', '<=', $this->fecha_fin)
-            )
-
-            ->select('users.*')
+            ->when($this->desde, fn($q) => $q->whereDate('users.created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('users.created_at', '<=', $this->hasta))
+            ->select('users.*', 'clientes.dni')
             ->latest('users.created_at')
             ->paginate($this->perPage);
 

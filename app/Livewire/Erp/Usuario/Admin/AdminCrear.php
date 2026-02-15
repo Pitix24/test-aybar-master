@@ -91,7 +91,7 @@ class AdminCrear extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('usuarios')->error("[USUARIO] Error al crear usuario admin: " . $e->getMessage(), [
+            Log::channel('admins')->error("[USUARIO] Error al crear usuario admin: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()
