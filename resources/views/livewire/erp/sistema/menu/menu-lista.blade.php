@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Estado</label>
+                    <label>Activo</label>
                     <select wire:model.live="activo">
                         <option value="">Todos</option>
                         <option value="1">Activos</option>

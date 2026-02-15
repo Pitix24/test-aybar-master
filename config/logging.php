@@ -165,6 +165,13 @@ return [
             'days' => 14,
         ],
 
+        'negocio' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/negocio.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

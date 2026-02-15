@@ -26,22 +26,38 @@ class UnidadNegocioCrear extends Component
     public $cavali_girador_apellido = '';
     public $cavali_girador_email = '';
     public $cavali_girador_telefono = '';
-    public $activo = false;
+    public $activo = true;
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:unidad_negocios,nombre',
-            'razon_social' => 'required',
-            'ruc' => 'nullable|unique:unidad_negocios,ruc',
-            'slin_id' => 'nullable|unique:unidad_negocios,slin_id',
-            'cavali_girador_tipo_documento' => 'nullable',
-            'cavali_girador_documento' => 'nullable',
-            'cavali_girador_nombre' => 'nullable',
-            'cavali_girador_apellido' => 'nullable',
-            'cavali_girador_email' => 'nullable|email',
-            'cavali_girador_telefono' => 'nullable',
+            'nombre' => 'required|string|max:255|unique:unidad_negocios,nombre',
+            'razon_social' => 'required|string|max:255',
+            'ruc' => 'nullable|string|max:20|unique:unidad_negocios,ruc',
+            'slin_id' => 'nullable|string|max:50|unique:unidad_negocios,slin_id',
+            'cavali_girador_tipo_documento' => 'nullable|string|max:50',
+            'cavali_girador_documento' => 'nullable|string|max:20',
+            'cavali_girador_nombre' => 'nullable|string|max:255',
+            'cavali_girador_apellido' => 'nullable|string|max:255',
+            'cavali_girador_email' => 'nullable|email|max:255',
+            'cavali_girador_telefono' => 'nullable|string|max:20',
             'activo' => 'required|boolean',
+        ];
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre comercial',
+            'razon_social' => 'razón social',
+            'ruc' => 'RUC',
+            'slin_id' => 'SLIN ID',
+            'cavali_girador_tipo_documento' => 'tipo doc. girador',
+            'cavali_girador_documento' => 'nº doc. girador',
+            'cavali_girador_nombre' => 'nombre girador',
+            'cavali_girador_apellido' => 'apellido girador',
+            'cavali_girador_email' => 'email girador',
+            'cavali_girador_telefono' => 'teléfono girador',
         ];
     }
 
@@ -52,11 +68,16 @@ class UnidadNegocioCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('unidad-negocio.crear'), 403);
+        $this->authorize('unidad-negocio.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -79,14 +100,26 @@ class UnidadNegocioCrear extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardo correctamente.']);
-            $this->reset();
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Creado',
+                'text' => 'La unidad de negocio se guardó correctamente.'
+            ]);
+
             return redirect()->route('erp.unidad-negocio.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear unidad de negocio: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+            Log::channel('negocio')->error("[UNIDAD NEGOCIO] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo completar la operación.'
+            ]);
         }
     }
 

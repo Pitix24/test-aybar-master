@@ -17,12 +17,14 @@ use App\Livewire\Erp\Negocio\Sede\SedeLista;
 use App\Livewire\Erp\Negocio\UnidadNegocio\UnidadNegocioCrear;
 use App\Livewire\Erp\Negocio\UnidadNegocio\UnidadNegocioEditar;
 use App\Livewire\Erp\Negocio\UnidadNegocio\UnidadNegocioLista;
+use App\Livewire\Erp\Negocio\UnidadNegocio\UnidadNegocioVer;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-negocio.ver']], function () {
     Route::group(['middleware' => ['permission:unidad-negocio.navegacion']], function () {
         Route::prefix('unidad-negocio')->name('unidad-negocio.vista.')->group(function () {
             Route::get('/', UnidadNegocioLista::class)->middleware('permission:unidad-negocio.ver')->name('todo');
+            Route::get('/ver/{id}', UnidadNegocioVer::class)->middleware('permission:unidad-negocio.ver')->name('ver');
             Route::get('/crear', UnidadNegocioCrear::class)->middleware('permission:unidad-negocio.crear')->name('crear');
             Route::get('/editar/{id}', UnidadNegocioEditar::class)->middleware('permission:unidad-negocio.editar')->name('editar');
         });
@@ -77,7 +79,8 @@ UNIDAD NEGOCIO
 3. unidad-negocio.crear
 4. unidad-negocio.editar
 5. unidad-negocio.eliminar
-6. unidad-negocio.exportar
+6. unidad-negocio.exportar-filtro
+7. unidad-negocio.exportar-todo
 
 GRUPO PROYECTO
 1. grupo-proyecto.navegacion
@@ -85,7 +88,8 @@ GRUPO PROYECTO
 3. grupo-proyecto.crear
 4. grupo-proyecto.editar
 5. grupo-proyecto.eliminar
-6. grupo-proyecto.exportar
+6. grupo-proyecto.exportar-filtro
+7. grupo-proyecto.exportar-todo
 
 PROYECTO
 1. proyecto.navegacion
@@ -93,7 +97,8 @@ PROYECTO
 3. proyecto.crear
 4. proyecto.editar
 5. proyecto.eliminar
-6. proyecto.exportar
+6. proyecto.exportar-filtro
+7. proyecto.exportar-todo
 
 SEDE
 1. sede.navegacion
@@ -101,7 +106,8 @@ SEDE
 3. sede.crear
 4. sede.editar
 5. sede.eliminar
-6. sede.exportar
+6. sede.exportar-filtro
+7. sede.exportar-todo
 
 AREA
 1. area.navegacion
@@ -109,13 +115,14 @@ AREA
 3. area.crear
 4. area.editar
 5. area.eliminar
-6. area.exportar
-7. area.ver-usuarios
-8. area.ver-solicitudes
-9. area.agregar-usuarios
-10. area.agregar-solicitudes
-11. area.eliminar-usuarios
-12. area.eliminar-solicitudes
-13. area.exportar-usuarios
-14. area.exportar-solicitudes
+6. area.exportar-filtro
+7. area.exportar-todo
+8. area.ver-usuarios
+9. area.ver-solicitudes
+10. area.agregar-usuarios
+11. area.agregar-solicitudes
+12. area.eliminar-usuarios
+13. area.eliminar-solicitudes
+14. area.exportar-usuarios
+15. area.exportar-solicitudes
 */

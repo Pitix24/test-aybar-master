@@ -17,7 +17,7 @@ use Livewire\Attributes\Title;
 #[Title('Editar Unidad de Negocio')]
 class UnidadNegocioEditar extends Component
 {
-    public UnidadNegocio $unidadNegocio;
+    public UnidadNegocio $unidad_model;
 
     public $nombre = '';
     public $razon_social = '';
@@ -34,34 +34,50 @@ class UnidadNegocioEditar extends Component
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:unidad_negocios,nombre,' . $this->unidadNegocio->id,
-            'razon_social' => 'required',
-            'ruc' => 'nullable|unique:unidad_negocios,ruc,' . $this->unidadNegocio->id,
-            'slin_id' => 'nullable|unique:unidad_negocios,slin_id,' . $this->unidadNegocio->id,
-            'cavali_girador_tipo_documento' => 'nullable',
-            'cavali_girador_documento' => 'nullable',
-            'cavali_girador_nombre' => 'nullable',
-            'cavali_girador_apellido' => 'nullable',
-            'cavali_girador_email' => 'nullable|email',
-            'cavali_girador_telefono' => 'nullable',
+            'nombre' => 'required|string|max:255|unique:unidad_negocios,nombre,' . $this->unidad_model->id,
+            'razon_social' => 'required|string|max:255',
+            'ruc' => 'nullable|string|max:20|unique:unidad_negocios,ruc,' . $this->unidad_model->id,
+            'slin_id' => 'nullable|string|max:50|unique:unidad_negocios,slin_id,' . $this->unidad_model->id,
+            'cavali_girador_tipo_documento' => 'nullable|string|max:50',
+            'cavali_girador_documento' => 'nullable|string|max:20',
+            'cavali_girador_nombre' => 'nullable|string|max:255',
+            'cavali_girador_apellido' => 'nullable|string|max:255',
+            'cavali_girador_email' => 'nullable|email|max:255',
+            'cavali_girador_telefono' => 'nullable|string|max:20',
             'activo' => 'required|boolean',
+        ];
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre comercial',
+            'razon_social' => 'razón social',
+            'ruc' => 'RUC',
+            'slin_id' => 'SLIN ID',
+            'cavali_girador_tipo_documento' => 'tipo doc. girador',
+            'cavali_girador_documento' => 'nº doc. girador',
+            'cavali_girador_nombre' => 'nombre girador',
+            'cavali_girador_apellido' => 'apellido girador',
+            'cavali_girador_email' => 'email girador',
+            'cavali_girador_telefono' => 'teléfono girador',
         ];
     }
 
     public function mount($id)
     {
-        $this->unidadNegocio = UnidadNegocio::findOrFail($id);
-        $this->nombre = $this->unidadNegocio->nombre;
-        $this->razon_social = $this->unidadNegocio->razon_social;
-        $this->ruc = $this->unidadNegocio->ruc;
-        $this->slin_id = $this->unidadNegocio->slin_id;
-        $this->cavali_girador_tipo_documento = $this->unidadNegocio->cavali_girador_tipo_documento;
-        $this->cavali_girador_documento = $this->unidadNegocio->cavali_girador_documento;
-        $this->cavali_girador_nombre = $this->unidadNegocio->cavali_girador_nombre;
-        $this->cavali_girador_apellido = $this->unidadNegocio->cavali_girador_apellido;
-        $this->cavali_girador_email = $this->unidadNegocio->cavali_girador_email;
-        $this->cavali_girador_telefono = $this->unidadNegocio->cavali_girador_telefono;
-        $this->activo = $this->unidadNegocio->activo;
+        $this->unidad_model = UnidadNegocio::findOrFail($id);
+        $this->nombre = $this->unidad_model->nombre;
+        $this->razon_social = $this->unidad_model->razon_social;
+        $this->ruc = $this->unidad_model->ruc;
+        $this->slin_id = $this->unidad_model->slin_id;
+        $this->cavali_girador_tipo_documento = $this->unidad_model->cavali_girador_tipo_documento;
+        $this->cavali_girador_documento = $this->unidad_model->cavali_girador_documento;
+        $this->cavali_girador_nombre = $this->unidad_model->cavali_girador_nombre;
+        $this->cavali_girador_apellido = $this->unidad_model->cavali_girador_apellido;
+        $this->cavali_girador_email = $this->unidad_model->cavali_girador_email;
+        $this->cavali_girador_telefono = $this->unidad_model->cavali_girador_telefono;
+        $this->activo = $this->unidad_model->activo;
     }
 
     public function updated($propertyName)
@@ -71,18 +87,23 @@ class UnidadNegocioEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('unidad-negocio.editar'), 403);
+        $this->authorize('unidad-negocio.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->unidadNegocio->update([
+            $this->unidad_model->update([
                 'nombre' => $this->nombre,
                 'razon_social' => $this->razon_social,
                 'ruc' => $this->ruc ?: null,
@@ -98,33 +119,64 @@ class UnidadNegocioEditar extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizo correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Actualizado',
+                'text' => 'La unidad de negocio se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar unidad de negocio: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('negocio')->error("[UNIDAD NEGOCIO] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->unidad_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo completar la operación.'
+            ]);
         }
     }
 
     #[On('eliminarUnidadNegocioOn')]
     public function eliminarUnidadNegocioOn()
     {
-        abort_unless(auth()->user()->can('unidad-negocio.eliminar'), 403);
+        $this->authorize('unidad-negocio.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->unidadNegocio->delete();
+            $id = $this->unidad_model->id;
+            $nombre = $this->unidad_model->nombre;
+
+            $this->unidad_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se elimino correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Eliminado',
+                'text' => 'Se eliminó correctamente.'
+            ]);
+
             return redirect()->route('erp.unidad-negocio.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar unidad de negocio: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('negocio')->error("[UNIDAD NEGOCIO] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $id ?? null,
+                'nombre' => $nombre ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar. Verifique si tiene registros relacionados.'
+            ]);
         }
     }
 
