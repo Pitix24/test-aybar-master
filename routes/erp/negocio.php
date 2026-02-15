@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['permission:modulo-negocio.ver']], function () {
     Route::group(['middleware' => ['permission:unidad-negocio.navegacion']], function () {
         Route::prefix('unidad-negocio')->name('unidad-negocio.vista.')->group(function () {
-            Route::get('/', UnidadNegocioLista::class)->middleware('permission:unidad-negocio.ver')->name('todo');
+            Route::get('/', UnidadNegocioLista::class)->middleware('permission:unidad-negocio.lista')->name('todo');
             Route::get('/ver/{id}', UnidadNegocioVer::class)->middleware('permission:unidad-negocio.ver')->name('ver');
             Route::get('/crear', UnidadNegocioCrear::class)->middleware('permission:unidad-negocio.crear')->name('crear');
             Route::get('/editar/{id}', UnidadNegocioEditar::class)->middleware('permission:unidad-negocio.editar')->name('editar');
@@ -75,54 +75,59 @@ MODULO
 
 UNIDAD NEGOCIO
 1. unidad-negocio.navegacion
-2. unidad-negocio.ver
-3. unidad-negocio.crear
-4. unidad-negocio.editar
-5. unidad-negocio.eliminar
-6. unidad-negocio.exportar-filtro
-7. unidad-negocio.exportar-todo
+2. unidad-negocio.lista
+3. unidad-negocio.ver
+4. unidad-negocio.crear
+5. unidad-negocio.editar
+6. unidad-negocio.eliminar
+7. unidad-negocio.exportar-filtro
+8. unidad-negocio.exportar-todo
 
 GRUPO PROYECTO
 1. grupo-proyecto.navegacion
-2. grupo-proyecto.ver
-3. grupo-proyecto.crear
-4. grupo-proyecto.editar
-5. grupo-proyecto.eliminar
-6. grupo-proyecto.exportar-filtro
-7. grupo-proyecto.exportar-todo
+2. grupo-proyecto.lista
+3. grupo-proyecto.ver
+4. grupo-proyecto.crear
+5. grupo-proyecto.editar
+6. grupo-proyecto.eliminar
+7. grupo-proyecto.exportar-filtro
+8. grupo-proyecto.exportar-todo
 
 PROYECTO
 1. proyecto.navegacion
-2. proyecto.ver
-3. proyecto.crear
-4. proyecto.editar
-5. proyecto.eliminar
-6. proyecto.exportar-filtro
-7. proyecto.exportar-todo
+2. proyecto.lista
+3. proyecto.ver
+4. proyecto.crear
+5. proyecto.editar
+6. proyecto.eliminar
+7. proyecto.exportar-filtro
+8. proyecto.exportar-todo
 
 SEDE
 1. sede.navegacion
-2. sede.ver
-3. sede.crear
-4. sede.editar
-5. sede.eliminar
-6. sede.exportar-filtro
-7. sede.exportar-todo
+2. sede.lista
+3. sede.ver
+4. sede.crear
+5. sede.editar
+6. sede.eliminar
+7. sede.exportar-filtro
+8. sede.exportar-todo
 
 AREA
 1. area.navegacion
-2. area.ver
-3. area.crear
-4. area.editar
-5. area.eliminar
-6. area.exportar-filtro
-7. area.exportar-todo
-8. area.ver-usuarios
-9. area.ver-solicitudes
-10. area.agregar-usuarios
-11. area.agregar-solicitudes
-12. area.eliminar-usuarios
-13. area.eliminar-solicitudes
-14. area.exportar-usuarios
-15. area.exportar-solicitudes
+2. area.lista
+3. area.ver
+4. area.crear
+5. area.editar
+6. area.eliminar
+7. area.exportar-filtro
+8. area.exportar-todo
+9. area.ver-usuarios
+10. area.ver-solicitudes
+11. area.agregar-usuarios
+12. area.agregar-solicitudes
+13. area.eliminar-usuarios
+14. area.eliminar-solicitudes
+15. area.exportar-usuarios
+16. area.exportar-solicitudes
 */
