@@ -94,6 +94,12 @@
                             </td>
 
                             <td class="g_celda_centro">
+                                @can('rol.ver')
+                                    <a href="{{ route('erp.rol.vista.ver', $item->id) }}" class="g_accion ver" title="Ver">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                @endcan
+
                                 @can('rol.editar')
                                     <a href="{{ route('erp.rol.vista.editar', $item->id) }}" class="g_accion editar"
                                         title="Editar">
