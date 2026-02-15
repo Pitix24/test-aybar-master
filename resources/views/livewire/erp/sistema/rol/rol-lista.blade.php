@@ -35,9 +35,9 @@
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
                 @can('rol.exportar')
-                    <button wire:click="exportExcel" class="g_boton excel" wire:loading.attr="disabled"
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
                         wire:target="exportExcel">
-                        <span wire:loading.remove wire:target="exportExcel">Filtrados <i
+                        <span wire:loading.remove wire:target="exportExcel">Exportar Filtrados <i
                                 class="fa-regular fa-file-excel"></i></span>
                         <span wire:loading wire:target="exportExcel">Generando... <i
                                 class="fa-solid fa-spinner fa-spin"></i></span>

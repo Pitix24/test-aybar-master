@@ -1,4 +1,5 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="update, eliminarRolOn, name" message="Procesando..." />
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar Rol</h2>
 

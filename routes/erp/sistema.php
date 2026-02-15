@@ -62,7 +62,8 @@ PERMISO
 3. permiso.crear
 4. permiso.editar
 5. permiso.eliminar
-6. permiso.exportar
+6. permiso.exportar-filtro
+7. permiso.exportar-todo
 
 MENÚ
 1. menu.navegacion
@@ -70,5 +71,6 @@ MENÚ
 3. menu.crear
 4. menu.editar
 5. menu.eliminar
-6. menu.exportar
+6. menu.exportar-filtro
+7. menu.exportar-todo
 */

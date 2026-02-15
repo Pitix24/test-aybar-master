@@ -52,7 +52,7 @@ class RolLista extends Component
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
         $this->authorize('rol.exportar-filtro');
 
