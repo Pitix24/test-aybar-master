@@ -30,6 +30,7 @@ class AreaSolicitud extends Component
     #[Url(as: 'qd')]
     public $searchDisponibles = '';
 
+    public $perPageAgregados = 15;
     public $perPageDisponibles = 15;
 
     public function mount($id)
@@ -40,14 +41,29 @@ class AreaSolicitud extends Component
 
     public function updated($property)
     {
-        if (in_array($property, ['searchAgregados', 'searchDisponibles'])) {
-            $this->resetPage();
+        if ($property === 'searchAgregados' || $property === 'perPageAgregados') {
+            $this->resetPage('pageAgregados');
         }
+        if ($property === 'searchDisponibles' || $property === 'perPageDisponibles') {
+            $this->resetPage('pageDisponibles');
+        }
+    }
+
+    public function resetFiltrosAgregados()
+    {
+        $this->reset('searchAgregados');
+        $this->resetPage('pageAgregados');
+    }
+
+    public function resetFiltrosDisponibles()
+    {
+        $this->reset('searchDisponibles');
+        $this->resetPage('pageDisponibles');
     }
 
     public function agregarTipo($tipoId)
     {
-        $this->authorize('area.editar');
+        $this->authorize('area.agregar-solicitudes');
 
         try {
             DB::beginTransaction();
@@ -79,7 +95,7 @@ class AreaSolicitud extends Component
 
     public function quitarTipo($tipoId)
     {
-        $this->authorize('area.editar');
+        $this->authorize('area.eliminar-solicitudes');
 
         try {
             DB::beginTransaction();
@@ -111,7 +127,7 @@ class AreaSolicitud extends Component
 
     public function exportExcel()
     {
-        $this->authorize('area.exportar-filtro');
+        $this->authorize('area.exportar-solicitudes');
 
         return Excel::download(
             new AreaTiposExport($this->area, $this->searchAgregados),
@@ -121,13 +137,15 @@ class AreaSolicitud extends Component
 
     public function render()
     {
-        $idsAgregados = $this->area->tiposSolicitud()->pluck('tipo_solicituds.id')->toArray();
-
+        // Tipos ya asignados
         $tiposAgregados = $this->area->tiposSolicitud()
             ->where('nombre', 'like', '%' . $this->searchAgregados . '%')
             ->orderBy('nombre')
-            ->get();
+            ->paginate($this->perPageAgregados, ['*'], 'pageAgregados');
 
+        $idsAgregados = $this->area->tiposSolicitud()->pluck('tipo_solicituds.id')->toArray();
+
+        // Tipos disponibles (no asignados)
         $tiposDisponibles = TipoSolicitud::whereNotIn('id', $idsAgregados)
             ->where('nombre', 'like', '%' . $this->searchDisponibles . '%')
             ->orderBy('nombre')

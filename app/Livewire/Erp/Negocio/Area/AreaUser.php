@@ -30,6 +30,7 @@ class AreaUser extends Component
     #[Url(as: 'ud')]
     public $searchDisponibles = '';
 
+    public $perPageAsignados = 15;
     public $perPageDisponibles = 15;
 
     public function mount($id)
@@ -40,9 +41,24 @@ class AreaUser extends Component
 
     public function updated($property)
     {
-        if (in_array($property, ['searchAgregados', 'searchDisponibles'])) {
-            $this->resetPage();
+        if ($property === 'searchAgregados' || $property === 'perPageAsignados') {
+            $this->resetPage('pageAsignados');
         }
+        if ($property === 'searchDisponibles' || $property === 'perPageDisponibles') {
+            $this->resetPage('pageDisponibles');
+        }
+    }
+
+    public function resetFiltrosAgregados()
+    {
+        $this->reset('searchAgregados');
+        $this->resetPage('pageAsignados');
+    }
+
+    public function resetFiltrosDisponibles()
+    {
+        $this->reset('searchDisponibles');
+        $this->resetPage('pageDisponibles');
     }
 
     public function agregarUsuario($userId)
@@ -160,6 +176,7 @@ class AreaUser extends Component
 
     public function render()
     {
+        // Usuarios ya asignados
         $usuariosAgregados = $this->area->users()
             ->where('rol', 'admin')
             ->where(function ($q) {
@@ -167,10 +184,11 @@ class AreaUser extends Component
                     ->orWhere('email', 'like', '%' . $this->searchAgregados . '%');
             })
             ->orderBy('name')
-            ->get();
+            ->paginate($this->perPageAsignados, ['*'], 'pageAsignados');
 
         $idsAgregados = $this->area->users()->pluck('users.id')->toArray();
 
+        // Usuarios disponibles (no asignados)
         $usuariosDisponibles = User::whereNotIn('id', $idsAgregados)
             ->where('rol', 'admin')
             ->where('activo', true)
@@ -179,7 +197,7 @@ class AreaUser extends Component
                     ->orWhere('email', 'like', '%' . $this->searchDisponibles . '%');
             })
             ->orderBy('name')
-            ->paginate($this->perPageDisponibles, ['*'], 'pageUsers');
+            ->paginate($this->perPageDisponibles, ['*'], 'pageDisponibles');
 
         return view('livewire.erp.negocio.area.area-user', [
             'usuariosAgregados' => $usuariosAgregados,

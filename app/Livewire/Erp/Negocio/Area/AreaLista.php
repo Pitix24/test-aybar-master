@@ -98,7 +98,7 @@ class AreaLista extends Component
             })
             ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
             ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
-            ->latest()
+            ->orderBy('id', 'desc')
             ->paginate($this->perPage);
 
         return view('livewire.erp.negocio.area.area-lista', compact('items'));
