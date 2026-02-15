@@ -1,20 +1,23 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="update" message="Procesando..." />
+
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar Unidad de Negocio</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('unidad-negocio.lista')
+                <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
+            @endcan
 
-            <a href="{{ route('erp.unidad-negocio.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('unidad-negocio.eliminar')
+                <button type="button" class="g_boton danger" onclick="confirmarEliminarUnidadNegocio()">
+                    Eliminar <i class="fa-solid fa-trash"></i>
+                </button>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarUnidadNegocio()">
-                Eliminar <i class="fa-solid fa-trash-can"></i>
-            </button>
-
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -39,7 +42,7 @@
 
                             <button type="button" @click="activeTab = 'slin'"
                                 :class="activeTab === 'slin' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
-                                <i class="fa-solid fa-user-tie"></i> SLIN
+                                <i class="fa-solid fa-server"></i> SLIN
                             </button>
                         </div>
                     </div>
@@ -97,7 +100,7 @@
                                     RUC
                                 </label>
                                 <input type="text" id="ruc" wire:model.blur="ruc"
-                                    class="@error('ruc') input-error @enderror" autocomplete="off">
+                                    class="@error('ruc') input-error @enderror" autocomplete="off" maxlength="11">
                                 @error('ruc')
                                     <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
@@ -206,8 +209,7 @@
                     </div>
 
                     <div class="formulario_botones g_tab_form_buttons">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="update">
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                             <span wire:loading.remove wire:target="update">
                                 <i class="fa-solid fa-save"></i> Actualizar
                             </span>
@@ -216,9 +218,9 @@
                             </span>
                         </button>
 
-                        <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_cancelar">
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
                             <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -227,14 +229,14 @@
 
     @script
     <script>
-        window.alertaEliminarUnidadNegocio = function () {
+        window.confirmarEliminarUnidadNegocio = function () {
             Swal.fire({
-                title: '¿Quieres eliminar?',
-                text: "No podrás recuperarlo.",
+                title: '¿Quieres eliminar esta unidad de negocio?',
+                text: "Se perderá la vinculación con proyectos y sedes. Esta acción no se puede deshacer.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
                 confirmButtonText: '¡Sí, eliminar!',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
@@ -245,4 +247,5 @@
         }
     </script>
     @endscript
+
 </div>

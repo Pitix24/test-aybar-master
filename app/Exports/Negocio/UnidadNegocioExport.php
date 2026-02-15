@@ -42,7 +42,9 @@ class UnidadNegocioExport implements FromCollection, WithHeadings, ShouldAutoSiz
         if (!$this->todo) {
             $query->when($this->buscar, function ($q) {
                 $q->where(function ($sub) {
-                    $sub->where('nombre', 'like', "%{$this->buscar}%");
+                    $sub->where('nombre', 'like', "%{$this->buscar}%")
+                        ->orWhere('razon_social', 'like', "%{$this->buscar}%")
+                        ->orWhere('ruc', 'like', "%{$this->buscar}%");
 
                     if (is_numeric($this->buscar)) {
                         $sub->orWhere('id', (int) $this->buscar);
@@ -70,6 +72,8 @@ class UnidadNegocioExport implements FromCollection, WithHeadings, ShouldAutoSiz
                 $item->razon_social ?? '-',
                 $item->ruc ?? '-',
                 $item->slin_id ?? '-',
+                $item->cavali_girador_nombre ?? '-',
+                $item->cavali_girador_email ?? '-',
                 $item->activo ? 'Activo' : 'Inactivo',
                 $item->created_at ? $item->created_at->format('Y-m-d H:i') : '-',
             ];
@@ -85,6 +89,8 @@ class UnidadNegocioExport implements FromCollection, WithHeadings, ShouldAutoSiz
             'Razón Social',
             'RUC',
             'Slin ID',
+            'Girador',
+            'Email Girador',
             'Estado',
             'Fecha Creación',
         ];

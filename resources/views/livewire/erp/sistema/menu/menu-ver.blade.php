@@ -3,7 +3,7 @@
         <h2>Ver Ítem de Menú</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('menu.ver')
+            @can('menu.lista')
                 <a href="{{ route('erp.menu.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan

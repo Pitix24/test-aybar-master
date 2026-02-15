@@ -3,7 +3,7 @@
         <h2>Ver Rol</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('rol.ver')
+            @can('rol.lista')
                 <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan

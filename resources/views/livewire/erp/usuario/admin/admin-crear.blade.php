@@ -5,7 +5,7 @@
         <h2>Crear Usuario Administrativo</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('admin.ver')
+            @can('admin.lista')
                 <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -109,9 +109,11 @@
                             </button>
                         @endcan
 
-                        <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('admin.lista')
+                            <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton cancelar">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>

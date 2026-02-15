@@ -77,7 +77,7 @@ class UnidadNegocioEditar extends Component
         $this->cavali_girador_apellido = $this->unidad_model->cavali_girador_apellido;
         $this->cavali_girador_email = $this->unidad_model->cavali_girador_email;
         $this->cavali_girador_telefono = $this->unidad_model->cavali_girador_telefono;
-        $this->activo = $this->unidad_model->activo;
+        $this->activo = (bool) $this->unidad_model->activo;
     }
 
     public function updated($propertyName)
@@ -175,7 +175,7 @@ class UnidadNegocioEditar extends Component
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',
-                'text' => 'No se pudo eliminar. Verifique si tiene registros relacionados.'
+                'text' => 'No se pudo eliminar.'
             ]);
         }
     }

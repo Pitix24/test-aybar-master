@@ -3,7 +3,7 @@
         <h2>Ver Usuario Administrativo</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('admin.ver')
+            @can('admin.lista')
                 <a href="{{ route('erp.admin.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan

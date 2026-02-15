@@ -1,13 +1,17 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="store" message="Procesando..." />
+
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear Unidad de Negocio</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('unidad-negocio.lista')
+                <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -32,7 +36,7 @@
 
                             <button type="button" @click="activeTab = 'slin'"
                                 :class="activeTab === 'slin' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
-                                <i class="fa-solid fa-user-tie"></i> SLIN
+                                <i class="fa-solid fa-server"></i> SLIN
                             </button>
                         </div>
                     </div>
@@ -90,7 +94,7 @@
                                     RUC
                                 </label>
                                 <input type="text" id="ruc" wire:model.blur="ruc"
-                                    class="@error('ruc') input-error @enderror" autocomplete="off">
+                                    class="@error('ruc') input-error @enderror" autocomplete="off" maxlength="11">
                                 @error('ruc')
                                     <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
@@ -199,19 +203,22 @@
                     </div>
 
                     <div class="formulario_botones g_tab_form_buttons">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="store">
-                            <span wire:loading.remove wire:target="store">
-                                <i class="fa-solid fa-save"></i> Guardar
-                            </span>
-                            <span wire:loading wire:target="store">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                            </span>
-                        </button>
+                        @can('unidad-negocio.crear')
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
+                                <span wire:loading.remove wire:target="store">
+                                    <i class="fa-solid fa-save"></i> Crear
+                                </span>
+                                <span wire:loading wire:target="store">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('unidad-negocio.lista')
+                            <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton cancelar">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>

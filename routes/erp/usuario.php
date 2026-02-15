@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['permission:modulo-usuarios.ver']], function () {
     Route::group(['middleware' => ['permission:admin.navegacion']], function () {
         Route::prefix('admin')->name('admin.vista.')->group(function () {
-            Route::get('/', AdminLista::class)->middleware('permission:admin.ver')->name('todo');
+            Route::get('/', AdminLista::class)->middleware('permission:admin.lista')->name('todo');
             Route::get('/ver/{id}', AdminVer::class)->middleware('permission:admin.ver')->name('ver');
             Route::get('/crear', AdminCrear::class)->middleware('permission:admin.crear')->name('crear');
             Route::get('/editar/{id}', AdminEditar::class)->middleware('permission:admin.editar')->name('editar');
@@ -25,7 +25,7 @@ Route::group(['middleware' => ['permission:modulo-usuarios.ver']], function () {
 
     Route::group(['middleware' => ['permission:cliente.navegacion']], function () {
         Route::prefix('cliente')->name('cliente.vista.')->group(function () {
-            Route::get('/', ClienteLista::class)->middleware('permission:cliente.ver')->name('todo');
+            Route::get('/', ClienteLista::class)->middleware('permission:cliente.lista')->name('todo');
             Route::get('/ver/{id}', ClienteVer::class)->middleware('permission:cliente.ver')->name('ver');
             Route::get('/crear', ClienteCrear::class)->middleware('permission:cliente.crear')->name('crear');
             Route::get('/editar/{id}', ClienteEditar::class)->middleware('permission:cliente.editar')->name('editar');
@@ -50,21 +50,22 @@ MODULO
 
 ADMIN
 1. admin.navegacion
-2. admin.ver
-3. admin.crear
-4. admin.editar
-5. admin.eliminar
-5. admin.cambiar-clave
-6. admin.exportar-filtro
-7. admin.exportar-todo
+2. admin.lista
+3. admin.ver
+4. admin.crear
+5. admin.editar
+6. admin.cambiar-clave
+7. admin.exportar-filtro
+8. admin.exportar-todo
 
 CLIENTE
 1. cliente.navegacion
-2. cliente.ver
-3. cliente.crear
-4. cliente.editar
-5. cliente.exportar-filtro
-6. cliente.exportar-todo
-7. cliente.consultar
+2. cliente.lista
+3. cliente.ver
+4. cliente.crear
+5. cliente.editar
+6. cliente.exportar-filtro
+7. cliente.exportar-todo
+8. cliente.consultar
 
 */

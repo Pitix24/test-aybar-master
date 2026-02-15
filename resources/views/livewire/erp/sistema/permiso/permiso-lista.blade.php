@@ -98,7 +98,7 @@
                             </td>
 
                             <td class="g_celda_centro">
-                                @can('permiso.ver')
+                                @can('permiso.lista')
                                     <a href="{{ route('erp.permiso.vista.ver', $item->id) }}" class="g_accion ver" title="Ver">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>

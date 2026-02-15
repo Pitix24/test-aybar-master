@@ -5,7 +5,7 @@
         <h2>Crear Ítem de Menú</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('menu.ver')
+            @can('menu.lista')
                 <a href="{{ route('erp.menu.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -174,7 +174,7 @@
                             </button>
                         @endcan
 
-                        @can('menu.ver')
+                        @can('menu.lista')
                             <a href="{{ route('erp.menu.vista.todo') }}" class="g_boton cancelar">
                                 <i class="fa-solid fa-times"></i> Cancelar
                             </a>

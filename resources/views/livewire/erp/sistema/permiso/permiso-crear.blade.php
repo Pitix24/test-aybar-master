@@ -5,7 +5,7 @@
         <h2>Crear Permiso</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('permiso.ver')
+            @can('permiso.lista')
                 <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -57,7 +57,7 @@
                             </button>
                         @endcan
 
-                        @can('permiso.ver')
+                        @can('permiso.lista')
                             <a href="{{ route('erp.permiso.vista.todo') }}" class="g_boton cancelar">
                                 <i class="fa-solid fa-times"></i> Cancelar
                             </a>
