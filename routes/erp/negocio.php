@@ -9,6 +9,7 @@ use App\Livewire\Erp\Negocio\Area\AreaUser;
 use App\Livewire\Erp\Negocio\GrupoProyecto\GrupoProyectoCrear;
 use App\Livewire\Erp\Negocio\GrupoProyecto\GrupoProyectoEditar;
 use App\Livewire\Erp\Negocio\GrupoProyecto\GrupoProyectoLista;
+use App\Livewire\Erp\Negocio\GrupoProyecto\GrupoProyectoVer;
 use App\Livewire\Erp\Negocio\Proyecto\ProyectoCrear;
 use App\Livewire\Erp\Negocio\Proyecto\ProyectoEditar;
 use App\Livewire\Erp\Negocio\Proyecto\ProyectoLista;
@@ -34,7 +35,8 @@ Route::group(['middleware' => ['permission:modulo-negocio.ver']], function () {
 
     Route::group(['middleware' => ['permission:grupo-proyecto.navegacion']], function () {
         Route::prefix('grupo-proyecto')->name('grupo-proyecto.vista.')->group(function () {
-            Route::get('/', GrupoProyectoLista::class)->middleware('permission:grupo-proyecto.ver')->name('todo');
+            Route::get('/', GrupoProyectoLista::class)->middleware('permission:grupo-proyecto.lista')->name('todo');
+            Route::get('/ver/{id}', GrupoProyectoVer::class)->middleware('permission:grupo-proyecto.ver')->name('ver');
             Route::get('/crear', GrupoProyectoCrear::class)->middleware('permission:grupo-proyecto.crear')->name('crear');
             Route::get('/editar/{id}', GrupoProyectoEditar::class)->middleware('permission:grupo-proyecto.editar')->name('editar');
         });

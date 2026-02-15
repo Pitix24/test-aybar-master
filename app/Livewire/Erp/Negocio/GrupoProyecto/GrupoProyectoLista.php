@@ -8,7 +8,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\GrupoProyectoExport;
+use App\Exports\Negocio\GrupoProyectoExport;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 
@@ -23,61 +23,80 @@ class GrupoProyectoLista extends Component
     public $buscar = '';
 
     #[Url]
-    public $perPage = 20;
+    public $activo = '';
 
     #[Url]
-    public $activo = '';
+    public $desde = '';
+
+    #[Url]
+    public $hasta = '';
+
+    #[Url]
+    public $perPage = 20;
 
     public function updated($property)
     {
-        if (
-            in_array($property, [
-                'buscar',
-                'activo',
-                'perPage'
-            ])
-        ) {
+        if (in_array($property, ['buscar', 'activo', 'desde', 'hasta', 'perPage'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'activo']);
+        $this->reset(['buscar', 'activo', 'desde', 'hasta']);
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('grupo-proyecto.exportar'), 403);
+        $this->authorize('grupo-proyecto.exportar-filtro');
+
         return Excel::download(
             new GrupoProyectoExport(
-                $this->buscar,
-                $this->activo,
-                $this->perPage,
-                $this->getPage()
+                buscar: $this->buscar,
+                activo: $this->activo,
+                perPage: $this->perPage,
+                page: $this->getPage(),
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: false
             ),
-            'grupo-proyectos.xlsx'
+            'grupo_proyectos_filtrados_' . now()->format('Y-m-d_H-i') . '.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('grupo-proyecto.exportar-todo');
+
+        return Excel::download(
+            new GrupoProyectoExport(
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: true
+            ),
+            'grupo_proyectos_total_' . now()->format('Y-m-d_H-i') . '.xlsx'
         );
     }
 
     public function render()
     {
         $items = GrupoProyecto::query()
-            ->when($this->buscar, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('nombre', 'like', "%{$this->buscar}%");
-
+            ->when($this->buscar !== '', function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('nombre', 'like', "%{$this->buscar}%");
                     if (is_numeric($this->buscar)) {
-                        $q->orWhere('id', (int) $this->buscar);
+                        $sub->orWhere('id', (int) $this->buscar);
                     }
                 });
             })
-            ->when($this->activo !== '', function ($query) {
-                $query->where('activo', $this->activo);
+            ->when($this->activo !== '', function ($q) {
+                $q->where('activo', $this->activo);
             })
-            ->orderBy('created_at', 'desc')
+            ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
+            ->orderBy('id', 'desc')
             ->paginate($this->perPage);
 
         return view('livewire.erp.negocio.grupo-proyecto.grupo-proyecto-lista', compact('items'));

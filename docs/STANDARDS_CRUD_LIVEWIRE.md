@@ -62,7 +62,7 @@ ROL
 
 ### Feedback y Registro (Logging)
 - **Alertas**: Dispatcher `alertaLivewire` con `type`, `title` y `text`.
-- **Logs**: Usar canales específicos (ej. `negocio`, `admins`, `usuarios`) definidos en `config/logging.php`.
+- **Logs**: Usar canales específicos definidos en `config/logging.php`.
 - Prefijo obligatorio en logs: `[MODULO] Acción: mensaje`.
 
 ## 4. Estándar de Vistas (Blade)
@@ -70,12 +70,12 @@ ROL
 ### Layout General
 - **Lista**: Ancho completo con filtros en la parte superior.
 - **Crear**: Columna central de 8 (`g_columna_8`).
-- **Editar**: Estructura 8/4 (`g_columna_8` para datos, `g_columna_4` para panel de **Auditoría**).
-- **Ver**: Estructura central de 8 (`g_columna_8`), solo lectura y **sin panel de auditoría**.
+- **Editar**: Columna central de 8 (`g_columna_8`). **NO usar panel de auditoría**.
+- **Ver**: Misma estructura que **Editar** (Columna 8), pero con todos los campos en `readonly` o `disabled`. Solo botones de navegación, sin botones de acción de guardado.
 
 ### Componentes de UI
 - **Loading Overlay**: `<x-loading-overlay wire:loading wire:target="metodo" message="Procesando..." />`.
-- **Switches**: Uso del componente `g_switch` para estados activos/inactivos.
+- **Switches**: Uso de la estructura `g_switch-wrapper` con `g_switch` y `g_switch-slider`.
 - **Botones**: 
     - `g_boton guardar` (Verde con icono `fa-save`)
     - `g_boton cancelar` (Utilizando `onclick="history.back()"` o redirección a la lista)

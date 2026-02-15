@@ -4,36 +4,44 @@ namespace App\Livewire\Erp\Negocio\GrupoProyecto;
 
 use App\Models\GrupoProyecto;
 use Illuminate\Support\Facades\DB;
-use Livewire\Attributes\Layout;
-use Livewire\Component;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
+use Livewire\Component;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 
 #[Lazy]
-#[Title('Editar Grupo de Proyecto')]
 #[Layout('layouts.erp.layout-erp')]
+#[Title('Editar Grupo de Proyecto')]
 class GrupoProyectoEditar extends Component
 {
-    public GrupoProyecto $grupoProyecto;
-    public $nombre = '';
-    public $activo = false;
+    public GrupoProyecto $grupo_model;
+    public $nombre;
+    public $activo;
+
+    public function mount($id)
+    {
+        $this->authorize('grupo-proyecto.editar');
+        $this->grupo_model = GrupoProyecto::findOrFail($id);
+        $this->nombre = $this->grupo_model->nombre;
+        $this->activo = (bool) $this->grupo_model->activo;
+    }
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:grupo_proyectos,nombre,' . $this->grupoProyecto->id,
-            'activo' => 'required|boolean',
+            'nombre' => 'required|unique:grupo_proyectos,nombre,' . $this->grupo_model->id,
+            'activo' => 'nullable|boolean',
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->grupoProyecto = GrupoProyecto::findOrFail($id);
-        $this->nombre = $this->grupoProyecto->nombre;
-        $this->activo = $this->grupoProyecto->activo;
+        return [
+            'nombre' => 'nombre del grupo',
+            'activo' => 'estado',
+        ];
     }
 
     public function updated($propertyName)
@@ -43,51 +51,77 @@ class GrupoProyectoEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('grupo-proyecto.editar'), 403);
-        try {
-            $this->validate();
-        } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
-            throw $e;
-        }
+        $this->authorize('grupo-proyecto.editar');
+        $this->validate();
 
         try {
             DB::beginTransaction();
 
-            $this->grupoProyecto->update([
-                'nombre' => $this->nombre,
-                'activo' => $this->activo,
+            $this->grupo_model->update([
+                'nombre' => trim($this->nombre),
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizo correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'El grupo de proyecto se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar unidad de negocio: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('grupo_proyecto')->error("[GRUPO PROYECTO] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->grupo_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el grupo de proyecto.'
+            ]);
         }
     }
 
-    #[On('eliminarGrupoProyectoOn')]
-    public function eliminarGrupoProyectoOn()
+    #[On('eliminarGrupoOn')]
+    public function eliminarGrupoOn($id)
     {
-        abort_unless(auth()->user()->can('grupo-proyecto.eliminar'), 403);
+        $this->authorize('grupo-proyecto.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->grupoProyecto->delete();
+            $item = GrupoProyecto::findOrFail($id);
+            $nombre = $item->nombre;
+            $item->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se elimino correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "El grupo '$nombre' ha sido eliminado."
+            ]);
+
             return redirect()->route('erp.grupo-proyecto.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar grupo de proyecto: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('grupo_proyecto')->error("[GRUPO PROYECTO] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el grupo de proyecto.'
+            ]);
         }
     }
 
