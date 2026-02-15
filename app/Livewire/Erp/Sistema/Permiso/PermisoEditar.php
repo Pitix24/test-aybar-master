@@ -78,14 +78,6 @@ class PermisoEditar extends Component
 
             DB::commit();
 
-            Log::channel('permissions')->info('Permiso actualizado', [
-                'usuario_id' => auth()->id(),
-                'permiso_id' => $this->permission->id,
-                'nuevo_nombre' => $this->name,
-                'nuevo_modulo' => $this->module,
-                'ip' => request()->ip(),
-            ]);
-
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => 'Actualizado',
@@ -93,7 +85,13 @@ class PermisoEditar extends Component
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar permiso: ' . $e->getMessage());
+            Log::channel('permissions')->error("[PERMISO] Error al actualizar permiso: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'permiso_id' => $this->permission->id,
+                'name' => $this->name,
+                'module' => $this->module,
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',
@@ -115,13 +113,6 @@ class PermisoEditar extends Component
             $this->permission->delete();
             DB::commit();
 
-            Log::channel('permissions')->info('Permiso eliminado', [
-                'usuario_id' => auth()->id(),
-                'permiso_id' => $permisoId,
-                'nombre' => $permisoNombre,
-                'ip' => request()->ip(),
-            ]);
-
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => 'Eliminado',
@@ -131,7 +122,12 @@ class PermisoEditar extends Component
             return redirect()->route('erp.permiso.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar permiso: ' . $e->getMessage());
+            Log::channel('permissions')->error("[PERMISO] Error al eliminar permiso: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'permiso_id' => $permisoId,
+                'nombre' => $permisoNombre,
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',

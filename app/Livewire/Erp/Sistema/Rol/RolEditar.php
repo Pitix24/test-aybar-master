@@ -85,14 +85,6 @@ class RolEditar extends Component
 
             DB::commit();
 
-            Log::channel('roles')->info('Rol actualizado exitosamente', [
-                'usuario_id' => auth()->id(),
-                'rol_id' => $this->role->id,
-                'rol_nombre' => $this->role->name,
-                'permisos' => $this->permissions,
-                'ip' => request()->ip()
-            ]);
-
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => 'Actualizado',
@@ -101,10 +93,12 @@ class RolEditar extends Component
         } catch (\Exception $e) {
             DB::rollBack();
 
-            Log::channel('roles')->error('Error al actualizar rol', [
+            Log::channel('roles')->error("[ROL] Error al actualizar rol: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
-                'error' => $e->getMessage(),
-                'rol_id' => $this->role->id
+                'rol_id' => $this->role->id,
+                'name' => $this->name,
+                'permissions' => $this->permissions,
+                'trace' => $e->getTraceAsString()
             ]);
 
             $this->dispatch('alertaLivewire', [
@@ -135,12 +129,6 @@ class RolEditar extends Component
             $this->role->delete();
             DB::commit();
 
-            Log::channel('roles')->info('Rol eliminado', [
-                'usuario_id' => auth()->id(),
-                'rol_nombre' => $rolNombre,
-                'ip' => request()->ip()
-            ]);
-
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => 'Eliminado',
@@ -151,10 +139,11 @@ class RolEditar extends Component
         } catch (\Exception $e) {
             DB::rollBack();
 
-            Log::channel('roles')->error('Error al eliminar rol', [
+            Log::channel('roles')->error("[ROL] Error al eliminar rol: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
-                'error' => $e->getMessage(),
-                'rol_id' => $this->role->id
+                'rol_id' => $this->role->id,
+                'rol_nombre' => $rolNombre,
+                'trace' => $e->getTraceAsString()
             ]);
 
             $this->dispatch('alertaLivewire', [

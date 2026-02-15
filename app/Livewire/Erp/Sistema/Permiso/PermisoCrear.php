@@ -70,14 +70,6 @@ class PermisoCrear extends Component
 
             DB::commit();
 
-            Log::channel('permissions')->info('Permiso creado', [
-                'usuario_id' => auth()->id(),
-                'permiso_id' => $permission->id,
-                'nombre' => $permission->name,
-                'modulo' => $permission->module,
-                'ip' => request()->ip(),
-            ]);
-
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => 'Creado',
@@ -87,7 +79,12 @@ class PermisoCrear extends Component
             return redirect()->route('erp.permiso.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear permiso: ' . $e->getMessage());
+            Log::channel('permissions')->error("[PERMISO] Error al crear permiso: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'name' => $this->name,
+                'module' => $this->module,
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',

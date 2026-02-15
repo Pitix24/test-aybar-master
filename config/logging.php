@@ -133,14 +133,14 @@ return [
         'roles' => [
             'driver' => 'daily',
             'path' => storage_path('logs/roles.log'),
-            'level' => 'info',
+            'level' => 'debug',
             'days' => 14,
         ],
 
         'permissions' => [
             'driver' => 'daily',
             'path' => storage_path('logs/permissions.log'),
-            'level' => 'info',
+            'level' => 'debug',
             'days' => 14,
         ],
 

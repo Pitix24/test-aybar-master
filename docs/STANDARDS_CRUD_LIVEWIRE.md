@@ -69,15 +69,18 @@ $this->dispatch('alertaLivewire', [
 ]);
 ```
 
-### Registro de Logs (Logging)
-Cada módulo debe tener su propio canal de log configurado en `config/logging.php`. Se deben registrar las acciones críticas (crear, editar, eliminar) incluyendo detalles del usuario y la IP.
+### Registro de Errores (Logging)
+Cada módulo debe tener su propio canal de log configurado en `config/logging.php`. Se debe usar el canal específico (`Log::channel('nombre_modulo')->error`) dentro de los bloques `catch`, incluyendo un prefijo descriptivo (ej: `[ROL]`, `[PERMISO]`) para facilitar la trazabilidad fuera del log general.
+
 ```php
-Log::channel('nombre_recurso')->info('Acción realizada', [
-    'usuario_id' => auth()->id(),
-    'recurso_id' => $id,
-    'datos' => $datos,
-    'ip' => request()->ip()
-]);
+} catch (\Exception $e) {
+    Log::channel('nombre_modulo')->error("[MODULO] Error en acción X: " . $e->getMessage(), [
+        'usuario_id' => auth()->id(),
+        'datos' => $this->all(),
+        'trace' => $e->getTraceAsString()
+    ]);
+    // ... dispatch alerta
+}
 ```
 
 ## 4. Estándar de Vistas (Blade)

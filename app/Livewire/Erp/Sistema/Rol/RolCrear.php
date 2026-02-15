@@ -75,15 +75,6 @@ class RolCrear extends Component
 
             DB::commit();
 
-            Log::channel('roles')->info('Rol creado exitosamente', [
-                'usuario_id' => auth()->id(),
-                'usuario_nombre' => auth()->user()->name,
-                'rol_id' => $role->id,
-                'rol_nombre' => $role->name,
-                'permisos' => $this->permissions,
-                'ip' => request()->ip()
-            ]);
-
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => 'Creado',
@@ -94,14 +85,13 @@ class RolCrear extends Component
         } catch (\Exception $e) {
             DB::rollBack();
 
-            Log::channel('roles')->error('Error al crear rol', [
+            Log::channel('roles')->error("[ROL] Error al crear rol: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'datos' => [
                     'name' => $this->name,
                     'permissions' => $this->permissions
-                ]
+                ],
+                'trace' => $e->getTraceAsString()
             ]);
 
             $this->dispatch('alertaLivewire', [
