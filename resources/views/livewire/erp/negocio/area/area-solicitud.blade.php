@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="searchAgregados, searchDisponibles, resetFiltrosAgregados, resetFiltrosDisponibles, agregarTipo, quitarTipo, exportExcel"
+        wire:target="searchAgregados,searchDisponibles,perPageAgregados,perPageDisponibles,resetFiltrosAgregados,resetFiltrosDisponibles,agregarTipo,quitarTipo,exportExcel,gotoPage,nextPage,previousPage"
         message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -52,6 +52,10 @@
                     </div>
 
                     <div class="g_tabla_cabecera_filtro formulario">
+                        <div>
+                            <label>Tipo solicitud</label>
+                            <input type="text" wire:model.live.debounce.800ms="searchAgregados">
+                        </div>
                         <div class="g_margin_right_10">
                             <label>Mostrar</label>
                             <select wire:model.live="perPageAgregados">
@@ -59,10 +63,6 @@
                                 <option value="30">30</option>
                                 <option value="50">50</option>
                             </select>
-                        </div>
-                        <div>
-                            <label>Tipo solicitud</label>
-                            <input type="text" wire:model.live.debounce.800ms="searchAgregados">
                         </div>
                     </div>
                 </div>
@@ -121,6 +121,10 @@
                         </button>
                     </div>
                     <div class="g_tabla_cabecera_filtro formulario">
+                        <div>
+                            <label>Tipo solicitud</label>
+                            <input type="text" wire:model.live.debounce.800ms="searchDisponibles">
+                        </div>
                         <div class="g_margin_right_10">
                             <label>Mostrar</label>
                             <select wire:model.live="perPageDisponibles">
@@ -128,10 +132,6 @@
                                 <option value="30">30</option>
                                 <option value="50">50</option>
                             </select>
-                        </div>
-                        <div>
-                            <label>Tipo solicitud</label>
-                            <input type="text" wire:model.live.debounce.800ms="searchDisponibles">
                         </div>
                     </div>
                 </div>

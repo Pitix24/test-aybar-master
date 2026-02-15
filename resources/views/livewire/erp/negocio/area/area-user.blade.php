@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="searchAgregados, searchDisponibles, resetFiltrosAgregados, resetFiltrosDisponibles, agregarUsuario, quitarUsuario, marcarPrincipal, exportExcel"
+        wire:target="searchAgregados,searchDisponibles,perPageAsignados,perPageDisponibles,resetFiltrosAgregados,resetFiltrosDisponibles,agregarUsuario,quitarUsuario,marcarPrincipal,exportExcel,gotoPage,nextPage,previousPage"
         message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -51,18 +51,18 @@
                         </button>
                     </div>
 
-                    <div class="g_tabla_cabecera_filtro formulario">
-                        <div class="g_margin_right_10">
+                    <div class="g_tabla_cabecera_filtro formulario">                       
+                        <div>
+                            <label>Admin (Nombre o Email)</label>
+                            <input type="text" wire:model.live.debounce.800ms="searchAgregados">
+                        </div>
+                         <div class="g_margin_right_10">
                             <label>Mostrar</label>
                             <select wire:model.live="perPageAsignados">
                                 <option value="15">15</option>
                                 <option value="30">30</option>
                                 <option value="50">50</option>
                             </select>
-                        </div>
-                        <div>
-                            <label>Usuario</label>
-                            <input type="text" wire:model.live.debounce.800ms="searchAgregados">
                         </div>
                     </div>
                 </div>
@@ -133,7 +133,11 @@
                              <i class="fa-solid fa-rotate-left"></i>
                         </button>
                     </div>
-                    <div class="g_tabla_cabecera_filtro formulario">
+                    <div class="g_tabla_cabecera_filtro formulario">                        
+                        <div>
+                            <label>Admin (Nombre o Email)</label>
+                            <input type="text" wire:model.live.debounce.800ms="searchDisponibles">
+                        </div>
                         <div class="g_margin_right_10">
                             <label>Mostrar</label>
                             <select wire:model.live="perPageDisponibles">
@@ -141,10 +145,6 @@
                                 <option value="30">30</option>
                                 <option value="50">50</option>
                             </select>
-                        </div>
-                        <div>
-                            <label>Usuario</label>
-                            <input type="text" wire:model.live.debounce.800ms="searchDisponibles">
                         </div>
                     </div>
                 </div>

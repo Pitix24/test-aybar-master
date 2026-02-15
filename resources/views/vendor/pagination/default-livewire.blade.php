@@ -8,9 +8,7 @@
                 </li>
             @else
                 <li>
-                    <button type="button"
-                        wire:click="previousPage"
-                        rel="prev"
+                    <button type="button" wire:click="previousPage('{{ $paginator->getPageName() }}')" rel="prev"
                         aria-label="@lang('pagination.previous')">
                         &lsaquo;
                     </button>
@@ -31,8 +29,7 @@
                             <li class="active" aria-current="page"><span>{{ $page }}</span></li>
                         @else
                             <li>
-                                <button type="button"
-                                    wire:click="gotoPage({{ $page }})">
+                                <button type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')">
                                     {{ $page }}
                                 </button>
                             </li>
@@ -44,9 +41,7 @@
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
                 <li>
-                    <button type="button"
-                        wire:click="nextPage"
-                        rel="next"
+                    <button type="button" wire:click="nextPage('{{ $paginator->getPageName() }}')" rel="next"
                         aria-label="@lang('pagination.next')">
                         &rsaquo;
                     </button>
