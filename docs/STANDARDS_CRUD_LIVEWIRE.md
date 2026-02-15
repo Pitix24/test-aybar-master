@@ -2,16 +2,27 @@
 
 Este documento define la estructura, lógica y componentes obligatorios para todos los módulos del sistema Aybar ERP, con el fin de mantener coherencia visual, técnica y de seguridad en todo el proyecto.
 
-## 1. Estructura de Archivos
-Cada módulo debe estar organizado en su propio directorio dentro de `app/Livewire/Erp/` y seguir esta nomenclatura:
+## 1. Estructura de Archivos y Nomenclatura
+Cada módulo debe estar organizado en su propio directorio dentro de `app/Livewire/Erp/` y sus vistas en `resources/views/livewire/erp/`.
 
+### Componentes Livewire (`app/Livewire/...`)
 - `NombreLista.php`: Vista de tabla con filtros, búsqueda y paginación.
 - `NombreCrear.php`: Formulario para el registro de nuevos datos.
 - `NombreEditar.php`: Formulario para modificar datos existentes y acción de eliminar.
 - `NombreVer.php`: Pantalla de detalle con todos los campos en modo de solo lectura.
 
+### Vistas Blade (`resources/views/livewire/...`)
+- Se deben usar rutas de archivos en minúsculas separadas por guiones (Kebab-case).
+- Ej: `unidad-negocio-lista.blade.php`.
+
 ## 2. Configuración de Rutas y Permisos
-Las rutas deben definirse en archivos específicos por módulo dentro de `routes/erp/`. Cada acción debe estar protegida por un permiso específico.
+Las rutas deben definirse en archivos específicos por módulo dentro de `routes/erp/`.
+
+### Convención de Nombres de Rutas
+- `erp.recurso.vista.todo` (Lista)
+- `erp.recurso.vista.ver` (Consulta)
+- `erp.recurso.vista.crear` (Creación)
+- `erp.recurso.vista.editar` (Edición)
 
 ### Bloque de Comentarios de Permisos
 Al final de cada archivo de rutas, se debe incluir el inventario de permisos bajo la convención `recurso.accion`:
@@ -20,106 +31,74 @@ Al final de cada archivo de rutas, se debe incluir el inventario de permisos baj
 /*
 ROL
 1. rol.navegacion (Permite ver el ítem en el menú)
-2. rol.ver (Acceso a la lista y al detalle individual)
-3. rol.crear
-4. rol.editar
-5. rol.eliminar
-6. rol.exportar-filtro
-7. rol.exportar-todo
+2. rol.lista (Acceso a la tabla de datos)
+3. rol.ver (Acceso al detalle individual)
+4. rol.crear
+5. rol.editar
+6. rol.eliminar
+7. rol.exportar-filtro
+8. rol.exportar-todo
 */
 ```
 
 ## 3. Estándar de Componentes (PHP)
 
-Todos los componentes de página deben usar las siguientes directivas y métodos:
-
-### Atributos de Clase
+### Directivas de Clase
 ```php
-#[Lazy] // Carga asíncrona para mejorar la experiencia inicial
-#[Layout('layouts.erp.layout-erp')] // Uso del layout principal del ERP
-#[Title('Título de la Página')] // Definición del título de la pestaña del navegador
+#[Lazy] // Carga diferida
+#[Layout('layouts.erp.layout-erp')] // Layout obligatorio
+#[Title('Título de la Página')] // Título de la pestaña
 ```
 
-### Autorización de Acciones
-Se debe usar `$this->authorize()` en cada método que realice cambios.
-```php
-public function store() {
-    $this->authorize('rol.crear');
-    // ... lógica de guardado
-}
-```
+### Gestión de Filtros (Lista)
+- Los filtros deben estar vinculados a la URL usando `#[Url]`.
+- Propiedades estándar: `$buscar`, `$activo`, `$desde`, `$hasta`, `$perPage`.
+- Resetear página al actualizar filtros en el método `updated($property)`.
 
-### Estados de Carga (Placeholder)
-Es obligatorio para el funcionamiento de `#[Lazy]`.
-```php
-public function placeholder() {
-    return <<<'HTML'
-    <x-placeholder />
-    HTML;
-}
-```
+### Autorización y Validación
+- Usar `$this->authorize('recurso.accion')` en cada método de acción.
+- Implementar `validationAttributes()` para mensajes de error amigables.
+- Usar `DB::beginTransaction()` y `commit()` en operaciones que alteren la base de datos.
 
-### Feedback y Alertas
-Notificar al usuario mediante el despacho del evento `alertaLivewire`.
-```php
-$this->dispatch('alertaLivewire', [
-    'type' => 'success', // success, error, warning, info
-    'title' => 'Título Mensaje',
-    'text' => 'Descripción detallada de la acción.'
-]);
-```
-
-### Registro de Errores (Logging)
-Cada módulo debe tener su propio canal de log configurado en `config/logging.php`. Se debe usar el canal específico (`Log::channel('nombre_modulo')->error`) dentro de los bloques `catch`, incluyendo un prefijo descriptivo (ej: `[ROL]`, `[PERMISO]`) para facilitar la trazabilidad fuera del log general.
-
-```php
-} catch (\Exception $e) {
-    Log::channel('nombre_modulo')->error("[MODULO] Error en acción X: " . $e->getMessage(), [
-        'usuario_id' => auth()->id(),
-        'datos' => $this->all(),
-        'trace' => $e->getTraceAsString()
-    ]);
-    // ... dispatch alerta
-}
-```
+### Feedback y Registro (Logging)
+- **Alertas**: Dispatcher `alertaLivewire` con `type`, `title` y `text`.
+- **Logs**: Usar canales específicos (ej. `negocio`, `admins`, `usuarios`) definidos en `config/logging.php`.
+- Prefijo obligatorio en logs: `[MODULO] Acción: mensaje`.
 
 ## 4. Estándar de Vistas (Blade)
 
-### Feedback Visual de Carga
-Incluir el overlay de carga al inicio de la vista, apuntando a los métodos clave.
-```html
-<x-loading-overlay 
-    wire:loading 
-    wire:target="update, eliminarRolOn" 
-    message="Procesando..." 
-/>
-```
+### Layout General
+- **Lista**: Ancho completo con filtros en la parte superior.
+- **Crear**: Columna central de 8 (`g_columna_8`).
+- **Editar / Ver**: Estructura 8/4 (`g_columna_8` para datos, `g_columna_4` para panel de **Auditoría**).
 
-### Validación de Formularios
-Uso de la clase `input-error` y visualización de mensajes de error.
+### Componentes de UI
+- **Loading Overlay**: `<x-loading-overlay wire:loading wire:target="metodo" message="Procesando..." />`.
+- **Switches**: Uso del componente `g_switch` para estados activos/inactivos.
+- **Botones**: 
+    - `g_boton guardar` (Verde con icono `fa-save`)
+    - `g_boton cancelar` (Utilizando `onclick="history.back()"` o redirección a la lista)
+    - `g_boton dark` (Para botones de retroceso)
+    - En la tabla: `g_accion ver`, `g_accion editar`, `g_accion eliminar`.
+
+### Pestañas (Tabs)
+Para formularios complejos, se debe usar Alpine.js con la siguiente estructura:
 ```html
-<div class="g_margin_bottom_10">
-    <label for="name">Nombre</label>
-    <input type="text" id="name" wire:model.blur="name" class="@error('name') input-error @enderror">
-    @error('name') 
-        <p class="mensaje_error">{{ $message }}</p> 
-    @enderror
+<div x-data="{ activeTab: 'general' }">
+    <div class="g_tab_navegacion">
+        <div class="g_tab_botones">
+            <button @click="activeTab = 'general'" :class="activeTab === 'general' ? 'g_tab_active' : 'g_tab_inactive'">...</button>
+        </div>
+    </div>
+    <div x-show="activeTab === 'general'" class="g_tab_content">...</div>
 </div>
 ```
 
-### Control de Visibilidad (Blade @can)
-Todos los botones que ejecuten acciones deben estar envueltos en directivas `@can`.
-```html
-@can('rol.editar')
-    <button type="submit" class="g_boton guardar">Actualizar</button>
-@endcan
-```
-
 ## 5. Exportación a Excel
-Los módulos deben incluir dos opciones de exportación utilizando una única clase `Export` parametrizada:
-
-1.  **Exportar Filtrados**: Respeta la búsqueda actual, filtros personalizados y la paginación de la vista. (Permiso: `recurso.exportar-filtro`).
-2.  **Exportar Todo**: Ignora búsqueda y paginación, pero debe filtrar por rango de fechas (Desde/Hasta). (Permiso: `recurso.exportar-todo`).
+Implementación obligatoria de **Dual Export** en el componente de lista:
+1. `exportExcelFiltro`: Exporta lo que el usuario está viendo actualmente (respeta filtros y búsqueda).
+2. `exportExcelTodo`: Exporta la base de datos completa (solo respeta filtro de fechas).
+- Las clases de exportación deben estar en `App\Exports\Modulo\ClaseExport.php`.
 
 ---
-*Este estándar es la base para garantizar la rapidez en el desarrollo y la calidad del código en Aybar ERP.*
+*Cualquier código que no cumpla con estos estándares será rechazado en la revisión técnica.*

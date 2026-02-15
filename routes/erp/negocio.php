@@ -3,6 +3,7 @@
 use App\Livewire\Erp\Negocio\Area\AreaCrear;
 use App\Livewire\Erp\Negocio\Area\AreaEditar;
 use App\Livewire\Erp\Negocio\Area\AreaLista;
+use App\Livewire\Erp\Negocio\Area\AreaVer;
 use App\Livewire\Erp\Negocio\Area\AreaSolicitud;
 use App\Livewire\Erp\Negocio\Area\AreaUser;
 use App\Livewire\Erp\Negocio\GrupoProyecto\GrupoProyectoCrear;
@@ -58,7 +59,8 @@ Route::group(['middleware' => ['permission:modulo-negocio.ver']], function () {
 
     Route::group(['middleware' => ['permission:area.navegacion']], function () {
         Route::prefix('area')->name('area.vista.')->group(function () {
-            Route::get('/', AreaLista::class)->middleware('permission:area.ver')->name('todo');
+            Route::get('/', AreaLista::class)->middleware('permission:area.lista')->name('todo');
+            Route::get('/ver/{id}', AreaVer::class)->middleware('permission:area.ver')->name('ver');
             Route::get('/crear', AreaCrear::class)->middleware('permission:area.crear')->name('crear');
             Route::get('/editar/{id}', AreaEditar::class)->middleware('permission:area.editar')->name('editar');
             Route::get('/user/{id}', AreaUser::class)->middleware('permission:area.ver-usuarios')->name('user');

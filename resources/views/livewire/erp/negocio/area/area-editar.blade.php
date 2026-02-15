@@ -1,22 +1,23 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="update, eliminarAreaOn" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar Área</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.area.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('area.lista')
+                <a href="{{ route('erp.area.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
+            @endcan
 
-            <a href="{{ route('erp.area.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i>
-            </a>
+            @can('area.eliminar')
+                <button type="button" class="g_boton danger" onclick="confirmarEliminarArea()">
+                    Eliminar <i class="fa-solid fa-trash"></i>
+                </button>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarArea()">
-                Eliminar <i class="fa-solid fa-trash-can"></i>
-            </button>
-
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -25,7 +26,7 @@
         <div class="g_fila">
             <div class="g_columna_8">
                 <div class="g_panel">
-                    <h4 class="g_panel_titulo">General</h4>
+                    <h4 class="g_panel_titulo">Información General</h4>
 
                     <div class="g_margin_bottom_10">
                         <label for="estado_activo">
@@ -91,12 +92,14 @@
 
                     <div class="g_margin_bottom_10">
                         <label>Sedes vinculadas</label>
-                        <div>
-                            @foreach($sedes as $sede)
-                                <label>
-                                    <input type="checkbox" wire:model="selectedSedes" value="{{ $sede->id }}">
-                                    <span>{{ $sede->nombre }}</span>
-                                </label>
+                        <div class="g_fila">
+                            @foreach ($sedes as $sede)
+                                <div class="g_columna_4">
+                                    <label class="g_checkbox">
+                                        <input type="checkbox" wire:model="selectedSedes" value="{{ $sede->id }}">
+                                        <span>{{ $sede->nombre }}</span>
+                                    </label>
+                                </div>
                             @endforeach
                         </div>
                         @error('selectedSedes')
@@ -105,19 +108,22 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="update">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-pencil"></i> Actualizar
-                            </span>
-                            <span wire:loading wire:target="update">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
-                        </button>
+                        @can('area.editar')
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                                <span wire:loading.remove wire:target="update">
+                                    <i class="fa-solid fa-save"></i> Actualizar
+                                </span>
+                                <span wire:loading wire:target="update">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.area.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('area.lista')
+                            <button type="button" class="g_boton cancelar" onclick="history.back()">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -126,14 +132,14 @@
 
     @script
     <script>
-        window.alertaEliminarArea = function () {
+        window.confirmarEliminarArea = function () {
             Swal.fire({
-                title: '¿Quieres eliminar?',
-                text: "No podrás recuperarlo.",
+                title: '¿Quieres eliminar esta área?',
+                text: "Esta acción no se puede deshacer.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
                 confirmButtonText: '¡Sí, eliminar!',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {

@@ -128,6 +128,30 @@
     background-color: #ff669215;
 }
 
+.g_accion.info {
+    color: #46caeb;
+}
+
+.g_accion.info:hover {
+    background-color: #46caeb15;
+}
+
+.g_accion.alerta {
+    color: #ff6692;
+}
+
+.g_accion.alerta:hover {
+    background-color: #ff669215;
+}
+
+.g_accion.success {
+    color: #36c76c;
+}
+
+.g_accion.success:hover {
+    background-color: #36c76c15;
+}
+
 .boton_personalizado {
     text-decoration: none;
     font-weight: 700;

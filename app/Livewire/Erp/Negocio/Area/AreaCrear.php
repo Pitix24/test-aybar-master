@@ -27,13 +27,22 @@ class AreaCrear extends Component
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:areas,nombre',
-            'email_buzon' => 'nullable|email',
-            'color' => 'nullable|string',
-            'icono' => 'nullable|string',
+            'nombre' => 'required|string|max:255|unique:areas,nombre',
+            'email_buzon' => 'nullable|email|max:255',
+            'color' => 'nullable|string|max:20',
+            'icono' => 'nullable|string|max:100',
             'activo' => 'required|boolean',
             'selectedSedes' => 'nullable|array',
             'selectedSedes.*' => 'exists:sedes,id',
+        ];
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre del área',
+            'email_buzon' => 'email de buzón',
+            'selectedSedes' => 'sedes seleccionadas',
         ];
     }
 
@@ -44,11 +53,16 @@ class AreaCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('area.crear'), 403);
+        $this->authorize('area.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -57,9 +71,9 @@ class AreaCrear extends Component
 
             $area = Area::create([
                 'nombre' => $this->nombre,
-                'email_buzon' => $this->email_buzon,
-                'color' => $this->color,
-                'icono' => $this->icono,
+                'email_buzon' => $this->email_buzon ?: null,
+                'color' => $this->color ?: '#3b82f6',
+                'icono' => $this->icono ?: 'fa-solid fa-shapes',
                 'activo' => $this->activo,
             ]);
 
@@ -69,13 +83,26 @@ class AreaCrear extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Creado',
+                'text' => 'El área se guardó correctamente.'
+            ]);
+
             return redirect()->route('erp.area.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear área: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+            Log::channel('negocio')->error("[AREA] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo completar la operación.'
+            ]);
         }
     }
 
