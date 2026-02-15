@@ -93,7 +93,7 @@ class AreaCrear extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('negocio')->error("[AREA] Error al crear: " . $e->getMessage(), [
+            Log::channel('area')->error("[AREA] Error al crear: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()

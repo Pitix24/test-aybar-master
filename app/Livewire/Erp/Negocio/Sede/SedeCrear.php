@@ -78,7 +78,7 @@ class SedeCrear extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('negocio')->error("[SEDE] Error al crear: " . $e->getMessage(), [
+            Log::channel('sede')->error("[SEDE] Error al crear: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()

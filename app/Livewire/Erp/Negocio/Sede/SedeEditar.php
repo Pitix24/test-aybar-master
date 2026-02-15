@@ -87,7 +87,7 @@ class SedeEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('negocio')->error("[SEDE] Error al actualizar: " . $e->getMessage(), [
+            Log::channel('sede')->error("[SEDE] Error al actualizar: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'target_id' => $this->sede_model->id,
                 'datos' => $this->all(),
@@ -126,7 +126,7 @@ class SedeEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('negocio')->error("[SEDE] Error al eliminar: " . $e->getMessage(), [
+            Log::channel('sede')->error("[SEDE] Error al eliminar: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'target_id' => $id ?? null,
                 'nombre' => $nombre ?? null,

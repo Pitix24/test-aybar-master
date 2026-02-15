@@ -4,17 +4,19 @@ namespace App\Livewire\Erp\Negocio\Area;
 
 use App\Models\Area;
 use App\Models\TipoSolicitud;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\AreaTiposExport;
+use App\Exports\Negocio\AreaTiposExport;
 use Livewire\Attributes\Title;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Tipos de Solicitud')]
 class AreaSolicitud extends Component
 {
@@ -32,6 +34,7 @@ class AreaSolicitud extends Component
 
     public function mount($id)
     {
+        $this->authorize('area.ver-solicitudes');
         $this->area = Area::findOrFail($id);
     }
 
@@ -44,21 +47,72 @@ class AreaSolicitud extends Component
 
     public function agregarTipo($tipoId)
     {
-        abort_unless(auth()->user()->can('area.editar'), 403);
-        $this->area->tiposSolicitud()->syncWithoutDetaching([$tipoId]);
-        $this->dispatch('alertaLivewire', ['title' => 'Agregado', 'text' => 'Tipo de solicitud vinculado correctamente.']);
+        $this->authorize('area.editar');
+
+        try {
+            DB::beginTransaction();
+
+            $this->area->tiposSolicitud()->syncWithoutDetaching([$tipoId]);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Agregado',
+                'text' => 'Tipo de solicitud vinculado correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('area')->error("[AREA SOLICITUD] Error al agregar tipo: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'area_id' => $this->area->id,
+                'tipo_id' => $tipoId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo vincular el tipo de solicitud.'
+            ]);
+        }
     }
 
     public function quitarTipo($tipoId)
     {
-        abort_unless(auth()->user()->can('area.editar'), 403);
-        $this->area->tiposSolicitud()->detach($tipoId);
-        $this->dispatch('alertaLivewire', ['title' => 'Quitado', 'text' => 'Vínculo eliminado correctamente.']);
+        $this->authorize('area.editar');
+
+        try {
+            DB::beginTransaction();
+
+            $this->area->tiposSolicitud()->detach($tipoId);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Quitado',
+                'text' => 'Vínculo eliminado correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('area')->error("[AREA SOLICITUD] Error al quitar tipo: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'area_id' => $this->area->id,
+                'tipo_id' => $tipoId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el vínculo.'
+            ]);
+        }
     }
 
     public function exportExcel()
     {
-        abort_unless(auth()->user()->can('area.exportar'), 403);
+        $this->authorize('area.exportar-filtro');
+
         return Excel::download(
             new AreaTiposExport($this->area, $this->searchAgregados),
             'tipos-asignados-' . strtolower($this->area->nombre) . '.xlsx'
@@ -67,16 +121,13 @@ class AreaSolicitud extends Component
 
     public function render()
     {
-        // IDs de tipos ya asignados a esta área
         $idsAgregados = $this->area->tiposSolicitud()->pluck('tipo_solicituds.id')->toArray();
 
-        // Tipos ya asignados (con filtro de búsqueda)
         $tiposAgregados = $this->area->tiposSolicitud()
             ->where('nombre', 'like', '%' . $this->searchAgregados . '%')
             ->orderBy('nombre')
             ->get();
 
-        // Tipos disponibles (no asignados, con filtro de búsqueda)
         $tiposDisponibles = TipoSolicitud::whereNotIn('id', $idsAgregados)
             ->where('nombre', 'like', '%' . $this->searchDisponibles . '%')
             ->orderBy('nombre')

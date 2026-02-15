@@ -9,16 +9,16 @@
         </h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.area.vista.todo') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.area.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i></a>
 
-            <a href="{{ route('erp.area.vista.crear') }}" class="g_boton g_boton_primary">
+            <a href="{{ route('erp.area.vista.crear') }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
 
-            <a href="{{ route('erp.area.vista.editar', $area->id) }}" class="g_boton g_boton_secondary">
+            <a href="{{ route('erp.area.vista.editar', $area->id) }}" class="g_boton secondary">
                 Editar <i class="fa-solid fa-pencil"></i></a>
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -30,7 +30,7 @@
 
                 <div class="g_tabla_cabecera">
                     <div class="g_tabla_cabecera_botones">
-                        <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
+                        <button wire:click="exportExcel" class="g_boton excel" wire:loading.attr="disabled"
                             wire:target="exportExcel">
                             <span wire:loading.remove wire:target="exportExcel">Excel <i
                                     class="fa-regular fa-file-excel"></i></span>
@@ -76,7 +76,7 @@
                                     </td>
                                     <td class="g_celda_acciones g_celda_centro centro">
                                         <button wire:click="quitarUsuario({{ $user->id }})"
-                                            class="g_boton g_boton_danger g_boton_pequeno" title="Quitar del área">
+                                            class="g_boton danger" title="Quitar del área">
                                             <i class="fa-solid fa-user-minus"></i>
                                         </button>
                                     </td>
@@ -131,7 +131,7 @@
                                     </td>
                                     <td class="g_celda_acciones g_celda_centro centro">
                                         <button wire:click="agregarUsuario({{ $user->id }})"
-                                            class="g_boton g_boton_success g_boton_pequeno">
+                                            class="g_boton success">
                                             <i class="fa-solid fa-user-plus"></i>
                                         </button>
                                     </td>

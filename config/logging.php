@@ -172,6 +172,20 @@ return [
             'days' => 14,
         ],
 
+        'area' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/area.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'sede' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/sede.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

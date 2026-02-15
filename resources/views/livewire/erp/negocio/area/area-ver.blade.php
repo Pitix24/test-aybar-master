@@ -27,13 +27,19 @@
                     <h4 class="g_panel_titulo">Información General</h4>
 
                     <div class="g_margin_bottom_10">
-                        <label>Estado</label>
-                        <div class="g_margin_top_5">
-                            @if ($area_model->activo)
-                                <span class="g_badge success">Activo</span>
-                            @else
-                                <span class="g_badge danger">Inactivo</span>
-                            @endif
+                        <label for="estado_activo">
+                            Estado
+                        </label>
+
+                        <div class="g_switch-wrapper">
+                            <label class="g_switch">
+                                <input id="estado_activo" type="checkbox" @checked($area_model->activo) disabled>
+                                <span class="g_switch-slider"></span>
+                            </label>
+
+                            <span class="g_switch-label">
+                                {{ $area_model->activo ? 'Activo' : 'Desactivado' }}
+                            </span>
                         </div>
                     </div>
 
@@ -52,36 +58,26 @@
                     <div class="g_fila">
                         <div class="g_columna_6 g_margin_bottom_10">
                             <label>Color Representativo</label>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                                <div
-                                    style="width: 30px; height: 30px; border-radius: 4px; background-color: {{ $area_model->color }}; border: 1px solid #ddd;">
-                                </div>
-                                <span>{{ $area_model->color }}</span>
-                            </div>
+                            <input type="color" value="{{ $area_model->color }}" readonly disabled>
                         </div>
 
                         <div class="g_columna_6 g_margin_bottom_10">
                             <label>Icono</label>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                                <i class="{{ $area_model->icono }}" style="font-size: 20px;"></i>
-                                <span>{{ $area_model->icono }}</span>
-                            </div>
+                            <input type="text" value="{{ $area_model->icono }}" readonly disabled>
                         </div>
                     </div>
 
                     <div class="g_margin_bottom_10">
                         <label>Sedes vinculadas</label>
                         <div class="g_fila">
-                            @forelse ($area_model->sedes as $sede)
+                            @foreach ($area_model->sedes as $sede)
                                 <div class="g_columna_4">
-                                    <span class="g_badge light"
-                                        style="display: block; margin-bottom: 5px;">{{ $sede->nombre }}</span>
+                                    <label class="g_checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span>{{ $sede->nombre }}</span>
+                                    </label>
                                 </div>
-                            @empty
-                                <div class="g_columna_12">
-                                    <p class="leyenda">No hay sedes vinculadas.</p>
-                                </div>
-                            @endforelse
+                            @endforeach
                         </div>
                     </div>
                 </div>

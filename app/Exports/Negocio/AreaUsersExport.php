@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports\Negocio;
 
 use App\Models\Area;
 use Maatwebsite\Excel\Concerns\FromCollection;

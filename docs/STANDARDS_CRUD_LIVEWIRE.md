@@ -70,7 +70,8 @@ ROL
 ### Layout General
 - **Lista**: Ancho completo con filtros en la parte superior.
 - **Crear**: Columna central de 8 (`g_columna_8`).
-- **Editar / Ver**: Estructura 8/4 (`g_columna_8` para datos, `g_columna_4` para panel de **Auditoría**).
+- **Editar**: Estructura 8/4 (`g_columna_8` para datos, `g_columna_4` para panel de **Auditoría**).
+- **Ver**: Estructura central de 8 (`g_columna_8`), solo lectura y **sin panel de auditoría**.
 
 ### Componentes de UI
 - **Loading Overlay**: `<x-loading-overlay wire:loading wire:target="metodo" message="Procesando..." />`.

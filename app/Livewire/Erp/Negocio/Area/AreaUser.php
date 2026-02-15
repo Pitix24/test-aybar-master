@@ -4,17 +4,19 @@ namespace App\Livewire\Erp\Negocio\Area;
 
 use App\Models\Area;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\AreaUsersExport;
+use App\Exports\Negocio\AreaUsersExport;
 use Livewire\Attributes\Title;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Vincular Usuarios')]
 class AreaUser extends Component
 {
@@ -32,6 +34,7 @@ class AreaUser extends Component
 
     public function mount($id)
     {
+        $this->authorize('area.ver-usuarios');
         $this->area = Area::findOrFail($id);
     }
 
@@ -44,36 +47,111 @@ class AreaUser extends Component
 
     public function agregarUsuario($userId)
     {
-        abort_unless(auth()->user()->can('area.editar'), 403);
-        $this->area->users()->syncWithoutDetaching([$userId => ['is_principal' => false]]);
-        $this->dispatch('alertaLivewire', ['title' => 'Agregado', 'text' => 'Usuario asignado al área correctamente.']);
+        $this->authorize('area.editar');
+
+        try {
+            DB::beginTransaction();
+
+            $this->area->users()->syncWithoutDetaching([$userId => ['is_principal' => false]]);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Agregado',
+                'text' => 'Usuario asignado al área correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('area')->error("[AREA USER] Error al agregar usuario: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'area_id' => $this->area->id,
+                'target_user_id' => $userId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo asignar el usuario.'
+            ]);
+        }
     }
 
     public function quitarUsuario($userId)
     {
-        abort_unless(auth()->user()->can('area.editar'), 403);
-        $this->area->users()->detach($userId);
-        $this->dispatch('alertaLivewire', ['title' => 'Quitado', 'text' => 'Usuario retirado del área.']);
+        $this->authorize('area.editar');
+
+        try {
+            DB::beginTransaction();
+
+            $this->area->users()->detach($userId);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Quitado',
+                'text' => 'Usuario retirado del área.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('area')->error("[AREA USER] Error al quitar usuario: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'area_id' => $this->area->id,
+                'target_user_id' => $userId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo retirar al usuario.'
+            ]);
+        }
     }
 
     public function marcarPrincipal($userId)
     {
-        abort_unless(auth()->user()->can('area.editar'), 403);
-        // Quitar principal actual
-        $this->area->users()->updateExistingPivot(
-            $this->area->users()->wherePivot('is_principal', true)->pluck('users.id')->toArray(),
-            ['is_principal' => false]
-        );
+        $this->authorize('area.editar');
 
-        // Asignar nuevo principal
-        $this->area->users()->updateExistingPivot($userId, ['is_principal' => true]);
+        try {
+            DB::beginTransaction();
 
-        $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se ha asignado el nuevo responsable del área.']);
+            // Quitar principal actual
+            $this->area->users()->updateExistingPivot(
+                $this->area->users()->wherePivot('is_principal', true)->pluck('users.id')->toArray(),
+                ['is_principal' => false]
+            );
+
+            // Asignar nuevo principal
+            $this->area->users()->updateExistingPivot($userId, ['is_principal' => true]);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Actualizado',
+                'text' => 'Se ha asignado el nuevo responsable del área.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('area')->error("[AREA USER] Error al marcar principal: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'area_id' => $this->area->id,
+                'target_user_id' => $userId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el responsable.'
+            ]);
+        }
     }
 
     public function exportExcel()
     {
-        abort_unless(auth()->user()->can('area.exportar'), 403);
+        $this->authorize('area.exportar-todo');
+
         return Excel::download(
             new AreaUsersExport($this->area, $this->searchAgregados),
             'usuarios-area-' . strtolower($this->area->nombre) . '.xlsx'
@@ -82,7 +160,6 @@ class AreaUser extends Component
 
     public function render()
     {
-        // Usuarios ya asignados
         $usuariosAgregados = $this->area->users()
             ->where('rol', 'admin')
             ->where(function ($q) {
@@ -94,8 +171,6 @@ class AreaUser extends Component
 
         $idsAgregados = $this->area->users()->pluck('users.id')->toArray();
 
-        // Usuarios disponibles (no asignados)
-        // Nota: Filtrado por rol 'admin' sugerido en el ejemplo
         $usuariosDisponibles = User::whereNotIn('id', $idsAgregados)
             ->where('rol', 'admin')
             ->where('activo', true)

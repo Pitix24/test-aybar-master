@@ -103,7 +103,7 @@ class AreaEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('negocio')->error("[AREA] Error al actualizar: " . $e->getMessage(), [
+            Log::channel('area')->error("[AREA] Error al actualizar: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'target_id' => $this->area_model->id,
                 'datos' => $this->all(),
@@ -142,7 +142,7 @@ class AreaEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('negocio')->error("[AREA] Error al eliminar: " . $e->getMessage(), [
+            Log::channel('area')->error("[AREA] Error al eliminar: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'target_id' => $id ?? null,
                 'nombre' => $nombre ?? null,
