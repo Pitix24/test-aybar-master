@@ -45,28 +45,13 @@
                     <div class="g_fila">
                         <div class="g_columna_6 g_margin_bottom_10">
                             <label>Color Informativo</label>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                                <div
-                                    style="width: 30px; height: 30px; border-radius: 4px; background-color: {{ $motivo->color }}; border: 1px solid #ddd;">
-                                </div>
-                                <span>{{ strtoupper($motivo->color) }}</span>
-                            </div>
+                            <input type="color" value="{{ $motivo->color }}" readonly disabled>
                         </div>
 
                         <div class="g_columna_6 g_margin_bottom_10">
-                            <label>Icono Representativo</label>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                                <i class="{{ $motivo->icono ?? 'fa-solid fa-circle' }}"
-                                    style="color: {{ $motivo->color }}; font-size: 1.5rem;"></i>
-                                <span>{{ $motivo->icono }}</span>
-                            </div>
+                            <label>Icono (FontAwesome)</label>
+                            <input type="text" value="{{ $motivo->icono }}" readonly disabled>
                         </div>
-                    </div>
-
-                    <div class="formulario_botones">
-                        <button type="button" class="g_boton dark" onclick="history.back()">
-                            <i class="fa-solid fa-arrow-left"></i> Regresar
-                        </button>
                     </div>
                 </div>
             </div>
