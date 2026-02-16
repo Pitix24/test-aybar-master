@@ -82,12 +82,16 @@ class EvidenciaPagoAntiguoVer extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('evidencia-pago-antiguo.editar'), 403);
+        $this->authorize('evidencia-pago-antiguo.editar');
 
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -107,14 +111,18 @@ class EvidenciaPagoAntiguoVer extends Component
             $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar evidencia stock: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar.']);
+            Log::channel('evidencia_pago_antiguo')->error("[EVIDENCIA PAGO ANTIGUO] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'evidencia_id' => $this->evidencia->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudo actualizar.']);
         }
     }
 
     public function validar()
     {
-        abort_unless(auth()->user()->can('evidencia-pago-validar'), 403);
+        $this->authorize('solicitud-evidencia-pago.validar');
 
         try {
             DB::beginTransaction();
@@ -138,8 +146,12 @@ class EvidenciaPagoAntiguoVer extends Component
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al validar evidencia stock: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo validar.']);
+            Log::channel('evidencia_pago_antiguo')->error("[EVIDENCIA PAGO ANTIGUO] Error al validar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'evidencia_id' => $this->evidencia->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudo validar.']);
         }
     }
 

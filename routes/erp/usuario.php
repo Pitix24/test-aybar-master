@@ -54,9 +54,10 @@ ADMIN
 3. admin.ver
 4. admin.crear
 5. admin.editar
-6. admin.cambiar-clave
-7. admin.exportar-filtro
-8. admin.exportar-todo
+6. admin.eliminar
+7. admin.cambiar-clave
+8. admin.exportar-filtro
+9. admin.exportar-todo
 
 CLIENTE
 1. cliente.navegacion
@@ -64,8 +65,11 @@ CLIENTE
 3. cliente.ver
 4. cliente.crear
 5. cliente.editar
-6. cliente.exportar-filtro
-7. cliente.exportar-todo
-8. cliente.consultar
+6. cliente.eliminar
+7. cliente.exportar-filtro
+8. cliente.exportar-todo
+9. cliente.consultar
+10. cliente.enviar-recuperar-clave
+11. cliente.movimientos
 
 */

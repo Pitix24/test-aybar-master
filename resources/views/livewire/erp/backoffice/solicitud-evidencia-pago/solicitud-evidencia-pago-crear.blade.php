@@ -1,15 +1,15 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="store" message="Guardando..." />
+    <x-loading-overlay wire:loading wire:target="store" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Nueva Solicitud de Evidencia</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.solicitud-evidencia-pago.vista.todo') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.solicitud-evidencia-pago.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -66,14 +66,16 @@
             <div class="g_margin_bottom_10">
                 <label>Observaciones iniciales</label>
                 <textarea wire:model.live="observacion" rows="4"
-                    placeholder="Alguna nota o referencia inicial..."></textarea>
+                    class="@error('observacion') input-error @enderror"></textarea>
                 @error('observacion') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
 
             <div class="formulario_botones">
-                <button type="submit" class="g_boton g_boton_guardar">
-                    Continuar <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                @can('solicitud-evidencia-pago.crear')
+                    <button type="submit" class="g_boton guardar">
+                        Continuar <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                @endcan
             </div>
         </form>
     </div>

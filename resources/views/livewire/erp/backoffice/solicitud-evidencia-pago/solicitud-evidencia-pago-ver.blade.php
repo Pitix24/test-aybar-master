@@ -3,7 +3,7 @@
         <h2>Detalle Solicitud de Evidencia #{{ $solicitud->id }}</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.solicitud-evidencia-pago.vista.todo') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.solicitud-evidencia-pago.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
@@ -13,11 +13,11 @@
                 </a>
             @endcan
 
-            <button type="button" class="g_boton g_boton_info" wire:click="$dispatch('toggleChat')">
+            <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
                 Chat <i class="fa-solid fa-comments"></i>
             </button>
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -256,7 +256,7 @@
                                     <td class="g_celda_centro">
                                         <div class="g_comparador_acciones">
                                             <button wire:click="seleccionarEvidencia({{ $evidencia->id }})"
-                                                class="g_accion_ver {{ $evidenciaSeleccionadaId == $evidencia->id ? 'active' : '' }}"
+                                                class="g_accion ver {{ $evidenciaSeleccionadaId == $evidencia->id ? 'active' : '' }}"
                                                 title="Seleccionar para comparar">
                                                 <i class="fa-solid fa-magnifying-glass-chart"></i>
                                             </button>

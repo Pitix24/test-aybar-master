@@ -100,6 +100,8 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
 PERMISOS ATC
 --------------------------------------------------------------------------
 Convención: recurso.accion
+MODULO
+1. modulo-atc.ver
 
 TIPO SOLICITUD
 1. tipo-solicitud.navegacion

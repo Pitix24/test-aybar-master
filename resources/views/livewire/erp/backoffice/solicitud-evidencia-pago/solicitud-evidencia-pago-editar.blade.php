@@ -89,12 +89,21 @@
                                 </select>
                                 @error('estado_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
+
+                            <div class="g_margin_bottom_10 g_columna_12">
+                                <label>Observación Interna</label>
+                                <textarea wire:model.live="observacion" rows="3"
+                                    class="@error('observacion') input-error @enderror"></textarea>
+                                @error('observacion') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            </div>
                         </div>
 
                         <div class="formulario_botones">
-                            <button type="submit" class="g_boton guardar">
-                                <i class="fa-solid fa-save"></i> Guardar Cambios
-                            </button>
+                            @can('solicitud-evidencia-pago.editar')
+                                <button type="submit" class="g_boton guardar">
+                                    <i class="fa-solid fa-save"></i> Guardar Cambios
+                                </button>
+                            @endcan
                         </div>
                     </form>
                 </div>
@@ -354,15 +363,17 @@
                                     </div>
                                 @else
                                     <div class="formulario_botones">
-                                        <button wire:click="enviarSlin" class="g_boton guardar" style="width: 100%;"
-                                            wire:loading.attr="disabled" wire:target="enviarSlin">
-                                            <span wire:loading.remove wire:target="enviarSlin">
-                                                VALIDAR CON SLIN <i class="fa-solid fa-paper-plane"></i>
-                                            </span>
-                                            <span wire:loading wire:target="enviarSlin">
-                                                Enviando a Slin... <i class="fa-solid fa-spinner fa-spin"></i>
-                                            </span>
-                                        </button>
+                                        @can('solicitud-evidencia-pago.validar')
+                                            <button wire:click="enviarSlin" class="g_boton guardar" style="width: 100%;"
+                                                wire:loading.attr="disabled" wire:target="enviarSlin">
+                                                <span wire:loading.remove wire:target="enviarSlin">
+                                                    VALIDAR CON SLIN <i class="fa-solid fa-paper-plane"></i>
+                                                </span>
+                                                <span wire:loading wire:target="enviarSlin">
+                                                    Enviando a Slin... <i class="fa-solid fa-spinner fa-spin"></i>
+                                                </span>
+                                            </button>
+                                        @endcan
                                     </div>
                                 @endif
                             @else
@@ -373,15 +384,17 @@
                                     </div>
                                 @else
                                     <div class="formulario_botones">
-                                        <button wire:click="cerrarManual" class="g_boton guardar" style="width: 100%;"
-                                            wire:loading.attr="disabled" wire:target="cerrarManual">
-                                            <span wire:loading.remove wire:target="cerrarManual">
-                                                CIERRE MANUAL <i class="fa-solid fa-lock"></i>
-                                            </span>
-                                            <span wire:loading wire:target="cerrarManual">
-                                                Procesando... <i class="fa-solid fa-spinner fa-spin"></i>
-                                            </span>
-                                        </button>
+                                        @can('solicitud-evidencia-pago.validar')
+                                            <button wire:click="cerrarManual" class="g_boton guardar" style="width: 100%;"
+                                                wire:loading.attr="disabled" wire:target="cerrarManual">
+                                                <span wire:loading.remove wire:target="cerrarManual">
+                                                    CIERRE MANUAL <i class="fa-solid fa-lock"></i>
+                                                </span>
+                                                <span wire:loading wire:target="cerrarManual">
+                                                    Procesando... <i class="fa-solid fa-spinner fa-spin"></i>
+                                                </span>
+                                            </button>
+                                        @endcan
                                     </div>
                                 @endif
                             @endif

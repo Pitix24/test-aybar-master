@@ -13,6 +13,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Illuminate\Validation\ValidationException;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -65,7 +66,16 @@ class SolicitudEvidenciaPagoCrear extends Component
     {
         $this->authorize('solicitud-evidencia-pago.crear');
 
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
@@ -86,9 +96,20 @@ class SolicitudEvidenciaPagoCrear extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error SolicitudEvidenciaPagoCrear@store: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear la solicitud.']);
+            Log::channel('solicitud_evidencia_pago')->error("[SOLICITUD EVIDENCIA PAGO] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudo crear la solicitud.']);
         }
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 
     public function render()

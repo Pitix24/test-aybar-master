@@ -46,6 +46,8 @@ Route::group(['middleware' => ['permission:modulo-backoffice.ver']], function ()
 PERMISOS BACKOFFICE
 --------------------------------------------------------------------------
 Convención: recurso.accion
+MODULO
+1. modulo-backoffice.ver
 
 ESTADO SOLICITUD EVIDENCIA PAGO
 1. estado-solicitud-evidencia-pago.navegacion
@@ -75,5 +77,5 @@ EVIDENCIA PAGO ANTIGUO
 4. evidencia-pago-antiguo.editar
 5. evidencia-pago-antiguo.exportar-filtro
 6. evidencia-pago-antiguo.exportar-todo
-7. solicitud-evidencia-pago.validar
+7. evidencia-pago-antiguo.validar
 */

@@ -1,14 +1,15 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="update, validar" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar evidencia pago stock</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.evidencia-pago-antiguo.vista.todo') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.evidencia-pago-antiguo.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
         </div>
@@ -148,18 +149,17 @@
 
                     <div class="g_margin_bottom_10">
                         <label for="observacion">Observación</label>
-                        <textarea wire:model.blur="observacion" id="observacion" rows="3"></textarea>
+                        <textarea wire:model.blur="observacion" id="observacion" rows="3"
+                            class="@error('observacion') input-error @enderror"></textarea>
                         @error('observacion') <span class="mensaje_error">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="update">
-                            <span wire:loading.remove wire:target="update"><i class="fa-solid fa-save"></i>
-                                Actualizar</span>
-                            <span wire:loading wire:target="update"><i class="fa-solid fa-spinner fa-spin"></i>
-                                Actualizando...</span>
-                        </button>
+                        @can('evidencia-pago-antiguo.editar')
+                            <button type="submit" class="g_boton guardar">
+                                <i class="fa-solid fa-save"></i> Actualizar
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </form>
@@ -175,9 +175,9 @@
                                 style="width: 100%; border-radius: 8px; box-shadow: var(--g-box-shadow);">
                         </a>
                         <div class="g_margin_top_10" style="display: flex; gap: 10px; justify-content: center;">
-                            <a href="{{ $evidencia->imagen_url }}" target="_blank" class="g_boton g_boton_light">Ver <i
+                            <a href="{{ $evidencia->imagen_url }}" target="_blank" class="g_boton light">Ver <i
                                     class="fa-solid fa-eye"></i></a>
-                            <a href="{{ $evidencia->imagen_url }}" download class="g_boton g_boton_primary">Bajar <i
+                            <a href="{{ $evidencia->imagen_url }}" download class="g_boton primary">Bajar <i
                                     class="fa-solid fa-download"></i></a>
                         </div>
                     @else
@@ -198,13 +198,11 @@
                 </div>
 
                 @if (!$evidencia->fecha_validacion)
-                    <button wire:click="validar" class="g_boton g_boton_success" style="width: 100%;"
-                        wire:loading.attr="disabled" wire:target="validar">
-                        <span wire:loading.remove wire:target="validar"><i class="fa-solid fa-check-double"></i> Validar
-                            Ahora</span>
-                        <span wire:loading wire:target="validar"><i class="fa-solid fa-spinner fa-spin"></i>
-                            Validando...</span>
-                    </button>
+                    @can('solicitud-evidencia-pago.validar')
+                        <button wire:click="validar" class="g_boton success" style="width: 100%;">
+                            <i class="fa-solid fa-check-double"></i> Validar Ahora
+                        </button>
+                    @endcan
                 @endif
             </div>
         </div>

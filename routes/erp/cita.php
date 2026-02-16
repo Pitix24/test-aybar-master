@@ -53,6 +53,8 @@ Route::group(['middleware' => ['permission:modulo-cita.ver']], function () {
 PERMISOS CITA
 --------------------------------------------------------------------------
 Convención: recurso.accion
+MODULO
+1. modulo-cita.ver
 
 ESTADO CITA
 1. estado-cita.navegacion

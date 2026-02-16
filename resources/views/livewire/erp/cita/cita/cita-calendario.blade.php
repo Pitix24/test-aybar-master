@@ -39,7 +39,7 @@
 
     <div class="g_panel" style="padding: 0; min-height: 70vh;">
         <div class="g_calendario_contenedor">
-            @include("livewire.cita.cita.vistas.{$vista}")
+            @include("livewire.erp.cita.cita.vistas.{$vista}")
         </div>
     </div>
 </div>

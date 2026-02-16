@@ -74,4 +74,11 @@ class SolicitudEvidenciaPagoVer extends Component
     {
         return view('livewire.erp.backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-ver');
     }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
+    }
 }

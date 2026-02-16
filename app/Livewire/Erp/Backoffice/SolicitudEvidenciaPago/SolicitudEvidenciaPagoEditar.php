@@ -11,11 +11,13 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Illuminate\Validation\ValidationException;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -101,11 +103,22 @@ class SolicitudEvidenciaPagoEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('solicitud-evidencia-pago.editar'), 403);
-
-        $this->validate();
+        $this->authorize('solicitud-evidencia-pago.editar');
 
         try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        }
+
+        try {
+            DB::beginTransaction();
+
             $this->solicitud->update([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'proyecto_id' => $this->proyecto_id,
@@ -114,10 +127,17 @@ class SolicitudEvidenciaPagoEditar extends Component
                 'observacion' => $this->observacion,
             ]);
 
+            DB::commit();
+
             $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Datos actualizados correctamente.']);
         } catch (\Exception $e) {
-            Log::error('Error SolicitudEvidenciaPagoEditar@update: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudieron guardar los cambios.']);
+            DB::rollBack();
+            Log::channel('solicitud_evidencia_pago')->error("[SOLICITUD EVIDENCIA PAGO] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'solicitud_id' => $this->solicitud->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudieron guardar los cambios.']);
         }
     }
 
@@ -137,7 +157,7 @@ class SolicitudEvidenciaPagoEditar extends Component
 
     public function enviarSlin()
     {
-        abort_unless(auth()->user()->can('solicitud-evidencia-pago.editar'), 403);
+        $this->authorize('solicitud-evidencia-pago.validar');
 
         if (!$this->evidenciaSeleccionada) {
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'Debe seleccionar una evidencia primero.']);
@@ -155,6 +175,8 @@ class SolicitudEvidenciaPagoEditar extends Component
         }
 
         try {
+            DB::beginTransaction();
+
             $imageContent = Storage::disk('public')->get($this->evidenciaSeleccionada->path);
             $fechaOperacion = Carbon::parse($this->evidenciaSeleccionada->fecha)->format('m/d/Y');
 
@@ -192,8 +214,10 @@ class SolicitudEvidenciaPagoEditar extends Component
                     'slin_respuesta' => $mensaje,
                 ]);
 
+                DB::commit();
+
                 $this->estado_id = $estadoRechazadoId;
-                $this->dispatch('alertaLivewire', ['title' => 'Rechazado por SLIN', 'text' => $mensaje]);
+                $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Rechazado por SLIN', 'text' => $mensaje]);
                 return;
             }
 
@@ -211,6 +235,8 @@ class SolicitudEvidenciaPagoEditar extends Component
                 'slin_respuesta' => $body['data']['message'] ?? 'Procesado correctamente por SLIN.',
             ]);
 
+            DB::commit();
+
             $this->estado_id = $estadoAprobadoId;
             $this->solicitud->refresh();
             $this->evidenciaSeleccionada->refresh();
@@ -218,14 +244,20 @@ class SolicitudEvidenciaPagoEditar extends Component
             $this->dispatch('alertaLivewire', ['title' => 'Éxito', 'text' => 'Evidencia enviada y validada por SLIN.']);
 
         } catch (\Exception $e) {
-            Log::error('Error SolicitudEvidenciaPagoEditar@enviarSlin: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'Ocurrió un error al procesar con SLIN.']);
+            DB::rollBack();
+            Log::channel('solicitud_evidencia_pago')->error("[SOLICITUD EVIDENCIA PAGO] Error en enviarSlin: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'solicitud_id' => $this->solicitud->id,
+                'evidencia_id' => $this->evidenciaSeleccionadaId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'Ocurrió un error al procesar con SLIN.']);
         }
     }
 
     public function cerrarManual()
     {
-        abort_unless(auth()->user()->can('solicitud-evidencia-pago.editar'), 403);
+        $this->authorize('solicitud-evidencia-pago.validar');
 
         if (!$this->evidenciaSeleccionada) {
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'Debe seleccionar una evidencia primero.']);
@@ -233,6 +265,8 @@ class SolicitudEvidenciaPagoEditar extends Component
         }
 
         try {
+            DB::beginTransaction();
+
             $estadoAprobadoId = EstadoSolicitudEvidenciaPago::id(EstadoSolicitudEvidenciaPago::APROBADO);
 
             $this->solicitud->update([
@@ -246,14 +280,21 @@ class SolicitudEvidenciaPagoEditar extends Component
                 'estado_solicitud_evidencia_pago_id' => $estadoAprobadoId,
             ]);
 
+            DB::commit();
+
             $this->estado_id = $estadoAprobadoId;
             $this->solicitud->refresh();
             $this->evidenciaSeleccionada->refresh();
 
             $this->dispatch('alertaLivewire', ['title' => 'Aprobado', 'text' => 'La solicitud ha sido cerrada manualmente con éxito.']);
         } catch (\Exception $e) {
-            Log::error('Error SolicitudEvidenciaPagoEditar@cerrarManual: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo realizar el cierre manual.']);
+            DB::rollBack();
+            Log::channel('solicitud_evidencia_pago')->error("[SOLICITUD EVIDENCIA PAGO] Error en cerrarManual: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'solicitud_id' => $this->solicitud->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudo realizar el cierre manual.']);
         }
     }
 

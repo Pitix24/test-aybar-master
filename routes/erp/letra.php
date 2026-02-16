@@ -41,6 +41,8 @@ Route::group(['middleware' => ['permission:modulo-letras.ver']], function () {
 PERMISOS LETRAS
 --------------------------------------------------------------------------
 Convención: recurso.accion
+MODULO
+1. modulo-letras.ver
 
 ESTADO SOLICITUD DIGITALIZAR LETRA
 1. estado-solicitud-digitalizar-letra.navegacion
