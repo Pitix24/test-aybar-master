@@ -5,8 +5,8 @@ use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigita
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraEditar;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraVer;
-use App\Livewire\Erp\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraEditar;
 use App\Livewire\Erp\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraLista;
+use App\Livewire\Erp\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraVer;
 use App\Livewire\Erp\Letra\EnvioCavali\EnvioCavaliDetalle;
 use App\Livewire\Erp\Letra\EnvioCavali\EnvioCavaliLista;
 use Illuminate\Support\Facades\Route;
@@ -24,13 +24,13 @@ Route::group(['middleware' => ['permission:modulo-letras.ver']], function () {
     Route::group(['middleware' => ['permission:solicitud-digitalizar-letra.navegacion']], function () {
         Route::prefix('solicitar-letra-digital')->name('solicitar-letra-digital.vista.')->group(function () {
             Route::get('/', SolicitudDigitalizarLetraLista::class)->middleware('permission:solicitud-digitalizar-letra.ver')->name('todo');
-            Route::get('/editar/{id}', SolicitudDigitalizarLetraEditar::class)->middleware('permission:solicitud-digitalizar-letra.editar')->name('editar');
+            Route::get('/ver/{id}', SolicitudDigitalizarLetraVer::class)->middleware('permission:solicitud-digitalizar-letra.ver')->name('ver');
         });
     });
 
     Route::group(['middleware' => ['permission:envio-cavali.navegacion']], function () {
         Route::prefix('envio-cavali')->name('envio-cavali.vista.')->group(function () {
-            Route::get('/', EnvioCavaliLista::class)->middleware('permission:envio-cavali.ver')->name('todo');
+            Route::get('/', EnvioCavaliLista::class)->middleware('permission:envio-cavali.lista')->name('todo');
             Route::get('/detalle/{id}', EnvioCavaliDetalle::class)->middleware('permission:envio-cavali.detalle')->name('detalle');
         });
     });
@@ -54,17 +54,15 @@ ESTADO SOLICITUD DIGITALIZAR LETRA
 
 SOLICITUD DIGITALIZAR LETRA
 1. solicitud-digitalizar-letra.navegacion
-2. solicitud-digitalizar-letra.ver
-3. solicitud-digitalizar-letra.crear
-4. solicitud-digitalizar-letra.editar
-5. solicitud-digitalizar-letra.eliminar
-6. solicitud-digitalizar-letra.exportar
+2. solicitud-digitalizar-letra.lista
+3. solicitud-digitalizar-letra.ver
+4. solicitud-digitalizar-letra.exportar-filtro
+5. solicitud-digitalizar-letra.exportar-todo
 
-ENVIO CAVALI SOLICITUD
-1. envio-cavali-solicitud.navegacion
-2. envio-cavali-solicitud.ver
-3. envio-cavali-solicitud.crear
-4. envio-cavali-solicitud.editar
-5. envio-cavali-solicitud.eliminar
-6. envio-cavali-solicitud.exportar
+ENVIO CAVALI
+1. envio-cavali.navegacion
+2. envio-cavali.lista
+3. envio-cavali.detalle
+4. envio-cavali.exportar-filtro
+5. envio-cavali.exportar-todo
 */

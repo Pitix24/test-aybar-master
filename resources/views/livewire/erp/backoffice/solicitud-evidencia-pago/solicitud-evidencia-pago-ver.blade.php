@@ -1,20 +1,23 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="update, enviarSlin, cerrarManual, enviarCorreo, seleccionarEvidencia"
-        message="Procesando..." />
-
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Solicitud de Evidencia #{{ $solicitud->id }}</h2>
+        <h2>Detalle Solicitud de Evidencia #{{ $solicitud->id }}</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.solicitud-evidencia-pago.vista.todo') }}" class="g_boton light">
+            <a href="{{ route('erp.solicitud-evidencia-pago.vista.todo') }}" class="g_boton g_boton_light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
-            <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
+            @can('solicitud-evidencia-pago.editar')
+                <a href="{{ route('erp.solicitud-evidencia-pago.vista.editar', $solicitud->id) }}" class="g_boton guardar">
+                    Editar <i class="fa-solid fa-pencil"></i>
+                </a>
+            @endcan
+
+            <button type="button" class="g_boton g_boton_info" wire:click="$dispatch('toggleChat')">
                 Chat <i class="fa-solid fa-comments"></i>
             </button>
 
-            <button type="button" class="g_boton dark" onclick="history.back()">
+            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -42,61 +45,42 @@
                 </div>
 
                 <div x-show="activeTab === 'general'" x-transition class="g_tab_content">
-                    <form wire:submit="update" class="formulario">
+                    <div class="formulario">
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_3">
                                 <label>Empresa</label>
-                                <select wire:model.live="unidad_negocio_id"
-                                    class="@error('unidad_negocio_id') input-error @enderror">
-                                    <option value="">Seleccione...</option>
-                                    @foreach($unidades_negocios as $un)
-                                        <option value="{{ $un->id }}">{{ $un->nombre }}</option>
-                                    @endforeach
+                                <select disabled>
+                                    <option value="">{{ $solicitud->unidadNegocio->nombre ?? '—' }}</option>
                                 </select>
-                                @error('unidad_negocio_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="g_margin_bottom_10 g_columna_3">
                                 <label>Proyecto</label>
-                                <select wire:model.live="proyecto_id"
-                                    class="@error('proyecto_id') input-error @enderror">
-                                    <option value="">Seleccione...</option>
-                                    @foreach($proyectos as $pr)
-                                        <option value="{{ $pr->id }}">{{ $pr->nombre }}</option>
-                                    @endforeach
+                                <select disabled>
+                                    <option value="">{{ $solicitud->proyecto->nombre ?? '—' }}</option>
                                 </select>
-                                @error('proyecto_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="g_margin_bottom_10 g_columna_3">
                                 <label>Gestor Asignado</label>
-                                <select wire:model.live="gestor_id" class="@error('gestor_id') input-error @enderror">
-                                    <option value="">Seleccione...</option>
-                                    @foreach($gestores as $ge)
-                                        <option value="{{ $ge->id }}">{{ $ge->name }}</option>
-                                    @endforeach
+                                <select disabled>
+                                    <option value="">{{ $solicitud->gestor->name ?? '—' }}</option>
                                 </select>
-                                @error('gestor_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="g_margin_bottom_10 g_columna_3">
                                 <label>Estado Actual</label>
-                                <select wire:model.live="estado_id" class="@error('estado_id') input-error @enderror">
-                                    <option value="">Seleccione...</option>
-                                    @foreach($estados as $es)
-                                        <option value="{{ $es->id }}">{{ $es->nombre }}</option>
-                                    @endforeach
+                                <select disabled>
+                                    <option value="">{{ $solicitud->estado->nombre ?? '—' }}</option>
                                 </select>
-                                @error('estado_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
                         </div>
-
-                        <div class="formulario_botones">
-                            <button type="submit" class="g_boton guardar">
-                                <i class="fa-solid fa-save"></i> Guardar Cambios
-                            </button>
+                        
+                        <div class="g_margin_bottom_10">
+                            <label>Observación</label>
+                            <textarea disabled rows="3">{{ $solicitud->observacion }}</textarea>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
@@ -225,7 +209,7 @@
                                     </span>
                                 </td>
                                 <td class="g_celda_centro">
-                                    
+                                    <i class="fa-solid fa-anchor" title="Dato de referencia"></i>
                                 </td>
                             </tr>
                         </tbody>
@@ -258,10 +242,6 @@
                                     <td>{{ $evidencia->numero_operacion ?? '—' }}</td>
                                     <td class="g_negrita">
                                         S/ {{ number_format($evidencia->monto, 2) }}
-                                        @if(isset($solicitud->monto_operacion) && $evidencia->monto != $solicitud->monto_operacion)
-                                            <i class="fa-solid fa-triangle-exclamation" style="color: red;"
-                                                title="El monto no coincide con el ERP"></i>
-                                        @endif
                                     </td>
                                     <td>
                                         @if ($evidencia->estado)
@@ -276,7 +256,7 @@
                                     <td class="g_celda_centro">
                                         <div class="g_comparador_acciones">
                                             <button wire:click="seleccionarEvidencia({{ $evidencia->id }})"
-                                                class="g_accion ver {{ $evidenciaSeleccionadaId == $evidencia->id ? 'active' : '' }}"
+                                                class="g_accion_ver {{ $evidenciaSeleccionadaId == $evidencia->id ? 'active' : '' }}"
                                                 title="Seleccionar para comparar">
                                                 <i class="fa-solid fa-magnifying-glass-chart"></i>
                                             </button>
@@ -291,23 +271,13 @@
 
             @livewire('erp.backoffice.solicitud-evidencia-pago.solicitud-evidencia-pago-email', [
                 'solicitud' => $solicitud,
-                'evidenciaId' => $evidenciaSeleccionadaId
+                'evidenciaId' => $evidenciaSeleccionadaId,
+                'soloLectura' => true
             ])
         </div>
 
         <div class="g_columna_4 g_gap_pagina g_columna_invertir">
             <div class="g_panel">
-                @if (session('info'))
-                    <div class="g_alerta info g_margin_bottom_10">
-                        <i class="fa-solid fa-circle-info"></i> {{ session('info') }}
-                    </div>
-                @endif
-                @if (session('success'))
-                    <div class="g_alerta success g_margin_bottom_10">
-                        <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
-                    </div>
-                @endif
-
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-magnifying-glass"></i> Evidencia seleccionada</h4>
 
                 @if ($evidenciaSeleccionada)
@@ -329,72 +299,29 @@
                             </span>
                         </div>
 
-                        <div class="g_evidencia_meta_list">
-                            <div class="g_evidencia_meta_item">
-                                <span class="g_evidencia_meta_label">Lote</span>
-                                <span class="g_evidencia_meta_value">{{ $solicitud->lote_completo ?? '—' }}</span>
-                            </div>
-                            <div class="g_evidencia_meta_item">
-                                <span class="g_evidencia_meta_label">Cliente</span>
-                                <span class="g_evidencia_meta_value">{{ $solicitud->codigo_cliente ?? '—' }}</span>
-                            </div>
-                            <div class="g_evidencia_meta_item">
-                                <span class="g_evidencia_meta_label">ID Transacción</span>
-                                <span class="g_evidencia_meta_value">{{ $solicitud->transaccion_id ?? '—' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="formulario">
-                            @if ($solicitud->slin_asbanc)
-                                @if ($solicitud->fecha_validacion && $solicitud->slin_evidencia)
-                                    <div class="g_resaltado_caja success">
-                                        <span class="g_resaltado_caja_titulo">Validación Digital EXITOSA</span>
-                                        <p><strong>Fecha:</strong> {{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}</p>
-                                        <p><strong>Respuesta:</strong> {{ $solicitud->slin_respuesta }}</p>
-                                    </div>
-                                @else
-                                    <div class="formulario_botones">
-                                        <button wire:click="enviarSlin" class="g_boton guardar" style="width: 100%;"
-                                            wire:loading.attr="disabled" wire:target="enviarSlin">
-                                            <span wire:loading.remove wire:target="enviarSlin">
-                                                VALIDAR CON SLIN <i class="fa-solid fa-paper-plane"></i>
-                                            </span>
-                                            <span wire:loading wire:target="enviarSlin">
-                                                Enviando a Slin... <i class="fa-solid fa-spinner fa-spin"></i>
-                                            </span>
-                                        </button>
-                                    </div>
+                        @if ($solicitud->fecha_validacion)
+                            <div class="g_resaltado_caja {{ $solicitud->slin_evidencia ? 'success' : 'info' }}">
+                                <span class="g_resaltado_caja_titulo">Validación {{ $solicitud->slin_evidencia ? 'Digital' : 'Manual' }}</span>
+                                <p><strong>Fecha:</strong> {{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}</p>
+                                @if($solicitud->slin_respuesta)
+                                    <p><strong>Respuesta:</strong> {{ $solicitud->slin_respuesta }}</p>
                                 @endif
-                            @else
-                                @if ($solicitud->fecha_validacion)
-                                    <div class="g_resaltado_caja info">
-                                        <span class="g_resaltado_caja_titulo">Validación MANUAL</span>
-                                        <p><strong>Aprobado el:</strong> {{ $solicitud->fecha_validacion->format('d/m/Y H:i') }}</p>
-                                    </div>
-                                @else
-                                    <div class="formulario_botones">
-                                        <button wire:click="cerrarManual" class="g_boton guardar" style="width: 100%;"
-                                            wire:loading.attr="disabled" wire:target="cerrarManual">
-                                            <span wire:loading.remove wire:target="cerrarManual">
-                                                CIERRE MANUAL <i class="fa-solid fa-lock"></i>
-                                            </span>
-                                            <span wire:loading wire:target="cerrarManual">
-                                                Procesando... <i class="fa-solid fa-spinner fa-spin"></i>
-                                            </span>
-                                        </button>
-                                    </div>
-                                @endif
-                            @endif
-                        </div>
+                                <p><strong>Gestor:</strong> {{ $solicitud->usuarioValida->name ?? 'N/A' }}</p>
+                            </div>
+                        @else
+                            <div class="g_alerta_info">
+                                <i class="fa-solid fa-clock"></i> Pendiente de validación.
+                            </div>
+                        @endif
                     </div>
                 @else
                 <div class="g_vacio" style="height: 300px;">
                     <i class="fa-solid fa-hand-pointer fa-bounce" style="font-size: 30px"></i>
-                    <p>Seleccione una evidencia de la lista para gestionarla.</p>
+                    <p>Seleccione una evidencia de la lista para ver el detalle.</p>
                 </div>
                 @endif
             </div>
         </div>
-        @livewire('erp.backoffice.solicitud-evidencia-pago.solicitud-evidencia-chat', ['solicitud' => $solicitud])
+        @livewire('erp.backoffice.solicitud-evidencia-pago.solicitud-evidencia-chat', ['solicitud' => $solicitud, 'soloLectura' => true])
     </div>
 </div>

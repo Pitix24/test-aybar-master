@@ -1,13 +1,13 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, estado_id, unidad_negocio_id, resetFiltros, exportCavali"
+        wire:target="buscar, perPage, estado_id, unidad_negocio_id, resetFiltros, exportCavali, exportExcelFiltro, exportExcelTodo, gotoPage, nextPage, previousPage"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Listado de Envíos CAVALI</h2>
 
         <div class="cabecera_titulo_botones">
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
         </div>
@@ -47,7 +47,27 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                @can('envio-cavali-solicitud.exportar-filtro')
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                        wire:target="exportExcelFiltro">
+                        <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcelFiltro">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                @can('envio-cavali-solicitud.exportar-todo')
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -80,13 +100,15 @@
                 </thead>
 
                 <tbody>
-                    @foreach ($items as $index => $item)
+                    @foreach ($items as $item)
                         <tr wire:key="envio-{{ $item->id }}">
-                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge light">#{{ $item->id }}</span>
+                            </td>
                             <td class="g_negrita g_inferior">{{ $item->fecha_corte->format('d/m/Y') }}</td>
                             <td class="g_resumir">{{ $item->unidadNegocio?->nombre ?? '—' }}</td>
                             <td class="g_celda_centro">
-                                <span class="g_badge g_badge_light">{{ $item->solicitudes_count }}</span>
+                                <span class="g_badge light">{{ $item->solicitudes_count }}</span>
                             </td>
                             <td class="g_celda_centro">
                                 @if ($item->estado)
@@ -95,20 +117,21 @@
                                         {{ $item->estado->nombre }}
                                     </span>
                                 @else
-                                    <span class="g_badge g_badge_light">Pendiente</span>
+                                    <span class="g_badge light">Pendiente</span>
                                 @endif
                             </td>
                             <td class="g_inferior">{{ $item->enviado_at?->format('d/m/Y H:i') ?? '—' }}</td>
                             <td class="g_resumir g_inferior">{{ $item->archivo_nombre ?? '—' }}</td>
                             <td class="g_celda_acciones g_celda_centro">
                                 @can('envio-cavali-solicitud.exportar')
-                                    <button wire:click="exportCavali({{ $item->id }})" class="g_accion_excel" title="Cavali Excel">
+                                    <button wire:click="exportCavali({{ $item->id }})" class="g_accion excel"
+                                        title="Cavali Excel">
                                         <i class="fa-regular fa-file-excel"></i>
                                     </button>
                                 @endcan
 
-                                <a href="{{ route('erp.envio-cavali.vista.detalle', $item->id) }}"
-                                    class="g_accion_editar" title="Ver Detalle">
+                                <a href="{{ route('erp.envio-cavali.vista.detalle', $item->id) }}" class="g_accion editar"
+                                    title="Ver Detalle">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
                             </td>

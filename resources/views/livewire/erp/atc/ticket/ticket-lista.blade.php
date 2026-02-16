@@ -7,8 +7,10 @@
         <h2>Listado de Tickets</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.ticket.vista.crear') }}" class="g_boton primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('erp.ticket.vista.crear')
+                <a href="{{ route('erp.ticket.vista.crear') }}" class="g_boton primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
         </div>
     </div>
 
@@ -215,7 +217,7 @@
                     @foreach ($items as $item)
                         <tr>
                             <td class="g_celda_centro">
-                                <span class="g_badge g_badge_light">#{{ $item->id }}</span>
+                                <span class="g_badge light">#{{ $item->id }}</span>
                             </td>
                             <td class="g_negrita g_resumir">{{ $item->nombres }}</td>
                             <td>
@@ -224,7 +226,7 @@
                                         <i class="{{ $item->area->icono }}"></i> {{ $item->area->nombre }}
                                     </span>
                                 @else
-                                    <span class="g_badge g_badge_light">-</span>
+                                    <span class="g_badge light">-</span>
                                 @endif
                             </td>
                             <td class="g_resumir g_inferior">{{ $item->tipoSolicitud->nombre }}</td>

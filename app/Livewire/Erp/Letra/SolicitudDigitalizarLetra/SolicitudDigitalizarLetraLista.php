@@ -12,7 +12,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Exports\SolicitudDigitalizarLetraExport;
+use App\Exports\Letra\SolicitudDigitalizarLetraExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 #[Lazy]
@@ -22,25 +22,25 @@ class SolicitudDigitalizarLetraLista extends Component
 {
     use WithPagination;
 
-    #[Url(as: 'q')]
+    #[Url(as: 'q', keep: true)]
     public $buscar = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $estado_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $unidad_negocio_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $proyecto_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $fecha_inicio = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $fecha_fin = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $perPage = 20;
 
     public $estados = [];
@@ -49,6 +49,9 @@ class SolicitudDigitalizarLetraLista extends Component
 
     public function mount()
     {
+        $this->fecha_inicio = now()->startOfMonth()->format('Y-m-d');
+        $this->fecha_fin = now()->format('Y-m-d');
+
         $this->estados = EstadoSolicitudDigitalizarLetra::all();
         $this->unidades_negocios = UnidadNegocio::all();
 
@@ -65,6 +68,7 @@ class SolicitudDigitalizarLetraLista extends Component
         if ($value) {
             $this->loadProyectos();
         }
+        $this->resetPage();
     }
 
     public function loadProyectos()
@@ -98,18 +102,18 @@ class SolicitudDigitalizarLetraLista extends Component
             'estado_id',
             'unidad_negocio_id',
             'proyecto_id',
-            'fecha_inicio',
-            'fecha_fin',
         ]);
+        $this->fecha_inicio = now()->startOfMonth()->format('Y-m-d');
+        $this->fecha_fin = now()->format('Y-m-d');
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('solicitud-digitalizar-letra.exportar'), 403);
+        $this->authorize('solicitud-digitalizar-letra.exportar-filtro');
 
-        $nombreArchivo = 'solicitudes_letras_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $nombreArchivo = 'letras_filtro_' . now()->format('Ymd_His') . '.xlsx';
 
         return Excel::download(new SolicitudDigitalizarLetraExport(
             $this->buscar,
@@ -117,7 +121,29 @@ class SolicitudDigitalizarLetraLista extends Component
             $this->unidad_negocio_id,
             $this->proyecto_id,
             $this->fecha_inicio,
-            $this->fecha_fin
+            $this->fecha_fin,
+            $this->perPage,
+            $this->getPage(),
+            false
+        ), $nombreArchivo);
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('solicitud-digitalizar-letra.exportar-todo');
+
+        $nombreArchivo = 'letras_todo_' . now()->format('Ymd_His') . '.xlsx';
+
+        return Excel::download(new SolicitudDigitalizarLetraExport(
+            '',
+            '',
+            '',
+            '',
+            $this->fecha_inicio,
+            $this->fecha_fin,
+            null,
+            null,
+            true
         ), $nombreArchivo);
     }
 

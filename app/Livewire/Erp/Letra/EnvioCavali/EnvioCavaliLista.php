@@ -2,7 +2,8 @@
 
 namespace App\Livewire\Erp\Letra\EnvioCavali;
 
-use App\Exports\CavaliExport;
+use App\Exports\Letra\CavaliExport;
+use App\Exports\Letra\EnvioCavaliListExport;
 use App\Models\EnvioCavali;
 use App\Models\UnidadNegocio;
 use Livewire\Attributes\Layout;
@@ -20,16 +21,16 @@ class EnvioCavaliLista extends Component
 {
     use WithPagination;
 
-    #[Url(as: 'q')]
+    #[Url(as: 'q', keep: true)]
     public $buscar = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $perPage = 20;
 
-    #[Url]
+    #[Url(keep: true)]
     public $estado_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $unidad_negocio_id = '';
 
     public $estados = [];
@@ -55,9 +56,37 @@ class EnvioCavaliLista extends Component
         $this->resetPage();
     }
 
+    public function exportExcelFiltro()
+    {
+        $this->authorize('envio-cavali-solicitud.exportar-filtro');
+
+        $nombreArchivo = 'envios_cavali_filtro_' . now()->format('Ymd_His') . '.xlsx';
+
+        return Excel::download(new EnvioCavaliListExport(
+            $this->buscar,
+            $this->estado_id,
+            $this->unidad_negocio_id,
+            false
+        ), $nombreArchivo);
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('envio-cavali-solicitud.exportar-todo');
+
+        $nombreArchivo = 'envios_cavali_todo_' . now()->format('Ymd_His') . '.xlsx';
+
+        return Excel::download(new EnvioCavaliListExport(
+            '',
+            '',
+            '',
+            true
+        ), $nombreArchivo);
+    }
+
     public function exportCavali($id)
     {
-        abort_unless(auth()->user()->can('envio-cavali-solicitud.exportar'), 403);
+        $this->authorize('envio-cavali-solicitud.exportar');
 
         $envio = EnvioCavali::findOrFail($id);
         $nombreArchivo = 'Cavali_' . $envio->unidadNegocio->nombre . '_' . $envio->fecha_corte->format('Y-m-d') . '.xlsx';

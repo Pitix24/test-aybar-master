@@ -13,8 +13,8 @@ use Livewire\Component;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
-#[Title('Editar Solicitud de Letra Digital')]
-class SolicitudDigitalizarLetraEditar extends Component
+#[Title('Ver Solicitud de Letra Digital')]
+class SolicitudDigitalizarLetraVer extends Component
 {
     public SolicitudDigitalizarLetra $solicitud;
 
@@ -59,7 +59,7 @@ class SolicitudDigitalizarLetraEditar extends Component
 
     public function render()
     {
-        return view('livewire.erp.letra.solicitud-digitalizar-letra.solicitud-digitalizar-letra-editar', [
+        return view('livewire.erp.letra.solicitud-digitalizar-letra.solicitud-digitalizar-letra-ver', [
             'estados' => EstadoSolicitudDigitalizarLetra::where('activo', true)->get(),
         ]);
     }

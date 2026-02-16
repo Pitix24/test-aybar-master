@@ -7,7 +7,7 @@
         <h2>Detalle de Envío CAVALI #{{ $envio->id }}</h2>
 
         <div class="cabecera_titulo_botones">
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
         </div>
@@ -37,7 +37,7 @@
                                 {{ $envio->estado->nombre }}
                             </span>
                         @else
-                            <span class="g_badge g_badge_light">Pendiente</span>
+                            <span class="g_badge light">Pendiente</span>
                         @endif
                     </p>
                 </div>
@@ -57,7 +57,7 @@
                 <div class="g_columna_3">
                     <label>Archivo Generado</label>
                     @if ($envio->archivo_zip)
-                        <button wire:click="descargarArchivo" class="g_boton g_boton_success g_boton_sm">
+                        <button wire:click="descargarArchivo" class="g_boton success g_boton_sm">
                             <i class="fa-solid fa-download"></i> {{ $envio->archivo_nombre }}
                         </button>
                     @else
@@ -69,15 +69,15 @@
 
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="descargarAceptantes" class="g_boton g_boton_excel">
+                <button wire:click="descargarAceptantes" class="g_boton excel">
                     <i class="fa-solid fa-download"></i> Aceptantes
                 </button>
 
-                <button wire:click="descargarLetras" class="g_boton g_boton_excel">
+                <button wire:click="descargarLetras" class="g_boton excel">
                     <i class="fa-solid fa-download"></i> Letras
                 </button>
 
-                <button wire:click="descargarGirador" class="g_boton g_boton_excel">
+                <button wire:click="descargarGirador" class="g_boton excel">
                     <i class="fa-solid fa-download"></i> Girador
                 </button>
             </div>
@@ -122,7 +122,7 @@
                                         {{ $solicitud->estado->nombre }}
                                     </span>
                                 @else
-                                    <span class="g_badge g_badge_light">Pendiente</span>
+                                    <span class="g_badge light">Pendiente</span>
                                 @endif
                             </td>
                             <td class="g_inferior g_celda_centro">{{ $solicitud->created_at->format('d/m/Y H:i') }}</td>

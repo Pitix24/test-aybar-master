@@ -21,11 +21,13 @@ class SolicitudEvidenciaPagoEmail extends Component
     public $evidenciaId;
 
     public $mensaje_correo = '';
+    public $soloLectura = false;
 
-    public function mount(SolicitudEvidenciaPago $solicitud, $evidenciaId = null)
+    public function mount(SolicitudEvidenciaPago $solicitud, $evidenciaId = null, $soloLectura = false)
     {
         $this->solicitud = $solicitud;
         $this->evidenciaId = $evidenciaId;
+        $this->soloLectura = $soloLectura;
     }
 
     public function enviarCorreo($cambiarEstado = false)

@@ -14,6 +14,13 @@ class SolicitudEvidenciaChat extends Component
     public $mensaje = '';
     public $es_interno = false;
     public $isOpen = false;
+    public $soloLectura = false;
+
+    public function mount(SolicitudEvidenciaPago $solicitud, $soloLectura = false)
+    {
+        $this->solicitud = $solicitud;
+        $this->soloLectura = $soloLectura;
+    }
 
     #[On('toggleChat')]
     public function toggle()

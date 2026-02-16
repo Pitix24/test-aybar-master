@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, gestor_id, fecha_inicio, fecha_fin, tipo_cierre, tiene_validacion, es_asbanc, cantidad_evidencias, cantidad_correos, resetFiltros, exportExcel"
+        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, gestor_id, fecha_inicio, fecha_fin, tipo_cierre, tiene_validacion, es_asbanc, cantidad_evidencias, cantidad_correos, resetFiltros, exportExcelFiltro, exportExcelTodo, gotoPage, nextPage, previousPage"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -125,15 +125,27 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
-                    wire:target="exportExcel">
-                    <span wire:loading.remove wire:target="exportExcel">Excel <i
-                            class="fa-regular fa-file-excel"></i></span>
-                    <span wire:loading wire:target="exportExcel">Exportando... <i
-                            class="fa-solid fa-spinner fa-spin"></i></span>
-                </button>
+                @can('solicitud-evidencia-pago.exportar-filtro')
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                        wire:target="exportExcelFiltro">
+                        <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcelFiltro">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
 
-                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                @can('solicitud-evidencia-pago.exportar-todo')
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -173,9 +185,11 @@
                 </thead>
 
                 <tbody>
-                    @foreach ($items as $index => $item)
+                    @foreach ($items as $item)
                         <tr>
-                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge light">#{{ $item->id }}</span>
+                            </td>
                             <td class="g_negrita g_resumir">
                                 {{ $item->gestor?->name ?? 'Falta asignar' }}
                             </td>
@@ -186,13 +200,12 @@
                             <td class="g_celda_centro">{{ $item->lote }}</td>
                             <td class="g_celda_centro">{{ $item->numero_cuota }}</td>
                             <td class="g_celda_centro">
-                                <span
-                                    class="g_badge {{ $item->evidencias_count > 0 ? 'g_badge_primary' : 'g_badge_light' }}">
+                                <span class="g_badge {{ $item->evidencias_count > 0 ? 'primary' : 'light' }}">
                                     {{ $item->evidencias_count }}
                                 </span>
                             </td>
                             <td class="g_celda_centro">
-                                <span class="g_badge {{ $item->correos_count > 0 ? 'g_badge_info' : 'g_badge_light' }}">
+                                <span class="g_badge {{ $item->correos_count > 0 ? 'info' : 'light' }}">
                                     {{ $item->correos_count }}
                                 </span>
                             </td>
@@ -204,13 +217,18 @@
                                         {{ $item->estado->nombre }}
                                     </span>
                                 @else
-                                    <span class="g_badge g_badge_light">S/E</span>
+                                    <span class="g_badge light">S/E</span>
                                 @endif
                             </td>
                             <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
                             <td class="g_celda_acciones g_celda_centro">
+                                <a href="{{ route('erp.solicitud-evidencia-pago.vista.ver', $item->id) }}"
+                                    class="g_accion ver" title="Ver Detalle">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+
                                 <a href="{{ route('erp.solicitud-evidencia-pago.vista.editar', $item->id) }}"
-                                    class="g_accion_editar" title="Editar">
+                                    class="g_accion editar" title="Editar">
                                     <i class="fa-solid fa-pencil"></i>
                                 </a>
                             </td>

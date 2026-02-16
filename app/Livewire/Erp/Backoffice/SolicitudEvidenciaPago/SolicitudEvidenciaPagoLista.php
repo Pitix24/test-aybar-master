@@ -14,7 +14,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\SolicitudEvidenciaPagoExport;
+use App\Exports\Backoffice\SolicitudEvidenciaPagoExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -26,40 +26,40 @@ class SolicitudEvidenciaPagoLista extends Component
     #[Url(as: 'q')]
     public $buscar = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $estado_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $unidad_negocio_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $proyecto_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $gestor_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $fecha_inicio = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $fecha_fin = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $tipo_cierre = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $tiene_validacion = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $es_asbanc = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $cantidad_evidencias = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $cantidad_correos = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $perPage = 20;
 
     public $estados = [];
@@ -72,6 +72,13 @@ class SolicitudEvidenciaPagoLista extends Component
         $this->estados = EstadoSolicitudEvidenciaPago::where('activo', true)->get();
         $this->unidades_negocios = UnidadNegocio::where('activo', true)->get();
         $this->usuarios_admin = User::role(['asesor-atc', 'supervisor-atc'])->get();
+
+        if (!request()->has('fecha_inicio') && is_null($this->fecha_inicio)) {
+            $this->fecha_inicio = now()->startOfMonth()->toDateString();
+        }
+        if (!request()->has('fecha_fin') && is_null($this->fecha_fin)) {
+            $this->fecha_fin = now()->toDateString();
+        }
 
         if ($this->unidad_negocio_id) {
             $this->loadProyectos();
@@ -126,21 +133,21 @@ class SolicitudEvidenciaPagoLista extends Component
             'unidad_negocio_id',
             'proyecto_id',
             'gestor_id',
-            'fecha_inicio',
-            'fecha_fin',
             'tipo_cierre',
             'tiene_validacion',
             'es_asbanc',
             'cantidad_evidencias',
             'cantidad_correos',
         ]);
+        $this->fecha_inicio = '';
+        $this->fecha_fin = '';
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('solicitud-evidencia-pago.exportar'), 403);
+        $this->authorize('solicitud-evidencia-pago.exportar-filtro');
 
         return Excel::download(
             new SolicitudEvidenciaPagoExport(
@@ -157,9 +164,36 @@ class SolicitudEvidenciaPagoLista extends Component
                 $this->cantidad_evidencias,
                 $this->cantidad_correos,
                 $this->perPage,
-                $this->getPage()
+                $this->getPage(),
+                false
             ),
-            'solicitudes-evidencia-pago.xlsx'
+            'solicitudes_filtradas.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('solicitud-evidencia-pago.exportar-todo');
+
+        return Excel::download(
+            new SolicitudEvidenciaPagoExport(
+                '',
+                '',
+                '',
+                '',
+                '',
+                $this->fecha_inicio,
+                $this->fecha_fin,
+                '',
+                '',
+                '',
+                null,
+                null,
+                null,
+                null,
+                true
+            ),
+            'solicitudes_todo.xlsx'
         );
     }
 

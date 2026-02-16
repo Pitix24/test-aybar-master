@@ -46,27 +46,29 @@
             @endforelse
         </div>
 
-        <div class="g_chat_footer">
-            <div class="g_chat_input_container">
-                <div class="g_chat_input_wrapper">
-                    <textarea wire:model="mensaje" placeholder="Escribe un mensaje..." rows="1"
-                        oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
+        @if(!$soloLectura)
+            <div class="g_chat_footer">
+                <div class="g_chat_input_container">
+                    <div class="g_chat_input_wrapper">
+                        <textarea wire:model="mensaje" placeholder="Escribe un mensaje..." rows="1"
+                            oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"></textarea>
 
-                    <div class="g_chat_actions">
-                        <button class="g_chat_action_btn {{ $es_interno ? 'g_chat_action_btn_active' : '' }}"
-                            wire:click="$toggle('es_interno')"
-                            title="{{ $es_interno ? 'Desactivar nota interna' : 'Activar como nota interna' }}">
-                            <i class="fa-solid {{ $es_interno ? 'fa-lock' : 'fa-lock-open' }}"></i>
-                        </button>
+                        <div class="g_chat_actions">
+                            <button class="g_chat_action_btn {{ $es_interno ? 'g_chat_action_btn_active' : '' }}"
+                                wire:click="$toggle('es_interno')"
+                                title="{{ $es_interno ? 'Desactivar nota interna' : 'Activar como nota interna' }}">
+                                <i class="fa-solid {{ $es_interno ? 'fa-lock' : 'fa-lock-open' }}"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <button class="g_chat_send_btn" wire:click="enviar" wire:loading.attr="disabled">
-                    <i class="fa-solid fa-paper-plane" wire:loading.remove wire:target="enviar"></i>
-                    <i class="fa-solid fa-spinner fa-spin" wire:loading wire:target="enviar"></i>
-                </button>
+                    <button class="g_chat_send_btn" wire:click="enviar" wire:loading.attr="disabled">
+                        <i class="fa-solid fa-paper-plane" wire:loading.remove wire:target="enviar"></i>
+                        <i class="fa-solid fa-spinner fa-spin" wire:loading wire:target="enviar"></i>
+                    </button>
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 
     @script

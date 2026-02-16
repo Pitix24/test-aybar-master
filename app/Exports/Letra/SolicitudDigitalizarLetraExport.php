@@ -15,6 +15,9 @@ class SolicitudDigitalizarLetraExport implements FromCollection, WithHeadings, S
     protected $proyecto_id;
     protected $fecha_inicio;
     protected $fecha_fin;
+    protected $perPage;
+    protected $page;
+    protected $todo;
 
     public function __construct(
         $buscar = '',
@@ -22,7 +25,10 @@ class SolicitudDigitalizarLetraExport implements FromCollection, WithHeadings, S
         $unidad_negocio_id = '',
         $proyecto_id = '',
         $fecha_inicio = '',
-        $fecha_fin = ''
+        $fecha_fin = '',
+        $perPage = null,
+        $page = null,
+        $todo = false
     ) {
         $this->buscar = $buscar;
         $this->estado_id = $estado_id;
@@ -30,13 +36,18 @@ class SolicitudDigitalizarLetraExport implements FromCollection, WithHeadings, S
         $this->proyecto_id = $proyecto_id;
         $this->fecha_inicio = $fecha_inicio;
         $this->fecha_fin = $fecha_fin;
+        $this->perPage = $perPage;
+        $this->page = $page;
+        $this->todo = $todo;
     }
 
     public function collection()
     {
-        return SolicitudDigitalizarLetra::query()
-            ->with(['unidadNegocio', 'proyecto', 'userCliente.perfilCliente', 'estado'])
-            ->when($this->buscar, function ($q) {
+        $query = SolicitudDigitalizarLetra::query()
+            ->with(['unidadNegocio', 'proyecto', 'userCliente.perfilCliente', 'estado']);
+
+        if (!$this->todo) {
+            $query->when($this->buscar, function ($q) {
                 $buscar = $this->buscar;
                 $q->where(function ($sub) use ($buscar) {
                     $sub->where('id', 'like', "%{$buscar}%")
@@ -50,13 +61,20 @@ class SolicitudDigitalizarLetraExport implements FromCollection, WithHeadings, S
                         });
                 });
             })
-            ->when($this->estado_id, fn($q) => $q->where('estado_solicitud_digitalizar_letra_id', $this->estado_id))
-            ->when($this->unidad_negocio_id, fn($q) => $q->where('unidad_negocio_id', $this->unidad_negocio_id))
-            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
-            ->when($this->fecha_inicio, fn($q) => $q->whereDate('created_at', '>=', $this->fecha_inicio))
+                ->when($this->estado_id, fn($q) => $q->where('estado_solicitud_digitalizar_letra_id', $this->estado_id))
+                ->when($this->unidad_negocio_id, fn($q) => $q->where('unidad_negocio_id', $this->unidad_negocio_id))
+                ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id));
+        }
+
+        $query->when($this->fecha_inicio, fn($q) => $q->whereDate('created_at', '>=', $this->fecha_inicio))
             ->when($this->fecha_fin, fn($q) => $q->whereDate('created_at', '<=', $this->fecha_fin))
-            ->orderBy('created_at', 'desc')
-            ->get()
+            ->orderByDesc('created_at');
+
+        if (!$this->todo && $this->perPage && $this->page) {
+            $query->skip(($this->page - 1) * $this->perPage)->take($this->perPage);
+        }
+
+        return $query->get()
             ->map(function ($item, $index) {
                 return [
                     $index + 1,

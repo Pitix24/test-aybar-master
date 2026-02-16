@@ -1,16 +1,18 @@
-<div class="g_panel" x-data="{ activeTab: 'enviar' }">
+<div class="g_panel" x-data="{ activeTab: '{{ $soloLectura ? 'historial' : 'enviar' }}' }">
     <div class="g_tab_navegacion">
         <div class="g_tab_botones">
-            <button type="button" @click="activeTab = 'enviar'"
-                :class="activeTab === 'enviar' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
-                <i class="fa-solid fa-paper-plane"></i> Enviar Observación
-            </button>
+            @if(!$soloLectura)
+                <button type="button" @click="activeTab = 'enviar'"
+                    :class="activeTab === 'enviar' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar Observación
+                </button>
 
-            <button type="button" @click="activeTab = 'enviar_y_cambiar_estado'"
-                :class="activeTab === 'enviar_y_cambiar_estado' ? 'g_tab_active' : 'g_tab_inactive'"
-                class="g_tab_boton">
-                <i class="fa-solid fa-triangle-exclamation"></i> Enviar y Rechazar
-            </button>
+                <button type="button" @click="activeTab = 'enviar_y_cambiar_estado'"
+                    :class="activeTab === 'enviar_y_cambiar_estado' ? 'g_tab_active' : 'g_tab_inactive'"
+                    class="g_tab_boton">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Enviar y Rechazar
+                </button>
+            @endif
 
             <button type="button" @click="activeTab = 'historial'"
                 :class="activeTab === 'historial' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
@@ -34,7 +36,7 @@
                 @error('mensaje_correo') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
             <div class="formulario_botones">
-                <button type="button" wire:click="enviarCorreo(false)" class="g_boton g_boton_guardar">
+                <button type="button" wire:click="enviarCorreo(false)" class="g_boton guardar">
                     Enviar Solo Correo <i class="fa-solid fa-envelope"></i>
                 </button>
             </div>
@@ -56,7 +58,7 @@
                     @error('mensaje_correo') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
                 <div class="formulario_botones">
-                    <button type="button" wire:click="enviarCorreo(true)" class="g_boton g_boton_guardar">
+                    <button type="button" wire:click="enviarCorreo(true)" class="g_boton guardar">
                         Enviar y Rechazar Solicitud <i class="fa-solid fa-ban"></i>
                     </button>
                 </div>
@@ -85,8 +87,8 @@
                         <tr>
                             <td class="g_negrita g_inferior">{{ $cor->enviado_at->format('d/m H:i') }}</td>
                             <td><small>{{ $cor->emisor->name ?? 'Sistema' }}</small></td>
-                            <td><span class="g_badge g_badge_light" style="font-size: 10px;">{{ $cor->asunto }}</span></td>
-                            <td class="g_resumir" title="{{ $cor->mensaje }}">{{ $cor->mensaje }}</td>
+                            <td class="g_celda_wrap"><span class="g_badge g_badge_light">{{ $cor->asunto }}</span></td>
+                            <td class="g_celda_wrap" title="{{ $cor->mensaje }}">{{ $cor->mensaje }}</td>
                         </tr>
                     @empty
                         <tr>

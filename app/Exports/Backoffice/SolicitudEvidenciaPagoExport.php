@@ -23,22 +23,24 @@ class SolicitudEvidenciaPagoExport implements FromCollection, WithHeadings, Shou
     protected $cantidad_correos;
     protected $perPage;
     protected $page;
+    protected $todo;
 
     public function __construct(
-        $buscar,
-        $unidad_negocio_id,
-        $proyecto_id,
-        $admin,
-        $estado_id,
-        $fecha_inicio,
-        $fecha_fin,
-        $tipo_cierre,
-        $tiene_validacion,
-        $es_asbanc,
+        $buscar = '',
+        $unidad_negocio_id = '',
+        $proyecto_id = '',
+        $admin = '',
+        $estado_id = '',
+        $fecha_inicio = '',
+        $fecha_fin = '',
+        $tipo_cierre = '',
+        $tiene_validacion = '',
+        $es_asbanc = '',
         $cantidad_evidencias = null,
         $cantidad_correos = null,
-        $perPage = 20,
-        $page = 1
+        $perPage = null,
+        $page = null,
+        $todo = false
     ) {
         $this->buscar = $buscar;
         $this->unidad_negocio_id = $unidad_negocio_id;
@@ -54,13 +56,16 @@ class SolicitudEvidenciaPagoExport implements FromCollection, WithHeadings, Shou
         $this->cantidad_correos = $cantidad_correos;
         $this->perPage = $perPage;
         $this->page = $page;
+        $this->todo = $todo;
     }
 
     public function collection()
     {
-        return SolicitudEvidenciaPago::query()
-            ->with(['unidadNegocio', 'proyecto', 'userCliente.perfilCliente', 'estado', 'gestor'])
-            ->when($this->buscar, function ($q) {
+        $query = SolicitudEvidenciaPago::query()
+            ->with(['unidadNegocio', 'proyecto', 'userCliente.perfilCliente', 'estado', 'gestor']);
+
+        if (!$this->todo) {
+            $query->when($this->buscar, function ($q) {
                 $buscar = $this->buscar;
                 $q->where(function ($sub) use ($buscar) {
                     $sub->where('id', 'like', "%{$buscar}%")
@@ -72,62 +77,63 @@ class SolicitudEvidenciaPagoExport implements FromCollection, WithHeadings, Shou
                         });
                 });
             })
-            ->when($this->estado_id, function ($q) {
-                $q->where('estado_solicitud_evidencia_pago_id', $this->estado_id);
-            })
-            ->when($this->admin, function ($q) {
-                if ($this->admin === 'sin_asignar') {
-                    $q->whereNull('gestor_id');
-                } else {
-                    $q->where('gestor_id', $this->admin);
-                }
-            })
-            ->when($this->unidad_negocio_id, function ($q) {
-                $q->where('unidad_negocio_id', $this->unidad_negocio_id);
-            })
-            ->when($this->proyecto_id, function ($q) {
-                $q->where('proyecto_id', $this->proyecto_id);
-            })
-            ->when($this->fecha_inicio, function ($q) {
-                $q->whereDate('created_at', '>=', $this->fecha_inicio);
-            })
-            ->when($this->fecha_fin, function ($q) {
-                $q->whereDate('created_at', '<=', $this->fecha_fin);
-            })
-            ->when($this->tipo_cierre, function ($q) {
-                if ($this->tipo_cierre === 'api') {
-                    $q->where('slin_evidencia', true);
-                }
-                if ($this->tipo_cierre === 'manual') {
-                    $q->where('resuelto_manual', true);
-                }
-            })
-            ->when($this->tiene_validacion !== '', function ($q) {
-                if ($this->tiene_validacion === 'si') {
-                    $q->whereNotNull('fecha_validacion');
-                }
-                if ($this->tiene_validacion === 'no') {
-                    $q->whereNull('fecha_validacion');
-                }
-            })
-            ->when($this->es_asbanc !== '', function ($q) {
-                if ($this->es_asbanc === 'si') {
-                    $q->where('slin_asbanc', true);
-                }
-                if ($this->es_asbanc === 'no') {
-                    $q->where('slin_asbanc', false);
-                }
-            })
-            ->when($this->cantidad_evidencias !== '' && !is_null($this->cantidad_evidencias), function ($q) {
-                $q->has('evidencias', '=', $this->cantidad_evidencias);
-            })
-            ->when($this->cantidad_correos !== '' && !is_null($this->cantidad_correos), function ($q) {
-                $q->has('correos', '=', $this->cantidad_correos);
-            })
-            ->orderBy('created_at', 'desc')
-            ->skip(($this->page - 1) * $this->perPage)
-            ->take($this->perPage)
-            ->get()
+                ->when($this->estado_id, function ($q) {
+                    $q->where('estado_solicitud_evidencia_pago_id', $this->estado_id);
+                })
+                ->when($this->admin, function ($q) {
+                    if ($this->admin === 'sin_asignar') {
+                        $q->whereNull('gestor_id');
+                    } else {
+                        $q->where('gestor_id', $this->admin);
+                    }
+                })
+                ->when($this->unidad_negocio_id, function ($q) {
+                    $q->where('unidad_negocio_id', $this->unidad_negocio_id);
+                })
+                ->when($this->proyecto_id, function ($q) {
+                    $q->where('proyecto_id', $this->proyecto_id);
+                })
+                ->when($this->tipo_cierre, function ($q) {
+                    if ($this->tipo_cierre === 'api') {
+                        $q->where('slin_evidencia', true);
+                    }
+                    if ($this->tipo_cierre === 'manual') {
+                        $q->where('resuelto_manual', true);
+                    }
+                })
+                ->when($this->tiene_validacion !== '', function ($q) {
+                    if ($this->tiene_validacion === 'si') {
+                        $q->whereNotNull('fecha_validacion');
+                    }
+                    if ($this->tiene_validacion === 'no') {
+                        $q->whereNull('fecha_validacion');
+                    }
+                })
+                ->when($this->es_asbanc !== '', function ($q) {
+                    if ($this->es_asbanc === 'si') {
+                        $q->where('slin_asbanc', true);
+                    }
+                    if ($this->es_asbanc === 'no') {
+                        $q->where('slin_asbanc', false);
+                    }
+                })
+                ->when($this->cantidad_evidencias !== '' && !is_null($this->cantidad_evidencias), function ($q) {
+                    $q->has('evidencias', '=', $this->cantidad_evidencias);
+                })
+                ->when($this->cantidad_correos !== '' && !is_null($this->cantidad_correos), function ($q) {
+                    $q->has('correos', '=', $this->cantidad_correos);
+                });
+        }
+
+        $query->when($this->fecha_inicio, fn($q) => $q->whereDate('created_at', '>=', $this->fecha_inicio))
+            ->when($this->fecha_fin, fn($q) => $q->whereDate('created_at', '<=', $this->fecha_fin))
+            ->orderByDesc('created_at');
+
+        if (!$this->todo && $this->perPage && $this->page) {
+            $query->skip(($this->page - 1) * $this->perPage)->take($this->perPage);
+        }
+
+        return $query->get()
             ->map(function ($item, $index) {
                 return [
                     $index + 1,
