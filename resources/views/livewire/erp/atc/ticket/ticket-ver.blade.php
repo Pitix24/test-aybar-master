@@ -1,6 +1,7 @@
 <div class="g_gap_pagina">
+
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Detalle del Ticket #{{ $ticket->id }}</h2>
+        <h2>Detalle del ticket #{{ $ticket->id }}</h2>
 
         <div class="cabecera_titulo_botones">
             @can('ticket.lista')
@@ -9,15 +10,22 @@
                 </a>
             @endcan
 
-            @can('ticket.editar')
-                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton primary">
-                    Editar <i class="fa-solid fa-pencil"></i>
+            @can('ticket.crear')
+                <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton primary">
+                    Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
+
+            @can('ticket.derivar')
+                <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton secondary">
+                    Derivar <i class="fa-solid fa-route"></i>
                 </a>
             @endcan
 
-            <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
-                Chat <i class="fa-solid fa-comments"></i>
-            </button>
+            @can('ticket.editar')
+                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton warning">
+                    Editar <i class="fa-solid fa-pencil"></i>
+                </a>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
@@ -95,13 +103,9 @@
                     </div>
 
                     <div class="g_fila">
-                        <div class="g_columna_4 g_margin_bottom_10">
+                        <div class="g_margin_bottom_10 g_columna_4">
                             <label>Prioridad</label>
-                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
-                                <i class="{{ $ticket->prioridad->icono }}"
-                                    style="color: {{ $ticket->prioridad->color }};"></i>
-                                <span>{{ $ticket->prioridad->nombre ?? 'Sin asignar' }}</span>
-                            </div>
+                            <input type="text" disabled value="{{ $ticket->prioridad->nombre ?? 'Sin asignar' }}">
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
@@ -111,12 +115,7 @@
 
                         <div class="g_margin_bottom_10 g_columna_4">
                             <label>Estado</label>
-                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 5px;">
-                                <span class="g_badge g_badge_soft"
-                                    style="color: {{ $ticket->estado->color }}; padding: 5px 10px;">
-                                    {{ $ticket->estado->nombre }}
-                                </span>
-                            </div>
+                            <input type="text" disabled value="{{ $ticket->estado->nombre ?? 'Sin asignar' }}">
                         </div>
                     </div>
 
@@ -133,6 +132,7 @@
                     @if (!empty($ticket->lotes))
                         <div class="g_margin_bottom_10">
                             <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+
                             <div class="g_contenedor_tabla">
                                 <table class="g_tabla">
                                     <thead>
@@ -144,7 +144,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($ticket->lotes as $index => $l)
-                                            <tr wire:key="lote-ver-{{ $index }}">
+                                            <tr class="sorteable_item" wire:key="lote-{{ $index }}">
                                                 <td> {{ $l['razon_social'] }} </td>
                                                 <td> {{ $l['proyecto'] }} </td>
                                                 <td> {{ $l['numero_lote'] }} </td>
@@ -187,78 +187,17 @@
                     @livewire('erp.atc.ticket.ticket-participante', ['ticket' => $ticket])
                 </div>
 
-                <div x-show="activeTab === 'derivaciones'" x-transition class="g_tab_content">
-                    <div class="g_margin_bottom_10 g_contenedor_tabla">
-                        <table class="g_tabla">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>De Área</th>
-                                    <th>A Área</th>
-                                    <th>Deriva</th>
-                                    <th>Recibe</th>
-                                    <th>Motivo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($derivados as $der)
-                                    <tr wire:key="der-ver-{{ $der->id }}">
-                                        <td class="g_negrita">{{ $der->created_at->format('d/m H:i') }}</td>
-                                        <td>{{ $der->deArea->nombre ?? 'N/A' }}</td>
-                                        <td><span class="g_badge g_badge_primary">{{ $der->aArea->nombre ?? 'N/A' }}</span>
-                                        </td>
-                                        <td><small>{{ $der->usuarioDeriva->name ?? 'N/A' }}</small></td>
-                                        <td><small>{{ $der->usuarioRecibe->name ?? 'N/A' }}</small></td>
-                                        <td>{{ $der->motivo ?? 'Sin motivo' }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="g_celda_vacia">No hay derivaciones registradas.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                <div x-show="activeTab === 'derivaciones'" x-transition class="g_tab_content g_margin_bottom_10">
+                    @livewire('erp.atc.ticket.ticket-derivados', ['ticket' => $ticket])
                 </div>
 
-                <div x-show="activeTab === 'historial'" x-transition class="g_tab_content">
-                    <div class="g_margin_bottom_10 g_contenedor_tabla">
-                        <table class="g_tabla">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Usuario</th>
-                                    <th>Acción</th>
-                                    <th>Detalle</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($historial as $item)
-                                    <tr wire:key="hist-ver-{{ $item->id }}">
-                                        <td class="g_negrita">{{ $item->created_at->format('d/m H:i') }}</td>
-                                        <td>{{ $item->usuarioHistorial->name ?? 'Sistema' }}</td>
-                                        <td><span class="g_badge g_badge_light">{{ $item->accion }}</span></td>
-                                        <td style="font-size: 0.85rem;">
-                                            @foreach (explode(' | ', $item->detalle) as $linea)
-                                                <div>{{ $linea }}</div>
-                                            @endforeach
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="g_celda_vacia">Sin movimientos registrados.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                <div x-show="activeTab === 'historial'" x-transition class="g_tab_content g_margin_bottom_10">
+                    @livewire('erp.atc.ticket.ticket-historial', ['ticket' => $ticket])
                 </div>
+            </div>
 
-                <div class="formulario_botones">
-                    <button type="button" class="g_boton dark" onclick="history.back()">
-                        <i class="fa-solid fa-arrow-left"></i> Regresar
-                    </button>
-                </div>
+            <div>
+                @livewire('erp.atc.ticket.ticket-email', ['ticket' => $ticket])
             </div>
         </div>
 

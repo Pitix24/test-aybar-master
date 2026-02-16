@@ -25,6 +25,8 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
     protected $con_citas;
     protected $con_hijos;
     protected $todo;
+    protected $perPage;
+    protected $page;
 
     public function __construct(
         $buscar = '',
@@ -42,7 +44,9 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
         $con_derivados = '',
         $con_citas = '',
         $con_hijos = '',
-        $todo = false
+        $todo = false,
+        $perPage = null,
+        $page = null
     ) {
         $this->buscar = $buscar;
         $this->unidad_negocio_id = $unidad_negocio_id;
@@ -60,6 +64,8 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
         $this->con_citas = $con_citas;
         $this->con_hijos = $con_hijos;
         $this->todo = $todo;
+        $this->perPage = $perPage;
+        $this->page = $page;
     }
 
     public function collection()
@@ -93,10 +99,15 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
                 ->when($this->con_hijos === '0', fn($q) => $q->where('ticket_padre_id', null));
         }
 
-        return $query->when($this->fecha_inicio, fn($q) => $q->whereDate('created_at', '>=', $this->fecha_inicio))
+        $query->when($this->fecha_inicio, fn($q) => $q->whereDate('created_at', '>=', $this->fecha_inicio))
             ->when($this->fecha_fin, fn($q) => $q->whereDate('created_at', '<=', $this->fecha_fin))
-            ->orderByDesc('created_at')
-            ->get()
+            ->orderByDesc('created_at');
+
+        if (!$this->todo && $this->perPage && $this->page) {
+            $query->skip(($this->page - 1) * $this->perPage)->take($this->perPage);
+        }
+
+        return $query->get()
             ->map(function ($item, $index) {
                 return [
                     $index + 1,

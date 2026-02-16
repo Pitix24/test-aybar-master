@@ -228,7 +228,9 @@ class TicketLista extends Component
                 $this->con_derivados,
                 $this->con_citas,
                 $this->con_hijos,
-                false
+                false,
+                $this->perPage,
+                $this->getPage()
             ),
             'tickets_filtrados.xlsx'
         );
