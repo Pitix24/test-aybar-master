@@ -32,52 +32,49 @@ class TicketLista extends Component
     #[Url(as: 'q')]
     public $buscar = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $estado_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $prioridad_id = '';
 
-    #[Url]
-    public $usuario_admin_id = '';
+    #[Url(keep: true)]
+    public $usuario_admin_id = null;
 
-    #[Url]
-    public $fecha_inicio = '';
+    #[Url(keep: true)]
+    public $desde = null;
 
-    #[Url]
-    public $fecha_fin = '';
+    #[Url(keep: true)]
+    public $hasta = null;
 
-    #[Url]
+    #[Url(keep: true)]
     public $unidad_negocio_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $proyecto_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $area_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $solicitud_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $sub_tipo_solicitud_id = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $canal_id = '';
 
-    #[Url]
-    public $sedes_id = '';
-
-    #[Url]
+    #[Url(keep: true)]
     public $con_derivados = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $con_citas = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $con_hijos = '';
 
-    #[Url]
+    #[Url(keep: true)]
     public $perPage = 20;
 
     public $estados = [];
@@ -98,11 +95,28 @@ class TicketLista extends Component
         $this->canales = Canal::all();
         $this->usuarios_admin = User::role(['asesor-atc', 'supervisor-atc'])->get();
         $this->prioridades = PrioridadTicket::all();
-        $this->usuario_admin_id = Auth::check() ? Auth::id() : '';
-        $this->fecha_inicio = now()->toDateString(); // "2025-11-26"
-        $this->fecha_fin = now()->toDateString();
+        // Aplicamos filtros por defecto solo si NO están presentes en la URL
+        // Esto permite que si regresas con ?desde=&hasta= (vacíos), se respeten.
+        if (!request()->has('usuario_admin_id') && is_null($this->usuario_admin_id)) {
+            $this->usuario_admin_id = Auth::check() ? Auth::id() : '';
+        }
+        if (!request()->has('desde') && is_null($this->desde)) {
+            $this->desde = now()->toDateString();
+        }
+        if (!request()->has('hasta') && is_null($this->hasta)) {
+            $this->hasta = now()->toDateString();
+        }
 
         $this->unidades_negocios = UnidadNegocio::all();
+
+        // Cargamos catálogos dependientes si hay un valor (venga de URL o de los defaults anteriores)
+        if ($this->unidad_negocio_id) {
+            $this->loadProyectos();
+        }
+
+        if ($this->solicitud_id) {
+            $this->loadSubTipoSolicitudes();
+        }
     }
 
     public function updatedUnidadNegocioId($value)
@@ -154,8 +168,8 @@ class TicketLista extends Component
                 'canal_id',
                 'usuario_admin_id',
                 'prioridad_id',
-                'fecha_inicio',
-                'fecha_fin',
+                'desde',
+                'hasta',
                 'con_derivados',
                 'con_citas',
                 'con_hijos',
@@ -177,21 +191,25 @@ class TicketLista extends Component
             'solicitud_id',
             'sub_tipo_solicitud_id',
             'canal_id',
-            'usuario_admin_id',
             'prioridad_id',
-            'fecha_inicio',
-            'fecha_fin',
             'con_derivados',
             'con_citas',
             'con_hijos',
         ]);
+
+        // Seteamos a string vacío en lugar de null (reset default) 
+        // para que mount() no vuelva a aplicar los filtros automáticos
+        $this->usuario_admin_id = '';
+        $this->desde = '';
+        $this->hasta = '';
+
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('ticket.exportar'), 403);
+        $this->authorize('ticket.exportar-filtro');
 
         return Excel::download(
             new TicketExport(
@@ -205,13 +223,41 @@ class TicketLista extends Component
                 $this->canal_id,
                 $this->usuario_admin_id,
                 $this->prioridad_id,
-                $this->fecha_inicio,
-                $this->fecha_fin,
+                $this->desde,
+                $this->hasta,
                 $this->con_derivados,
                 $this->con_citas,
                 $this->con_hijos,
+                false
             ),
-            'tickets.xlsx'
+            'tickets_filtrados.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('ticket.exportar-todo');
+
+        return Excel::download(
+            new TicketExport(
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                $this->desde,
+                $this->hasta,
+                '',
+                '',
+                '',
+                true
+            ),
+            'tickets_todo.xlsx'
         );
     }
 
@@ -222,7 +268,6 @@ class TicketLista extends Component
                 $query->where(function ($q) {
                     $q->where('id', 'like', "%{$this->buscar}%")
                         ->orWhere('dni', 'like', "%{$this->buscar}%")
-                        ->orWhere('asunto_inicial', 'like', "%{$this->buscar}%")
                         ->orWhere('nombres', 'like', "%{$this->buscar}%");
                 });
             })
@@ -235,45 +280,39 @@ class TicketLista extends Component
             ->when($this->canal_id, fn($q) => $q->where('canal_id', $this->canal_id))
             ->when($this->usuario_admin_id, fn($q) => $q->where('gestor_id', $this->usuario_admin_id))
             ->when(
-                $this->fecha_inicio,
+                $this->desde,
                 fn($q) =>
-                $q->whereDate('created_at', '>=', $this->fecha_inicio)
+                $q->whereDate('created_at', '>=', $this->desde)
             )
             ->when(
-                $this->fecha_fin,
+                $this->hasta,
                 fn($q) =>
-                $q->whereDate('created_at', '<=', $this->fecha_fin)
+                $q->whereDate('created_at', '<=', $this->hasta)
             )
             ->when($this->prioridad_id, fn($q) => $q->where('prioridad_ticket_id', $this->prioridad_id))
             ->when(
-                $this->con_derivados === '1',
-                fn($q) =>
-                $q->whereHas('derivados')
+                $this->con_derivados == '1',
+                fn($q) => $q->whereHas('derivados')
             )
             ->when(
-                $this->con_derivados === '0',
-                fn($q) =>
-                $q->whereDoesntHave('derivados')
+                $this->con_derivados == '0',
+                fn($q) => $q->whereDoesntHave('derivados')
             )
             ->when(
-                $this->con_citas === '1',
-                fn($q) =>
-                $q->whereHas('citas')
+                $this->con_citas == '1',
+                fn($q) => $q->whereHas('citas')
             )
             ->when(
-                $this->con_citas === '0',
-                fn($q) =>
-                $q->whereDoesntHave('citas')
+                $this->con_citas == '0',
+                fn($q) => $q->whereDoesntHave('citas')
             )
             ->when(
-                $this->con_hijos === '1',
-                fn($q) =>
-                $q->where('ticket_padre_id', '!=', null)
+                $this->con_hijos == '1',
+                fn($q) => $q->whereNotNull('ticket_padre_id')
             )
             ->when(
-                $this->con_hijos === '0',
-                fn($q) =>
-                $q->where('ticket_padre_id', null)
+                $this->con_hijos == '0',
+                fn($q) => $q->whereNull('ticket_padre_id')
             )
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);

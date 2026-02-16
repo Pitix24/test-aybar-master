@@ -47,11 +47,29 @@ class TicketEditar extends Component
         $this->mapEstados = EstadoTicket::pluck('nombre', 'id')->toArray();
     }
 
+    public function validationAttributes()
+    {
+        return [
+            'email' => 'Correo Electrónico',
+            'celular' => 'Número de Celular',
+            'estado_ticket_id' => 'Estado del Ticket',
+        ];
+    }
+
     public function update()
     {
-        abort_unless(auth()->user()->can('ticket.editar'), 403);
+        $this->authorize('ticket.editar');
 
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
@@ -91,29 +109,65 @@ class TicketEditar extends Component
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Cambios guardados correctamente.']);
+            Log::channel('ticket')->info('[TICKET] Edición: Ticket #' . $this->ticket->id . ' actualizado por ' . auth()->user()->name, [
+                'usuario_id' => auth()->id(),
+                'cambios' => $cambios
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Actualizado',
+                'text' => 'Cambios guardados correctamente.'
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error TicketEditar@update: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudieron guardar los cambios.']);
+            Log::channel('ticket')->error('[TICKET] Error en Edición: ' . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'ticket_id' => $this->ticket->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudieron guardar los cambios. Intente nuevamente.'
+            ]);
         }
     }
 
     #[On('eliminarTicketOn')]
     public function eliminarTicketOn()
     {
-        abort_unless(auth()->user()->can('ticket.eliminar'), 403);
+        $this->authorize('ticket.eliminar');
 
         try {
             if ($this->ticket->hijos()->exists()) {
-                $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'Este ticket tiene hijos, no se puede eliminar.']);
+                $this->dispatch('alertaLivewire', [
+                    'type' => 'warning',
+                    'title' => 'No permitido',
+                    'text' => 'Este ticket tiene tickets hijos asociados y no puede ser eliminado.'
+                ]);
                 return;
             }
 
+            $ticket_id = $this->ticket->id;
             $this->ticket->delete();
+
+            Log::channel('ticket')->info('[TICKET] Eliminación: Ticket #' . $ticket_id . ' eliminado por ' . auth()->user()->name, [
+                'usuario_id' => auth()->id()
+            ]);
+
             return redirect()->route('erp.ticket.vista.todo');
         } catch (\Exception $e) {
-            Log::error('Error TicketEditar@eliminarTicketOn: ' . $e->getMessage());
+            Log::channel('ticket')->error('[TICKET] Error en Eliminación: ' . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'ticket_id' => $this->ticket->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el ticket.'
+            ]);
         }
     }
 

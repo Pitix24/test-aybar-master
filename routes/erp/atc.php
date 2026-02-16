@@ -19,6 +19,7 @@ use App\Livewire\Erp\Atc\Ticket\TicketCrear;
 use App\Livewire\Erp\Atc\Ticket\TicketDerivar;
 use App\Livewire\Erp\Atc\Ticket\TicketEditar;
 use App\Livewire\Erp\Atc\Ticket\TicketLista;
+use App\Livewire\Erp\Atc\Ticket\TicketVer;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudCrear;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudEditar;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudLista;
@@ -86,6 +87,7 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
             ->name('ticket.vista.')
             ->group(function () {
                 Route::get('/', TicketLista::class)->middleware('permission:ticket.lista')->name('todo');
+                Route::get('/ver/{id}', TicketVer::class)->middleware('permission:ticket.ver')->name('ver');
                 Route::get('/crear/{ticketPadre?}', TicketCrear::class)->middleware('permission:ticket.crear')->name('crear');
                 Route::get('/editar/{id}', TicketEditar::class)->middleware('permission:ticket.editar')->name('editar');
                 Route::get('/derivado/{id}', TicketDerivar::class)->middleware('permission:ticket.derivar')->name('derivar');

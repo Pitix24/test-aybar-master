@@ -128,6 +128,11 @@ class Ticket extends Model
         return $this->hasMany(Ticket::class, 'ticket_padre_id');
     }
 
+    public function citas()
+    {
+        return $this->hasMany(Cita::class);
+    }
+
     public function validadoPor()
     {
         return $this->belongsTo(User::class, 'usuario_valida_id');

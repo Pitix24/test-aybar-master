@@ -85,6 +85,24 @@ class TicketCrear extends Component
         return $rules;
     }
 
+    public function validationAttributes()
+    {
+        return [
+            'unidad_negocio_id' => 'Unidad de Negocio',
+            'proyecto_id' => 'Proyecto',
+            'area_id' => 'Área Destino',
+            'tipo_solicitud_id' => 'Tipo de Solicitud',
+            'canal_id' => 'Canal',
+            'asunto_inicial' => 'Asunto',
+            'descripcion_inicial' => 'Descripción',
+            'prioridad_ticket_id' => 'Prioridad',
+            'dni' => 'DNI/CE/RUC',
+            'nombres' => 'Nombre del Cliente',
+            'email' => 'Correo Electrónico',
+            'celular' => 'Número de Celular',
+        ];
+    }
+
     public function mount($ticketPadre = null)
     {
         if ($ticketPadre) {
@@ -340,16 +358,20 @@ class TicketCrear extends Component
 
     public function store($confirmado = false)
     {
-        abort_unless(auth()->user()->can('ticket.crear'), 403);
+        $this->authorize('ticket.crear');
 
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Faltan campos obligatorios.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
-        // 1. Validación de contacto
+        // 1. Validación de contacto (Confirmación opcional via JS)
         if (!$confirmado && (empty($this->email) || empty($this->celular))) {
             $this->dispatch('confirmarTicketSinDatos');
             return;
@@ -359,13 +381,12 @@ class TicketCrear extends Component
             DB::beginTransaction();
 
             $estadoAbiertoId = EstadoTicket::id(EstadoTicket::NUEVO);
+            $ticketsGenerados = [];
 
-            // Siempre generamos tickets separados por lote si hay más de uno.
+            // Generamos tickets separados por lote si hay más de uno.
             $lotesIterar = count($this->lotes_agregados) > 1 ? $this->lotes_agregados : [null];
 
             foreach ($lotesIterar as $loteIndividual) {
-                // Si hay varios, $loteIndividual es el lote actual.
-                // Si hay 0 o 1, $lotesParaTicket será el array original (que tendrá 0 o 1 item).
                 $lotesParaTicket = $loteIndividual ? [$loteIndividual] : $this->lotes_agregados;
 
                 $ticket = Ticket::create([
@@ -399,23 +420,41 @@ class TicketCrear extends Component
                     'ticket_id' => $ticket->id,
                     'user_id' => auth()->id(),
                     'accion' => 'Creación',
-                    'detalle' => 'Ticket creado con estado: ' . $ticket->estado?->nombre,
+                    'detalle' => 'Ticket creado con estado inicial: ' . ($ticket->estado?->nombre ?? 'N/A'),
                 ]);
+
+                $ticketsGenerados[] = $ticket->id;
             }
 
             DB::commit();
+
+            Log::channel('ticket')->info('[TICKET] Creación: Múltiples/Simple ticket(s) creado(s) por ' . auth()->user()->name, [
+                'usuario_id' => auth()->id(),
+                'tickets_ids' => $ticketsGenerados
+            ]);
 
             $mensaje = count($lotesIterar) > 1
                 ? 'Se han generado ' . count($lotesIterar) . ' tickets (separados por lote).'
                 : 'El ticket ha sido generado correctamente.';
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => $mensaje]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Creado',
+                'text' => $mensaje
+            ]);
+
             return redirect()->route('erp.ticket.vista.todo');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear ticket: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'Ocurrió un error al guardar el ticket.']);
-            return;
+            Log::channel('ticket')->error('[TICKET] Error en Creación: ' . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'Ocurrió un error al guardar el ticket. Intente nuevamente.'
+            ]);
         }
     }
 

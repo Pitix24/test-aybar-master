@@ -1,4 +1,7 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading
+        wire:target="buscarCliente, agregarLote, quitarLote, addParticipant, removeParticipant, store"
+        message="Guardando cambios..." />
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear ticket
             @if ($ticket_padre_id)
@@ -8,10 +11,10 @@
         </h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i></a>
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -283,7 +286,7 @@
                 </div>
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled">
+                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="store">
                             <i class="fa-solid fa-save"></i> Guardar
                         </span>
@@ -292,7 +295,7 @@
                         </span>
                     </button>
 
-                    <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_cancelar">
+                    <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton cancelar">
                         <i class="fa-solid fa-times"></i> Cancelar
                     </a>
                 </div>
@@ -305,8 +308,7 @@
                     <h4 class="g_panel_titulo">Ticket padre</h4>
 
                     <div class="g_margin_bottom_10">
-                        <a href="{{ route('erp.ticket.vista.editar', $ticketPadre->id) }}"
-                            class="g_boton g_boton_secondary">
+                        <a href="{{ route('erp.ticket.vista.editar', $ticketPadre->id) }}" class="g_boton secondary">
                             <i class="fa-solid fa-eye"></i> Ver ticket
                         </a>
                     </div>
@@ -405,21 +407,21 @@
             @else
                 <div class="g_panel">
                     @if (session('info'))
-                        <div class="g_alerta_info">
-                            <i class="fa-solid fa-circle-check"></i>
+                        <div class="g_alerta g_alerta_info">
+                            <i class="fa-solid fa-circle-info"></i>
                             {{ session('info') }}
                         </div>
                     @endif
 
                     @if (session('error'))
-                        <div class="g_alerta_error">
+                        <div class="g_alerta g_alerta_danger">
                             <i class="fa-solid fa-circle-exclamation"></i>
                             {{ session('error') }}
                         </div>
                     @endif
 
                     @if (session('success'))
-                        <div class="g_alerta_succes">
+                        <div class="g_alerta g_alerta_success">
                             <i class="fa-solid fa-circle-check"></i>
                             {{ session('success') }}
                         </div>
@@ -439,7 +441,7 @@
                     </div>
 
                     <div class="formulario_botones g_margin_bottom_10">
-                        <button wire:click="buscarCliente" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                        <button wire:click="buscarCliente" class="g_boton guardar" wire:loading.attr="disabled"
                             wire:target="buscarCliente">
                             <span wire:loading.remove wire:target="buscarCliente"><i class="fa-solid fa-search"></i>
                                 Buscar</span>
@@ -464,7 +466,7 @@
                         </div>
 
                         <div class="formulario_botones">
-                            <button wire:click="agregarLote" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+                            <button wire:click="agregarLote" class="g_boton guardar" wire:loading.attr="disabled"
                                 wire:target="agregarLote">
                                 <span wire:loading.remove wire:target="agregarLote"><i class="fa-solid fa-plus"></i>
                                     Agregar</span>

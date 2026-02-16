@@ -1,12 +1,13 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="buscar, estado, prioridad, perPage, resetFiltros, exportExcel"
+    <x-loading-overlay wire:loading
+        wire:target="buscar, desde, hasta, perPage, resetFiltros, exportExcelFiltro, exportExcelTodo, gotoPage, nextPage, previousPage"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Listado de Tickets</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.ticket.vista.crear') }}" class="g_boton g_boton_primary">
+            <a href="{{ route('erp.ticket.vista.crear') }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>
     </div>
@@ -15,7 +16,7 @@
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Cliente/DNI/Nombres</label>
+                    <label>Cliente (DNI o Nombres)</label>
                     <input type="text" wire:model.live.debounce.1300ms="buscar" id="buscar" name="buscar">
                 </div>
 
@@ -141,13 +142,13 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Fecha inicio</label>
-                    <input type="date" wire:model.live="fecha_inicio">
+                    <label>Desde</label>
+                    <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Fecha fin</label>
-                    <input type="date" wire:model.live="fecha_fin">
+                    <label>Hasta</label>
+                    <input type="date" wire:model.live="hasta">
                 </div>
             </div>
         </div>
@@ -156,15 +157,27 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="exportExcel" class="g_boton g_boton_excel" wire:loading.attr="disabled"
-                    wire:target="exportExcel">
-                    <span wire:loading.remove wire:target="exportExcel">Excel <i
-                            class="fa-regular fa-file-excel"></i></span>
-                    <span wire:loading wire:target="exportExcel">Exportando... <i
-                            class="fa-solid fa-spinner fa-spin"></i></span>
-                </button>
+                @can('ticket.exportar-filtro')
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                        wire:target="exportExcelFiltro">
+                        <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcelFiltro">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
 
-                <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                @can('ticket.exportar-todo')
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
@@ -229,15 +242,24 @@
                             </td>
                             <td class="g_inferior g_celda_centro">{{ $item->created_at->format('d/m/Y H:i') }}</td>
                             <td class="g_celda_centro">
-                                <span class="g_badge {{ $item->tiene_derivados ? 'g_badge_success' : 'g_badge_light' }}">
+                                <span class="g_badge {{ $item->tiene_derivados ? 'success' : 'light' }}">
                                     {{ $item->tiene_derivados ? 'SI' : 'NO' }}
                                 </span>
                             </td>
-                            <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.ticket.vista.editar', $item->id) }}" class="g_accion_editar"
-                                    title="Editar">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
+                            <td class="g_celda_acciones g_celda_centro centro">
+                                @can('ticket.ver')
+                                    <a href="{{ route('erp.ticket.vista.ver', $item->id) }}" class="g_accion ver"
+                                        title="Ver detalle">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                @endcan
+
+                                @can('ticket.editar')
+                                    <a href="{{ route('erp.ticket.vista.editar', $item->id) }}" class="g_accion editar"
+                                        title="Editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach
