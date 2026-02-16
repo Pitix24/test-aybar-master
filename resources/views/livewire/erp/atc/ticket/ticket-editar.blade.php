@@ -6,24 +6,34 @@
         <h2>Editar ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('ticket.lista')
+                <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
+            @endcan
 
-            <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton primary">
-                Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
+            @can('ticket.crear')
+                <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton primary">
+                    Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
 
-            <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton secondary">
-                Derivar <i class="fa-solid fa-route"></i>
-            </a>
+            @can('ticket.derivar')
+                <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton secondary">
+                    Derivar <i class="fa-solid fa-route"></i>
+                </a>
+            @endcan
 
-            <button type="button" class="g_boton danger" onclick="alertaEliminarTicket()">
-                Eliminar <i class="fa-solid fa-trash-can"></i>
-            </button>
+            @can('ticket.eliminar')
+                <button type="button" class="g_boton danger" onclick="alertaEliminarTicket()">
+                    Eliminar <i class="fa-solid fa-trash-can"></i>
+                </button>
+            @endcan
 
-            <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
-                Chat <i class="fa-solid fa-comments"></i>
-            </button>
+            @can('ticket.chat')
+                <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
+                    Chat <i class="fa-solid fa-comments"></i>
+                </button>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
@@ -201,18 +211,22 @@
                 </div>
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
-                        <span wire:loading.remove wire:target="update">
-                            <i class="fa-solid fa-pencil"></i> Actualizar
-                        </span>
-                        <span wire:loading wire:target="update">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                        </span>
-                    </button>
+                    @can('ticket.editar')
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                            <span wire:loading.remove wire:target="update">
+                                <i class="fa-solid fa-pencil"></i> Actualizar
+                            </span>
+                            <span wire:loading wire:target="update">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                            </span>
+                        </button>
+                    @endcan
 
-                    <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton cancelar">
-                        <i class="fa-solid fa-times"></i> Cancelar
-                    </a>
+                    @can('ticket.lista')
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </button>
+                    @endcan
                 </div>
             </form>
 
@@ -241,10 +255,12 @@
                                     <td class="g_negrita">#{{ $ticket->padre->id }}</td>
                                     <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
                                     <td class="g_celda_centro">
-                                        <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}"
-                                            class="g_accion ver" title="Ver Ticket Padre">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
+                                        @can('ticket.editar')
+                                            <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}"
+                                                class="g_accion ver" title="Ver Ticket Padre">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                        @endcan
                                     </td>
                                 </tr>
                             </tbody>
@@ -271,10 +287,12 @@
                                         <td class="g_negrita">#{{ $hijo->id }}</td>
                                         <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
                                         <td class="g_celda_centro">
-                                            <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion ver"
-                                                title="Ver Ticket Hijo">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </a>
+                                            @can('ticket.editar')
+                                                <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion ver"
+                                                    title="Ver Ticket Hijo">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach

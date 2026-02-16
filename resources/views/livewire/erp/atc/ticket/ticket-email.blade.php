@@ -1,5 +1,5 @@
 <div class="g_panel" x-data="{ activeTab: 'enviar' }">
-    <x-loading-overlay wire:loading wire:target="nuevosArchivos, quitarArchivo, enviar" message="Procesando... " />
+    <x-loading-overlay wire:loading wire:target="nuevosArchivos, quitarArchivo, store" message="Procesando envío..." />
 
     <div class="g_tab_navegacion">
         <div class="g_tab_botones">
@@ -34,13 +34,13 @@
 
             <div class="g_margin_bottom_10">
                 <label>Asunto:</label>
-                <input type="text" wire:model="asunto">
+                <input type="text" wire:model="asunto" class="@error('asunto') input-error @enderror">
                 @error('asunto') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
 
             <div class="g_margin_bottom_10">
                 <label>Mensaje:</label>
-                <textarea wire:model="mensaje" rows="6"></textarea>
+                <textarea wire:model="mensaje" rows="6" class="@error('mensaje') input-error @enderror"></textarea>
                 @error('mensaje') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
 
@@ -87,12 +87,17 @@
             </div>
 
             <div class="formulario_botones">
-                <button class="g_boton guardar" wire:click="enviar" wire:loading.attr="disabled" @if(!$ticket->email)
-                disabled @endif>
-                    <span>
-                        <i class="fa-solid fa-paper-plane"></i> Enviar Correo ahora
-                    </span>
-                </button>
+                @can('ticket.enviar-correo')
+                    <button class="g_boton guardar" wire:click="store" wire:loading.attr="disabled" @if(!$ticket->email)
+                    disabled @endif>
+                        <span wire:loading.remove wire:target="store">
+                            <i class="fa-solid fa-paper-plane"></i> Enviar Correo ahora
+                        </span>
+                        <span wire:loading wire:target="store">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Enviando...
+                        </span>
+                    </button>
+                @endcan
             </div>
         </div>
     </div>

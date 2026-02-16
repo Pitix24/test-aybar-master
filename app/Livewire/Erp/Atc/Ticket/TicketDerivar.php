@@ -130,6 +130,12 @@ class TicketDerivar extends Component
                 'updated_by' => auth()->id(),
             ]);
 
+            // Registrar participantes: el que deriva y el que recibe
+            $this->ticket->usuariosParticipantes()->syncWithoutDetaching([
+                auth()->id(),
+                (int) $this->gestor_id
+            ]);
+
             $detalle = "Ticket derivado de Área '$oldArea' a '$newAreaName' | ";
             $detalle .= "Gestor cambiado de '$oldGestor' a '$newGestorName' | ";
             $detalle .= "Motivo: {$this->motivo}";

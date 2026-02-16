@@ -340,7 +340,6 @@ class TicketCrear extends Component
             ->values()
             ->toArray();
     }
-
     public function store($confirmado = false)
     {
         $this->authorize('ticket.crear');
@@ -396,8 +395,14 @@ class TicketCrear extends Component
                     'created_by' => auth()->id(),
                 ]);
 
-                if (!empty($this->selectedParticipants)) {
-                    $ticket->usuariosParticipantes()->sync($this->selectedParticipants);
+                // Asegurar que el creador y el gestor sean participantes
+                $participantes = $this->selectedParticipants;
+                if ($this->gestor_id && !in_array($this->gestor_id, $participantes)) {
+                    $participantes[] = (int) $this->gestor_id;
+                }
+
+                if (!empty($participantes)) {
+                    $ticket->usuariosParticipantes()->sync($participantes);
                 }
 
                 TicketHistorial::create([

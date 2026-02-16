@@ -11,8 +11,10 @@
         </h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('ticket.lista')
+                <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
@@ -223,18 +225,22 @@
                 </div>
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="store">
-                            <i class="fa-solid fa-save"></i> Crear
-                        </span>
-                        <span wire:loading wire:target="store">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Creando...
-                        </span>
-                    </button>
+                    @can('ticket.crear')
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="store">
+                                <i class="fa-solid fa-save"></i> Crear
+                            </span>
+                            <span wire:loading wire:target="store">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                            </span>
+                        </button>
+                    @endcan
 
-                    <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton cancelar">
-                        <i class="fa-solid fa-times"></i> Cancelar
-                    </a>
+                    @can('ticket.lista')
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </button>
+                    @endcan
                 </div>
             </form>
         </div>
@@ -245,9 +251,11 @@
                     <h4 class="g_panel_titulo">Ticket padre</h4>
 
                     <div class="g_margin_bottom_10">
-                        <a href="{{ route('erp.ticket.vista.editar', $ticketPadre->id) }}" class="g_boton secondary">
-                            <i class="fa-solid fa-eye"></i> Ver ticket
-                        </a>
+                        @can('ticket.editar')
+                            <a href="{{ route('erp.ticket.vista.editar', $ticketPadre->id) }}" class="g_boton secondary">
+                                <i class="fa-solid fa-eye"></i> Ver ticket
+                            </a>
+                        @endcan
                     </div>
 
                     <div class="g_fila">

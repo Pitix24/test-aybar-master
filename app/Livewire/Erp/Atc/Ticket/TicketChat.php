@@ -4,9 +4,7 @@ namespace App\Livewire\Erp\Atc\Ticket;
 
 use App\Models\Ticket;
 use App\Models\TicketMensaje;
-use App\Models\TicketArchivo;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +27,7 @@ class TicketChat extends Component
 
     public function enviar()
     {
-        abort_unless(auth()->user()->can('ticket.ver'), 403);
+        $this->authorize('ticket.chat');
 
         if (trim($this->mensaje) == '') {
             return;
@@ -55,7 +53,6 @@ class TicketChat extends Component
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo enviar el mensaje.']);
         }
     }
-
     public function render()
     {
         $mensajes = TicketMensaje::where('ticket_id', $this->ticket->id)

@@ -87,12 +87,15 @@
                             <div>{{ $file->nombre_original }}</div>
                         </td>
                         <td class="g_celda_acciones g_celda_centro">
-                            <a href="{{ $file->url }}" target="_blank" class="g_accion ver" title="Ver">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
+                            @can('ticket.ver-archivo')
+                                <a href="{{ $file->url }}" target="_blank" class="g_accion ver" title="Ver">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            @endcan
+
                             @can('ticket.eliminar-archivo')
-                                <button type="button" onclick="alertaEliminarArchivo({{ $file->id }})"
-                                    class="g_accion eliminar" title="Eliminar">
+                                <button type="button" onclick="alertaEliminarArchivo({{ $file->id }})" class="g_accion eliminar"
+                                    title="Eliminar">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             @endcan
@@ -114,22 +117,22 @@
 </div>
 
 @script
-    <script>
-        window.alertaEliminarArchivo = function(id) {
-            Swal.fire({
-                title: '¿Eliminar Adjunto?',
-                text: "El archivo será borrado permanentemente.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $wire.eliminarArchivo(id);
-                }
-            });
-        }
-    </script>
+<script>
+    window.alertaEliminarArchivo = function (id) {
+        Swal.fire({
+            title: '¿Eliminar Adjunto?',
+            text: "El archivo será borrado permanentemente.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $wire.eliminarArchivo(id);
+            }
+        });
+    }
+</script>
 @endscript

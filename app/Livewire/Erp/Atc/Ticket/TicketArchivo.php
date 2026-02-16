@@ -72,6 +72,9 @@ class TicketArchivo extends Component
                 'mime_type' => $this->archivo->getMimeType(),
             ]);
 
+            // Registrar al usuario que adjunta el archivo como participante
+            $this->ticket->usuariosParticipantes()->syncWithoutDetaching([auth()->id()]);
+
             TicketHistorial::create([
                 'ticket_id' => $this->ticket->id,
                 'user_id' => auth()->id(),

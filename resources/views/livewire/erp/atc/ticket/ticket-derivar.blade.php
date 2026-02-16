@@ -4,11 +4,13 @@
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Derivar Ticket</h2>
 
-        <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton dark">
-                <i class="fa-solid fa-arrow-left"></i> Regresar al ticket
-            </a>
-        </div>
+        @can('ticket.editar')
+            <div class="cabecera_titulo_botones">
+                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton dark">
+                    <i class="fa-solid fa-arrow-left"></i> Regresar al ticket
+                </a>
+            </div>
+        @endcan
     </div>
 
     <div class="g_fila">
@@ -85,18 +87,22 @@
                         </div>
 
                         <div class="formulario_botones">
-                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="store">
-                                    <i class="fa-solid fa-route"></i> Derivar
-                                </span>
-                                <span wire:loading wire:target="store">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Derivando...
-                                </span>
-                            </button>
+                            @can('ticket.derivar')
+                                <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                                    <span wire:loading.remove wire:target="store">
+                                        <i class="fa-solid fa-route"></i> Derivar
+                                    </span>
+                                    <span wire:loading wire:target="store">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Derivando...
+                                    </span>
+                                </button>
+                            @endcan
 
-                            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton cancelar">
-                                <i class="fa-solid fa-times"></i> Cancelar
-                            </a>
+                            @can('ticket.editar')
+                                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton cancelar">
+                                    <i class="fa-solid fa-times"></i> Cancelar
+                                </a>
+                            @endcan
                         </div>
                     </form>
                 </div>

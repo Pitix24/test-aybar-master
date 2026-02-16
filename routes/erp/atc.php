@@ -163,6 +163,7 @@ TICKET
 9. ticket.derivar
 10. ticket.agregar-archivo
 11. ticket.eliminar-archivo
+11. ticket.ver-archivo
 12. ticket.enviar-correo
 13. ticket.chat
 */

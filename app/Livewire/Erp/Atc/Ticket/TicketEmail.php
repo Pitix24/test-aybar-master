@@ -6,10 +6,14 @@ use App\Mail\TicketComunicacionMail;
 use App\Models\Ticket;
 use App\Models\TicketEmail as TicketEmailModel;
 use App\Models\TicketArchivo;
+use App\Models\TicketHistorial;
 use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class TicketEmail extends Component
 {
@@ -32,25 +36,34 @@ class TicketEmail extends Component
         $this->nuevosArchivos = array_values($this->nuevosArchivos);
     }
 
-    public function enviar()
+    public function store()
     {
-        abort_unless(auth()->user()->can('ticket.editar'), 403);
+        $this->authorize('ticket.enviar-correo');
 
-        $this->validate([
-            'asunto' => 'required|min:5|max:200',
-            'mensaje' => 'required|min:10',
-            'nuevosArchivos.*' => 'nullable|file|max:10240', // 10MB c/u
-        ]);
+        try {
+            $this->validate([
+                'asunto' => 'required|min:5|max:200',
+                'mensaje' => 'required|min:10',
+                'nuevosArchivos.*' => 'nullable|file|max:10240', // 10MB c/u
+            ]);
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        }
 
         $emailDestino = $this->ticket->email;
 
         if (!$emailDestino || !filter_var($emailDestino, FILTER_VALIDATE_EMAIL)) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'El ticket no tiene un correo válido registrado.']);
+            $this->dispatch('alertaLivewire', ['type' => 'warning', 'title' => 'Advertencia', 'text' => 'El ticket no tiene un correo válido registrado.']);
             return;
         }
 
         try {
-            \Illuminate\Support\Facades\DB::beginTransaction();
+            DB::beginTransaction();
 
             $archivosAdjuntar = [];
 
@@ -65,7 +78,7 @@ class TicketEmail extends Component
                         'user_id' => auth()->id(),
                         'nombre_original' => $file->getClientOriginalName(),
                         'path' => $path,
-                        'url' => \Illuminate\Support\Facades\Storage::url($path),
+                        'url' => Storage::url($path),
                         'descripcion' => 'Adjunto enviado por email: ' . $this->asunto,
                         'extension' => $file->getClientOriginalExtension(),
                         'size' => $file->getSize(),
@@ -89,7 +102,17 @@ class TicketEmail extends Component
                 'enviado_at' => now(),
             ]);
 
-            \Illuminate\Support\Facades\DB::commit();
+            // Registrar al usuario que envía el correo como participante
+            $this->ticket->usuariosParticipantes()->syncWithoutDetaching([auth()->id()]);
+
+            TicketHistorial::create([
+                'ticket_id' => $this->ticket->id,
+                'user_id' => auth()->id(),
+                'accion' => 'Envío de Email',
+                'detalle' => "Comunicación enviada al cliente. Asunto: '{$this->asunto}'",
+            ]);
+
+            DB::commit();
 
             $this->reset(['mensaje', 'nuevosArchivos']);
             $this->dispatch('alertaLivewire', ['title' => 'Enviado', 'text' => 'El correo ha sido enviado correctamente al cliente.']);
@@ -98,8 +121,8 @@ class TicketEmail extends Component
             $this->dispatch('archivoSubido');
 
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\DB::rollBack();
-            Log::channel('ticket')->error('[TICKET] Error TicketEmail@enviar: ' . $e->getMessage(), [
+            DB::rollBack();
+            Log::channel('ticket')->error('[TICKET] Error TicketEmail@store: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
             $this->dispatch('alertaLivewire', [

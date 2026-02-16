@@ -101,6 +101,9 @@ class TicketEditar extends Component
                 'updated_by' => auth()->id(),
             ]);
 
+            // Registrar al usuario que edita como participante
+            $this->ticket->usuariosParticipantes()->syncWithoutDetaching([auth()->id()]);
+
             if (!empty($cambios)) {
                 TicketHistorial::create([
                     'ticket_id' => $this->ticket->id,
