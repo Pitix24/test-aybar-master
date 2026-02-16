@@ -786,20 +786,20 @@
                 "submenus": [
                     {
                         "id": 111,
-                        "nombre": "Reporte Roles",
-                        "ruta": "erp.reporte.vista.rol",
+                        "nombre": "Reporte Cliente",
+                        "ruta": "erp.reporte.vista.cliente",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "reporte.rol.ver",
+                        "permiso": "reporte.cliente.ver",
                         "submenus": []
                     },
                     {
                         "id": 112,
-                        "nombre": "Reporte Permisos",
-                        "ruta": "erp.reporte.vista.permiso",
+                        "nombre": "Reporte Solicitud Evidencia Pago",
+                        "ruta": "erp.reporte.vista.solicitud-evidencia-pago",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "reporte.permiso.ver",
+                        "permiso": "reporte.solicitud-evidencia-pago.ver",
                         "submenus": []
                     }
                 ]
