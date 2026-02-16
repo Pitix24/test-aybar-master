@@ -58,7 +58,7 @@
                                 <select wire:model.live="unidad_negocio_id"
                                     class="@error('unidad_negocio_id') select-error @enderror">
                                     <option value="">Seleccione...</option>
-                                    @foreach ($unidades as $u)
+                                    @foreach ($unidades_negocios as $u)
                                         <option value="{{ $u->id }}">{{ $u->nombre }}</option>
                                     @endforeach
                                 </select>
@@ -137,7 +137,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton guardar">
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
                             Actualizar Evento <i class="fa-solid fa-floppy-disk"></i>
                         </button>
                     </div>

@@ -15,24 +15,57 @@ use Livewire\WithPagination;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
-#[Title('Lista de Entrega Fest')]
+#[Title('Entrega Fest')]
 class EntregaFestLista extends Component
 {
     use WithPagination;
 
-    #[Url(history: true)]
+    #[Url(as: 'q')]
     public $buscar = '';
 
-    #[Url(history: true)]
+    #[Url(keep: true)]
     public $activo = '1';
 
-    #[Url(history: true)]
+    #[Url(keep: true)]
     public $unidad_negocio_id = '';
 
-    #[Url(history: true)]
+    #[Url(keep: true)]
     public $proyecto_id = '';
 
-    public $perPage = 10;
+    #[Url(keep: true)]
+    public $perPage = 15;
+
+    // Catálogos
+    public $unidades_negocios = [];
+    public $proyectos = [];
+
+    public function mount()
+    {
+        $this->unidades_negocios = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
+
+        if ($this->unidad_negocio_id) {
+            $this->loadProyectos();
+        }
+    }
+
+    public function updatedUnidadNegocioId($value)
+    {
+        $this->proyecto_id = '';
+        $this->proyectos = [];
+        if ($value) {
+            $this->loadProyectos();
+        }
+    }
+
+    public function loadProyectos()
+    {
+        if ($this->unidad_negocio_id) {
+            $this->proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)
+                ->where('activo', true)
+                ->orderBy('nombre')
+                ->get();
+        }
+    }
 
     public function updated($property)
     {
@@ -47,16 +80,6 @@ class EntregaFestLista extends Component
         $this->resetPage();
     }
 
-    public function exportExcelFiltro()
-    {
-        // Placeholder
-    }
-
-    public function exportExcelTodo()
-    {
-        // Placeholder
-    }
-
     public function placeholder()
     {
         return <<<'HTML'
@@ -66,14 +89,8 @@ class EntregaFestLista extends Component
 
     public function render()
     {
-        $unidades = UnidadNegocio::where('activo', true)->get();
-        $proyectos = [];
-        if ($this->unidad_negocio_id) {
-            $proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)->where('activo', true)->get();
-        }
-
         $eventos = EntregaFest::query()
-            ->with(['unidadNegocio', 'proyecto', 'user'])
+            ->with(['unidadNegocio', 'proyecto', 'user', 'cliente'])
             ->withCount(['prospectos', 'invitados'])
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
@@ -94,9 +111,7 @@ class EntregaFestLista extends Component
             ->paginate($this->perPage);
 
         return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-lista', [
-            'eventos' => $eventos,
-            'unidades' => $unidades,
-            'proyectos' => $proyectos,
+            'eventos' => $eventos
         ]);
     }
 }

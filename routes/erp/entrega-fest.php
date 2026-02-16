@@ -4,6 +4,7 @@ use App\Livewire\Erp\EntregaFest\AsistenciaEntregaFest\AsistenciaEntregaFestList
 use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestCrear;
 use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestEditar;
 use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestLista;
+use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestVer;
 use App\Livewire\Erp\EntregaFest\InvitadoEntregaFest\InvitadoEntregaFestLista;
 use App\Livewire\Erp\EntregaFest\ProspectoEntregaFest\ProspectoEntregaFestCrear;
 use App\Livewire\Erp\EntregaFest\ProspectoEntregaFest\ProspectoEntregaFestEditar;
@@ -18,6 +19,7 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
             ->name('entrega-fest.vista.')
             ->group(function () {
                 Route::get('/', EntregaFestLista::class)->middleware('permission:entrega-fest.lista')->name('todo');
+                Route::get('/ver/{id}', EntregaFestVer::class)->middleware('permission:entrega-fest.ver')->name('ver');
                 Route::get('/crear', EntregaFestCrear::class)->middleware('permission:entrega-fest.crear')->name('crear');
                 Route::get('/editar/{id}', EntregaFestEditar::class)->middleware('permission:entrega-fest.editar')->name('editar');
             });

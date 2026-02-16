@@ -57,7 +57,7 @@
                                 <select wire:model.live="unidad_negocio_id"
                                     class="@error('unidad_negocio_id') select-error @enderror">
                                     <option value="">Seleccione...</option>
-                                    @foreach ($unidades as $u)
+                                    @foreach ($unidades_negocios as $u)
                                         <option value="{{ $u->id }}">{{ $u->nombre }}</option>
                                     @endforeach
                                 </select>

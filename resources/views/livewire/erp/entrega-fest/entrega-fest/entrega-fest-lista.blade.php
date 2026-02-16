@@ -1,23 +1,13 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading message="Cargando información..." />
+    <x-loading-overlay wire:loading message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Lista de Entrega Fest</h2>
+        <h2>Módulo Entrega Fest</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('entrega-fest.exportar-filtro')
-                <button wire:click="exportExcelFiltro" class="g_boton light">
-                    Excel Filtro <i class="fa-solid fa-file-excel"></i>
-                </button>
-            @endcan
-            @can('entrega-fest.exportar-todo')
-                <button wire:click="exportExcelTodo" class="g_boton light">
-                    Excel Todo <i class="fa-solid fa-file-excel"></i>
-                </button>
-            @endcan
             @can('entrega-fest.crear')
                 <a href="{{ route('erp.entrega-fest.vista.crear') }}" class="g_boton primary">
-                    Crear Nuevo <i class="fa-solid fa-plus"></i>
+                    Nuevo Evento <i class="fa-solid fa-plus"></i>
                 </a>
             @endcan
         </div>
@@ -28,7 +18,7 @@
             <div class="g_columna_3">
                 <label>Buscar</label>
                 <div class="g_input_con_icono_derecha">
-                    <input type="text" wire:model.live.debounce.300ms="buscar" placeholder="Nombre o código...">
+                    <input type="text" wire:model.live.debounce.400ms="buscar" placeholder="Nombre o código...">
                     <i class="fa-solid fa-search"></i>
                 </div>
             </div>
@@ -37,7 +27,7 @@
                 <label>Unidad de Negocio</label>
                 <select wire:model.live="unidad_negocio_id">
                     <option value="">Todas</option>
-                    @foreach ($unidades as $u)
+                    @foreach ($unidades_negocios as $u)
                         <option value="{{ $u->id }}">{{ $u->nombre }}</option>
                     @endforeach
                 </select>
@@ -65,8 +55,8 @@
             <div class="g_columna_2">
                 <label>Mostrar</label>
                 <select wire:model.live="perPage">
-                    <option value="10">10 registros</option>
-                    <option value="25">25 registros</option>
+                    <option value="15">15 registros</option>
+                    <option value="30">30 registros</option>
                     <option value="50">50 registros</option>
                     <option value="100">100 registros</option>
                 </select>
@@ -83,10 +73,10 @@
             <table class="g_tabla">
                 <thead>
                     <tr>
-                        <th>Cód.</th>
-                        <th>Evento / Nombre</th>
-                        <th>Unidad Negocio / Proyecto</th>
-                        <th class="g_celda_centro">Fecha</th>
+                        <th style="width: 80px;">Cód.</th>
+                        <th>Nombre del Evento / Descripción</th>
+                        <th>Proyecto / Responsable</th>
+                        <th class="g_celda_centro">Fecha Entrega</th>
                         <th class="g_celda_centro">Prospectos</th>
                         <th class="g_celda_centro">Invitados</th>
                         <th class="g_celda_centro">Estado</th>
@@ -96,21 +86,24 @@
                 <tbody>
                     @forelse ($eventos as $e)
                         <tr wire:key="evento-{{ $e->id }}">
-                            <td class="g_negrita">#{{ $e->codigo }}</td>
+                            <td class="g_negrita" style="color: var(--color-primary);">#{{ $e->codigo }}</td>
                             <td>
                                 <div class="g_negrita">{{ $e->nombre }}</div>
-                                <div class="g_texto_pequeno">{{ Str::limit($e->descripcion, 50) }}</div>
+                                <div class="g_texto_pequeno" style="max-width: 300px;">{{ Str::limit($e->descripcion, 70) }}
+                                </div>
                             </td>
                             <td>
-                                <div>{{ $e->unidadNegocio->nombre }}</div>
-                                <div class="g_texto_pequeno">{{ $e->proyecto->nombre ?? 'Sin proyecto' }}</div>
-                            </td>
-                            <td class="g_celda_centro">{{ $e->fecha_entrega->format('d/m/Y') }}</td>
-                            <td class="g_celda_centro">
-                                <span class="g_badge primary">{{ $e->prospectos_count }}</span>
+                                <div class="g_negrita">{{ $e->proyecto->nombre ?? 'N/A' }}</div>
+                                <div class="g_texto_pequeno">{{ $e->cliente->nombre_completo ?? 'Sin cliente' }}</div>
                             </td>
                             <td class="g_celda_centro">
-                                <span class="g_badge success">{{ $e->invitados_count }}</span>
+                                <span class="g_negrita">{{ $e->fecha_entrega->format('d/m/Y') }}</span>
+                            </td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge dark">{{ $e->prospectos_count }}</span>
+                            </td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge primary">{{ $e->invitados_count }}</span>
                             </td>
                             <td class="g_celda_centro">
                                 <span class="g_badge {{ $e->activo ? 'success' : 'error' }}">
@@ -124,14 +117,20 @@
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>
                                 @endcan
+                                @can('prospecto-entrega-fest.lista')
+                                    <a href="{{ route('erp.prospecto-entrega-fest.vista.todo', ['entrega_fest_id' => $e->id]) }}"
+                                        class="g_accion primary" title="Ver Prospectos">
+                                        <i class="fa-solid fa-users-viewfinder"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @empty
                         <tr>
                             <td colspan="8">
                                 <div class="g_vacio">
-                                    <i class="fa-regular fa-face-grin-wink"></i>
-                                    <p>No hay eventos registrados.</p>
+                                    <i class="fa-solid fa-champagne-glasses"></i>
+                                    <p>No se encontraron eventos registrados.</p>
                                 </div>
                             </td>
                         </tr>
