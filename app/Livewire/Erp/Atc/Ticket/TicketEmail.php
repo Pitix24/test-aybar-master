@@ -99,8 +99,9 @@ class TicketEmail extends Component
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
-            Log::error('Error TicketEmail@enviar: ' . $e->getMessage());
-            Log::error($e->getTraceAsString());
+            Log::channel('ticket')->error('[TICKET] Error TicketEmail@enviar: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->dispatch('alertaLivewire', [
                 'title' => 'Error de Envío',
                 'text' => 'Hubo un problema técnico: ' . $e->getMessage()

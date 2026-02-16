@@ -4,7 +4,7 @@
         <div class="g_select_search">
             <div class="g_posicion_relativa">
                 <input type="text" id="searchUser" wire:model.live="searchUser" autocomplete="off"
-                    class="g_select_search_input" placeholder="Escriba nombre del usuario...">
+                    class="g_select_search_input">
             </div>
 
             @if(!empty($participantesDisponibles))
@@ -38,8 +38,8 @@
                             </td>
                             <td>{{ $part->email }}</td>
                             <td class="g_celda_acciones g_celda_centro">
-                                <button type="button" wire:click="removeParticipant({{ $part->id }})"
-                                    class="g_accion_eliminar" title="Quitar participante">
+                                <button type="button" wire:click="removeParticipant({{ $part->id }})" class="g_boton danger"
+                                    title="Quitar participante">
                                     <i class="fa-solid fa-user-minus"></i>
                                 </button>
                             </td>

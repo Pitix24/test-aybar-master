@@ -18,10 +18,11 @@
     <div x-show="activeTab === 'enviar'" x-transition class="g_tab_content">
         <div class="formulario">
             @if(!$ticket->email)
-                <p class="g_resaltado error">
+                <p class="g_resaltado_indicacion info">
                     <i class="fa-solid fa-info-circle"></i>
                     <span>
-                        El cliente no tiene un email registrado en este ticket. No se puede realizar el envío.
+                        El cliente <strong>no tiene un email</strong> registrado en este ticket. No se puede realizar el
+                        envío.
                     </span>
                 </p>
             @endif
@@ -86,8 +87,8 @@
             </div>
 
             <div class="formulario_botones">
-                <button class="g_boton g_boton_guardar" wire:click="enviar" wire:loading.attr="disabled"
-                    @if(!$ticket->email) disabled @endif>
+                <button class="g_boton guardar" wire:click="enviar" wire:loading.attr="disabled" @if(!$ticket->email)
+                disabled @endif>
                     <span>
                         <i class="fa-solid fa-paper-plane"></i> Enviar Correo ahora
                     </span>

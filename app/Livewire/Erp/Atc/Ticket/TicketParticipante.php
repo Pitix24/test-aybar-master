@@ -6,6 +6,8 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Models\TicketHistorial;
 use Livewire\Component;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TicketParticipante extends Component
 {
@@ -21,38 +23,58 @@ class TicketParticipante extends Component
     {
         abort_unless(auth()->user()->can('ticket.editar'), 403);
 
-        if (!$this->ticket->usuariosParticipantes()->where('users.id', $userId)->exists()) {
-            $this->ticket->usuariosParticipantes()->attach($userId);
+        try {
+            DB::beginTransaction();
 
-            $user = User::find($userId);
-            TicketHistorial::create([
-                'ticket_id' => $this->ticket->id,
-                'user_id' => auth()->id(),
-                'accion' => 'Agregar Participante',
-                'detalle' => "Se agregó al usuario: {$user->name}",
-            ]);
+            if (!$this->ticket->usuariosParticipantes()->where('users.id', $userId)->exists()) {
+                $this->ticket->usuariosParticipantes()->attach($userId);
 
-            $this->dispatch('alertaLivewire', ['title' => 'Agregado', 'text' => 'Participante añadido correctamente.']);
+                $user = User::find($userId);
+                TicketHistorial::create([
+                    'ticket_id' => $this->ticket->id,
+                    'user_id' => auth()->id(),
+                    'accion' => 'Agregar Participante',
+                    'detalle' => "Se agregó al usuario: {$user->name}",
+                ]);
+
+                $this->dispatch('alertaLivewire', ['title' => 'Agregado', 'text' => 'Participante añadido correctamente.']);
+            }
+
+            DB::commit();
+
+            $this->searchUser = '';
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('ticket')->error('[TICKET] Error TicketParticipante@addParticipant: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo agregar al participante.']);
         }
-
-        $this->searchUser = '';
     }
 
     public function removeParticipant($userId)
     {
         abort_unless(auth()->user()->can('ticket.editar'), 403);
 
-        $this->ticket->usuariosParticipantes()->detach($userId);
+        try {
+            DB::beginTransaction();
 
-        $user = User::find($userId);
-        TicketHistorial::create([
-            'ticket_id' => $this->ticket->id,
-            'user_id' => auth()->id(),
-            'accion' => 'Quitar Participante',
-            'detalle' => "Se retiró al usuario: {$user->name}",
-        ]);
+            $this->ticket->usuariosParticipantes()->detach($userId);
 
-        $this->dispatch('alertaLivewire', ['title' => 'Quitado', 'text' => 'Participante retirado.']);
+            $user = User::find($userId);
+            TicketHistorial::create([
+                'ticket_id' => $this->ticket->id,
+                'user_id' => auth()->id(),
+                'accion' => 'Quitar Participante',
+                'detalle' => "Se retiró al usuario: {$user->name}",
+            ]);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', ['title' => 'Quitado', 'text' => 'Participante retirado.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('ticket')->error('[TICKET] Error TicketParticipante@removeParticipant: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo retirar al participante.']);
+        }
     }
 
     public function render()

@@ -36,6 +36,8 @@ class TicketChat extends Component
         }
 
         try {
+            DB::beginTransaction();
+
             TicketMensaje::create([
                 'ticket_id' => $this->ticket->id,
                 'user_id' => auth()->id(),
@@ -43,10 +45,13 @@ class TicketChat extends Component
                 'es_interno' => $this->es_interno,
             ]);
 
+            DB::commit();
+
             $this->reset(['mensaje', 'es_interno']);
             $this->dispatch('mensajeEnviado');
         } catch (\Exception $e) {
-            Log::error('Error al enviar mensaje chat: ' . $e->getMessage());
+            DB::rollBack();
+            Log::channel('ticket')->error('[TICKET] Error al enviar mensaje chat: ' . $e->getMessage());
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo enviar el mensaje.']);
         }
     }

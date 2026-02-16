@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, desde, hasta, perPage, resetFiltros, exportExcelFiltro, exportExcelTodo, gotoPage, nextPage, previousPage"
+        wire:target="buscar, unidad_negocio_id, proyecto_id, estado_id, area_id, solicitud_id, sub_tipo_solicitud_id, canal_id, usuario_admin_id, prioridad_id, con_citas, con_derivados, con_hijos, desde, hasta, perPage, resetFiltros, exportExcelFiltro, exportExcelTodo, gotoPage, nextPage, previousPage"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">

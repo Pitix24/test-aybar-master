@@ -6,26 +6,26 @@
         <h2>Editar ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
-            <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton g_boton_primary">
+            <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton primary">
                 Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
 
-            <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton g_boton_secondary">
+            <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton secondary">
                 Derivar <i class="fa-solid fa-route"></i>
             </a>
 
-            <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarTicket()">
+            <button type="button" class="g_boton danger" onclick="alertaEliminarTicket()">
                 Eliminar <i class="fa-solid fa-trash-can"></i>
             </button>
 
-            <button type="button" class="g_boton g_boton_info" wire:click="$dispatch('toggleChat')">
+            <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
                 Chat <i class="fa-solid fa-comments"></i>
             </button>
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -242,8 +242,8 @@
                                     <tr wire:key="hist-{{ $item->id }}">
                                         <td class="g_negrita">{{ $item->created_at->format('d/m H:i') }}</td>
                                         <td>{{ $item->usuarioHistorial->name ?? 'Sistema' }}</td>
-                                        <td><span class="g_badge g_badge_light">{{ $item->accion }}</span></td>
-                                        <td style="font-size: 0.85rem;">
+                                        <td><span class="g_badge light">{{ $item->accion }}</span></td>
+                                        <td>
                                             @foreach (explode(' | ', $item->detalle) as $linea)
                                                 <div>{{ $linea }}</div>
                                             @endforeach
@@ -260,8 +260,7 @@
                 </div>
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                        wire:target="update">
+                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                         <span wire:loading.remove wire:target="update">
                             <i class="fa-solid fa-pencil"></i> Actualizar
                         </span>
@@ -270,7 +269,7 @@
                         </span>
                     </button>
 
-                    <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton g_boton_cancelar">
+                    <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton cancelar">
                         <i class="fa-solid fa-times"></i> Cancelar
                     </a>
                 </div>
@@ -302,7 +301,7 @@
                                     <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
                                     <td class="g_celda_centro">
                                         <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}"
-                                            class="g_accion_editar" title="Ver Ticket Padre">
+                                            class="g_accion ver" title="Ver Ticket Padre">
                                             <i class="fa-solid fa-eye"></i>
                                         </a>
                                     </td>
@@ -331,7 +330,7 @@
                                         <td class="g_negrita">#{{ $hijo->id }}</td>
                                         <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
                                         <td class="g_celda_centro">
-                                            <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion_editar"
+                                            <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion ver"
                                                 title="Ver Ticket Hijo">
                                                 <i class="fa-solid fa-eye"></i>
                                             </a>

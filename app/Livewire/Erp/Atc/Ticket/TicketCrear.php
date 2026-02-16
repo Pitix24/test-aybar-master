@@ -312,7 +312,6 @@ class TicketCrear extends Component
                 break;
         }
     }
-
     public function agregarLote()
     {
         if (!$this->lote_id)
@@ -334,26 +333,12 @@ class TicketCrear extends Component
 
         $this->lote_id = "";
     }
-
     public function quitarLote($id)
     {
         $this->lotes_agregados = collect($this->lotes_agregados)
             ->reject(fn($l) => $l['id'] == $id)
             ->values()
             ->toArray();
-    }
-
-    public function addParticipant($userId)
-    {
-        if (!in_array($userId, $this->selectedParticipants)) {
-            $this->selectedParticipants[] = $userId;
-        }
-        $this->searchUser = '';
-    }
-
-    public function removeParticipant($userId)
-    {
-        $this->selectedParticipants = array_diff($this->selectedParticipants, [$userId]);
     }
 
     public function store($confirmado = false)
@@ -381,7 +366,6 @@ class TicketCrear extends Component
             DB::beginTransaction();
 
             $estadoAbiertoId = EstadoTicket::id(EstadoTicket::NUEVO);
-            $ticketsGenerados = [];
 
             // Generamos tickets separados por lote si hay más de uno.
             $lotesIterar = count($this->lotes_agregados) > 1 ? $this->lotes_agregados : [null];
@@ -422,16 +406,9 @@ class TicketCrear extends Component
                     'accion' => 'Creación',
                     'detalle' => 'Ticket creado con estado inicial: ' . ($ticket->estado?->nombre ?? 'N/A'),
                 ]);
-
-                $ticketsGenerados[] = $ticket->id;
             }
 
             DB::commit();
-
-            Log::channel('ticket')->info('[TICKET] Creación: Múltiples/Simple ticket(s) creado(s) por ' . auth()->user()->name, [
-                'usuario_id' => auth()->id(),
-                'tickets_ids' => $ticketsGenerados
-            ]);
 
             $mensaje = count($lotesIterar) > 1
                 ? 'Se han generado ' . count($lotesIterar) . ' tickets (separados por lote).'
@@ -457,7 +434,6 @@ class TicketCrear extends Component
             ]);
         }
     }
-
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);

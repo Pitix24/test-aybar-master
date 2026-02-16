@@ -148,7 +148,7 @@ class TicketDerivar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error TicketDerivar@derivar: ' . $e->getMessage());
+            Log::channel('ticket')->error('[TICKET] Error TicketDerivar@derivar: ' . $e->getMessage());
             $this->dispatch('alertaLivewire', [
                 'title' => 'Error',
                 'text' => 'No se pudo procesar la derivación.'

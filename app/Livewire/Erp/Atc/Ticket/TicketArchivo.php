@@ -78,7 +78,7 @@ class TicketArchivo extends Component
             $this->dispatch('archivoSubido'); // Avisar a otros componentes (como el de Email)
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Error TicketArchivo@adjuntar: ' . $e->getMessage());
+            Log::channel('ticket')->error('[TICKET] Error TicketArchivo@adjuntar: ' . $e->getMessage());
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo subir el archivo.']);
         }
     }
@@ -89,6 +89,7 @@ class TicketArchivo extends Component
         abort_unless(auth()->user()->can('ticket.eliminar'), 403);
 
         try {
+            DB::beginTransaction();
             $archivo = TicketArchivoModel::findOrFail($archivoId);
 
             if (Storage::disk('public')->exists($archivo->path)) {
@@ -106,11 +107,14 @@ class TicketArchivo extends Component
                 'detalle' => "Se eliminó el archivo: '{$desc}' ({$name})",
             ]);
 
+            DB::commit();
+
             $this->refreshArchivos();
             $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Archivo eliminado.']);
             $this->dispatch('archivoSubido'); // Refrescar otros componentes
         } catch (Exception $e) {
-            Log::error('Error TicketArchivo@eliminarArchivo: ' . $e->getMessage());
+            DB::rollBack();
+            Log::channel('ticket')->error('[TICKET] Error TicketArchivo@eliminarArchivo: ' . $e->getMessage());
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar el archivo.']);
         }
     }

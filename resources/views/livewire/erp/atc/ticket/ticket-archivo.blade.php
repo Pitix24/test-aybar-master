@@ -46,8 +46,7 @@
             </div>
 
             <div class="formulario_botones g_margin_bottom_10">
-                <button wire:click="adjuntar" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                    wire:target="adjuntar">
+                <button wire:click="adjuntar" class="g_boton guardar" wire:loading.attr="disabled" wire:target="adjuntar">
                     <span wire:loading.remove wire:target="adjuntar">Adjuntar <i class="fa-solid fa-paperclip"></i></span>
                     <span wire:loading wire:target="adjuntar">Adjuntando... <i
                             class="fa-solid fa-spinner fa-spin"></i></span>
@@ -73,10 +72,10 @@
                             <div>{{ $file->nombre_original }}</div>
                         </td>
                         <td class="g_celda_acciones g_celda_centro">
-                            <a href="{{ $file->url }}" target="_blank" class="g_accion_editar" title="Ver">
+                            <a href="{{ $file->url }}" target="_blank" class="g_accion ver" title="Ver">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
-                            <button type="button" onclick="alertaEliminarArchivo({{ $file->id }})" class="g_accion_eliminar"
+                            <button type="button" onclick="alertaEliminarArchivo({{ $file->id }})" class="g_accion eliminar"
                                 title="Eliminar">
                                 <i class="fa-solid fa-trash"></i>
                             </button>

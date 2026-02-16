@@ -12,9 +12,12 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
+#[Title('Editar Ticket')]
 class TicketEditar extends Component
 {
     public Ticket $ticket;
@@ -62,7 +65,7 @@ class TicketEditar extends Component
 
         try {
             $this->validate();
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => 'Advertencia',
@@ -109,11 +112,6 @@ class TicketEditar extends Component
 
             DB::commit();
 
-            Log::channel('ticket')->info('[TICKET] Edición: Ticket #' . $this->ticket->id . ' actualizado por ' . auth()->user()->name, [
-                'usuario_id' => auth()->id(),
-                'cambios' => $cambios
-            ]);
-
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => 'Actualizado',
@@ -151,10 +149,6 @@ class TicketEditar extends Component
 
             $ticket_id = $this->ticket->id;
             $this->ticket->delete();
-
-            Log::channel('ticket')->info('[TICKET] Eliminación: Ticket #' . $ticket_id . ' eliminado por ' . auth()->user()->name, [
-                'usuario_id' => auth()->id()
-            ]);
 
             return redirect()->route('erp.ticket.vista.todo');
         } catch (\Exception $e) {
