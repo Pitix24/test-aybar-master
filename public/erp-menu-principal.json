@@ -771,7 +771,7 @@
         "nombre": "Módulo Reportes",
         "ruta": null,
         "url": null,
-        "icono": "fa-solid fa-pen-nib",
+        "icono": "fa-solid fa-chart-line",
         "nivel": 1,
         "permiso": "modulo-reporte.ver",
         "submenus": [
@@ -787,7 +787,7 @@
                     {
                         "id": 111,
                         "nombre": "Reporte Roles",
-                        "ruta": "erp.reporte.rol",
+                        "ruta": "erp.reporte.vista.rol",
                         "url": null,
                         "nivel": 3,
                         "permiso": "reporte.rol.ver",
@@ -796,10 +796,50 @@
                     {
                         "id": 112,
                         "nombre": "Reporte Permisos",
-                        "ruta": "erp.reporte.permiso",
+                        "ruta": "erp.reporte.vista.permiso",
                         "url": null,
                         "nivel": 3,
                         "permiso": "reporte.permiso.ver",
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "nombre": "Módulo Marketing",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-bullhorn",
+        "nivel": 1,
+        "permiso": "modulo-marketing.ver",
+        "submenus": [
+            {
+                "id": 50,
+                "nombre": "Tutoriales",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-graduation-cap",
+                "nivel": 2,
+                "permiso": "tutorial.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.tutorial.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "tutorial.lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.tutorial.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "tutorial.crear",
                         "submenus": []
                     }
                 ]

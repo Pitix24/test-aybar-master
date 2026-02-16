@@ -260,6 +260,17 @@ class RolesYPermisosSeeder extends Seeder
                 'reporte.ver',
                 'reporte-cliente.ver',
             ],
+            'Módulo Marketing' => [
+                'modulo-marketing.ver',
+                'tutorial.navegacion',
+                'tutorial.lista',
+                'tutorial.ver',
+                'tutorial.crear',
+                'tutorial.editar',
+                'tutorial.eliminar',
+                'tutorial.exportar-filtro',
+                'tutorial.exportar-todo',
+            ],
         ];
 
         $created = 0;
@@ -357,6 +368,22 @@ class RolesYPermisosSeeder extends Seeder
             'cita.editar',
         ]);
         $this->command->info("✓ Asesor Cita: 3 permisos");
+
+        // Supervisor Marketing: Todos los permisos de Marketing
+        $supervisor_marketing = Role::findByName('supervisor-marketing');
+        $permisosMarketing = Permission::where('module', 'Módulo Marketing')->get();
+        $supervisor_marketing->syncPermissions($permisosMarketing);
+        $this->command->info("✓ Supervisor Marketing: {$permisosMarketing->count()} permisos");
+
+        // Asesor Marketing: Permisos limitados
+        $asesor_marketing = Role::findByName('asesor-marketing');
+        $asesor_marketing->syncPermissions([
+            'modulo-marketing.ver',
+            'tutorial.navegacion',
+            'tutorial.lista',
+            'tutorial.ver',
+        ]);
+        $this->command->info("✓ Asesor Marketing: 4 permisos");
 
         $this->command->newLine();
         $this->command->info("========================================");
