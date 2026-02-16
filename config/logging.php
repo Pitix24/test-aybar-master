@@ -235,6 +235,34 @@ return [
             'days' => 14,
         ],
 
+        'motivo_cita' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/motivo_cita.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'estado_cita' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/estado_cita.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'estado_solicitud_evidencia_pago' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/estado_solicitud_evidencia_pago.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'estado_solicitud_digitalizar_letra' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/estado_solicitud_digitalizar_letra.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

@@ -8,13 +8,13 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\EstadoSolicitudEvidenciaPagoExport;
 use Livewire\Attributes\Title;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Backoffice\EstadoSolicitudEvidenciaPagoExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
-#[Title('Estado de Solicitud de Evidencia de Pago')]
+#[Title('Estados de Solicitud de Evidencia de Pago')]
 class EstadoSolicitudEvidenciaPagoLista extends Component
 {
     use WithPagination;
@@ -28,37 +28,55 @@ class EstadoSolicitudEvidenciaPagoLista extends Component
     #[Url]
     public $perPage = 20;
 
+    #[Url]
+    public $desde = '';
+
+    #[Url]
+    public $hasta = '';
+
     public function updated($property)
     {
-        if (
-            in_array($property, [
-                'buscar',
-                'activo',
-                'perPage'
-            ])
-        ) {
+        if (in_array($property, ['buscar', 'activo', 'perPage', 'desde', 'hasta'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'activo']);
+        $this->reset(['buscar', 'activo', 'desde', 'hasta']);
         $this->perPage = 20;
         $this->resetPage();
     }
 
-    public function exportExcel()
+    public function exportExcelFiltro()
     {
-        abort_unless(auth()->user()->can('estado-solicitud-evidencia-pago.exportar'), 403);
+        $this->authorize('estado-solicitud-evidencia-pago.exportar-filtro');
+
         return Excel::download(
             new EstadoSolicitudEvidenciaPagoExport(
-                $this->buscar,
-                $this->activo,
-                $this->perPage,
-                $this->getPage()
+                buscar: $this->buscar,
+                activo: $this->activo,
+                perPage: $this->perPage,
+                page: $this->getPage(),
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: false
             ),
-            'estado-solicitud-evidencia-pagos.xlsx'
+            'estados_evidencia_filtrados_' . now()->format('Y-m-d_H-i') . '.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('estado-solicitud-evidencia-pago.exportar-todo');
+
+        return Excel::download(
+            new EstadoSolicitudEvidenciaPagoExport(
+                desde: $this->desde,
+                hasta: $this->hasta,
+                todo: true
+            ),
+            'estados_evidencia_total_' . now()->format('Y-m-d_H-i') . '.xlsx'
         );
     }
 
@@ -66,15 +84,17 @@ class EstadoSolicitudEvidenciaPagoLista extends Component
     {
         $items = EstadoSolicitudEvidenciaPago::query()
             ->when($this->buscar !== '', function ($q) {
-                $q->where('nombre', 'like', "%{$this->buscar}%")
-                    ->orWhere('id', $this->buscar);
+                $q->where(function ($sub) {
+                    $sub->where('nombre', 'like', "%{$this->buscar}%");
+                    if (is_numeric($this->buscar)) {
+                        $sub->orWhere('id', (int) $this->buscar);
+                    }
+                });
             })
-            ->when(
-                $this->activo !== '',
-                fn($q) =>
-                $q->where('activo', $this->activo)
-            )
-            ->latest()
+            ->when($this->activo !== '', fn($q) => $q->where('activo', $this->activo))
+            ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
+            ->orderBy('id', 'desc')
             ->paginate($this->perPage);
 
         return view('livewire.erp.backoffice.estado-solicitud-evidencia-pago.estado-solicitud-evidencia-pago-lista', compact('items'));

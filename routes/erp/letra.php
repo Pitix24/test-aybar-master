@@ -4,6 +4,7 @@
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraCrear;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraEditar;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;
+use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraVer;
 use App\Livewire\Erp\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraEditar;
 use App\Livewire\Erp\Letra\SolicitudDigitalizarLetra\SolicitudDigitalizarLetraLista;
 use App\Livewire\Erp\Letra\EnvioCavali\EnvioCavaliDetalle;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['permission:modulo-letras.ver']], function () {
     Route::group(['middleware' => ['permission:estado-solicitud-digitalizar-letra.navegacion']], function () {
         Route::prefix('estado-solicitud-digitalizar-letra')->name('estado-solicitud-digitalizar-letra.vista.')->group(function () {
-            Route::get('/', EstadoSolicitudDigitalizarLetraLista::class)->middleware('permission:estado-solicitud-digitalizar-letra.ver')->name('todo');
+            Route::get('/', EstadoSolicitudDigitalizarLetraLista::class)->middleware('permission:estado-solicitud-digitalizar-letra.lista')->name('todo');
+            Route::get('/ver/{id}', EstadoSolicitudDigitalizarLetraVer::class)->middleware('permission:estado-solicitud-digitalizar-letra.ver')->name('ver');
             Route::get('/crear', EstadoSolicitudDigitalizarLetraCrear::class)->middleware('permission:estado-solicitud-digitalizar-letra.crear')->name('crear');
             Route::get('/editar/{id}', EstadoSolicitudDigitalizarLetraEditar::class)->middleware('permission:estado-solicitud-digitalizar-letra.editar')->name('editar');
         });
@@ -42,11 +44,13 @@ Convención: recurso.accion
 
 ESTADO SOLICITUD DIGITALIZAR LETRA
 1. estado-solicitud-digitalizar-letra.navegacion
-2. estado-solicitud-digitalizar-letra.ver
-3. estado-solicitud-digitalizar-letra.crear
-4. estado-solicitud-digitalizar-letra.editar
-5. estado-solicitud-digitalizar-letra.eliminar
-6. estado-solicitud-digitalizar-letra.exportar
+2. estado-solicitud-digitalizar-letra.lista
+3. estado-solicitud-digitalizar-letra.ver
+4. estado-solicitud-digitalizar-letra.crear
+5. estado-solicitud-digitalizar-letra.editar
+6. estado-solicitud-digitalizar-letra.eliminar
+7. estado-solicitud-digitalizar-letra.exportar-filtro
+8. estado-solicitud-digitalizar-letra.exportar-todo
 
 SOLICITUD DIGITALIZAR LETRA
 1. solicitud-digitalizar-letra.navegacion

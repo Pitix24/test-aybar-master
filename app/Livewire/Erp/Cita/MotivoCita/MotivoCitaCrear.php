@@ -25,9 +25,19 @@ class MotivoCitaCrear extends Component
     {
         return [
             'nombre' => 'required|unique:motivo_citas,nombre',
-            'color' => 'nullable|string',
-            'icono' => 'nullable|string',
+            'color' => 'nullable|string|max:50',
+            'icono' => 'nullable|string|max:50',
             'activo' => 'required|boolean',
+        ];
+    }
+
+    protected function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre del motivo',
+            'color' => 'color informativo',
+            'icono' => 'icono representativo',
+            'activo' => 'estado',
         ];
     }
 
@@ -38,11 +48,16 @@ class MotivoCitaCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('motivo-cita.crear'), 403);
+        $this->authorize('motivo-cita.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -50,21 +65,35 @@ class MotivoCitaCrear extends Component
             DB::beginTransaction();
 
             MotivoCita::create([
-                'nombre' => $this->nombre,
-                'color' => $this->color,
-                'icono' => $this->icono,
-                'activo' => $this->activo,
+                'nombre' => trim($this->nombre),
+                'color' => $this->color ?? '#64748b',
+                'icono' => $this->icono ?? 'fa-solid fa-circle-info',
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Creado!',
+                'text' => 'El motivo de cita se creó correctamente.'
+            ]);
+
             return redirect()->route('erp.motivo-cita.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear motivo de cita: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+            Log::channel('motivo_cita')->error("[MOTIVO CITA] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo crear el motivo de cita.'
+            ]);
         }
     }
 

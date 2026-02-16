@@ -17,31 +17,42 @@ use Livewire\Attributes\Title;
 #[Title('Editar Estado de Cita')]
 class EstadoCitaEditar extends Component
 {
-    public EstadoCita $estadoCita;
+    public EstadoCita $estado_model;
 
     public $nombre;
     public $color;
     public $icono;
-    public $activo = false;
+    public $activo;
+
+    public function mount($id)
+    {
+        $this->authorize('estado-cita.editar');
+        $this->estado_model = EstadoCita::findOrFail($id);
+
+        $this->nombre = $this->estado_model->nombre;
+        $this->color = $this->estado_model->color;
+        $this->icono = $this->estado_model->icono;
+        $this->activo = (bool) $this->estado_model->activo;
+    }
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:estado_citas,nombre,' . $this->estadoCita->id,
-            'color' => 'nullable|string',
-            'icono' => 'nullable|string',
+            'nombre' => 'required|unique:estado_citas,nombre,' . $this->estado_model->id,
+            'color' => 'nullable|string|max:50',
+            'icono' => 'nullable|string|max:50',
             'activo' => 'required|boolean',
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->estadoCita = EstadoCita::findOrFail($id);
-
-        $this->nombre = $this->estadoCita->nombre;
-        $this->color = $this->estadoCita->color;
-        $this->icono = $this->estadoCita->icono;
-        $this->activo = $this->estadoCita->activo;
+        return [
+            'nombre' => 'nombre del estado',
+            'color' => 'color informativo',
+            'icono' => 'icono representativo',
+            'activo' => 'estado',
+        ];
     }
 
     public function updated($propertyName)
@@ -51,53 +62,88 @@ class EstadoCitaEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('estado-cita.editar'), 403);
+        $this->authorize('estado-cita.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->estadoCita->update([
-                'nombre' => $this->nombre,
-                'color' => $this->color,
-                'icono' => $this->icono,
-                'activo' => $this->activo,
+            $this->estado_model->update([
+                'nombre' => trim($this->nombre),
+                'color' => $this->color ?? '#64748b',
+                'icono' => $this->icono ?? 'fa-solid fa-circle-info',
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'El estado de cita se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar estado de cita: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('estado_cita')->error("[ESTADO CITA] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->estado_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el estado de cita.'
+            ]);
         }
     }
 
     #[On('eliminarEstadoCitaOn')]
     public function eliminarEstadoCitaOn()
     {
-        abort_unless(auth()->user()->can('estado-cita.eliminar'), 403);
+        $this->authorize('estado-cita.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->estadoCita->delete();
+            $nombre = $this->estado_model->nombre;
+            $this->estado_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "El estado de cita '$nombre' ha sido eliminado."
+            ]);
+
             return redirect()->route('erp.estado-cita.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar estado de cita: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('estado_cita')->error("[ESTADO CITA] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->estado_model->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el estado de cita.'
+            ]);
         }
     }
 

@@ -14,34 +14,45 @@ use Livewire\Attributes\Title;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp')]
-#[Title('Editar Estado de Solicitud de Digitalización de Letra')]
+#[Title('Editar Estado de Digitalización')]
 class EstadoSolicitudDigitalizarLetraEditar extends Component
 {
-    public EstadoSolicitudDigitalizarLetra $estadoSolicitudDigitalizarLetra;
+    public EstadoSolicitudDigitalizarLetra $estado_model;
 
     public $nombre;
     public $color;
     public $icono;
-    public $activo = false;
+    public $activo;
+
+    public function mount($id)
+    {
+        $this->authorize('estado-solicitud-digitalizar-letra.editar');
+        $this->estado_model = EstadoSolicitudDigitalizarLetra::findOrFail($id);
+
+        $this->nombre = $this->estado_model->nombre;
+        $this->color = $this->estado_model->color;
+        $this->icono = $this->estado_model->icono;
+        $this->activo = (bool) $this->estado_model->activo;
+    }
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:estado_solicitud_digitalizar_letras,nombre,' . $this->estadoSolicitudDigitalizarLetra->id,
-            'color' => 'nullable|string',
-            'icono' => 'nullable|string',
+            'nombre' => 'required|unique:estado_solicitud_digitalizar_letras,nombre,' . $this->estado_model->id,
+            'color' => 'nullable|string|max:50',
+            'icono' => 'nullable|string|max:50',
             'activo' => 'required|boolean',
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->estadoSolicitudDigitalizarLetra = EstadoSolicitudDigitalizarLetra::findOrFail($id);
-
-        $this->nombre = $this->estadoSolicitudDigitalizarLetra->nombre;
-        $this->color = $this->estadoSolicitudDigitalizarLetra->color;
-        $this->icono = $this->estadoSolicitudDigitalizarLetra->icono;
-        $this->activo = $this->estadoSolicitudDigitalizarLetra->activo;
+        return [
+            'nombre' => 'nombre del estado',
+            'color' => 'color informativo',
+            'icono' => 'icono representativo',
+            'activo' => 'estado',
+        ];
     }
 
     public function updated($propertyName)
@@ -51,53 +62,88 @@ class EstadoSolicitudDigitalizarLetraEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('estado-solicitud-digitalizar-letra.editar'), 403);
+        $this->authorize('estado-solicitud-digitalizar-letra.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->estadoSolicitudDigitalizarLetra->update([
-                'nombre' => $this->nombre,
-                'color' => $this->color,
-                'icono' => $this->icono,
-                'activo' => $this->activo,
+            $this->estado_model->update([
+                'nombre' => trim($this->nombre),
+                'color' => $this->color ?? '#64748b',
+                'icono' => $this->icono ?? 'fa-solid fa-circle-info',
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'El estado se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar estado de solicitud de digitalización de letra: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('estado_solicitud_digitalizar_letra')->error("[ESTADO DIGITALIZACION] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->estado_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el estado.'
+            ]);
         }
     }
 
     #[On('eliminarEstadoSolicitudDigitalizarLetraOn')]
     public function eliminarEstadoSolicitudDigitalizarLetraOn()
     {
-        abort_unless(auth()->user()->can('estado-solicitud-digitalizar-letra.eliminar'), 403);
+        $this->authorize('estado-solicitud-digitalizar-letra.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->estadoSolicitudDigitalizarLetra->delete();
+            $nombre = $this->estado_model->nombre;
+            $this->estado_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "El estado '$nombre' ha sido eliminado."
+            ]);
+
             return redirect()->route('erp.estado-solicitud-digitalizar-letra.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar estado de solicitud de digitalización de letra: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('estado_solicitud_digitalizar_letra')->error("[ESTADO DIGITALIZACION] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->estado_model->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el estado.'
+            ]);
         }
     }
 

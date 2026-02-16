@@ -3,6 +3,7 @@
 use App\Livewire\Erp\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoCrear;
 use App\Livewire\Erp\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoEditar;
 use App\Livewire\Erp\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoLista;
+use App\Livewire\Erp\Backoffice\EstadoSolicitudEvidenciaPago\EstadoSolicitudEvidenciaPagoVer;
 use App\Livewire\Erp\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoEditar;
 use App\Livewire\Erp\Backoffice\SolicitudEvidenciaPago\SolicitudEvidenciaPagoLista;
 use App\Livewire\Erp\Backoffice\EvidenciaPagoAntiguo\EvidenciaPagoAntiguoEditar;
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['permission:modulo-backoffice.ver']], function () {
     Route::group(['middleware' => ['permission:estado-solicitud-evidencia-pago.navegacion']], function () {
         Route::prefix('estado-solicitud-evidencia-pago')->name('estado-solicitud-evidencia-pago.vista.')->group(function () {
-            Route::get('/', EstadoSolicitudEvidenciaPagoLista::class)->middleware('permission:estado-solicitud-evidencia-pago.ver')->name('todo');
+            Route::get('/', EstadoSolicitudEvidenciaPagoLista::class)->middleware('permission:estado-solicitud-evidencia-pago.lista')->name('todo');
+            Route::get('/ver/{id}', EstadoSolicitudEvidenciaPagoVer::class)->middleware('permission:estado-solicitud-evidencia-pago.ver')->name('ver');
             Route::get('/crear', EstadoSolicitudEvidenciaPagoCrear::class)->middleware('permission:estado-solicitud-evidencia-pago.crear')->name('crear');
             Route::get('/editar/{id}', EstadoSolicitudEvidenciaPagoEditar::class)->middleware('permission:estado-solicitud-evidencia-pago.editar')->name('editar');
         });
@@ -41,11 +43,13 @@ Convención: recurso.accion
 
 ESTADO SOLICITUD EVIDENCIA PAGO
 1. estado-solicitud-evidencia-pago.navegacion
-2. estado-solicitud-evidencia-pago.ver
-3. estado-solicitud-evidencia-pago.crear
-4. estado-solicitud-evidencia-pago.editar
-5. estado-solicitud-evidencia-pago.eliminar
-6. estado-solicitud-evidencia-pago.exportar
+2. estado-solicitud-evidencia-pago.lista
+3. estado-solicitud-evidencia-pago.ver
+4. estado-solicitud-evidencia-pago.crear
+5. estado-solicitud-evidencia-pago.editar
+6. estado-solicitud-evidencia-pago.eliminar
+7. estado-solicitud-evidencia-pago.exportar-filtro
+8. estado-solicitud-evidencia-pago.exportar-todo
 
 SOLICITUD EVIDENCIA PAGO
 1. solicitud-evidencia-pago.navegacion

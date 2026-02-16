@@ -17,31 +17,42 @@ use Livewire\Attributes\Title;
 #[Title('Editar Motivo de Cita')]
 class MotivoCitaEditar extends Component
 {
-    public MotivoCita $motivoCita;
+    public MotivoCita $motivo_model;
 
     public $nombre;
     public $color;
     public $icono;
-    public $activo = false;
+    public $activo;
+
+    public function mount($id)
+    {
+        $this->authorize('motivo-cita.editar');
+        $this->motivo_model = MotivoCita::findOrFail($id);
+
+        $this->nombre = $this->motivo_model->nombre;
+        $this->color = $this->motivo_model->color;
+        $this->icono = $this->motivo_model->icono;
+        $this->activo = (bool) $this->motivo_model->activo;
+    }
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:motivo_citas,nombre,' . $this->motivoCita->id,
-            'color' => 'nullable|string',
-            'icono' => 'nullable|string',
+            'nombre' => 'required|unique:motivo_citas,nombre,' . $this->motivo_model->id,
+            'color' => 'nullable|string|max:50',
+            'icono' => 'nullable|string|max:50',
             'activo' => 'required|boolean',
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->motivoCita = MotivoCita::findOrFail($id);
-
-        $this->nombre = $this->motivoCita->nombre;
-        $this->color = $this->motivoCita->color;
-        $this->icono = $this->motivoCita->icono;
-        $this->activo = $this->motivoCita->activo;
+        return [
+            'nombre' => 'nombre del motivo',
+            'color' => 'color informativo',
+            'icono' => 'icono representativo',
+            'activo' => 'estado',
+        ];
     }
 
     public function updated($propertyName)
@@ -51,53 +62,88 @@ class MotivoCitaEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('motivo-cita.editar'), 403);
+        $this->authorize('motivo-cita.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->motivoCita->update([
-                'nombre' => $this->nombre,
-                'color' => $this->color,
-                'icono' => $this->icono,
-                'activo' => $this->activo,
+            $this->motivo_model->update([
+                'nombre' => trim($this->nombre),
+                'color' => $this->color ?? '#64748b',
+                'icono' => $this->icono ?? 'fa-solid fa-circle-info',
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'El motivo de cita se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar motivo de cita: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('motivo_cita')->error("[MOTIVO CITA] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->motivo_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el motivo de cita.'
+            ]);
         }
     }
 
     #[On('eliminarMotivoCitaOn')]
     public function eliminarMotivoCitaOn()
     {
-        abort_unless(auth()->user()->can('motivo-cita.eliminar'), 403);
+        $this->authorize('motivo-cita.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->motivoCita->delete();
+            $nombre = $this->motivo_model->nombre;
+            $this->motivo_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "El motivo de cita '$nombre' ha sido eliminado."
+            ]);
+
             return redirect()->route('erp.motivo-cita.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar motivo de cita: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('motivo_cita')->error("[MOTIVO CITA] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->motivo_model->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el motivo de cita.'
+            ]);
         }
     }
 

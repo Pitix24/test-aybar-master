@@ -1,13 +1,16 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="store" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Nuevo Motivo de Cita</h2>
+        <h2>Crear Motivo de Cita</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.motivo-cita.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('motivo-cita.lista')
+                <a href="{{ route('erp.motivo-cita.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -16,7 +19,7 @@
         <div class="g_fila">
             <div class="g_columna_8">
                 <div class="g_panel">
-                    <h4 class="g_panel_titulo">General</h4>
+                    <h4 class="g_panel_titulo">Información General</h4>
 
                     <div class="g_margin_bottom_10">
                         <label for="estado_activo">
@@ -30,7 +33,7 @@
                             </label>
 
                             <span class="g_switch-label">
-                                {{ $activo ? 'Activo' : 'Desactivado' }}
+                                {{ $activo ? 'Activo' : 'Inactivo' }}
                             </span>
 
                             @error('activo')
@@ -40,8 +43,9 @@
                     </div>
 
                     <div class="g_margin_bottom_10">
-                        <label for="nombre">Nombre del Motivo <span class="obligatorio"><i
-                                    class="fa-solid fa-asterisk"></i></span></label>
+                        <label for="nombre">
+                            Nombre del Motivo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                        </label>
                         <input type="text" id="nombre" wire:model.blur="nombre"
                             class="@error('nombre') input-error @enderror" autocomplete="off">
                         @error('nombre')
@@ -51,7 +55,9 @@
 
                     <div class="g_fila">
                         <div class="g_columna_6 g_margin_bottom_10">
-                            <label for="color">Color Representativo</label>
+                            <label for="color">
+                                Color Informativo
+                            </label>
                             <input type="color" id="color" wire:model.blur="color"
                                 class="@error('color') input-error @enderror">
                             @error('color')
@@ -60,29 +66,35 @@
                         </div>
 
                         <div class="g_columna_6 g_margin_bottom_10">
-                            <label for="icono">Icono (FontAwesome)</label>
+                            <label for="icono">
+                                Icono (FontAwesome)
+                            </label>
                             <input type="text" id="icono" wire:model.blur="icono"
                                 class="@error('icono') input-error @enderror" autocomplete="off">
                             @error('icono')
                                 <p class="mensaje_error">{{ $message }}</p>
                             @enderror
+                            <p class="leyenda">Ej: fa-solid fa-calendar-check, fa-solid fa-circle-info</p>
                         </div>
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="store">
-                            <span wire:loading.remove wire:target="store">
-                                <i class="fa-solid fa-save"></i> Guardar
-                            </span>
-                            <span wire:loading wire:target="store">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                            </span>
-                        </button>
+                        @can('motivo-cita.crear')
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
+                                <span wire:loading.remove wire:target="store">
+                                    <i class="fa-solid fa-save"></i> Crear
+                                </span>
+                                <span wire:loading wire:target="store">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.motivo-cita.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('motivo-cita.lista')
+                            <button type="button" class="g_boton cancelar" onclick="history.back()">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>
