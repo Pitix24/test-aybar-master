@@ -845,5 +845,114 @@
                 ]
             }
         ]
+    },
+    {
+        "id": 9,
+        "nombre": "Módulo Entrega Fest",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-champagne-glasses",
+        "nivel": 1,
+        "permiso": "modulo-entrega-fest.ver",
+        "submenus": [
+            {
+                "id": 60,
+                "nombre": "Eventos",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-calendar-star",
+                "nivel": 2,
+                "permiso": "entrega-fest.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.entrega-fest.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "entrega-fest.lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.entrega-fest.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "entrega-fest.crear",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 61,
+                "nombre": "Prospectos",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-users-viewfinder",
+                "nivel": 2,
+                "permiso": "prospecto-entrega-fest.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.prospecto-entrega-fest.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "prospecto-entrega-fest.lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.prospecto-entrega-fest.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "prospecto-entrega-fest.crear",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 62,
+                "nombre": "Invitados",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-user-check",
+                "nivel": 2,
+                "permiso": "invitado-entrega-fest.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.invitado-entrega-fest.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "invitado-entrega-fest.lista",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 63,
+                "nombre": "Asistencia",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-qrcode",
+                "nivel": 2,
+                "permiso": "asistencia-entrega-fest.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Control QR",
+                        "ruta": "erp.asistencia-entrega-fest.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "asistencia-entrega-fest.lista",
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
     }
 ]
