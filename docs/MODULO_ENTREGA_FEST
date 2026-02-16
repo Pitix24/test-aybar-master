@@ -1,0 +1,150 @@
+📌 2️⃣ FLUJO FUNCIONAL DEL MÓDULO (DOCUMENTACIÓN)
+
+Aquí te lo dejo redactado como documentación técnica.
+
+📘 MÓDULO: ENTREGA FEST
+🎯 Objetivo
+
+Gestionar el proceso completo de:
+
+Registro de campaña o evento
+
+Evaluación de prospectos
+
+Generación de invitados oficiales
+
+Gestión de acompañantes
+
+Control de asistencia
+
+🔄 FASES DEL PROCESO
+🔷 Fase 1: Creación del Evento (EntregaFest)
+
+Se crea una EntregaFest vinculada a:
+
+Unidad de Negocio
+
+Proyecto (opcional)
+
+Cliente
+
+Usuario responsable
+
+Fecha del evento
+
+Resultado:
+Se genera un código único del evento.
+
+🔷 Fase 2: Registro de Prospectos
+
+Se cargan prospectos manualmente o por importación.
+
+Cada prospecto tiene:
+
+DNI
+
+Nombre
+
+Apellidos
+
+Estado (pendiente por defecto)
+
+Estados posibles:
+
+pendiente → recién registrado
+
+observado → requiere validación
+
+aprobado → apto para convertirse en invitado
+
+rechazado → descartado
+
+🔷 Fase 3: Conversión a Invitado
+
+Cuando un prospecto es aprobado:
+
+Se genera un registro en:
+
+invitado_entrega_fests
+
+Esto implica:
+
+Se genera código único (QR o código interno)
+
+Se define cantidad de acompañantes permitidos
+
+Puede marcarse como confirmado
+
+Importante:
+Un prospecto solo puede convertirse una vez (constraint unique).
+
+🔷 Fase 4: Gestión de Acompañantes
+
+Cada invitado puede registrar acompañantes según el límite permitido.
+
+Cada acompañante tiene:
+
+DNI (opcional)
+
+Nombre
+
+Apellidos
+
+Estado de asistencia
+
+🔷 Fase 5: Control de Asistencia
+
+El día del evento:
+
+Se registra en asistencia_entrega_fests:
+
+Fecha y hora de check-in
+
+Método (QR, manual, DNI)
+
+Relación:
+1 invitado → 1 registro de asistencia
+
+📊 Métricas que este módulo permite
+
+Total prospectos
+
+% aprobados
+
+% rechazados
+
+Total invitados
+
+Total acompañantes
+
+% asistencia real
+
+Confirmados vs No confirmados
+
+🏗 Arquitectura del Módulo
+
+El módulo está estructurado en capas:
+
+Entidad administrativa (EntregaFest)
+
+Evaluación (Prospecto)
+
+Operación (Invitado)
+
+Extensión (Acompañantes)
+
+Control (Asistencia)
+
+Esto permite:
+
+✔ Escalabilidad
+✔ Métricas claras
+✔ Separación de responsabilidades
+✔ Posible integración futura con QR, API o App móvil
+
+EntregaFest
+   ├── Prospectos (evaluación)
+   └── Invitados (operativo)
+         ├── Envios (historial contacto)
+         ├── Acompanantes
+         └── Asistencia (único registro)

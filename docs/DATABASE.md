@@ -202,3 +202,13 @@ php artisan make:livewire cliente.lote.adjuntar-voucher-pago --class
 php artisan make:livewire cliente.lote.aceptar-digitalizar-letra --class
 
 php artisan make:livewire cliente.tutorial.tutorial-todo --class
+
+
+php artisan make:model MarketingArchivo -mfsc
+php artisan make:model Tutorial -mfsc
+php artisan make:model EntregaFest -mfsc
+php artisan make:model ProspectoEntregaFest -mfsc
+php artisan make:model InvitadoEntregaFest -mfsc
+php artisan make:model InvitadoAcompananteEntregaFest -mfsc
+php artisan make:model AsistenciaEntregaFest -mfsc
+php artisan make:model InvitadoEnvioEntregaFest -mfsc
