@@ -1,0 +1,56 @@
+.informacion_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.informacion_beneficios_lista {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.informacion_beneficio_item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--color-dark-contraste);
+}
+
+.informacion_beneficio_item i {
+    color: var(--color-success);
+    font-size: 16px;
+}
+
+.informacion_resumen_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.informacion_resumen_item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.informacion_resumen_label {
+    display: block;
+    opacity: 0.6;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.5px;
+}
+
+.informacion_resumen_valor {
+    display: block;
+    font-size: 13px;
+    font-weight: var(--fw-semibold);
+    color: var(--color-primary-dark);
+}

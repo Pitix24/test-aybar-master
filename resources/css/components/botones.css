@@ -90,6 +90,12 @@
     color: white;
 }
 
+.g_boton_largo {
+    width: 100%;
+    padding: 15px !important;
+    font-size: 14px !important;
+}
+
 .g_accion {
     display: inline-flex;
     align-items: center;
