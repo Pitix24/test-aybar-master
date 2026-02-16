@@ -167,12 +167,7 @@ class TicketDerivar extends Component
 
     public function render()
     {
-        return view('livewire.erp.atc.ticket.ticket-derivar', [
-            'derivados' => $this->ticket->derivados()
-                ->with(['deArea', 'aArea', 'usuarioDeriva', 'usuarioRecibe'])
-                ->latest()
-                ->get()
-        ]);
+        return view('livewire.erp.atc.ticket.ticket-derivar');
     }
 
     public function placeholder()
