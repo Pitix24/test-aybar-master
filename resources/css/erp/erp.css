@@ -1,5 +1,5 @@
 /* ================================
-   CORE
+CORE
 ================================ */
 @import "../core/reset.css";
 
@@ -16,12 +16,12 @@
 @import "../core/print.css";
 
 /* ================================
-   LAYOUT
+LAYOUT
 ================================ */
 @import "./layout.css";
 
 /* ================================
-   COMPONENTS GLOBALES
+COMPONENTS GLOBALES
 ================================ */
 @import "../components/panel.css";
 @import "../components/botones.css";

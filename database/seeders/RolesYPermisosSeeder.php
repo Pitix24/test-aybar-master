@@ -294,8 +294,14 @@ class RolesYPermisosSeeder extends Seeder
             'admin' => 'Administrador',
             'supervisor-atc' => 'Supervisor ATC',
             'asesor-atc' => 'Asesor ATC',
+            'supervisor-backoffice' => 'Supervisor Backoffice',
+            'asesor-backoffice' => 'Asesor Backoffice',
             'supervisor-cita' => 'Supervisor Cita',
             'asesor-cita' => 'Asesor Cita',
+            'supervisor-letras' => 'Supervisor Letras',
+            'asesor-letras' => 'Asesor Letras',
+            'supervisor-marketing' => 'Supervisor Marketing',
+            'asesor-marketing' => 'Asesor Marketing',
         ];
 
         foreach ($roles as $rolName => $descripcion) {

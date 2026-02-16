@@ -1,29 +1,28 @@
 <div>
     @if (session()->has('success'))
-        <div class="g_alerta success g_margin_bottom_20">
+        <div class="g_alerta success g_margin_bottom_10">
             <i class="fa-solid fa-circle-check"></i>
             {{ session('success') }}
         </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="g_alerta error g_margin_bottom_20">
+        <div class="g_alerta error g_margin_bottom_10">
             <i class="fa-solid fa-circle-exclamation"></i>
             {{ session('error') }}
         </div>
     @endif
 
     @if (session()->has('info'))
-        <div class="g_alerta info g_margin_bottom_20">
+        <div class="g_alerta info g_margin_bottom_10">
             <i class="fa-solid fa-circle-info"></i>
             {{ session('info') }}
         </div>
     @endif
 
     <div class="cronograma_contenedor">
-        <div class="tabla_contenido">
-            <div class="contenedor_tabla">
-                <table class="tabla_info">
+        <div class="g_contenedor_tabla">
+          <table class="g_tabla tabla_info">
 
                     <tr>
                         <td class="label">Proyecto</td>
@@ -83,14 +82,11 @@
                             {{ $estado_cuenta['IdRecaudo'] ?? '-' }}
                         </td>
                     </tr>
-                </table>
-
-            </div>
+          </table>
         </div>
 
-        <div class="tabla_contenido">
-            <div class="contenedor_tabla">
-                <table class="tabla_detalle">
+        <div class="g_contenedor_tabla">
+          <table class="g_tabla tabla_detalle">
                     <thead>
                         <tr>
                             <th>Nro</th>
@@ -112,7 +108,7 @@
                                 <td> S/ {{ $item['CuotaPagada'] ?? 0 }}</td>
                                 <td>
                                     @if ($item['EvidPago'])
-                                        <span class="g_boton g_boton_guardar"
+                                        <span class="g_boton guardar"
                                             style="cursor: not-allowed; pointer-events: none;">
                                             <i class="fa-solid fa-circle-check"></i>
                                             Comprobado
@@ -126,7 +122,7 @@
                                         @if ($item['puede_subir'] ?? false)
                                             @if (($item['comprobantes_count'] ?? 0) == 0)
                                                 <button wire:click="seleccionarCuota({{ json_encode($item) }})"
-                                                    class="g_boton g_boton_cancelar"
+                                                    class="g_boton cancelar"
                                                     wire:loading.attr="disabled"
                                                     wire:target="seleccionarCuota({{ json_encode($item) }})">
                                                     <span wire:loading.remove wire:target="seleccionarCuota({{ json_encode($item) }})">
@@ -138,7 +134,7 @@
                                                 </button>
                                             @else
                                                 <button wire:click="seleccionarCuota({{ json_encode($item) }})"
-                                                    class="g_boton g_boton_dark"
+                                                    class="g_boton dark"
                                                     wire:loading.attr="disabled"
                                                     wire:target="seleccionarCuota({{ json_encode($item) }})">
                                                     <span wire:loading.remove wire:target="seleccionarCuota({{ json_encode($item) }})">
@@ -150,7 +146,7 @@
                                                 </button>
                                             @endif
                                         @else
-                                            <span class="g_boton g_boton_dark">
+                                            <span class="g_boton dark">
                                                 <i class="fa-solid fa-image"></i> En validación ({{ $item['comprobantes_count'] ?? 0 }})
                                             </span>
                                         @endif
@@ -160,11 +156,11 @@
                                     @if (!empty($item['Comprobante']))
                                         @if (substr_count($item['Comprobante'], '-') === 2 && ($item['SaldoPendiente'] ?? 0) == 0)
                                             <a href="{{ route('slin.comprobante.ver', ['empresa' => $lote['id_empresa'], 'comprobante' => $item['Comprobante']]) }}"
-                                                target="_blank" class="g_boton g_boton_guardar">
+                                                target="_blank" class="g_boton guardar">
                                                 <i class="fas fa-file-invoice-dollar"></i>
                                             </a>
                                         @else
-                                            <button class="g_boton g_boton_cancelar"
+                                            <button class="g_boton cancelar"
                                                 title="Tu boleta está siendo confirmada!" type="button"
                                                 style="cursor: default;">
                                                 <i class="fas fa-file-invoice-dollar"></i>
@@ -176,7 +172,7 @@
                                     @if (!empty($item['NroCavali']) && ($item['SaldoPendiente'] ?? 0) == 0)
                                         @if ($item['tiene_constancia_cavali'] ?? false)
                                              <button wire:click="verConstanciaCavali({{ json_encode($item) }})"
-                                                class="g_boton g_boton_guardar"
+                                                class="g_boton guardar"
                                                 title="Ver letra digital firmada"
                                                 wire:loading.attr="disabled"
                                                 wire:target="verConstanciaCavali({{ json_encode($item) }})">
@@ -189,7 +185,7 @@
                                             </button>
                                         @elseif ($item['letra_digitalizada_local'] ?? false)
                                              <button wire:click="verConstanciaCavali({{ json_encode($item) }})"
-                                                class="g_boton g_boton_info"
+                                                class="g_boton info"
                                                 title="Ver letra digital local"
                                                 wire:loading.attr="disabled"
                                                 wire:target="verConstanciaCavali({{ json_encode($item) }})">
@@ -201,14 +197,14 @@
                                                 </span>
                                             </button>
                                         @elseif ($item['tiene_solicitud_digitalizacion'] ?? false)
-                                            <button class="g_boton g_boton_cancelar"
+                                            <button class="g_boton cancelar"
                                                 title="Tu letra esta siendo analizada" type="button"
                                                 style="cursor: default;">
                                                 <i class="fas fa-file-shield"></i>
                                             </button>
                                         @else
                                             <button wire:click="verConstanciaCavali({{ json_encode($item) }})"
-                                                class="g_boton g_boton_dark"
+                                                class="g_boton dark"
                                                 title="Solicitar Digitalización"
                                                 wire:loading.attr="disabled"
                                                 wire:target="verConstanciaCavali({{ json_encode($item) }})">
@@ -225,8 +221,7 @@
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
-            </div>
+          </table>
         </div>
     </div>
 

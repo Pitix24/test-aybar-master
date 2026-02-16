@@ -1,12 +1,12 @@
 <div>
     @if (session('success'))
-        <div class="g_alerta_succes">
+        <div class="g_alerta succes">
             <i class="fa-solid fa-circle-check"></i>
             {{ session('success') }}
         </div>
     @endif
     @if (session()->has('error'))
-        <div class="g_alerta_error">
+        <div class="g_alerta error">
             <i class="fa-solid fa-triangle-exclamation"></i>
             {{ session('error') }}
         </div>
@@ -19,7 +19,7 @@
     </div>
 
     <div class="formulario_botones">
-        <button wire:click="guardar" class="g_boton_personalizado verde">
+        <button wire:click="guardar" class="g_boton guardar">
             Solicita tu letra
         </button>
     </div>

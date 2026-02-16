@@ -1,20 +1,20 @@
 <div class="g_panel">
     @if (session()->has('success'))
-        <div class="g_alerta success g_margin_bottom_20">
+        <div class="g_alerta success g_margin_bottom_10">
             <i class="fa-solid fa-circle-check"></i>
             {{ session('success') }}
         </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="g_alerta error g_margin_bottom_20">
+        <div class="g_alerta error g_margin_bottom_10">
             <i class="fa-solid fa-circle-exclamation"></i>
             {{ session('error') }}
         </div>
     @endif
 
     @if (session()->has('info'))
-        <div class="g_alerta info g_margin_bottom_20">
+        <div class="g_alerta info g_margin_bottom_10">
             <i class="fa-solid fa-circle-info"></i>
             {{ session('info') }}
         </div>
@@ -26,7 +26,7 @@
 
     <div class="formulario">
         <div class="g_fila">
-            <div class="g_margin_top_20 g_columna_4">
+            <div class="g_margin_bottom_10 g_columna_4">
                 <label for="region_id">Departamento <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
                 <select wire:model.live="region_id" id="region_id" name="region_id"
@@ -41,7 +41,7 @@
                 @enderror
             </div>
 
-            <div class="g_margin_top_20 g_columna_4">
+            <div class="g_margin_bottom_10 g_columna_4">
                 <label for="provincia_id">Provincia <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
                 <select wire:model.live="provincia_id" id="provincia_id" name="provincia_id"
@@ -56,7 +56,7 @@
                 @enderror
             </div>
 
-            <div class="g_margin_top_20 g_columna_4">
+            <div class="g_margin_bottom_10 g_columna_4">
                 <label for="distrito_id">Distrito <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
                 <select wire:model.live="distrito_id" id="distrito_id" name="distrito_id"
@@ -73,7 +73,7 @@
         </div>
 
         <div class="g_fila">
-            <div class="g_margin_top_20 g_columna_6">
+            <div class="g_margin_bottom_10 g_columna_6">
                 <label for="direccion">Avenida / Calle / Jirón <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
                 <input type="text" wire:model.blur="direccion" id="direccion" name="direccion"
@@ -83,7 +83,7 @@
                 @enderror
             </div>
 
-            <div class="g_margin_top_20 g_columna_6">
+            <div class="g_margin_bottom_10 g_columna_6">
                 <label for="direccion_numero">Número <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
                 <input type="text" wire:model.blur="direccion_numero" id="direccion_numero" name="direccion_numero"
@@ -95,7 +95,7 @@
         </div>
 
         <div class="g_fila">
-            <div class="g_margin_top_20 g_columna_6">
+            <div class="g_margin_bottom_10 g_columna_6">
                 <label for="opcional">Dpto. / Interior / Piso / Lote</label>
                 <input type="text" wire:model.blur="opcional" id="opcional" name="opcional"
                     class="@error('opcional') input-error @enderror" placeholder="Ejem: Casa 1 piso, lote 15."
@@ -105,7 +105,7 @@
                 @enderror
             </div>
 
-            <div class="g_margin_top_20 g_columna_6">
+            <div class="g_margin_bottom_10 g_columna_6">
                 <label for="codigo_postal">Código postal <span class="obligatorio"><i
                             class="fa-solid fa-asterisk"></i></span></label>
                 <input type="text" wire:model.blur="codigo_postal" id="codigo_postal" name="codigo_postal"
@@ -117,7 +117,7 @@
         </div>
 
         <div class="g_fila">
-            <div class="g_margin_top_20 g_columna_12">
+            <div class="g_margin_bottom_10 g_columna_12">
                 <label for="referencia">Referencia de la ubicación</label>
                 <textarea id="referencia" name="referencia" wire:model.blur="referencia" rows="3"
                     class="@error('referencia') input-error @enderror" placeholder="Referencia..."></textarea>
@@ -127,8 +127,8 @@
             </div>
         </div>
 
-        <div class="g_margin_top_20 formulario_botones">
-            <button wire:click="saveDireccion" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
+        <div class="formulario_botones">
+            <button wire:click="saveDireccion" class="g_boton guardar" wire:loading.attr="disabled"
                 wire:target="saveDireccion">
                 <span wire:loading.remove wire:target="saveDireccion">
                     {{ $direccion_seleccionada ? 'Guardar Cambios' : 'Guardar Dirección' }}

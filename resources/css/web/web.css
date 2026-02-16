@@ -1,9 +1,12 @@
+/* ================================
+CORE
+================================ */
 @import "../core/reset.css";
 
 @import "../core/tokens/typography.css";
 @import "../core/tokens/colors.css";
 
-@import "../core/base.css";
+@import "../core/base-web.css";
 @import "../core/variables.css";
 @import "../core/globales.css";
 @import "../core/rejilla.css";
@@ -11,8 +14,14 @@
 @import "../core/utilities.css";
 @import "../core/print.css";
 
+/* ================================
+LAYOUT
+================================ */
 @import "./layout.css";
 
+/* ================================
+COMPONENTS GLOBALES
+================================ */
 @import "../components/alertas.css";
 @import "../components/botones.css";
 @import "../components/paginacion.css";
@@ -20,10 +29,19 @@
 @import "../components/formulario.css";
 @import "../components/modal.css";
 
+/* ================================
+COMPONENTS WEB
+================================ */
 @import "./components/header.css";
 @import "./components/header-banner.css";
 @import "./components/footer.css";
 
+/* ================================
+PAGINAS WEB
+================================ */
 @import "./sesion/ingresar.css";
 
+/* ================================
+MODULO CLIENTE
+================================ */
 @import "./../cliente/cliente.css";

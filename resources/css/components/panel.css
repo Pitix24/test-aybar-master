@@ -18,7 +18,7 @@
 }
 
 .g_panel_parrafo {
-    font-size: var(--fs-2xs);
+    font-size: 12px;
     margin-bottom: 8px;
     color: var(--color-dark-contraste);
     font-weight: var(--fw-semibold);
