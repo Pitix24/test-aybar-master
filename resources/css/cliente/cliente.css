@@ -6,7 +6,8 @@ COMPONENTS GLOBALES
 @import "../components/tabla-cabecera.css";
 @import "../components/tabla.css";
 @import "../components/informacion.css";
-
+@import "../components/dropzone.css";
+@import "../components/imagen.css";
 /* ================================
 LAYOUT
 ================================ */

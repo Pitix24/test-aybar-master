@@ -9,6 +9,7 @@ use App\Models\SolicitudEvidenciaPago;
 use App\Models\UnidadNegocio;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -189,7 +190,8 @@ NO agregues explicación ni texto adicional. Solo JSON.",
     {
         $this->validate();
 
-        DB::transaction(function () {
+        try {
+            DB::beginTransaction();
 
             $monto_operacion = $this->normalizarMonto($this->cuota["MtoOperacion"] ?? null);
             $slinMonto = $this->normalizarMonto($this->cuota["Cuota"] ?? null);
@@ -222,10 +224,10 @@ NO agregues explicación ni texto adicional. Solo JSON.",
                     'ticket' => $this->cuota["Ticket"] ?? null,
                     'comprobante' => $this->cuota["Comprobante"] ?? null,
                     'lote_completo' =>
-                        $this->lote['id_proyecto'] .
-                        $this->lote['id_etapa'] . '-' .
-                        $this->lote['id_manzana'] . '-' .
-                        $this->lote['id_lote'],
+                        ($this->lote['id_proyecto'] ?? '') .
+                        ($this->lote['id_etapa'] ?? '') . '-' .
+                        ($this->lote['id_manzana'] ?? '') . '-' .
+                        ($this->lote['id_lote'] ?? ''),
                     'slin_asbanc' => $this->cuota["Asbanc"] ?? false,
                     'slin_evidencia' => $this->cuota["EvidPago"] ?? false,
                 ]
@@ -251,12 +253,32 @@ NO agregues explicación ni texto adicional. Solo JSON.",
                 'monto' => $monto,
                 'fecha' => $this->datos['fecha'] ?? null,
             ]);
-        });
 
-        session()->flash('success', 'Comprobante guardado correctamente');
-        $this->reset(['imagen', 'datos', 'unidad_negocio_id', 'proyecto_id']);
-        $this->dispatch('actualizarCronograma');
+            DB::commit();
+
+            session()->flash('success', 'Comprobante guardado correctamente');
+            $this->reset(['imagen', 'datos', 'unidad_negocio_id', 'proyecto_id']);
+            $this->dispatch('actualizarCronograma');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Error al guardar AdjuntarVoucherPago', [
+                'error' => $e->getMessage(),
+                'usuario_id' => Auth::id(),
+                'lote' => $this->lote,
+                'datos' => $this->datos,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo guardar la evidencia. Intente nuevamente.'
+            ]);
+        }
     }
+
 
     public function render()
     {
