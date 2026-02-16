@@ -1,11 +1,11 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="derivar" message="Procesando derivación..." />
+    <x-loading-overlay wire:loading wire:target="store" message="Procesando derivación..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Derivar Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton g_boton_dark">
+            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton dark">
                 <i class="fa-solid fa-arrow-left"></i> Regresar al ticket
             </a>
         </div>
@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="formulario_botones">
-                            <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled">
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="store">
                                     <i class="fa-solid fa-route"></i> Derivar
                                 </span>
@@ -94,8 +94,7 @@
                                 </span>
                             </button>
 
-                            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}"
-                                class="g_boton g_boton_cancelar">
+                            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton cancelar">
                                 <i class="fa-solid fa-times"></i> Cancelar
                             </a>
                         </div>
@@ -143,7 +142,7 @@
                 <h4 class="g_panel_titulo">Ticket padre</h4>
 
                 <div class="g_margin_bottom_10">
-                    <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton g_boton_secondary">
+                    <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton secondary">
                         <i class="fa-solid fa-eye"></i> Ver ticket
                     </a>
                 </div>

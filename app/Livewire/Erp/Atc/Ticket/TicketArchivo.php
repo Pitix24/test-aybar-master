@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -35,12 +36,21 @@ class TicketArchivo extends Component
 
     public function adjuntar()
     {
-        abort_unless(auth()->user()->can('ticket.editar'), 403);
+        $this->authorize('ticket.agregar-archivo');
 
-        $this->validate([
-            'archivo' => 'required|file|max:51200|mimes:pdf,docx,xlsx,pptx,jpg,jpeg,png',
-            'descripcion_archivo' => 'required|min:3|max:200',
-        ]);
+        try {
+            $this->validate([
+                'archivo' => 'required|file|max:51200|mimes:pdf,docx,xlsx,pptx,jpg,jpeg,png',
+                'descripcion_archivo' => 'required|min:3|max:200',
+            ]);
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
@@ -74,19 +84,27 @@ class TicketArchivo extends Component
             $this->reset(['archivo', 'descripcion_archivo']);
             $this->refreshArchivos();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Adjunto', 'text' => 'Archivo subido con éxito.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Adjunto',
+                'text' => 'Archivo subido con éxito.'
+            ]);
             $this->dispatch('archivoSubido'); // Avisar a otros componentes (como el de Email)
         } catch (Exception $e) {
             DB::rollBack();
             Log::channel('ticket')->error('[TICKET] Error TicketArchivo@adjuntar: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo subir el archivo.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo subir el archivo.'
+            ]);
         }
     }
 
     #[On('eliminarArchivoOn')]
     public function eliminarArchivo($archivoId)
     {
-        abort_unless(auth()->user()->can('ticket.eliminar'), 403);
+        $this->authorize('ticket.eliminar-archivo');
 
         try {
             DB::beginTransaction();

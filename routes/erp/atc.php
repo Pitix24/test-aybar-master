@@ -161,6 +161,8 @@ TICKET
 7. ticket.exportar-filtro
 8. ticket.exportar-todo
 9. ticket.derivar
-10. ticket.validar
-11. ticket.reportar
+10. ticket.agregar-archivo
+11. ticket.eliminar-archivo
+12. ticket.enviar-correo
+13. ticket.chat
 */

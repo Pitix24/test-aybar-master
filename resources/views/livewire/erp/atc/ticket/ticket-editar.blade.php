@@ -363,25 +363,6 @@
                 }
             });
         }
-
-        window.alertaEliminarArchivo = function (id) {
-            Swal.fire({
-                title: '¿Eliminar Adjunto?',
-                text: "El archivo será borrado permanentemente.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $wire.dispatch('eliminarArchivoOn', {
-                        archivoId: id
-                    });
-                }
-            });
-        }
     </script>
     @endscript
 

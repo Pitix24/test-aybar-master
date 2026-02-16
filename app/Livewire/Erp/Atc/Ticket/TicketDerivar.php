@@ -90,12 +90,16 @@ class TicketDerivar extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('ticket.editar'), 403);
+        $this->authorize('ticket.derivar');
 
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Faltan campos obligatorios.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
