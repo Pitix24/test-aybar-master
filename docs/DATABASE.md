@@ -206,9 +206,33 @@ php artisan make:livewire cliente.tutorial.tutorial-todo --class
 
 php artisan make:model MarketingArchivo -mfsc
 php artisan make:model Tutorial -mfsc
+
 php artisan make:model EntregaFest -mfsc
+php artisan make:livewire erp.entrega-fest.entrega-fest.entrega-fest-lista --class
+php artisan make:livewire erp.entrega-fest.entrega-fest.entrega-fest-crear --class
+php artisan make:livewire erp.entrega-fest.entrega-fest.entrega-fest-editar --class
+
 php artisan make:model ProspectoEntregaFest -mfsc
+php artisan make:livewire erp.entrega-fest.prospecto-entrega-fest.prospecto-entrega-fest-lista --class
+php artisan make:livewire erp.entrega-fest.prospecto-entrega-fest.prospecto-entrega-fest-crear --class
+php artisan make:livewire erp.entrega-fest.prospecto-entrega-fest.prospecto-entrega-fest-editar --class
+
 php artisan make:model InvitadoEntregaFest -mfsc
+php artisan make:livewire erp.entrega-fest.invitado-entrega-fest.invitado-entrega-fest-lista --class
+php artisan make:livewire erp.entrega-fest.invitado-entrega-fest.invitado-entrega-fest-crear --class
+php artisan make:livewire erp.entrega-fest.invitado-entrega-fest.invitado-entrega-fest-editar --class
+
 php artisan make:model InvitadoAcompananteEntregaFest -mfsc
+php artisan make:livewire erp.entrega-fest.invitado-acompanante-entrega-fest.invitado-acompanante-entrega-fest-lista --class
+php artisan make:livewire erp.entrega-fest.invitado-acompanante-entrega-fest.invitado-acompanante-entrega-fest-crear --class
+php artisan make:livewire erp.entrega-fest.invitado-acompanante-entrega-fest.invitado-acompanante-entrega-fest-editar --class
+
 php artisan make:model AsistenciaEntregaFest -mfsc
+php artisan make:livewire erp.entrega-fest.asistencia-entrega-fest.asistencia-entrega-fest-lista --class
+php artisan make:livewire erp.entrega-fest.asistencia-entrega-fest.asistencia-entrega-fest-crear --class
+php artisan make:livewire erp.entrega-fest.asistencia-entrega-fest.asistencia-entrega-fest-editar --class
+
 php artisan make:model InvitadoEnvioEntregaFest -mfsc
+php artisan make:livewire erp.entrega-fest.invitado-envio-entrega-fest.invitado-envio-entrega-fest-lista --class
+php artisan make:livewire erp.entrega-fest.invitado-envio-entrega-fest.invitado-envio-entrega-fest-crear --class
+php artisan make:livewire erp.entrega-fest.invitado-envio-entrega-fest.invitado-envio-entrega-fest-editar --class
