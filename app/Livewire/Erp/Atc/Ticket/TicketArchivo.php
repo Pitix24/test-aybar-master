@@ -22,10 +22,12 @@ class TicketArchivo extends Component
     public $archivo;
     public $descripcion_archivo;
     public $archivos_existentes = [];
+    public $soloLectura = false;
 
-    public function mount(Ticket $ticket)
+    public function mount(Ticket $ticket, $soloLectura = false)
     {
         $this->ticket = $ticket;
+        $this->soloLectura = $soloLectura;
         $this->refreshArchivos();
     }
 

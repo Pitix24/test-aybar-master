@@ -255,10 +255,17 @@
                                     <td class="g_negrita">#{{ $ticket->padre->id }}</td>
                                     <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
                                     <td class="g_celda_centro">
+                                        @can('ticket.ver')
+                                            <a href="{{ route('erp.ticket.vista.ver', $ticket->padre->id) }}"
+                                                class="g_accion ver" title="Ver detalle">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                        @endcan
+
                                         @can('ticket.editar')
                                             <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}"
-                                                class="g_accion ver" title="Ver Ticket Padre">
-                                                <i class="fa-solid fa-eye"></i>
+                                                class="g_accion editar" title="Editar">
+                                                <i class="fa-solid fa-pencil"></i>
                                             </a>
                                         @endcan
                                     </td>
@@ -287,10 +294,17 @@
                                         <td class="g_negrita">#{{ $hijo->id }}</td>
                                         <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
                                         <td class="g_celda_centro">
-                                            @can('ticket.editar')
-                                                <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion ver"
+                                            @can('ticket.ver')
+                                                <a href="{{ route('erp.ticket.vista.ver', $hijo->id) }}" class="g_accion ver"
                                                     title="Ver Ticket Hijo">
                                                     <i class="fa-solid fa-eye"></i>
+                                                </a>
+                                            @endcan
+
+                                            @can('ticket.editar')
+                                                <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion editar"
+                                                    title="Editar Ticket Hijo">
+                                                    <i class="fa-solid fa-pencil"></i>
                                                 </a>
                                             @endcan
                                         </td>

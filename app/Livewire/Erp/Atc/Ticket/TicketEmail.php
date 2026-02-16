@@ -23,10 +23,12 @@ class TicketEmail extends Component
     public $asunto = '';
     public $mensaje = '';
     public $nuevosArchivos = [];
+    public $soloLectura = false;
 
-    public function mount(Ticket $ticket)
+    public function mount(Ticket $ticket, $soloLectura = false)
     {
         $this->ticket = $ticket;
+        $this->soloLectura = $soloLectura;
         $this->asunto = "Información sobre su Ticket #{$ticket->id}";
     }
 

@@ -118,9 +118,17 @@
                 <h4 class="g_panel_titulo">Ticket padre</h4>
 
                 <div class="g_margin_bottom_10">
-                    <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton secondary">
-                        <i class="fa-solid fa-eye"></i> Ver ticket
-                    </a>
+                    @can('ticket.ver')
+                        <a href="{{ route('erp.ticket.vista.ver', $ticket->id) }}" class="g_boton warning">
+                            <i class="fa-solid fa-eye"></i> Ver ticket
+                        </a>
+                    @endcan
+
+                    @can('ticket.editar')
+                        <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton info">
+                            <i class="fa-solid fa-pencil"></i> Editar ticket
+                        </a>
+                    @endcan
                 </div>
 
                 <div class="g_fila">

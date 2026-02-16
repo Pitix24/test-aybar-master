@@ -15,6 +15,13 @@ class TicketChat extends Component
     public $mensaje = '';
     public $es_interno = false;
     public $isOpen = false;
+    public $soloLectura = false;
+
+    public function mount($ticket, $soloLectura = false)
+    {
+        $this->ticket = $ticket;
+        $this->soloLectura = $soloLectura;
+    }
 
     #[On('toggleChat')]
     public function toggle()

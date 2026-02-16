@@ -197,12 +197,12 @@
             </div>
 
             <div>
-                @livewire('erp.atc.ticket.ticket-email', ['ticket' => $ticket])
+                @livewire('erp.atc.ticket.ticket-email', ['ticket' => $ticket, 'soloLectura' => true])
             </div>
         </div>
 
         <div class="g_columna_4 g_gap_pagina">
-            @livewire('erp.atc.ticket.ticket-archivo', ['ticket' => $ticket])
+            @livewire('erp.atc.ticket.ticket-archivo', ['ticket' => $ticket, 'soloLectura' => true])
 
             @if ($ticket->padre)
                 <div class="g_panel">
@@ -266,5 +266,5 @@
         </div>
     </div>
 
-    @livewire('erp.atc.ticket.ticket-chat', ['ticket' => $ticket])
+    @livewire('erp.atc.ticket.ticket-chat', ['ticket' => $ticket, 'soloLectura' => true])
 </div>
