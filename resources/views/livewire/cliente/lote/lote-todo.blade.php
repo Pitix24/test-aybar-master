@@ -88,8 +88,8 @@
                 </div>
             </div>
 
-            <div class="g_panel_titulo centrar g_margin_top_20">
-                <h3>Cronograma de Pagos y Estado de Cuenta</h3>
+            <div class="g_panel_titulo centrar">
+                <h2>ESTADO DE CUENTA</h2>
             </div>
 
             @livewire('cliente.lote.estado-cuenta-ver', [

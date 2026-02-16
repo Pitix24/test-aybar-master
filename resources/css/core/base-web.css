@@ -12,5 +12,5 @@ body {
     font-size: var(--fs-md);
     line-height: var(--lh-normal);
     /*color: var(--color-texto-primario);*/
-    background: var(--color-fondo);
+    background: #fafafa;
 }
