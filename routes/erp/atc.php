@@ -2,12 +2,15 @@
 use App\Livewire\Erp\Atc\Canal\CanalCrear;
 use App\Livewire\Erp\Atc\Canal\CanalEditar;
 use App\Livewire\Erp\Atc\Canal\CanalLista;
+use App\Livewire\Erp\Atc\Canal\CanalVer;
 use App\Livewire\Erp\Atc\EstadoTicket\EstadoTicketCrear;
 use App\Livewire\Erp\Atc\EstadoTicket\EstadoTicketEditar;
 use App\Livewire\Erp\Atc\EstadoTicket\EstadoTicketLista;
+use App\Livewire\Erp\Atc\EstadoTicket\EstadoTicketVer;
 use App\Livewire\Erp\Atc\PrioridadTicket\PrioridadTicketCrear;
 use App\Livewire\Erp\Atc\PrioridadTicket\PrioridadTicketEditar;
 use App\Livewire\Erp\Atc\PrioridadTicket\PrioridadTicketLista;
+use App\Livewire\Erp\Atc\PrioridadTicket\PrioridadTicketVer;
 use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudCrear;
 use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudEditar;
 use App\Livewire\Erp\Atc\SubTipoSolicitud\SubTipoSolicitudLista;
@@ -49,7 +52,8 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('estado-ticket')
             ->name('estado-ticket.vista.')
             ->group(function () {
-                Route::get('/', EstadoTicketLista::class)->middleware('permission:estado-ticket.ver')->name('todo');
+                Route::get('/', EstadoTicketLista::class)->middleware('permission:estado-ticket.lista')->name('todo');
+                Route::get('/ver/{id}', EstadoTicketVer::class)->middleware('permission:estado-ticket.ver')->name('ver');
                 Route::get('/crear', EstadoTicketCrear::class)->middleware('permission:estado-ticket.crear')->name('crear');
                 Route::get('/editar/{id}', EstadoTicketEditar::class)->middleware('permission:estado-ticket.editar')->name('editar');
             });
@@ -59,7 +63,8 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('prioridad-ticket')
             ->name('prioridad-ticket.vista.')
             ->group(function () {
-                Route::get('/', PrioridadTicketLista::class)->middleware('permission:prioridad-ticket.ver')->name('todo');
+                Route::get('/', PrioridadTicketLista::class)->middleware('permission:prioridad-ticket.lista')->name('todo');
+                Route::get('/ver/{id}', PrioridadTicketVer::class)->middleware('permission:prioridad-ticket.ver')->name('ver');
                 Route::get('/crear', PrioridadTicketCrear::class)->middleware('permission:prioridad-ticket.crear')->name('crear');
                 Route::get('/editar/{id}', PrioridadTicketEditar::class)->middleware('permission:prioridad-ticket.editar')->name('editar');
             });
@@ -69,7 +74,8 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('canal')
             ->name('canal.vista.')
             ->group(function () {
-                Route::get('/', CanalLista::class)->middleware('permission:canal.ver')->name('todo');
+                Route::get('/', CanalLista::class)->middleware('permission:canal.lista')->name('todo');
+                Route::get('/ver/{id}', CanalVer::class)->middleware('permission:canal.ver')->name('ver');
                 Route::get('/crear', CanalCrear::class)->middleware('permission:canal.crear')->name('crear');
                 Route::get('/editar/{id}', CanalEditar::class)->middleware('permission:canal.editar')->name('editar');
             });
@@ -79,7 +85,7 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('ticket')
             ->name('ticket.vista.')
             ->group(function () {
-                Route::get('/', TicketLista::class)->middleware('permission:ticket.ver')->name('todo');
+                Route::get('/', TicketLista::class)->middleware('permission:ticket.lista')->name('todo');
                 Route::get('/crear/{ticketPadre?}', TicketCrear::class)->middleware('permission:ticket.crear')->name('crear');
                 Route::get('/editar/{id}', TicketEditar::class)->middleware('permission:ticket.editar')->name('editar');
                 Route::get('/derivado/{id}', TicketDerivar::class)->middleware('permission:ticket.derivar')->name('derivar');
@@ -115,36 +121,44 @@ SUB TIPO SOLICITUD
 
 PRIORIDAD TICKET
 1. prioridad-ticket.navegacion
-2. prioridad-ticket.ver
-3. prioridad-ticket.crear
-4. prioridad-ticket.editar
-5. prioridad-ticket.eliminar
-6. prioridad-ticket.exportar
+2. prioridad-ticket.lista
+3. prioridad-ticket.ver
+4. prioridad-ticket.crear
+5. prioridad-ticket.editar
+6. prioridad-ticket.eliminar
+7. prioridad-ticket.exportar-filtro
+8. prioridad-ticket.exportar-todo
 
 ESTADO TICKET
 1. estado-ticket.navegacion
-2. estado-ticket.ver
-3. estado-ticket.crear
-4. estado-ticket.editar
-5. estado-ticket.eliminar
-6. estado-ticket.exportar
+2. estado-ticket.lista
+3. estado-ticket.ver
+4. estado-ticket.crear
+5. estado-ticket.editar
+6. estado-ticket.eliminar
+7. estado-ticket.exportar-filtro
+8. estado-ticket.exportar-todo
 
 CANAL
 1. canal.navegacion
-2. canal.ver
-3. canal.crear
-4. canal.editar
-5. canal.eliminar
-6. canal.exportar
+2. canal.lista
+3. canal.ver
+4. canal.crear
+5. canal.editar
+6. canal.eliminar
+7. canal.exportar-filtro
+8. canal.exportar-todo
 
 TICKET
 1. ticket.navegacion
-2. ticket.ver
-3. ticket.crear
-4. ticket.editar
-5. ticket.eliminar
-6. ticket.exportar
-7. ticket.derivar
-8. ticket.validar
-9. ticket.reportar
+2. ticket.lista
+3. ticket.ver
+4. ticket.crear
+5. ticket.editar
+6. ticket.eliminar
+7. ticket.exportar-filtro
+8. ticket.exportar-todo
+9. ticket.derivar
+10. ticket.validar
+11. ticket.reportar
 */

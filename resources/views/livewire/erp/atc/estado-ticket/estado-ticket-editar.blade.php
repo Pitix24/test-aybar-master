@@ -1,20 +1,27 @@
 <div class="g_gap_pagina">
+    <x-loading-overlay wire:loading wire:target="update, eliminarEstadoTicketOn" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Editar Estado</h2>
+        <h2>Editar Estado de Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.estado-ticket.vista.todo') }}" class="g_boton g_boton_light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('estado-ticket.lista')
+                <a href="{{ route('erp.estado-ticket.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
-            <a href="{{ route('erp.estado-ticket.vista.crear') }}" class="g_boton g_boton_primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('estado-ticket.crear')
+                <a href="{{ route('erp.estado-ticket.vista.crear') }}" class="g_boton primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarEstadoTicket()">
-                Eliminar <i class="fa-solid fa-trash-can"></i>
-            </button>
+            @can('estado-ticket.eliminar')
+                <button type="button" class="g_boton danger" onclick="confirmarEliminarEstadoTicket()">
+                    Eliminar <i class="fa-solid fa-trash-can"></i>
+                </button>
+            @endcan
 
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
@@ -23,7 +30,7 @@
         <div class="g_fila">
             <div class="g_columna_8">
                 <div class="g_panel">
-                    <h4 class="g_panel_titulo">General</h4>
+                    <h4 class="g_panel_titulo">Información General</h4>
 
                     <div class="g_margin_bottom_10">
                         <label for="estado_activo">
@@ -37,7 +44,7 @@
                             </label>
 
                             <span class="g_switch-label">
-                                {{ $activo ? 'Activo' : 'Desactivado' }}
+                                {{ $activo ? 'Activo' : 'Inactivo' }}
                             </span>
 
                             @error('activo')
@@ -47,8 +54,9 @@
                     </div>
 
                     <div class="g_margin_bottom_10">
-                        <label for="nombre">Nombre del Estado <span class="obligatorio"><i
-                                    class="fa-solid fa-asterisk"></i></span></label>
+                        <label for="nombre">
+                            Nombre del Estado <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                        </label>
                         <input type="text" id="nombre" wire:model.blur="nombre"
                             class="@error('nombre') input-error @enderror" autocomplete="off">
                         @error('nombre')
@@ -58,7 +66,9 @@
 
                     <div class="g_fila">
                         <div class="g_columna_6 g_margin_bottom_10">
-                            <label for="color">Color Representativo</label>
+                            <label for="color">
+                                Color Informativo
+                            </label>
                             <input type="color" id="color" wire:model.blur="color"
                                 class="@error('color') input-error @enderror">
                             @error('color')
@@ -67,29 +77,35 @@
                         </div>
 
                         <div class="g_columna_6 g_margin_bottom_10">
-                            <label for="icono">Icono (FontAwesome)</label>
+                            <label for="icono">
+                                Icono (FontAwesome)
+                            </label>
                             <input type="text" id="icono" wire:model.blur="icono"
                                 class="@error('icono') input-error @enderror" autocomplete="off">
                             @error('icono')
                                 <p class="mensaje_error">{{ $message }}</p>
                             @enderror
+                            <p class="leyenda">Ej: fa-solid fa-circle-check, fa-solid fa-spinner</p>
                         </div>
                     </div>
 
                     <div class="formulario_botones">
-                        <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                            wire:target="update">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-save"></i> Actualizar
-                            </span>
-                            <span wire:loading wire:target="update">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
-                        </button>
+                        @can('estado-ticket.editar')
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                                <span wire:loading.remove wire:target="update">
+                                    <i class="fa-solid fa-save"></i> Actualizar
+                                </span>
+                                <span wire:loading wire:target="update">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                                </span>
+                            </button>
+                        @endcan
 
-                        <a href="{{ route('erp.estado-ticket.vista.todo') }}" class="g_boton g_boton_cancelar">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </a>
+                        @can('estado-ticket.lista')
+                            <button type="button" class="g_boton cancelar" onclick="history.back()">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -98,14 +114,14 @@
 
     @script
     <script>
-        window.alertaEliminarEstadoTicket = function () {
+        window.confirmarEliminarEstadoTicket = function () {
             Swal.fire({
-                title: '¿Quieres eliminar?',
-                text: "No podrás recuperarlo.",
+                title: '¿Quieres eliminar este estado?',
+                text: "Esta acción no se puede deshacer.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
                 confirmButtonText: '¡Sí, eliminar!',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {

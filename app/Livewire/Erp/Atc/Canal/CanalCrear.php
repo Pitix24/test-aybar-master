@@ -27,6 +27,14 @@ class CanalCrear extends Component
         ];
     }
 
+    protected function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre del canal',
+            'activo' => 'estado',
+        ];
+    }
+
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
@@ -34,11 +42,16 @@ class CanalCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('canal.crear'), 403);
+        $this->authorize('canal.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -46,19 +59,33 @@ class CanalCrear extends Component
             DB::beginTransaction();
 
             Canal::create([
-                'nombre' => $this->nombre,
-                'activo' => $this->activo,
+                'nombre' => trim($this->nombre),
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Creado!',
+                'text' => 'El canal se creó correctamente.'
+            ]);
+
             return redirect()->route('erp.canal.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear canal: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+            Log::channel('canal')->error("[CANAL] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo crear el canal.'
+            ]);
         }
     }
 

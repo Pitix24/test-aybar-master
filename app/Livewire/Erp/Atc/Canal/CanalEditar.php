@@ -17,25 +17,34 @@ use Livewire\Attributes\Title;
 #[Title('Editar Canal')]
 class CanalEditar extends Component
 {
-    public Canal $canal;
+    public Canal $canal_model;
 
     public $nombre;
-    public $activo = false;
+    public $activo;
+
+    public function mount($id)
+    {
+        $this->authorize('canal.editar');
+        $this->canal_model = Canal::findOrFail($id);
+
+        $this->nombre = $this->canal_model->nombre;
+        $this->activo = (bool) $this->canal_model->activo;
+    }
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:canals,nombre,' . $this->canal->id,
+            'nombre' => 'required|unique:canals,nombre,' . $this->canal_model->id,
             'activo' => 'required|boolean',
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->canal = Canal::findOrFail($id);
-
-        $this->nombre = $this->canal->nombre;
-        $this->activo = $this->canal->activo;
+        return [
+            'nombre' => 'nombre del canal',
+            'activo' => 'estado',
+        ];
     }
 
     public function updated($propertyName)
@@ -45,51 +54,86 @@ class CanalEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('canal.editar'), 403);
+        $this->authorize('canal.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->canal->update([
-                'nombre' => $this->nombre,
-                'activo' => $this->activo,
+            $this->canal_model->update([
+                'nombre' => trim($this->nombre),
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'El canal se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar canal: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('canal')->error("[CANAL] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->canal_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el canal.'
+            ]);
         }
     }
 
     #[On('eliminarCanalOn')]
     public function eliminarCanalOn()
     {
-        abort_unless(auth()->user()->can('canal.eliminar'), 403);
+        $this->authorize('canal.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->canal->delete();
+            $nombre = $this->canal_model->nombre;
+            $this->canal_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "El canal '$nombre' ha sido eliminado."
+            ]);
+
             return redirect()->route('erp.canal.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar canal: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('canal')->error("[CANAL] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->canal_model->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el canal.'
+            ]);
         }
     }
 

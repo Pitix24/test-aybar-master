@@ -93,6 +93,7 @@
                         <th>Nombre</th>
                         <th>Buzón Email</th>
                         <th>Sedes</th>
+                        <th>Color</th>
                         <th class="g_celda_centro">Estado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
@@ -114,6 +115,11 @@
                                         <span class="g_badge light">{{ $sede->nombre }}</span>
                                     @endforeach
                                 </div>
+                            </td>
+                            <td>
+                                <span class="g_badge g_badge_soft" style="color: {{ $item->color }};">
+                                    {{ strtoupper($item->color) }}
+                                </span>
                             </td>
                             <td class="g_celda_centro">
                                 @if ($item->activo)

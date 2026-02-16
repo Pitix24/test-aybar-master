@@ -27,9 +27,20 @@ class PrioridadTicketCrear extends Component
         return [
             'nombre' => 'required|unique:prioridad_tickets,nombre',
             'tiempo_permitido' => 'required|numeric|min:0',
-            'color' => 'nullable|string',
-            'icono' => 'nullable|string',
+            'color' => 'nullable|string|max:50',
+            'icono' => 'nullable|string|max:50',
             'activo' => 'required|boolean',
+        ];
+    }
+
+    protected function validationAttributes()
+    {
+        return [
+            'nombre' => 'nombre de la prioridad',
+            'tiempo_permitido' => 'tiempo permitido (horas)',
+            'color' => 'color informativo',
+            'icono' => 'icono representativo',
+            'activo' => 'estado',
         ];
     }
 
@@ -40,11 +51,16 @@ class PrioridadTicketCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('prioridad-ticket.crear'), 403);
+        $this->authorize('prioridad-ticket.crear');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
@@ -52,22 +68,36 @@ class PrioridadTicketCrear extends Component
             DB::beginTransaction();
 
             PrioridadTicket::create([
-                'nombre' => $this->nombre,
+                'nombre' => trim($this->nombre),
                 'tiempo_permitido' => $this->tiempo_permitido,
-                'color' => $this->color,
-                'icono' => $this->icono,
-                'activo' => $this->activo,
+                'color' => $this->color ?? '#3b82f6',
+                'icono' => $this->icono ?? 'fa-solid fa-flag',
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Creado', 'text' => 'Se guardó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Creado!',
+                'text' => 'La prioridad de ticket se creó correctamente.'
+            ]);
+
             return redirect()->route('erp.prioridad-ticket.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear prioridad de ticket: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo crear. Intente nuevamente.']);
-            return;
+            Log::channel('prioridad_ticket')->error("[PRIORIDAD TICKET] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo crear la prioridad de ticket.'
+            ]);
         }
     }
 

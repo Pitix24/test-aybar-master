@@ -17,34 +17,46 @@ use Livewire\Attributes\Title;
 #[Title('Editar Prioridad de Ticket')]
 class PrioridadTicketEditar extends Component
 {
-    public PrioridadTicket $prioridadTicket;
+    public PrioridadTicket $prioridad_model;
 
     public $nombre;
     public $tiempo_permitido;
     public $color;
     public $icono;
-    public $activo = false;
+    public $activo;
+
+    public function mount($id)
+    {
+        $this->authorize('prioridad-ticket.editar');
+        $this->prioridad_model = PrioridadTicket::findOrFail($id);
+
+        $this->nombre = $this->prioridad_model->nombre;
+        $this->tiempo_permitido = $this->prioridad_model->tiempo_permitido;
+        $this->color = $this->prioridad_model->color;
+        $this->icono = $this->prioridad_model->icono;
+        $this->activo = (bool) $this->prioridad_model->activo;
+    }
 
     protected function rules()
     {
         return [
-            'nombre' => 'required|unique:prioridad_tickets,nombre,' . $this->prioridadTicket->id,
+            'nombre' => 'required|unique:prioridad_tickets,nombre,' . $this->prioridad_model->id,
             'tiempo_permitido' => 'required|numeric|min:0',
-            'color' => 'nullable|string',
-            'icono' => 'nullable|string',
+            'color' => 'nullable|string|max:50',
+            'icono' => 'nullable|string|max:50',
             'activo' => 'required|boolean',
         ];
     }
 
-    public function mount($id)
+    protected function validationAttributes()
     {
-        $this->prioridadTicket = PrioridadTicket::findOrFail($id);
-
-        $this->nombre = $this->prioridadTicket->nombre;
-        $this->tiempo_permitido = $this->prioridadTicket->tiempo_permitido;
-        $this->color = $this->prioridadTicket->color;
-        $this->icono = $this->prioridadTicket->icono;
-        $this->activo = $this->prioridadTicket->activo;
+        return [
+            'nombre' => 'nombre de la prioridad',
+            'tiempo_permitido' => 'tiempo permitido (horas)',
+            'color' => 'color informativo',
+            'icono' => 'icono representativo',
+            'activo' => 'estado',
+        ];
     }
 
     public function updated($propertyName)
@@ -54,54 +66,89 @@ class PrioridadTicketEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('prioridad-ticket.editar'), 403);
+        $this->authorize('prioridad-ticket.editar');
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', ['title' => 'Advertencia', 'text' => 'Verifique los errores de los campos resaltados.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            $this->prioridadTicket->update([
-                'nombre' => $this->nombre,
+            $this->prioridad_model->update([
+                'nombre' => trim($this->nombre),
                 'tiempo_permitido' => $this->tiempo_permitido,
-                'color' => $this->color,
-                'icono' => $this->icono,
-                'activo' => $this->activo,
+                'color' => $this->color ?? '#3b82f6',
+                'icono' => $this->icono ?? 'fa-solid fa-flag',
+                'activo' => $this->activo ?? false,
             ]);
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Se actualizó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'La prioridad de ticket se actualizó correctamente.'
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar prioridad de ticket: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo actualizar. Intente nuevamente.']);
-            return;
+            Log::channel('prioridad_ticket')->error("[PRIORIDAD TICKET] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->prioridad_model->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar la prioridad de ticket.'
+            ]);
         }
     }
 
     #[On('eliminarPrioridadTicketOn')]
     public function eliminarPrioridadTicketOn()
     {
-        abort_unless(auth()->user()->can('prioridad-ticket.eliminar'), 403);
+        $this->authorize('prioridad-ticket.eliminar');
+
         try {
             DB::beginTransaction();
 
-            $this->prioridadTicket->delete();
+            $nombre = $this->prioridad_model->nombre;
+            $this->prioridad_model->delete();
 
             DB::commit();
 
-            $this->dispatch('alertaLivewire', ['title' => 'Eliminado', 'text' => 'Se eliminó correctamente.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => "La prioridad de ticket '$nombre' ha sido eliminada."
+            ]);
+
             return redirect()->route('erp.prioridad-ticket.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar prioridad de ticket: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar. Intente nuevamente.']);
-            return;
+            Log::channel('prioridad_ticket')->error("[PRIORIDAD TICKET] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->prioridad_model->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar la prioridad de ticket.'
+            ]);
         }
     }
 

@@ -214,6 +214,27 @@ return [
             'days' => 14,
         ],
 
+        'prioridad_ticket' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/prioridad_ticket.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'estado_ticket' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/estado_ticket.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'canal' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/canal.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
