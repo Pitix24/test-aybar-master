@@ -192,41 +192,12 @@
                     @livewire('erp.atc.ticket.ticket-participante', ['ticket' => $ticket])
                 </div>
 
-                <div x-show="activeTab === 'derivaciones'" x-transition class="g_tab_content">
+                <div x-show="activeTab === 'derivaciones'" x-transition class="g_tab_content g_margin_bottom_10">
                     @livewire('erp.atc.ticket.ticket-derivados', ['ticket' => $ticket])
                 </div>
 
-                <div x-show="activeTab === 'historial'" x-transition class="g_tab_content">
-                    <div class="g_margin_bottom_10 g_contenedor_tabla">
-                        <table class="g_tabla">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Usuario</th>
-                                    <th>Acción</th>
-                                    <th>Detalle</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($historial as $item)
-                                    <tr wire:key="hist-{{ $item->id }}">
-                                        <td class="g_negrita">{{ $item->created_at->format('d/m H:i') }}</td>
-                                        <td>{{ $item->usuarioHistorial->name ?? 'Sistema' }}</td>
-                                        <td><span class="g_badge light">{{ $item->accion }}</span></td>
-                                        <td>
-                                            @foreach (explode(' | ', $item->detalle) as $linea)
-                                                <div>{{ $linea }}</div>
-                                            @endforeach
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="g_celda_vacia">Sin movimientos registrados.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                <div x-show="activeTab === 'historial'" x-transition class="g_tab_content g_margin_bottom_10">
+                    @livewire('erp.atc.ticket.ticket-historial', ['ticket' => $ticket])
                 </div>
 
                 <div class="formulario_botones">

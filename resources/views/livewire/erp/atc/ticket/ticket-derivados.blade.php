@@ -1,4 +1,4 @@
-<div class="g_contenedor_tabla g_margin_bottom_10">
+<div class="g_contenedor_tabla">
     <table class="g_tabla">
         <thead>
             <tr>

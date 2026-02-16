@@ -169,7 +169,6 @@ class TicketEditar extends Component
     {
         return view('livewire.erp.atc.ticket.ticket-editar', [
             'estados' => EstadoTicket::where('activo', true)->get(),
-            'historial' => $this->ticket->historial()->with('usuarioHistorial')->latest()->get(),
         ]);
     }
 
