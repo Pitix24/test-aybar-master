@@ -189,7 +189,7 @@
                 </div>
 
                 <div x-show="activeTab === 'participantes'" x-transition class="g_tab_content">
-                    @livewire('atc.ticket.ticket-participante', ['ticket' => $ticket])
+                    @livewire('erp.atc.ticket.ticket-participante', ['ticket' => $ticket])
                 </div>
 
                 <div x-show="activeTab === 'derivaciones'" x-transition class="g_tab_content">
@@ -277,12 +277,12 @@
             </form>
 
             <div>
-                @livewire('atc.ticket.ticket-email', ['ticket' => $ticket])
+                @livewire('erp.atc.ticket.ticket-email', ['ticket' => $ticket])
             </div>
         </div>
 
         <div class="g_columna_4 g_gap_pagina">
-            @livewire('atc.ticket.ticket-archivo', ['ticket' => $ticket])
+            @livewire('erp.atc.ticket.ticket-archivo', ['ticket' => $ticket])
 
             @if ($ticket->padre)
                 <div class="g_panel">
@@ -386,5 +386,5 @@
     </script>
     @endscript
 
-    @livewire('atc.ticket.ticket-chat', ['ticket' => $ticket])
+    @livewire('erp.atc.ticket.ticket-chat', ['ticket' => $ticket])
 </div>

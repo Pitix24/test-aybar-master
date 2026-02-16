@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports\Backoffice;
 
 use App\Models\SolicitudEvidenciaPago;
 use Maatwebsite\Excel\Concerns\FromCollection;

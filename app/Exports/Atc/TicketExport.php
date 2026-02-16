@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports\Atc;
 
 use App\Models\Ticket;
 use Maatwebsite\Excel\Concerns\FromCollection;

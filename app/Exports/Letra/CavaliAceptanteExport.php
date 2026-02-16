@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports\Letra;
 
 use App\Models\EnvioCavali;
 use Maatwebsite\Excel\Concerns\FromCollection;

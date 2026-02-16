@@ -19,7 +19,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Title;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\TicketExport;
+use App\Exports\Atc\TicketExport;
 use Illuminate\Support\Facades\Auth;
 
 #[Lazy]

@@ -4,12 +4,13 @@ namespace App\Exports;
 
 use App\Models\EnvioCavali;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
-
+use Maatwebsite\Excel\Concerns\FromCollection;
 class CavaliExport implements WithMultipleSheets
 {
     public function __construct(
         protected EnvioCavali $envio
-    ) {}
+    ) {
+    }
 
     public function sheets(): array
     {
