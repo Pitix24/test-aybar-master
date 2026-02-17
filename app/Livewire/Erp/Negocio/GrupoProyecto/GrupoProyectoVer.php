@@ -17,7 +17,6 @@ class GrupoProyectoVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('grupo-proyecto.ver');
         $this->grupo = GrupoProyecto::findOrFail($id);
     }
 

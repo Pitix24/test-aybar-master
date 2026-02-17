@@ -133,9 +133,10 @@ AREA
 9. area.ver-usuarios
 10. area.ver-solicitudes
 11. area.agregar-usuarios
-12. area.agregar-solicitudes
-13. area.eliminar-usuarios
-14. area.eliminar-solicitudes
-15. area.exportar-usuarios
-16. area.exportar-solicitudes
+12. area.marcar-principal-usuario
+13. area.agregar-solicitudes
+14. area.eliminar-usuarios
+15. area.eliminar-solicitudes
+16. area.exportar-usuarios
+17. area.exportar-solicitudes
 */

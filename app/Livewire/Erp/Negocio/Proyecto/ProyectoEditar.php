@@ -32,7 +32,6 @@ class ProyectoEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('proyecto.editar');
         $this->proyecto_model = Proyecto::findOrFail($id);
 
         $this->unidad_negocio_id = $this->proyecto_model->unidad_negocio_id;

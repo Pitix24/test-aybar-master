@@ -22,7 +22,6 @@ class GrupoProyectoEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('grupo-proyecto.editar');
         $this->grupo_model = GrupoProyecto::findOrFail($id);
         $this->nombre = $this->grupo_model->nombre;
         $this->activo = (bool) $this->grupo_model->activo;

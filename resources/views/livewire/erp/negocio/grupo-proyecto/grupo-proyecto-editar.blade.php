@@ -32,7 +32,7 @@
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">Editar Información Básica</h4>
 
-                    <div class="g_margin_bottom_20">
+                    <div class="g_margin_bottom_10">
                         <label for="estado_activo">
                             Estado <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                         </label>
@@ -50,7 +50,7 @@
                         @enderror
                     </div>
 
-                    <div class="g_margin_bottom_20">
+                    <div class="g_margin_bottom_10">
                         <label for="nombre">
                             Nombre del Grupo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                         </label>
@@ -73,11 +73,9 @@
                             </button>
                         @endcan
 
-                        @can('grupo-proyecto.lista')
-                            <button type="button" class="g_boton cancelar" onclick="history.back()">
-                                <i class="fa-solid fa-times"></i> Cancelar
-                            </button>
-                        @endcan
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </div>
