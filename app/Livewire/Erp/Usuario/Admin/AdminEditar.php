@@ -147,7 +147,7 @@ class AdminEditar extends Component
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('usuarios')->error("[USUARIO] Error al actualizar password admin: " . $e->getMessage(), [
+            Log::channel('admins')->error("[USUARIO] Error al actualizar password admin: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'target_id' => $this->user_model->id,
                 'trace' => $e->getTraceAsString()
@@ -184,7 +184,7 @@ class AdminEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('usuarios')->error("[USUARIO] Error al eliminar usuario admin: " . $e->getMessage(), [
+            Log::channel('admins')->error("[USUARIO] Error al eliminar usuario admin: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'target_id' => $userId,
                 'nombre' => $userName,

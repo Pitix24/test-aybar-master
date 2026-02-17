@@ -81,6 +81,7 @@
                         <th>Nombre del Permiso</th>
                         <th>Guard</th>
                         <th>Módulo</th>
+                        <th>Fecha creación</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
@@ -96,6 +97,7 @@
                                     {{ $item->module ?? 'Sin Módulo' }}
                                 </span>
                             </td>
+                            <td>{{ $item->created_at->format('d/m/Y') }}</td>
 
                             <td class="g_celda_centro">
                                 @can('permiso.ver')

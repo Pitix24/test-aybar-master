@@ -23,12 +23,12 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Desde</label>
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Hasta</label>
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 
@@ -95,7 +95,7 @@
                         <th>Girador</th>
                         <th>Email Girador</th>
                         <th class="g_celda_centro">Estado</th>
-                        <th class="g_celda_centro">F. Creación</th>
+                        <th class="g_celda_centro">Fecha creación</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
@@ -104,11 +104,7 @@
                     @foreach ($items as $index => $item)
                         <tr>
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
-                            <td>
-                                <span class="g_resaltar">{{ $item->nombre }}</span>
-                                <br>
-                                <small class="g_color_neutral_400">{{ $item->razon_social }}</small>
-                            </td>
+                            <td>{{ $item->nombre }}</td>
                             <td>{{ $item->ruc ?? '-' }}</td>
                             <td class="g_celda_centro">{{ $item->slin_id ?? '-' }}</td>
                             <td class="g_inferior">{{ $item->cavali_girador_nombre ?? '-' }}</td>

@@ -23,12 +23,12 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Desde</label>
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Hasta</label>
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 
@@ -103,7 +103,7 @@
                         <th>Email</th>
                         <th>Roles</th>
                         <th class="g_celda_centro">Estado</th>
-                        <th class="g_celda_centro">F. Creación</th>
+                        <th class="g_celda_centro">Fecha creación</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>

@@ -3,15 +3,15 @@
         <h2>Consultar clientes portal</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.cliente.vista.todo') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.cliente.vista.todo') }}" class="g_boton light">
                 Inicio <i class="fa-solid fa-house"></i>
             </a>
 
-            <a href="{{ route('erp.cliente.vista.todo') }}" class="g_boton g_boton_darkt">
+            <a href="{{ route('erp.cliente.vista.todo') }}" class="g_boton dark">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </a>
 
-            <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+            <button wire:click="resetFiltros" class="g_boton danger">
                 Refresh Campos <i class="fa-solid fa-rotate-left"></i>
             </button>
         </div>
@@ -22,21 +22,21 @@
             <div class="g_columna_8 ">
                 <div class="g_panel">
                     @if (session('info'))
-                        <div class="g_alerta_info">
+                        <div class="g_alerta info">
                             <i class="fa-solid fa-circle-check"></i>
                             {{ session('info') }}
                         </div>
                     @endif
 
                     @if (session('error'))
-                        <div class="g_alerta_error">
+                        <div class="g_alerta error">
                             <i class="fa-solid fa-circle-check"></i>
                             {{ session('error') }}
                         </div>
                     @endif
 
                     @if (session('success'))
-                        <div class="g_alerta_succes">
+                        <div class="g_alerta success">
                             <i class="fa-solid fa-circle-check"></i>
                             {{ session('success') }}
                         </div>
@@ -55,7 +55,7 @@
                     </div>
 
                     <div class="formulario_botones g_margin_bottom_10">
-                        <button wire:click="buscarCliente" class="guardar" wire:loading.attr="disabled"
+                        <button wire:click="buscarCliente" class="g_boton guardar" wire:loading.attr="disabled"
                             wire:target="buscarCliente">
                             <span wire:loading.remove wire:target="buscarCliente">Buscar</span>
                             <span wire:loading wire:target="buscarCliente">Buscando...</span>
@@ -87,7 +87,8 @@
                         </div>
 
                         <div class="formulario_botones">
-                            <button wire:click="store" class="guardar" wire:loading.attr="disabled" wire:target="store">
+                            <button wire:click="store" class="g_boton guardar" wire:loading.attr="disabled"
+                                wire:target="store">
                                 <span wire:loading.remove wire:target="store">Registrar cliente</span>
                                 <span wire:loading wire:target="store">Registrando...</span>
                             </button>

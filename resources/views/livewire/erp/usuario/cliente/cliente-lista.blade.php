@@ -5,13 +5,6 @@
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Gestión de Clientes Portal</h2>
-
-        <div class="cabecera_titulo_botones">
-            @can('cliente.crear')
-                <a href="{{ route('erp.cliente.vista.crear') }}" class="g_boton primary">
-                    Crear <i class="fa-solid fa-square-plus"></i></a>
-            @endcan
-        </div>
     </div>
 
     <div class="g_panel">
@@ -23,12 +16,12 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Desde</label>
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Hasta</label>
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 
@@ -126,7 +119,7 @@
                         <th>Nombre</th>
                         <th>Email</th>
                         <th>DNI</th>
-                        <th class="g_celda_centro">F. Registro</th>
+                        <th class="g_celda_centro">Fecha creación</th>
                         <th class="g_celda_centro">Verificado</th>
                         <th class="g_celda_centro">Trat. D.P.</th>
                         <th class="g_celda_centro">P. Com.</th>

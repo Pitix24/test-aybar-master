@@ -94,6 +94,8 @@ class ClienteConsultar extends Component
 
     public function store()
     {
+        $this->authorize('cliente.crear');
+
         try {
             $this->validate([
                 'email' => 'required|email|unique:users,email',
