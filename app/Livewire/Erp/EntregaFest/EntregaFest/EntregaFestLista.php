@@ -89,7 +89,7 @@ class EntregaFestLista extends Component
 
     public function render()
     {
-        $eventos = EntregaFest::query()
+        $items = EntregaFest::query()
             ->with(['unidadNegocio', 'proyecto', 'user', 'cliente'])
             ->withCount(['prospectos', 'invitados'])
             ->when($this->buscar, function ($query) {
@@ -111,7 +111,7 @@ class EntregaFestLista extends Component
             ->paginate($this->perPage);
 
         return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-lista', [
-            'eventos' => $eventos
+            'items' => $items
         ]);
     }
 }

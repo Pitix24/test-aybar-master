@@ -197,14 +197,14 @@
                                                 </span>
                                             </button>
                                         @elseif ($item['tiene_solicitud_digitalizacion'] ?? false)
-                                            <button class="g_boton cancelar"
+                                            <button class="g_boton light"
                                                 title="Tu letra esta siendo analizada" type="button"
                                                 style="cursor: default;">
                                                 <i class="fas fa-file-shield"></i>
                                             </button>
                                         @else
                                             <button wire:click="verConstanciaCavali({{ json_encode($item) }})"
-                                                class="g_boton dark"
+                                                class="g_boton cancelar"
                                                 title="Solicitar Digitalización"
                                                 wire:loading.attr="disabled"
                                                 wire:target="verConstanciaCavali({{ json_encode($item) }})">

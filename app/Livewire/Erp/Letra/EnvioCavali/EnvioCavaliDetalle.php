@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Erp\Letra\EnvioCavali;
 
-use App\Exports\CavaliAceptanteExport;
-use App\Exports\CavaliGiradorExport;
-use App\Exports\CavaliLetrasExport;
+use App\Exports\Letra\CavaliAceptanteExport;
+use App\Exports\Letra\CavaliGiradorExport;
+use App\Exports\Letra\CavaliLetrasExport;
 use App\Models\EnvioCavali;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
@@ -50,17 +50,24 @@ class EnvioCavaliDetalle extends Component
     public function descargarArchivo()
     {
         if (!$this->envio->archivo_zip) {
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No hay archivo disponible para descargar.']);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No hay archivo disponible para descargar.'
+            ]);
             return;
         }
 
-        if (!Storage::disk('public')->exists($this->envio->archivo_zip)) {
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'El archivo no existe en el servidor.']);
+        if (!Storage::disk('local')->exists($this->envio->archivo_zip)) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'El archivo no existe en el servidor.'
+            ]);
             return;
         }
 
-        $path = Storage::disk('public')->path($this->envio->archivo_zip);
-        return response()->download($path, $this->envio->archivo_nombre);
+        return Storage::disk('local')->download($this->envio->archivo_zip, $this->envio->archivo_nombre);
     }
 
     public function render()

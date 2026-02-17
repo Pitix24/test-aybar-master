@@ -83,7 +83,7 @@ class ProspectoEntregaFestLista extends Component
     {
         $eventos = EntregaFest::orderBy('fecha_entrega', 'desc')->get();
 
-        $prospectos = ProspectoEntregaFest::query()
+        $items = ProspectoEntregaFest::query()
             ->with(['entregaFest', 'user'])
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
@@ -102,7 +102,7 @@ class ProspectoEntregaFestLista extends Component
             ->paginate($this->perPage);
 
         return view('livewire.erp.entrega-fest.prospecto-entrega-fest.prospecto-entrega-fest-lista', [
-            'prospectos' => $prospectos,
+            'items' => $items,
             'eventos' => $eventos,
         ]);
     }
