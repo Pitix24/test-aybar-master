@@ -1,7 +1,7 @@
 <?php
 
-use App\Livewire\Erp\Reporte\Sistema\ReporteCliente;
-use App\Livewire\Erp\Reporte\Sistema\ReporteSolicitudEvidenciaPago;
+use App\Livewire\Erp\Reporte\Usuario\ReporteCliente;
+use App\Livewire\Erp\Reporte\Backoffice\ReporteSolicitudEvidenciaPago;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-reporte.ver']], function () {
