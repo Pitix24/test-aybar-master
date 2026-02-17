@@ -125,6 +125,7 @@ class RolesYPermisosSeeder extends Seeder
                 'area.ver-usuarios',
                 'area.ver-solicitudes',
                 'area.agregar-usuarios',
+                'area.marcar-principal-usuario',
                 'area.agregar-solicitudes',
                 'area.eliminar-usuarios',
                 'area.eliminar-solicitudes',

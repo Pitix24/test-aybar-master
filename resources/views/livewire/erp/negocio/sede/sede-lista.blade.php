@@ -111,7 +111,7 @@
                                 @endif
                             </td>
                             <td class="g_celda_centro">
-                                {{ $item->created_at ? $item->created_at->format('d/m/Y H:i') : '-' }}
+                                {{ $item->created_at }}
                             </td>
                             <td class="g_celda_centro">
                                 @can('sede.ver')

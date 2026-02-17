@@ -35,7 +35,6 @@ class AreaSolicitud extends Component
 
     public function mount($id)
     {
-        $this->authorize('area.ver-solicitudes');
         $this->area = Area::findOrFail($id);
     }
 

@@ -23,12 +23,12 @@
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Desde</label>
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Hasta</label>
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 
@@ -94,6 +94,7 @@
                         <th>Buzón Email</th>
                         <th>Sedes</th>
                         <th>Color</th>
+                        <th class="g_celda_centro">Fecha creación</th>
                         <th class="g_celda_centro">Estado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
@@ -121,6 +122,7 @@
                                     {{ strtoupper($item->color) }}
                                 </span>
                             </td>
+                            <td class="g_celda_centro">{{ $item->created_at }}</td>
                             <td class="g_celda_centro">
                                 @if ($item->activo)
                                     <span class="g_badge success">Activo</span>

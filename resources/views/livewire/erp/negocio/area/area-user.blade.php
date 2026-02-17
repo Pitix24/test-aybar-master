@@ -89,10 +89,12 @@
                                        {{ $user->email }}
                                     </td>
                                     <td class="g_celda_centro">
+                                           @can('area.marcar-principal-usuario')
                                         <input type="radio" name="principal_radio"
                                             wire:click="marcarPrincipal({{ $user->id }})"
                                             {{ $user->pivot->is_principal ? 'checked' : '' }}
                                             title="Marcar como responsable principal">
+                                              @endcan
                                     </td>
                                     <td class="g_celda_acciones g_celda_centro centro">
                                         @can('area.eliminar-usuarios')

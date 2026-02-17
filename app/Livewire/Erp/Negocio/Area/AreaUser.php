@@ -35,7 +35,6 @@ class AreaUser extends Component
 
     public function mount($id)
     {
-        $this->authorize('area.ver-usuarios');
         $this->area = Area::findOrFail($id);
     }
 
@@ -63,7 +62,7 @@ class AreaUser extends Component
 
     public function agregarUsuario($userId)
     {
-        $this->authorize('area.editar');
+        $this->authorize('area.agregar-usuarios');
 
         try {
             DB::beginTransaction();
@@ -95,7 +94,7 @@ class AreaUser extends Component
 
     public function quitarUsuario($userId)
     {
-        $this->authorize('area.editar');
+        $this->authorize('area.eliminar-usuarios');
 
         try {
             DB::beginTransaction();
@@ -127,7 +126,7 @@ class AreaUser extends Component
 
     public function marcarPrincipal($userId)
     {
-        $this->authorize('area.editar');
+        $this->authorize('area.marcar-principal-usuario');
 
         try {
             DB::beginTransaction();
@@ -166,7 +165,7 @@ class AreaUser extends Component
 
     public function exportExcel()
     {
-        $this->authorize('area.exportar-todo');
+        $this->authorize('area.exportar-usuarios');
 
         return Excel::download(
             new AreaUsersExport($this->area, $this->searchAgregados),

@@ -18,7 +18,6 @@ class AreaVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('area.ver');
         $this->area_model = Area::with('sedes')->findOrFail($id);
     }
 
