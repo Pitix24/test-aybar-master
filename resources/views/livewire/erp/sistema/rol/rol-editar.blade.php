@@ -16,7 +16,7 @@
 
             @if($role->name !== 'super-admin')
                 @can('rol.eliminar')
-                    <button type="button" class="g_boton g_boton_danger" onclick="alertaEliminarRol()">
+                    <button type="button" class="g_boton danger" onclick="alertaEliminarRol()">
                         Eliminar <i class="fa-solid fa-trash-can"></i>
                     </button>
                 @endcan
@@ -119,11 +119,9 @@
                             </button>
                         @endcan
 
-                        @can('rol.lista')
-                            <button type="button" class="g_boton cancelar" onclick="history.back()">
-                                <i class="fa-solid fa-times"></i> Cancelar
-                            </button>
-                        @endcan
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </div>

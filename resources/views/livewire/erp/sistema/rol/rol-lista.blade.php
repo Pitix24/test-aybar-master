@@ -6,25 +6,27 @@
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Lista de Roles</h2>
 
-        <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton primary">
-                Crear <i class="fa-solid fa-square-plus"></i></a>
-        </div>
+        @can('rol.crear')
+            <div class="cabecera_titulo_botones">
+                <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton primary">
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            </div>
+        @endcan
     </div>
 
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_4">
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Rol (Nombre o ID)</label>
                     <input type="text" wire:model.live.debounce.1300ms="buscar">
                 </div>
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Desde</label>
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Hasta</label>
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha creación final</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
             </div>
@@ -34,7 +36,7 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                @can('rol.exportar')
+                @can('rol.exportar-filtro')
                     <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
                         wire:target="exportExcel">
                         <span wire:loading.remove wire:target="exportExcel">Exportar Filtrados <i
@@ -42,7 +44,9 @@
                         <span wire:loading wire:target="exportExcel">Generando... <i
                                 class="fa-solid fa-spinner fa-spin"></i></span>
                     </button>
+                @endcan
 
+                @can('rol.exportar-todo')
                     <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
                         wire:target="exportExcelTodo">
                         <span wire:loading.remove wire:target="exportExcelTodo">Exportar Todo <i
@@ -77,6 +81,7 @@
                         <th>Nombre del Rol</th>
                         <th>Guard</th>
                         <th>Permisos</th>
+                        <th>Fecha creación</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
@@ -92,6 +97,8 @@
                                     {{ $item->permissions_count }} permisos
                                 </span>
                             </td>
+
+                            <td>{{ $item->created_at->format('d/m/Y H:i:s') }}</td>
 
                             <td class="g_celda_centro">
                                 @can('rol.ver')

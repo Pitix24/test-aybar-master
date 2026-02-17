@@ -26,6 +26,7 @@ php artisan make:livewire erp.cliente.cliente-consultar --class
 
 php artisan make:livewire erp.cliente-antiguo.cliente-antiguo-lista --class
 php artisan make:livewire erp.cliente-antiguo.cliente-antiguo-crear --class
+php artisan make:livewire erp.usuario.cliente-antiguo.cliente-antiguo-editar --class
 
 php artisan make:livewire erp.admin.admin-lista --class
 php artisan make:livewire erp.admin.admin-crear --class

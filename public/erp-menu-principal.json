@@ -23,7 +23,7 @@
                         "ruta": "erp.rol.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "rol.ver",
+                        "permiso": "rol.lista",
                         "submenus": []
                     },
                     {
@@ -52,7 +52,7 @@
                         "ruta": "erp.permiso.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "permiso.ver",
+                        "permiso": "permiso.lista",
                         "submenus": []
                     },
                     {
@@ -81,7 +81,7 @@
                         "ruta": "erp.menu.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "menu.ver",
+                        "permiso": "menu.lista",
                         "submenus": []
                     },
                     {
@@ -121,7 +121,7 @@
                         "ruta": "erp.admin.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "admin.ver",
+                        "permiso": "admin.lista",
                         "submenus": []
                     },
                     {
@@ -150,7 +150,7 @@
                         "ruta": "erp.cliente.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "cliente.ver",
+                        "permiso": "cliente.lista",
                         "submenus": []
                     },
                     {
@@ -179,7 +179,16 @@
                         "ruta": "erp.cliente-antiguo.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "cliente-antiguo.ver",
+                        "permiso": "cliente-antiguo.lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.cliente-antiguo.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "cliente-antiguo.crear",
                         "submenus": []
                     }
                 ]
@@ -210,7 +219,7 @@
                         "ruta": "erp.unidad-negocio.vista.todo",
                         "url": null,
                         "nivel": 3,
-                        "permiso": "unidad-negocio.ver",
+                        "permiso": "unidad-negocio.lista",
                         "submenus": []
                     },
                     {

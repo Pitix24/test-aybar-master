@@ -187,37 +187,33 @@
                             </button>
                         @endcan
 
-                        @can('menu.lista')
-                            <button type="button" class="g_boton cancelar" onclick="history.back()">
-                                <i class="fa-solid fa-times"></i> Cancelar
-                            </button>
-                        @endcan
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </form>
 
-    @can('menu.eliminar')
-        @script
-        <script>
-            window.alertaEliminarMenu = function () {
-                Swal.fire({
-                    title: '¿Quieres eliminar este ítem?',
-                    text: "Se eliminarán también todos sus submenús. Esta acción no se puede deshacer.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: '¡Sí, eliminar!',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $wire.eliminarMenuOn();
-                    }
-                });
-            }
-        </script>
-        @endscript
-    @endcan
+    @script
+    <script>
+        window.alertaEliminarMenu = function () {
+            Swal.fire({
+                title: '¿Quieres eliminar este ítem?',
+                text: "Se eliminarán también todos sus submenús. Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '¡Sí, eliminar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $wire.eliminarMenuOn();
+                }
+            });
+        }
+    </script>
+    @endscript
 </div>

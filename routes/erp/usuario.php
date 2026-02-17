@@ -9,6 +9,7 @@ use App\Livewire\Erp\Usuario\Admin\AdminCrear;
 use App\Livewire\Erp\Usuario\Admin\AdminEditar;
 use App\Livewire\Erp\Usuario\Admin\AdminLista;
 use App\Livewire\Erp\Usuario\Admin\AdminVer;
+use App\Livewire\Erp\Usuario\ClienteAntiguo\ClienteAntiguoEditar;
 use App\Livewire\Erp\Usuario\ClienteAntiguo\ClienteAntiguoLista;
 use App\Livewire\Erp\Usuario\ClienteAntiguo\ClienteAntiguoCrear;
 use Illuminate\Support\Facades\Route;
@@ -32,12 +33,16 @@ Route::group(['middleware' => ['permission:modulo-usuarios.ver']], function () {
             Route::get('/consultar/{dni?}', ClienteConsultar::class)->middleware('permission:cliente.consultar')->name('consultar');
         });
     });
+
+    Route::group(['middleware' => ['permission:cliente-antiguo.navegacion']], function () {
+        Route::prefix('cliente-antiguo')->name('cliente-antiguo.vista.')->group(function () { //ok
+            Route::get('/', ClienteAntiguoLista::class)->middleware('permission:cliente-antiguo.lista')->name('todo');
+            Route::get('/crear', ClienteAntiguoCrear::class)->middleware('permission:cliente-antiguo.crear')->name('crear');
+            Route::get('/editar/{id}', ClienteAntiguoEditar::class)->middleware('permission:cliente-antiguo.editar')->name('editar');
+        });
+    });
 });
 
-Route::prefix('cliente-antiguo')->name('cliente-antiguo.vista.')->group(function () { //ok
-    Route::get('/', ClienteAntiguoLista::class)->name('todo');
-    Route::get('/crear', ClienteAntiguoCrear::class)->name('crear');
-});
 
 
 /*

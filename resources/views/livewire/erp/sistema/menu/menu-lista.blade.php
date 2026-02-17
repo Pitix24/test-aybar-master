@@ -17,18 +17,18 @@
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_4">
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Menú (Nombre o ID)</label>
                     <input type="text" wire:model.live.debounce.1300ms="buscar">
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Desde</label>
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Hasta</label>
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 
