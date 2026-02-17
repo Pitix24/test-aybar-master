@@ -21,6 +21,7 @@ class AsistenciaEntregaFestLista extends Component
     public $entrega_fest_id = '';
     public $mensaje = '';
     public $mensajeTipo = '';
+    public $perPage = 20;
 
     public function updatedCodigoQr()
     {
@@ -40,6 +41,7 @@ class AsistenciaEntregaFestLista extends Component
 
         $invitado = InvitadoEntregaFest::where('entrega_fest_id', $this->entrega_fest_id)
             ->where('codigo_invitado', $this->codigo_qr)
+            ->with('prospecto')
             ->first();
 
         if (!$invitado) {
@@ -56,7 +58,7 @@ class AsistenciaEntregaFestLista extends Component
                     'fecha_checkin' => now(),
                     'metodo' => 'qr',
                 ]);
-                $this->mensaje = '¡Bienvenido(a) ' . $invitado->prospecto->nombre . '! Ingreso registrado.';
+                $this->mensaje = '¡Bienvenido(a) ' . ($invitado->prospecto->nombre ?? 'Invitado') . '! Ingreso registrado.';
                 $this->mensajeTipo = 'success';
             }
         }
@@ -69,19 +71,19 @@ class AsistenciaEntregaFestLista extends Component
     {
         $eventos = EntregaFest::where('activo', true)->orderBy('fecha_entrega', 'desc')->get();
 
-        $asistenciasRecientes = AsistenciaEntregaFest::query()
-            ->with(['invitado.prospecto', 'invitado.entregaFest'])
+        $items = AsistenciaEntregaFest::query()
+            ->with(['invitado.prospecto', 'invitado.entregaFest', 'user'])
             ->when($this->entrega_fest_id, function ($q) {
                 $q->whereHas('invitado', function ($sq) {
                     $sq->where('entrega_fest_id', $this->entrega_fest_id);
                 });
             })
             ->orderBy('fecha_checkin', 'desc')
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.erp.entrega-fest.asistencia-entrega-fest.asistencia-entrega-fest-lista', [
             'eventos' => $eventos,
-            'asistenciasRecientes' => $asistenciasRecientes
+            'items' => $items
         ]);
     }
 }

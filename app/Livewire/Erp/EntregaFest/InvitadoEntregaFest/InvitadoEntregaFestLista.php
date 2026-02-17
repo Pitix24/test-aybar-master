@@ -30,7 +30,7 @@ class InvitadoEntregaFestLista extends Component
     #[Url(history: true)]
     public $asistio = '';
 
-    public $perPage = 15;
+    public $perPage = 20;
 
     public function updated($property)
     {
@@ -42,6 +42,7 @@ class InvitadoEntregaFestLista extends Component
     public function resetFiltros()
     {
         $this->reset(['buscar', 'entrega_fest_id', 'confirmado', 'asistio']);
+        $this->perPage = 20;
         $this->resetPage();
     }
 
@@ -56,15 +57,17 @@ class InvitadoEntregaFestLista extends Component
     {
         $eventos = EntregaFest::orderBy('fecha_entrega', 'desc')->get();
 
-        $invitados = InvitadoEntregaFest::query()
+        $items = InvitadoEntregaFest::query()
             ->with(['entregaFest', 'prospecto', 'asistencia'])
             ->withCount('acompanantes')
             ->when($this->buscar, function ($query) {
-                $query->whereHas('prospecto', function ($q) {
-                    $q->where('nombre', 'like', '%' . $this->buscar . '%')
-                        ->orWhere('apellidos', 'like', '%' . $this->buscar . '%')
-                        ->orWhere('dni', 'like', '%' . $this->buscar . '%');
-                })->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
+                $query->where(function ($q) {
+                    $q->whereHas('prospecto', function ($qp) {
+                        $qp->where('nombre', 'like', '%' . $this->buscar . '%')
+                            ->orWhere('apellidos', 'like', '%' . $this->buscar . '%')
+                            ->orWhere('dni', 'like', '%' . $this->buscar . '%');
+                    })->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
+                });
             })
             ->when($this->entrega_fest_id, function ($query) {
                 $query->where('entrega_fest_id', $this->entrega_fest_id);
@@ -83,7 +86,7 @@ class InvitadoEntregaFestLista extends Component
             ->paginate($this->perPage);
 
         return view('livewire.erp.entrega-fest.invitado-entrega-fest.invitado-entrega-fest-lista', [
-            'invitados' => $invitados,
+            'items' => $items,
             'eventos' => $eventos,
         ]);
     }

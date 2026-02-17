@@ -25,4 +25,9 @@ class AsistenciaEntregaFest extends Model
     {
         return $this->belongsTo(InvitadoEntregaFest::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
