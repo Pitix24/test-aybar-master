@@ -1,29 +1,48 @@
 @props([
-    'open' => false,
-    'maxWidth' => null,
+    'id' => null,
+    'maxWidth' => '550px',
+    'title' => null,
+    'wireClose' => null, // Acción de Livewire al cerrar
 ])
-<div x-data="{ open: @js($open) }" x-show="open" x-cloak @keydown.escape.window="open = false" class="g_modal">
-    <div class="modal_contenedor" @click.stop @if ($maxWidth) style="max-width: {{ $maxWidth }};" @endif>
+
+<div id="{{ $id }}" class="g_modal" x-data="{ open: true }" x-show="open" x-cloak
+    @keydown.escape.window="{{ $wireClose ? '$wire.' . $wireClose . '()' : 'open = false' }}">
+
+    <div class="modal_contenedor" @click.stop style="max-width: {{ $maxWidth }};">
+        <!-- Botón Cerrar -->
         <div class="modal_cerrar">
-            <button type="button" @click="open = false">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            @if ($wireClose)
+                <button type="button" wire:click="{{ $wireClose }}" title="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            @else
+                <button type="button" @click="open = false" title="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            @endif
         </div>
 
-        <div class="modal_titulo">
-            {{ $titulo ?? '' }}
-        </div>
+        <!-- Título -->
+        @if ($title || isset($titulo))
+            <div class="modal_titulo">
+                <h2>{{ $title ?? $titulo }}</h2>
+            </div>
+        @endif
 
+        <!-- Cuerpo -->
         <div class="modal_cuerpo">
-            {{ $cuerpo ?? '' }}
+            {{ $slot ?? ($cuerpo ?? '') }}
         </div>
 
-        <br>
-
-        <div class="formulario_botones g_centrar_elemento">
-            <button type="button" @click="open = false" class="guardar">
-                ACEPTAR
-            </button>
-        </div>
+        <!-- Pie / Botones -->
+        @if (isset($pie))
+            <div class="modal_pie">
+                {{ $pie }}
+            </div>
+        @elseif(isset($footer))
+            <div class="modal_pie">
+                {{ $footer }}
+            </div>
+        @endif
     </div>
 </div>

@@ -4,14 +4,14 @@
     <div class="layout_cliente">
         <div class="g_centrar_pagina">
             @if (session('bienvenida_cliente'))
-                <x-modal :open="true" max-width="600px">
-                    <x-slot:titulo>
-                        <h2 class="r_titulo_1 minimo left color_1">{{ session('bienvenida_cliente') }}</h2>
-                    </x-slot:titulo>
+                <x-modal maxWidth="600px" :title="session('bienvenida_cliente')">
+                    @include('modules.cliente.modal.bienvenida-cliente')
 
-                    <x-slot:cuerpo>
-                        @include('modules.cliente.modal.bienvenida-cliente')
-                    </x-slot:cuerpo>
+                    <x-slot:pie>
+                        <button type="button" @click="open = false" class="g_boton guardar">
+                            ¡ENTENDIDO!
+                        </button>
+                    </x-slot:pie>
                 </x-modal>
             @endif
             <div class="grid_layout_cliente">

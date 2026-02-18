@@ -1,0 +1,87 @@
+/* COMPONENTE: AVISO / BIENVENIDA */
+.g_contendor_aviso {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Header: Icono y Mensaje Principal */
+.g_aviso_header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.g_aviso_icono_perfil {
+    background-color: var(--color-light-border);
+    color: var(--color-primario);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.g_aviso_msg_principal {
+    font-size: 1.15rem;
+    color: var(--color-light-texto);
+    font-weight: var(--fw-medium);
+    line-height: var(--lh-tight);
+    max-width: 450px;
+}
+
+/* Cuerpo: Texto de descripción */
+.g_aviso_cuerpo {
+    color: #475569;
+    line-height: var(--lh-normal);
+    font-size: var(--fs-parrafo);
+}
+
+.g_aviso_cuerpo p {
+    margin-bottom: 1rem;
+}
+
+/* Nota / Alerta interna */
+.g_aviso_nota {
+    background-color: #f8fafc;
+    border-left: 4px solid var(--color-primario);
+    padding: 1.25rem;
+    border-radius: 4px;
+    display: flex;
+    gap: 1rem;
+}
+
+.g_aviso_nota i {
+    color: var(--color-primario);
+    margin-top: 4px;
+    font-size: 1rem;
+}
+
+.g_aviso_nota_contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.g_aviso_nota_titulo {
+    font-weight: var(--fw-bold);
+    color: var(--color-negro);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+.g_aviso_nota_texto {
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.g_aviso_footer {
+    text-align: center;
+    font-weight: var(--fw-medium);
+    margin-top: 0.5rem;
+}
