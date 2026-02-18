@@ -1,28 +1,54 @@
-<x-layouts::auth>
-    <div class="flex flex-col gap-6">
-        <x-auth-header
-            :title="__('Confirm password')"
-            :description="__('This is a secure area of the application. Please confirm your password before continuing.')"
-        />
+@extends('layouts.web.layout-web')
 
-        <x-auth-session-status class="text-center" :status="session('status')" />
+@section('contenido')
+    <div class="contenedor_login" x-data="{ submitting: false }">
 
-        <form method="POST" action="{{ route('password.confirm.store') }}" class="flex flex-col gap-6">
-            @csrf
+        <div x-show="submitting">
+            <x-loading-overlay message="Confirmando contraseña..." />
+        </div>
 
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="current-password"
-                :placeholder="__('Password')"
-                viewable
-            />
+        <div class="contenedor_login_imagen">
+            <img src="{{ asset('assets/imagen/construccion-aybar-corp.jpg') }}" alt="" />
+        </div>
 
-            <flux:button variant="primary" type="submit" class="w-full" data-test="confirm-password-button">
-                {{ __('Confirm') }}
-            </flux:button>
-        </form>
+        <div class="contenedor_login_formulario">
+            <div class="login_formulario_centrar">
+
+                <div class="login_formulario_logo">
+                    <a href="{{ route('home') }}">
+                        <img src="{{ asset('assets/imagen/logo-aybar-corp-verde.png') }}" alt="">
+                    </a>
+                </div>
+
+                <h1 class="titulo_formulario">CONFIRMAR CONTRASEÑA</h1>
+                <p class="descripcion_formulario">
+                    Esta es un área segura de la aplicación. Por favor, confirme su contraseña antes de continuar.
+                </p>
+
+                <form method="POST" action="{{ route('password.confirm.store') }}" class="formulario_flex formulario"
+                    @submit="submitting = true">
+                    @csrf
+
+                    <div class="g_margin_top_20">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" required autocomplete="current-password"
+                            placeholder="••••••••">
+                        @error('password')
+                            <div class="mensaje_error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="g_margin_top_20 formulario_botones centrar">
+                        <button type="submit" class="g_boton guardar" x-bind:disabled="submitting">
+                            <span x-show="!submitting">Confirmar contraseña</span>
+                            <span x-show="submitting">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Validando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
     </div>
-</x-layouts::auth>
+@endsection

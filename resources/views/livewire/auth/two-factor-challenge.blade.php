@@ -1,95 +1,104 @@
-<x-layouts::auth>
-    <div class="flex flex-col gap-6">
-        <div
-            class="relative w-full h-auto"
-            x-cloak
-            x-data="{
-                showRecoveryInput: @js($errors->has('recovery_code')),
-                code: '',
-                recovery_code: '',
-                toggleInput() {
-                    this.showRecoveryInput = !this.showRecoveryInput;
+@extends('layouts.web.layout-web')
 
-                    this.code = '';
-                    this.recovery_code = '';
+@section('contenido')
+    <div class="contenedor_login" x-data="{
+        submitting: false,
+        showRecoveryInput: @js($errors->has('recovery_code')),
+        code: '',
+        recovery_code: '',
+        toggleInput() {
+            this.showRecoveryInput = !this.showRecoveryInput;
+            this.code = '';
+            this.recovery_code = '';
+            this.$nextTick(() => {
+                if (this.showRecoveryInput) {
+                    this.$refs.recovery_code?.focus();
+                } else {
+                    this.$refs.code?.focus();
+                }
+            });
+        },
+    }">
 
-                    $dispatch('clear-2fa-auth-code');
+        <div x-show="submitting">
+            <x-loading-overlay message="Verificando código..." />
+        </div>
 
-                    $nextTick(() => {
-                        this.showRecoveryInput
-                            ? this.$refs.recovery_code?.focus()
-                            : $dispatch('focus-2fa-auth-code');
-                    });
-                },
-            }"
-        >
-            <div x-show="!showRecoveryInput">
-                <x-auth-header
-                    :title="__('Authentication Code')"
-                    :description="__('Enter the authentication code provided by your authenticator application.')"
-                />
-            </div>
+        <div class="contenedor_login_imagen">
+            <img src="{{ asset('assets/imagen/construccion-aybar-corp.jpg') }}" alt="" />
+        </div>
 
-            <div x-show="showRecoveryInput">
-                <x-auth-header
-                    :title="__('Recovery Code')"
-                    :description="__('Please confirm access to your account by entering one of your emergency recovery codes.')"
-                />
-            </div>
+        <div class="contenedor_login_formulario">
+            <div class="login_formulario_centrar">
 
-            <form method="POST" action="{{ route('two-factor.login.store') }}">
-                @csrf
-
-                <div class="space-y-5 text-center">
-                    <div x-show="!showRecoveryInput">
-                        <div class="flex items-center justify-center my-5">
-                            <flux:otp
-                                x-model="code"
-                                length="6"
-                                name="code"
-                                label="OTP Code"
-                                label:sr-only
-                                class="mx-auto"
-                             />
-                        </div>
-                    </div>
-
-                    <div x-show="showRecoveryInput">
-                        <div class="my-5">
-                            <flux:input
-                                type="text"
-                                name="recovery_code"
-                                x-ref="recovery_code"
-                                x-bind:required="showRecoveryInput"
-                                autocomplete="one-time-code"
-                                x-model="recovery_code"
-                            />
-                        </div>
-
-                        @error('recovery_code')
-                            <flux:text color="red">
-                                {{ $message }}
-                            </flux:text>
-                        @enderror
-                    </div>
-
-                    <flux:button
-                        variant="primary"
-                        type="submit"
-                        class="w-full"
-                    >
-                        {{ __('Continue') }}
-                    </flux:button>
+                <div class="login_formulario_logo">
+                    <a href="{{ route('home') }}">
+                        <img src="{{ asset('assets/imagen/logo-aybar-corp-verde.png') }}" alt="">
+                    </a>
                 </div>
 
-                <div class="mt-5 space-x-0.5 text-sm leading-5 text-center">
-                    <span class="opacity-50">{{ __('or you can') }}</span>
-                    <div class="inline font-medium underline cursor-pointer opacity-80">
-                        <span x-show="!showRecoveryInput" @click="toggleInput()">{{ __('login using a recovery code') }}</span>
-                        <span x-show="showRecoveryInput" @click="toggleInput()">{{ __('login using an authentication code') }}</span>
-                    </div>
+                <div x-show="!showRecoveryInput">
+                    <h1 class="titulo_formulario">CÓDIGO DE AUTENTICACIÓN</h1>
+                    <p class="descripcion_formulario">
+                        Ingrese el código de autenticación proporcionado por su aplicación de autenticación.
+                    </p>
                 </div>
-            </form>
+
+                <div x-show="showRecoveryInput">
+                    <h1 class="titulo_formulario">CÓDIGO DE RECUPERACIÓN</h1>
+                    <p class="descripcion_formulario">
+                        Confirme el acceso a su cuenta ingresando uno de sus códigos de recuperación de emergencia.
+                    </p>
+                </div>
+
+                <form method="POST" action="{{ route('two-factor.login.store') }}" @submit="submitting = true">
+                    @csrf
+
+                    <div class="formulario">
+                        <div x-show="!showRecoveryInput">
+                            <div class="g_margin_top_20">
+                                <label for="code"><i class="fa-solid fa-key"></i> Código</label>
+                                <input type="text" id="code" x-ref="code" name="code" placeholder="000000"
+                                    x-model="code" inputmode="numeric" autofocus autocomplete="one-time-code">
+                                @error('code')
+                                    <div class="mensaje_error">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div x-show="showRecoveryInput">
+                            <div class="g_margin_top_20">
+                                <label for="recovery_code"><i class="fa-solid fa-shield-heart"></i> Código de Recuperación</label>
+                                <input type="text" id="recovery_code" x-ref="recovery_code" name="recovery_code"
+                                    x-model="recovery_code" x-bind:required="showRecoveryInput"
+                                    autocomplete="one-time-code" placeholder="abcd-efgh-...">
+                                @error('recovery_code')
+                                    <div class="mensaje_error">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="g_margin_top_20 formulario_botones centrar">
+                            <button type="submit" class="g_boton guardar" x-bind:disabled="submitting">
+                                <span x-show="!submitting">Continuar</span>
+                                <span x-show="submitting">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Verificando...
+                                </span>
+                            </button>
+                        </div>
+
+                        <div class="g_margin_top_20 text-center">
+                            <button type="button" class="g_link" @click="toggleInput()"
+                                style="background:none; border:none; text-decoration:underline; font-size: 14px; color: #64748b; cursor: pointer;">
+                                <span x-show="!showRecoveryInput">Usar un código de recuperación</span>
+                                <span x-show="showRecoveryInput">Usar un código de autenticación</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
         </div>
     </div>
-</x-layouts::auth>
+@endsection
+

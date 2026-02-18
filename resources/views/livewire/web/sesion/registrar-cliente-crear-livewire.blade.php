@@ -1,5 +1,7 @@
 <div class="contenedor_login">
 
+    <x-loading-overlay wire:loading wire:target="buscarCliente, registrar" message="Procesando información..." />
+
     <div class="contenedor_login_imagen">
         <img src="{{ asset('assets/imagen/construccion-aybar-corp.jpg') }}" alt="" />
     </div>
@@ -40,7 +42,13 @@
                     </div>
 
                     <div class="g_margin_top_20 formulario_botones centrar">
-                        <button wire:click="buscarCliente" class="g_boton guardar">Validar DNI</button>
+                        <button wire:click="buscarCliente" class="g_boton guardar" wire:loading.attr="disabled"
+                            wire:target="buscarCliente">
+                            <span wire:loading.remove wire:target="buscarCliente">Validar DNI</span>
+                            <span wire:loading wire:target="buscarCliente">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Validando...
+                            </span>
+                        </button>
                     </div>
                 </div>
             @endif
@@ -103,7 +111,12 @@
                     </div>
 
                     <div class="g_margin_top_20 formulario_botones centrar">
-                        <button type="submit" class="g_boton guardar">Crear cuenta</button>
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="registrar">
+                            <span wire:loading.remove wire:target="registrar">Crear cuenta</span>
+                            <span wire:loading wire:target="registrar">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                            </span>
+                        </button>
                     </div>
 
                 </form>

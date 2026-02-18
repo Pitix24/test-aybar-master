@@ -1,7 +1,11 @@
 @extends('layouts.web.layout-web')
 
 @section('contenido')
-    <div class="contenedor_login">
+    <div class="contenedor_login" x-data="{ submitting: false }">
+
+        <div x-show="submitting">
+            <x-loading-overlay message="Validando credenciales..." />
+        </div>
 
         <div class="contenedor_login_imagen">
             <img src="{{ asset('assets/imagen/construccion-aybar-corp.jpg') }}" alt="" />
@@ -29,14 +33,14 @@
                 </p>
 
                 @if (session('status'))
-                    <div class="g_alerta_succes">
+                    <div class="g_alerta success">
                         <i class="fa-solid fa-circle-check"></i>
                         {{ session('status') }}
                     </div>
                 @endif
 
                 @if ($errors->any())
-                    <div class="g_alerta_error">
+                    <div class="g_alerta error">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                         <div>
                             <strong>Por favor corrige los siguientes errores:</strong>
@@ -44,7 +48,8 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login.store') }}" class="formulario_flex formulario">
+                <form method="POST" action="{{ route('login.store') }}" class="formulario_flex formulario"
+                    @submit="submitting = true">
                     @csrf
 
                     <div class="g_margin_top_20">
@@ -72,8 +77,11 @@
                     </div>
 
                     <div class="g_margin_top_20 formulario_botones centrar">
-                        <button type="submit" class="g_boton guardar">
-                            Ingresar
+                        <button type="submit" class="g_boton guardar" x-bind:disabled="submitting">
+                            <span x-show="!submitting">Ingresar</span>
+                            <span x-show="submitting">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Validando...
+                            </span>
                         </button>
                     </div>
 
