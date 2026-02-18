@@ -312,6 +312,7 @@ class TicketCrear extends Component
                 break;
         }
     }
+
     public function agregarLote()
     {
         if (!$this->lote_id)
@@ -340,6 +341,7 @@ class TicketCrear extends Component
             ->values()
             ->toArray();
     }
+
     public function store($confirmado = false)
     {
         $this->authorize('ticket.crear');

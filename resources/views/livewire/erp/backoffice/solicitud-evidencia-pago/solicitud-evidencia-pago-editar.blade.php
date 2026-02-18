@@ -89,13 +89,6 @@
                                 </select>
                                 @error('estado_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
-
-                            <div class="g_margin_bottom_10 g_columna_12">
-                                <label>Observación Interna</label>
-                                <textarea wire:model.live="observacion" rows="3"
-                                    class="@error('observacion') input-error @enderror"></textarea>
-                                @error('observacion') <p class="mensaje_error">{{ $message }}</p> @enderror
-                            </div>
                         </div>
 
                         <div class="formulario_botones">

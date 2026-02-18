@@ -17,7 +17,6 @@ class SubTipoSolicitudVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('sub-tipo-solicitud.ver');
         $this->sub_tipo = SubTipoSolicitud::with('tipoSolicitud')->findOrFail($id);
     }
 

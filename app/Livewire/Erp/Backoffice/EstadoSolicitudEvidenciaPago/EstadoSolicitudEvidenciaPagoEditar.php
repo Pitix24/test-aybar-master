@@ -26,7 +26,6 @@ class EstadoSolicitudEvidenciaPagoEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('estado-solicitud-evidencia-pago.editar');
         $this->estado_model = EstadoSolicitudEvidenciaPago::findOrFail($id);
 
         $this->nombre = $this->estado_model->nombre;

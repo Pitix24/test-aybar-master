@@ -33,12 +33,12 @@
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Desde</label>
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Hasta</label>
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 

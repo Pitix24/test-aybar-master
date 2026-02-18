@@ -26,7 +26,6 @@ class EstadoTicketEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('estado-ticket.editar');
         $this->estado_model = EstadoTicket::findOrFail($id);
 
         $this->nombre = $this->estado_model->nombre;

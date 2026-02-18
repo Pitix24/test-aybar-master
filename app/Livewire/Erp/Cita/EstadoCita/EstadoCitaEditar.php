@@ -26,7 +26,6 @@ class EstadoCitaEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('estado-cita.editar');
         $this->estado_model = EstadoCita::findOrFail($id);
 
         $this->nombre = $this->estado_model->nombre;

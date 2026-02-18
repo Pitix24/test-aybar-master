@@ -94,7 +94,7 @@
                         <th class="g_celda_centro">SLIN ID</th>
                         <th>Girador</th>
                         <th>Email Girador</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Activo</th>
                         <th class="g_celda_centro">Fecha creación</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>

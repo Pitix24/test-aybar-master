@@ -26,7 +26,6 @@ class MotivoCitaEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('motivo-cita.editar');
         $this->motivo_model = MotivoCita::findOrFail($id);
 
         $this->nombre = $this->motivo_model->nombre;

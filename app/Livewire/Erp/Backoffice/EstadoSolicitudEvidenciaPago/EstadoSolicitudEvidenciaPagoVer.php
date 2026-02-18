@@ -17,7 +17,6 @@ class EstadoSolicitudEvidenciaPagoVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('estado-solicitud-evidencia-pago.ver');
         $this->estado = EstadoSolicitudEvidenciaPago::findOrFail($id);
     }
 

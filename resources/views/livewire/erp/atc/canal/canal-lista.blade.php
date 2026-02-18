@@ -23,17 +23,17 @@
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Desde</label>
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Hasta</label>
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Estado</label>
+                    <label>Activo</label>
                     <select wire:model.live="activo">
                         <option value="">Todos</option>
                         <option value="1">Activos</option>
@@ -90,7 +90,7 @@
                     <tr>
                         <th class="g_celda_centro">N°</th>
                         <th>Nombre del Canal</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Activo</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>

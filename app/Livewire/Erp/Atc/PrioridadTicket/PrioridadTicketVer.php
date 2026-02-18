@@ -17,7 +17,6 @@ class PrioridadTicketVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('prioridad-ticket.ver');
         $this->prioridad = PrioridadTicket::findOrFail($id);
     }
 

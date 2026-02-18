@@ -23,17 +23,17 @@
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Desde</label>
+                    <label>Fecha creación desde</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Hasta</label>
+                    <label>Fecha creación hasta</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Estado</label>
+                    <label>Activo</label>
                     <select wire:model.live="activo">
                         <option value="">Todos</option>
                         <option value="1">Activos</option>
@@ -92,7 +92,7 @@
                         <th class="g_celda_centro">Icono</th>
                         <th>Nombre</th>
                         <th>Color</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Activo</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>

@@ -98,11 +98,9 @@
                                 </button>
                             @endcan
 
-                            @can('ticket.editar')
-                                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton cancelar">
-                                    <i class="fa-solid fa-times"></i> Cancelar
-                                </a>
-                            @endcan
+                            <button type="button" class="g_boton cancelar" onclick="history.back()">
+                                <i class="fa-solid fa-times"></i> Cancelar
+                            </button>
                         </div>
                     </form>
                 </div>

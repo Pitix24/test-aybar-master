@@ -23,12 +23,12 @@
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Desde</label>
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="desde">
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Hasta</label>
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="hasta">
                 </div>
 
@@ -91,7 +91,7 @@
                         <th class="g_celda_centro">N°</th>
                         <th>Nombre</th>
                         <th class="g_celda_centro">Tiempo Solución (Hrs)</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Activo</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>

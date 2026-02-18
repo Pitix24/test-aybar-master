@@ -102,7 +102,7 @@
                         <th>Nombre</th>
                         <th>Email</th>
                         <th>Roles</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Activo</th>
                         <th class="g_celda_centro">Fecha creación</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>

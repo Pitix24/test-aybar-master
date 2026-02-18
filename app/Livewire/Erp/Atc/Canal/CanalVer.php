@@ -17,7 +17,6 @@ class CanalVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('canal.ver');
         $this->canal = Canal::findOrFail($id);
     }
 

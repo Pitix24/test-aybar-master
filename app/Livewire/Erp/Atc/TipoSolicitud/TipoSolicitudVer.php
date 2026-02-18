@@ -17,7 +17,6 @@ class TipoSolicitudVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('tipo-solicitud.ver');
         $this->tipo = TipoSolicitud::with('areas')->findOrFail($id);
     }
 

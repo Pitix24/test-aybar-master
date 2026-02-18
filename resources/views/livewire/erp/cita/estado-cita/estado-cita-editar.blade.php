@@ -11,7 +11,7 @@
             @endcan
 
             @can('estado-cita.crear')
-                <a href="{{ route('erp.撂estado-cita.vista.crear') }}" class="g_boton primary">
+                <a href="{{ route('erp.estado-cita.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
@@ -101,11 +101,9 @@
                             </button>
                         @endcan
 
-                        @can('estado-cita.lista')
-                            <button type="button" class="g_boton cancelar" onclick="history.back()">
-                                <i class="fa-solid fa-times"></i> Cancelar
-                            </button>
-                        @endcan
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </div>

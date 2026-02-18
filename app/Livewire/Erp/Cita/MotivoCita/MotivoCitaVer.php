@@ -17,7 +17,6 @@ class MotivoCitaVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('motivo-cita.ver');
         $this->motivo = MotivoCita::findOrFail($id);
     }
 

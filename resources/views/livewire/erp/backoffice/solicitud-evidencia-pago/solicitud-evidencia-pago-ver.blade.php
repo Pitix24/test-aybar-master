@@ -75,11 +75,6 @@
                                 </select>
                             </div>
                         </div>
-                        
-                        <div class="g_margin_bottom_10">
-                            <label>Observación</label>
-                            <textarea disabled rows="3">{{ $solicitud->observacion }}</textarea>
-                        </div>
                     </div>
                 </div>
 

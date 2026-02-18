@@ -123,7 +123,7 @@
                         <th class="g_celda_centro">Verificado</th>
                         <th class="g_celda_centro">Trat. D.P.</th>
                         <th class="g_celda_centro">P. Com.</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Activo</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>

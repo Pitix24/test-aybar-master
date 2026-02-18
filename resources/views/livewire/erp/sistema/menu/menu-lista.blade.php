@@ -92,7 +92,7 @@
                         <th>Ruta / URL</th>
                         <th class="g_celda_centro">Nivel</th>
                         <th class="g_celda_centro">Orden</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Activo</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>

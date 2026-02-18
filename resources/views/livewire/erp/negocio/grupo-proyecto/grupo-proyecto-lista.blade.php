@@ -91,7 +91,7 @@
                         <th class="g_celda_centro">N°</th>
                         <th>Nombre del Grupo</th>
                         <th class="g_celda_centro">Fecha creación</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th class="g_celda_centro">Activo</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>

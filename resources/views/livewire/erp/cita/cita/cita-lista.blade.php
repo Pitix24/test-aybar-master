@@ -1,5 +1,6 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="buscar, unidad_negocio_id, proyecto_id, sede_id, motivo_cita_id, estado_cita_id, gestor_id, area_id, perPage, resetFiltros"
+    <x-loading-overlay wire:loading
+        wire:target="buscar, unidad_negocio_id, proyecto_id, sede_id, motivo_cita_id, estado_cita_id, gestor_id, area_id, perPage, resetFiltros"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -8,13 +9,12 @@
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.cita.vista.calendario') }}" class="g_boton g_boton_success">
                 Calendario <i class="fa-solid fa-calendar-days"></i></a>
-            
+
             <a href="{{ route('erp.cita.vista.crear') }}" class="g_boton g_boton_primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>
     </div>
 
-    <!-- FILTROS -->
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
@@ -54,7 +54,7 @@
                         @foreach($estados as $e) <option value="{{ $e->id }}">{{ $e->nombre }}</option> @endforeach
                     </select>
                 </div>
-                
+
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Motivo</label>
                     <select wire:model.live="motivo_cita_id">
@@ -72,7 +72,7 @@
                         @foreach($sedes as $s) <option value="{{ $s->id }}">{{ $s->nombre }}</option> @endforeach
                     </select>
                 </div>
-                
+
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Gestor</label>
                     <select wire:model.live="gestor_id">
@@ -82,17 +82,17 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Fecha inicio (Desde)</label>
+                    <label>Fecha creación inicio</label>
                     <input type="date" wire:model.live="fecha_inicio">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Fecha fin (Hasta)</label>
+                    <label>Fecha creación fin</label>
                     <input type="date" wire:model.live="fecha_fin">
                 </div>
-                
+
                 <div class="g_margin_bottom_10 g_columna_4" style="display: flex; align-items: flex-end; gap: 10px;">
-                     <button wire:click="resetFiltros" class="g_boton g_boton_danger">
+                    <button wire:click="resetFiltros" class="g_boton g_boton_danger">
                         Limpiar <i class="fa-solid fa-rotate-left"></i>
                     </button>
                 </div>
@@ -150,14 +150,16 @@
                             <td>
                                 <div style="display: flex; flex-direction: column;">
                                     <span class="g_negrita g_resumir">{{ $item->nombres }}</span>
-                                    <span style="font-size: 0.75rem; color: #94a3b8;">{{ $item->dni }} ({{ strtoupper($item->origen) }})</span>
+                                    <span style="font-size: 0.75rem; color: #94a3b8;">{{ $item->dni }}
+                                        ({{ strtoupper($item->origen) }})</span>
                                 </div>
                             </td>
                             <td>
                                 <div style="display: flex; flex-direction: column;">
                                     <span class="g_negrita">{{ $item->motivo?->nombre }}</span>
                                     @if($item->area)
-                                        <span class="g_badge g_badge_soft" style="color: {{ $item->area->color }}; width: fit-content; padding: 0;">
+                                        <span class="g_badge g_badge_soft"
+                                            style="color: {{ $item->area->color }}; width: fit-content; padding: 0;">
                                             <i class="{{ $item->area->icono }}"></i> {{ $item->area->nombre }}
                                         </span>
                                     @endif
@@ -167,15 +169,18 @@
                             <td>{{ $item->gestor?->name ?? 'Sin asignar' }}</td>
                             <td class="g_celda_centro">
                                 <span class="g_badge g_badge_soft" style="color: {{ $item->estado?->color }};">
-                                    <i class="{{ $item->estado?->icono }} g_margin_right_5"></i> {{ $item->estado?->nombre }}
+                                    <i class="{{ $item->estado?->icono }} g_margin_right_5"></i>
+                                    {{ $item->estado?->nombre }}
                                 </span>
                             </td>
                             <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.cita.vista.editar', $item->id) }}" class="g_accion_editar" title="Editar">
+                                <a href="{{ route('erp.cita.vista.editar', $item->id) }}" class="g_accion_editar"
+                                    title="Editar">
                                     <i class="fa-solid fa-pencil"></i>
                                 </a>
                                 @if($item->ticket_id)
-                                    <a href="{{ route('erp.ticket.vista.editar', $item->ticket_id) }}" class="g_accion_editar" style="background: #f0f9ff; color: #0369a1;" title="Ver Ticket">
+                                    <a href="{{ route('erp.ticket.vista.editar', $item->ticket_id) }}" class="g_accion_editar"
+                                        style="background: #f0f9ff; color: #0369a1;" title="Ver Ticket">
                                         <i class="fa-solid fa-ticket"></i>
                                     </a>
                                 @endif

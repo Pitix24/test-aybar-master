@@ -236,11 +236,9 @@
                         </button>
                     @endcan
 
-                    @can('ticket.lista')
-                        <button type="button" class="g_boton cancelar" onclick="history.back()">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </button>
-                    @endcan
+                    <button type="button" class="g_boton cancelar" onclick="history.back()">
+                        <i class="fa-solid fa-times"></i> Cancelar
+                    </button>
                 </div>
             </form>
         </div>
@@ -251,9 +249,15 @@
                     <h4 class="g_panel_titulo">Ticket padre</h4>
 
                     <div class="g_margin_bottom_10">
-                        @can('ticket.editar')
-                            <a href="{{ route('erp.ticket.vista.editar', $ticketPadre->id) }}" class="g_boton secondary">
+                        @can('ticket.ver')
+                            <a href="{{ route('erp.ticket.vista.ver', $ticketPadre->id) }}" class="g_boton warning">
                                 <i class="fa-solid fa-eye"></i> Ver ticket
+                            </a>
+                        @endcan
+
+                        @can('ticket.editar')
+                            <a href="{{ route('erp.ticket.vista.editar', $ticketPadre->id) }}" class="g_boton info">
+                                <i class="fa-solid fa-pencil"></i> Editar ticket
                             </a>
                         @endcan
                     </div>
@@ -317,7 +321,8 @@
                     <div class="g_fila">
                         <div class="g_columna_12">
                             <label>Descripción </label>
-                            <textarea disabled>{{ $ticketPadre->descripcion_inicial ?? 'Sin descripción' }}</textarea>
+                            <textarea disabled
+                                rows="5">{{ $ticketPadre->descripcion_inicial ?? 'Sin descripción' }}</textarea>
                         </div>
                     </div>
 

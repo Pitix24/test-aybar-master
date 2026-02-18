@@ -17,7 +17,6 @@ class EstadoCitaVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('estado-cita.ver');
         $this->estado = EstadoCita::findOrFail($id);
     }
 

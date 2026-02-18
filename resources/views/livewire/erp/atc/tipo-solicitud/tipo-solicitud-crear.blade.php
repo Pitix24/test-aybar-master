@@ -72,7 +72,7 @@
                             Áreas Relacionadas
                         </label>
 
-                        <div class="g_grid_permisos">
+                        <div class="g_grid_permisos @error('selectedAreas') input-error @enderror">
                             @foreach ($areas as $area)
                                 <div class="permiso_item">
                                     <label class="cursor_pointer">
@@ -99,11 +99,9 @@
                             </button>
                         @endcan
 
-                        @can('tipo-solicitud.lista')
-                            <button type="button" class="g_boton cancelar" onclick="history.back()">
-                                <i class="fa-solid fa-times"></i> Cancelar
-                            </button>
-                        @endcan
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </div>

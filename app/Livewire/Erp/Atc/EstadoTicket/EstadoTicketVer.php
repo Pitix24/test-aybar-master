@@ -17,7 +17,6 @@ class EstadoTicketVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('estado-ticket.ver');
         $this->estado = EstadoTicket::findOrFail($id);
     }
 
