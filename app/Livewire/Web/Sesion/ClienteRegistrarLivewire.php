@@ -101,43 +101,52 @@ class ClienteRegistrarLivewire extends Component
             return;
         }
 
-        /*if (strcasecmp(
-            trim($this->cliente_encontrado['correo']),
-            trim($this->email)
-        ) !== 0) {
+        if (
+            strcasecmp(
+                trim($this->cliente_encontrado['correo']),
+                trim($this->email)
+            ) !== 0
+        ) {
             session()->flash('error', 'Su correo no coincide con nuestra base de datos.');
             return;
-        }*/
+        }
 
         $this->validate();
 
-        DB::transaction(function () use (&$user) {
+        try {
+            $user = DB::transaction(function () {
+                $newUser = User::create([
+                    'name' => trim($this->cliente_encontrado['apellidos_nombres'] ?? $this->email),
+                    'email' => trim($this->email),
+                    'password' => Hash::make($this->password),
+                    'politica_uno' => $this->politica_uno,
+                    'politica_dos' => $this->politica_dos,
+                    'rol' => 'cliente',
+                    'activo' => true,
+                ]);
 
-            $user = User::create([
-                'name' => $this->cliente_encontrado['apellidos_nombres'] ?? $this->email,
-                'email' => $this->email,
-                'password' => Hash::make($this->password),
-                'politica_uno' => $this->politica_uno,
-                'politica_dos' => $this->politica_dos,
-                'rol' => 'cliente',
-                'activo' => true,
-            ]);
+                Cliente::create([
+                    'user_id' => $newUser->id,
+                    'nombre' => $newUser->name,
+                    'email' => $newUser->email,
+                    'telefono_principal' => $this->cliente_encontrado['telefono'] ?? null,
+                    'dni' => $this->dni,
+                ]);
 
-            Cliente::create([
-                'user_id' => $user->id,
-                'nombre' => $user->name,
-                'email' => $user->email,
-                'telefono_principal' => $this->cliente_encontrado['telefono'] ?? null,
-                'dni' => $this->dni,
-            ]);
-        });
+                return $newUser;
+            });
 
-        Auth::login($user);
+            Auth::login($user);
 
-        event(new UsuarioRegistrado($user));
+            event(new UsuarioRegistrado($user));
 
-        return redirect()->route('verification.notice');
+            return redirect()->route('verification.notice');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ocurrió un problema al procesar el registro: ' . $e->getMessage());
+            return;
+        }
     }
+
 
     public function render()
     {
