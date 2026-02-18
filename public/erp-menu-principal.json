@@ -950,6 +950,24 @@
                         "nivel": 3,
                         "permiso": "reporte-usuario.cliente.ver",
                         "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Reporte Cliente Dirección",
+                        "ruta": "erp.reporte.vista.direccion",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-usuario.direccion.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 113,
+                        "nombre": "Reporte Admin",
+                        "ruta": "erp.reporte.vista.admin",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-usuario.admin.ver",
+                        "submenus": []
                     }
                 ]
             },
@@ -969,6 +987,84 @@
                         "url": null,
                         "nivel": 3,
                         "permiso": "reporte-backoffice.solicitud-evidencia-pago.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Reporte Evidencia Pago",
+                        "ruta": "erp.reporte.vista.evidencia-pago",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-backoffice.evidencia-pago.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Reporte Evidencia Pago Antiguo",
+                        "ruta": "erp.reporte.vista.evidencia-pago-antiguo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-backoffice.evidencia-pago-antiguo.ver",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 13,
+                "nombre": "Modulo ATC",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "permiso": "reporte-atc.navegacion",
+                "submenus": [
+                    {
+                        "id": 112,
+                        "nombre": "Reporte Ticket",
+                        "ruta": "erp.reporte.vista.ticket",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-atc.ticket.ver",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 14,
+                "nombre": "Modulo Cita",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "permiso": "reporte-cita.navegacion",
+                "submenus": [
+                    {
+                        "id": 112,
+                        "nombre": "Reporte Cita",
+                        "ruta": "erp.reporte.vista.cita",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-cita.cita.ver",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 15,
+                "nombre": "Modulo Letras",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "permiso": "reporte-letra.navegacion",
+                "submenus": [
+                    {
+                        "id": 112,
+                        "nombre": "Reporte Letras",
+                        "ruta": "erp.reporte.vista.letra",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-letra.letra.ver",
                         "submenus": []
                     }
                 ]

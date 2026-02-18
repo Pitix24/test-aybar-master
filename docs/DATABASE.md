@@ -190,8 +190,19 @@ php artisan make:model EnvioCavali -mfsc
 php artisan make:livewire letras.envio-cavali.envio-cavali-lista --class
 php artisan make:livewire letras.envio-cavali.envio-cavali-detalle --class
 
-php artisan make:livewire erp.reporte.sistema.reporte-rol --class
-php artisan make:livewire erp.reporte.sistema.permiso-rol --class
+php artisan make:livewire erp.reporte.usuario.reporte-cliente --class
+php artisan make:livewire erp.reporte.usuario.reporte-direccion --class
+php artisan make:livewire erp.reporte.usuario.reporte-admin --class
+
+php artisan make:livewire erp.reporte.atc.reporte-ticket --class
+
+php artisan make:livewire erp.reporte.cita.reporte-cita --class
+
+php artisan make:livewire erp.reporte.backoffice.reporte-solicitud-evidencia-pago --class
+php artisan make:livewire erp.reporte.backoffice.reporte-evidencia-pago --class
+php artisan make:livewire erp.reporte.backoffice.reporte-evidencia-pago-antiguo --class
+
+php artisan make:livewire erp.reporte.letra.reporte-letra --class
 
 php artisan make:livewire cliente.perfil.perfil-ver --class
 php artisan make:livewire cliente.perfil.direccion-editar --class
