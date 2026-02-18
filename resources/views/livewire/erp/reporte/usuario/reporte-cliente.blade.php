@@ -61,13 +61,18 @@
         </div>
     </div>
 
-    <!-- Fila 2: Tendencia Diaria -->
+    <!-- Fila 2: Tendencia Diaria Dinámica -->
     <div class="g_fila">
         <div class="g_columna_12">
             <div class="g_panel">
-                <h2 style="margin-bottom: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-chart-line"></i> Tendencia de
-                    registros (Mes Actual)</h2>
-                <div style="height: 250px; width: 100%; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 style="font-size: 1.1rem; margin: 0;"><i class="fa-solid fa-chart-line"></i> Tendencia de registros</h2>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 0.85rem; color: #64748b;">Filtrar Mes:</span>
+                        <input type="month" wire:model.live="mesSeleccionado" class="g_input" style="padding: 0.3rem 0.5rem; width: 160px; font-size: 0.9rem;">
+                    </div>
+                </div>
+                <div style="height: 250px; width: 100%; position: relative;" wire:ignore>
                     <canvas id="chartDiaMes"></canvas>
                 </div>
             </div>
@@ -80,7 +85,7 @@
             <div class="g_panel">
                 <h2 style="margin-bottom: 1rem; font-size: 1rem;"><i class="fa-solid fa-map-location-dot"></i> Top 5
                     Regiones</h2>
-                <div style="height: 220px; width: 100%; position: relative;">
+                <div style="height: 220px; width: 100%; position: relative;" wire:ignore>
                     <canvas id="chartRegiones"></canvas>
                 </div>
             </div>
@@ -89,7 +94,7 @@
             <div class="g_panel">
                 <h2 style="margin-bottom: 1rem; font-size: 1rem;"><i class="fa-solid fa-shield-halved"></i> Políticas
                 </h2>
-                <div style="height: 220px; width: 100%; position: relative;">
+                <div style="height: 220px; width: 100%; position: relative;" wire:ignore>
                     <canvas id="chartPoliticas"></canvas>
                 </div>
             </div>
@@ -97,7 +102,7 @@
         <div class="g_columna_3">
             <div class="g_panel">
                 <h2 style="margin-bottom: 1rem; font-size: 1rem;"><i class="fa-solid fa-at"></i> Proveedores Email</h2>
-                <div style="height: 220px; width: 100%; position: relative;">
+                <div style="height: 220px; width: 100%; position: relative;" wire:ignore>
                     <canvas id="chartDominios"></canvas>
                 </div>
             </div>
@@ -106,7 +111,7 @@
             <div class="g_panel">
                 <h2 style="margin-bottom: 1rem; font-size: 1rem;"><i class="fa-solid fa-bullseye"></i> Salud Global (%)
                 </h2>
-                <div style="height: 220px; width: 100%; position: relative;">
+                <div style="height: 220px; width: 100%; position: relative;" wire:ignore>
                     <canvas id="chartRadar"></canvas>
                 </div>
             </div>
@@ -119,7 +124,7 @@
             <div class="g_panel">
                 <h2 style="margin-bottom: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-list-check"></i> Completitud
                     de Datos (% de la base)</h2>
-                <div style="height: 250px; width: 100%; position: relative;">
+                <div style="height: 250px; width: 100%; position: relative;" wire:ignore>
                     <canvas id="chartCompletitud"></canvas>
                 </div>
             </div>
@@ -128,7 +133,7 @@
             <div class="g_panel">
                 <h2 style="margin-bottom: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-clock"></i> Picos de Registro
                     (Horario 24h)</h2>
-                <div style="height: 250px; width: 100%; position: relative;">
+                <div style="height: 250px; width: 100%; position: relative;" wire:ignore>
                     <canvas id="chartHoras"></canvas>
                 </div>
             </div>
@@ -189,7 +194,7 @@
             <div class="g_panel">
                 <h2 style="margin-bottom: 1rem; font-size: 1.1rem;"><i class="fa-solid fa-chart-column"></i> Crecimiento
                     12 meses</h2>
-                <div style="height: 350px; width: 100%; position: relative;">
+                <div style="height: 350px; width: 100%; position: relative;" wire:ignore>
                     <canvas id="chartMeses"></canvas>
                 </div>
             </div>
@@ -200,9 +205,12 @@
 
 
 <script>
+    let chartDiaMes = null;
+    const charts = {};
+
     document.addEventListener('livewire:init', () => {
         const colores = ['#4F46E5', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
-
+        
         Chart.defaults.font.family = "'Instrument Sans', sans-serif";
         Chart.defaults.color = '#64748b';
 
@@ -210,27 +218,40 @@
             const ctx = document.getElementById(id);
             if (ctx) {
                 try {
-                    new Chart(ctx, config);
+                    const chart = new Chart(ctx, config);
+                    if (id === 'chartDiaMes') chartDiaMes = chart;
+                    else charts[id] = chart;
                 } catch (e) {
                     console.error('Error init chart ' + id, e);
                 }
             }
         };
 
-        // Pequeño delay para asegurar que el DOM y las animaciones de panel terminen
+        // Escuchar cambios dinámicos desde Livewire - Patrón del usuario
+        Livewire.on('actualizarGraficoDiaMes', (payload) => {
+            console.log(payload);
+            const data = payload[0];
+            if (chartDiaMes) {
+                chartDiaMes.data.labels = data.labels;
+                chartDiaMes.data.datasets[0].data = data.data;
+                chartDiaMes.update();
+            }
+        });
+
+        // Inicialización de todos los gráficos
         setTimeout(() => {
-            // 1. Tendencia Diaria (Línea)
+            // 1. Tendencia Diaria (Línea) - Basado en tu patrón
             initChart('chartDiaMes', {
                 type: 'line',
                 data: {
-                    labels: @json(array_values($clientesPorDiaMesActual['labels'] ?? [])),
+                    labels: @json($clientesPorDiaMesActual['labels']),
                     datasets: [{
-                        label: 'Registros',
-                        data: @json(array_values($clientesPorDiaMesActual['data'] ?? [])),
+                        label: 'Clientes nuevos',
+                        data: @json($clientesPorDiaMesActual['data']),
                         borderColor: '#10B981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         fill: true,
-                        tension: 0.4,
+                        tension: 0.3,
                         pointRadius: 4,
                         pointHoverRadius: 6
                     }]
@@ -238,9 +259,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: false,
                     plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                    scales: { 
+                        y: { beginAtZero: true, ticks: { precision: 0 } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -353,7 +375,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: {
+                    scales: { 
                         x: { beginAtZero: true, max: 100 },
                         y: { grid: { display: false } }
                     }
@@ -376,7 +398,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: {
+                    scales: { 
                         y: { beginAtZero: true, ticks: { stepSize: 5 } },
                         x: { grid: { display: false }, ticks: { font: { size: 9 } } }
                     }
@@ -399,7 +421,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: {
+                    scales: { 
                         y: { beginAtZero: true },
                         x: { grid: { display: false } }
                     }

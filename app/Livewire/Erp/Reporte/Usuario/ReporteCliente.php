@@ -40,8 +40,13 @@ class ReporteCliente extends Component
     // Tablas
     public $ultimosClientes = [];
 
+    // Filtros Dinámicos
+    public $mesSeleccionado;
+
     public function mount()
     {
+        $this->mesSeleccionado = Carbon::now()->format('Y-m');
+
         // Optimizamos la carga
         $clientesQuery = Cliente::with(['user', 'user.direccion.region']);
         $clientes = $clientesQuery->get();
@@ -54,7 +59,7 @@ class ReporteCliente extends Component
 
         $this->calcularCrecimientoMensual($clientes);
         $this->cargarClientesPorMes($clientes);
-        $this->cargarClientesPorDiaMesActual($clientes);
+        $this->cargarClientesPorDiaMesActual();
         $this->cargarClientesPoliticas($clientes);
         $this->cargarClientesEmailVerificado($clientes);
         $this->cargarClientesConDireccion($clientes);
@@ -66,6 +71,45 @@ class ReporteCliente extends Component
 
         // Últimos 10 registros
         $this->ultimosClientes = $clientes->sortByDesc('created_at')->take(10);
+    }
+
+    public function updatedMesSeleccionado()
+    {
+        $this->cargarClientesPorDiaMesActual();
+
+        $this->dispatch(
+            'actualizarGraficoDiaMes',
+            $this->clientesPorDiaMesActual
+        );
+    }
+
+    private function cargarClientesPorDiaMesActual()
+    {
+        if (empty($this->mesSeleccionado) || !str_contains($this->mesSeleccionado, '-')) {
+            $this->clientesPorDiaMesActual = [
+                'labels' => [],
+                'data' => [],
+            ];
+            return;
+        }
+
+        [$year, $month] = explode('-', $this->mesSeleccionado);
+        $fecha = Carbon::createFromDate($year, $month, 1);
+        $diasDelMes = $fecha->daysInMonth;
+
+        $clientes = Cliente::query()
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->selectRaw('DAY(created_at) as dia, COUNT(*) as total')
+            ->groupBy('dia')
+            ->pluck('total', 'dia');
+
+        $this->clientesPorDiaMesActual = [
+            'labels' => array_values(range(1, $diasDelMes)),
+            'data' => array_values(collect(range(1, $diasDelMes))
+                ->map(fn($dia) => $clientes[$dia] ?? 0)
+                ->toArray()),
+        ];
     }
 
     private function cargarDistribucionHoraria($clientes)
@@ -165,20 +209,6 @@ class ReporteCliente extends Component
         ];
     }
 
-    private function cargarClientesPorDiaMesActual($clientes)
-    {
-        $hoy = Carbon::now();
-        $diasDelMes = $hoy->daysInMonth;
-
-        $data = $clientes->filter(fn($c) => $c->created_at->month == $hoy->month && $c->created_at->year == $hoy->year)
-            ->groupBy(fn($c) => $c->created_at->day)
-            ->map(fn($group) => $group->count());
-
-        $this->clientesPorDiaMesActual = [
-            'labels' => array_values(range(1, $diasDelMes)),
-            'data' => array_values(array_map(fn($d) => $data[$d] ?? 0, range(1, $diasDelMes))),
-        ];
-    }
 
     private function cargarClientesPoliticas($clientes)
     {
