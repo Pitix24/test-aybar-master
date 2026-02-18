@@ -101,13 +101,13 @@ class ClienteRegistrarLivewire extends Component
             return;
         }
 
-        if (strcasecmp(
+        /*if (strcasecmp(
             trim($this->cliente_encontrado['correo']),
             trim($this->email)
         ) !== 0) {
             session()->flash('error', 'Su correo no coincide con nuestra base de datos.');
             return;
-        }
+        }*/
 
         $this->validate();
 
