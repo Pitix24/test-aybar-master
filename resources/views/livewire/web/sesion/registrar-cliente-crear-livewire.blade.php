@@ -9,7 +9,7 @@
 
             <div class="login_formulario_arriba">
                 <span>¿Ya tienes una cuenta?</span>
-                <a href="{{ route('ingresar.cliente') }}">Ingresar</a>
+                <a href="{{ route('login') }}">Ingresar</a>
             </div>
 
             <div class="login_formulario_logo">
@@ -22,7 +22,7 @@
             <p class="descripcion_formulario">Sigue los pasos correctamente.</p>
 
             @if (session('error'))
-                <div class="g_alerta_error">
+                <div class="g_alerta error">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <div>{{ session('error') }}</div>
                 </div>
@@ -40,14 +40,14 @@
                     </div>
 
                     <div class="g_margin_top_20 formulario_botones centrar">
-                        <button wire:click="buscarCliente" class="guardar">Validar DNI</button>
+                        <button wire:click="buscarCliente" class="g_boton guardar">Validar DNI</button>
                     </div>
                 </div>
             @endif
 
             @if ($cliente_encontrado)
                 @if (session('status'))
-                    <div class="g_alerta_succes">
+                    <div class="g_alerta success">
                         <i class="fa-solid fa-circle-check"></i>
                         ¡{{ $this->cliente_encontrado['apellidos_nombres'] }}!, {{ session('status') }}
                     </div>
@@ -92,9 +92,8 @@
                     <div>
                         <label>
                             <input type="checkbox" wire:model="politica_dos">
-                            <span>He leído y acepto la <a
-                                    href="https://aybarcorp.com/politica-comunicaciones-comerciales" target="_blank"
-                                    rel="noopener noreferrer"> <u>Política para envío de comunicaciones
+                            <span>He leído y acepto la <a href="https://aybarcorp.com/politica-comunicaciones-comerciales"
+                                    target="_blank" rel="noopener noreferrer"> <u>Política para envío de comunicaciones
                                         comerciales</u>.
                                 </a></span>
                         </label>
@@ -104,7 +103,7 @@
                     </div>
 
                     <div class="g_margin_top_20 formulario_botones centrar">
-                        <button type="submit" class="guardar">Crear cuenta</button>
+                        <button type="submit" class="g_boton guardar">Crear cuenta</button>
                     </div>
 
                 </form>

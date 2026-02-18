@@ -72,7 +72,7 @@
                     </div>
 
                     <div class="g_margin_top_20 formulario_botones centrar">
-                        <button type="submit" class="guardar">
+                        <button type="submit" class="g_boton guardar">
                             Ingresar
                         </button>
                     </div>
