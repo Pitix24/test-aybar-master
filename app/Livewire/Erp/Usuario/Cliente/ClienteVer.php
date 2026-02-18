@@ -17,7 +17,7 @@ class ClienteVer extends Component
 
     public function mount($id)
     {
-        $this->user = User::with('cliente')->findOrFail($id);
+        $this->user = User::with('perfilCliente')->findOrFail($id);
     }
 
     public function render()

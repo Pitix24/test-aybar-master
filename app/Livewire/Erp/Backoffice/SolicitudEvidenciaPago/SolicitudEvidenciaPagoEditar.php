@@ -81,7 +81,7 @@ class SolicitudEvidenciaPagoEditar extends Component
 
         $this->unidades_negocios = UnidadNegocio::where('activo', true)->get();
         $this->estados = EstadoSolicitudEvidenciaPago::where('activo', true)->get();
-        $this->gestores = User::role(['asesor-atc', 'supervisor-atc'])->get();
+        $this->gestores = User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
 
         $this->loadProyectos();
     }

@@ -42,7 +42,7 @@
 
                         <div class="g_columna_6 g_margin_bottom_10">
                             <label>DNI</label>
-                            <input type="text" value="{{ $user->cliente->dni ?? '-' }}" readonly disabled>
+                            <input type="text" value="{{ $user->perfilCliente->dni ?? '-' }}" readonly disabled>
                         </div>
                     </div>
 

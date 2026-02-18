@@ -102,8 +102,21 @@
                 </div>
 
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
-                    <div class="formulario">
-                        <div class="g_fila">
+                    <div class="formulario">  
+                         <div class="g_margin_bottom_10">
+                            @can('cliente.consultar')
+                                <a href="{{ route('erp.cliente.vista.consultar', $solicitud->userCliente->perfilCliente->dni) }}" class="g_boton primary">
+                                    <i class="fa-solid fa-border-all"></i> Estado cuenta
+                                </a>
+                            @endcan
+    
+                            @can('cliente.ver')
+                                <a href="{{ route('erp.cliente.vista.ver', $solicitud->userCliente->id) }}" class="g_boton info">
+                                    <i class="fa-solid fa-circle-user"></i> Perfil
+                                </a>
+                            @endcan
+                        </div>               
+                        <div class="g_fila">                           
                             <div class="g_margin_bottom_10 g_columna_6">
                                 <label>Nombre del Cliente</label>
                                 <input type="text" disabled value="{{ $solicitud->userCliente->name ?? '—' }}">
@@ -191,6 +204,13 @@
                             <div class="g_margin_bottom_10 g_columna_3">
                                 <label>Ticket</label>
                                 <input type="text" disabled value="{{ $solicitud->ticket ?? '—' }}">
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_3">
+                                <label>Fecha vencimiento</label>
+                                <input type="text" disabled value="{{ $solicitud->fecha_vencimiento ?? 'Sin asignar' }}">
                             </div>
                         </div>
                     </div>

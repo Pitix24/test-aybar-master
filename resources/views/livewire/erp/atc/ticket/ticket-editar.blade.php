@@ -173,6 +173,19 @@
                 </div>
 
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
+                    <div class="g_margin_bottom_10">
+                        @can('cliente.consultar')
+                            <a href="{{ route('erp.cliente.vista.consultar', $ticket->dni) }}" class="g_boton primary">
+                                <i class="fa-solid fa-border-all"></i> Estado cuenta
+                            </a>
+                        @endcan
+
+                        @can('cliente.ver')
+                            <a href="{{ route('erp.cliente.vista.ver', $ticket->userCliente->id) }}" class="g_boton info">
+                                <i class="fa-solid fa-circle-user"></i> Perfil
+                            </a>
+                        @endcan
+                    </div>
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_6">
                             <label>Cliente</label>
