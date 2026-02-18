@@ -23,6 +23,7 @@ use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use App\Events\TicketCreado;
 
 #[Title('Crear Ticket')]
 #[Lazy]
@@ -426,6 +427,8 @@ class TicketCrear extends Component
                 'title' => 'Creado',
                 'text' => $mensaje
             ]);
+
+            event(new TicketCreado($ticket));
 
             return redirect()->route('erp.ticket.vista.todo');
         } catch (\Exception $e) {

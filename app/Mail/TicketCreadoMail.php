@@ -17,7 +17,7 @@ class TicketCreadoMail extends Mailable
     public function __construct(Ticket $ticket)
     {
         $this->ticket = $ticket;
-        $this->url = route('admin.ticket.vista.editar', $ticket->id);
+        $this->url = route('erp.ticket.vista.editar', $ticket->id);
     }
 
     public function build()
