@@ -54,22 +54,16 @@
 }
 
 .g_menu_badge {
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 0.65rem;
     padding: 2px 6px;
-    border-radius: 10px;
-    color: #fff;
-    margin-left: auto;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-left: 0.5rem;
 }
 
-.g_menu_badge.info {
-    background-color: #2196f3;
-}
-
-.g_menu_badge.success {
-    background-color: #4caf50;
-}
-
-.g_menu_badge.danger {
-    background-color: #f44336;
+.g_menu_badge.warning {
+    background-color: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #ffedd5;
 }
