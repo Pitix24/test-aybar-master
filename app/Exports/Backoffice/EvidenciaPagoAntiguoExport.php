@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports\Backoffice;
+namespace App\Exports\Erp\Backoffice;
 
 use App\Models\EvidenciaPagoAntiguo;
 use Maatwebsite\Excel\Concerns\FromCollection;

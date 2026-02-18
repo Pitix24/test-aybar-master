@@ -12,11 +12,11 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Exports\EvidenciaPagoAntiguoExport;
+use App\Exports\Erp\Backoffice\EvidenciaPagoAntiguoExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Evidencias de Pago Stock')]
 class EvidenciaPagoAntiguoLista extends Component
 {
@@ -92,7 +92,8 @@ class EvidenciaPagoAntiguoLista extends Component
 
     public function exportExcel()
     {
-        abort_unless(auth()->user()->can('evidencia-pago-antiguo.exportar'), 403);
+        $this->authorize('evidencia-pago-antiguo.exportar-filtro');
+
         return Excel::download(
             new EvidenciaPagoAntiguoExport(
                 $this->buscar,
