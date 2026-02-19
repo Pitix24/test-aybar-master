@@ -47,6 +47,11 @@ return new class extends Migration {
 
             $table->text('observacion')->nullable();
 
+            //DB ANTIGUO
+            $table->string('dni')->nullable();
+            $table->string('nombres')->nullable();
+            $table->string('origen')->default('portal')->nullable(); //antiguo:clientes_2 o slin
+
             //SUPERVISOR
             $table->foreignId('usuario_valida_id')->nullable()->constrained('users')->nullOnDelete(); //CERRADO POR
             $table->dateTime('fecha_validacion')->nullable(); //FECHA CIERRE

@@ -17,7 +17,7 @@ class TicketVer extends Component
 
     public function mount($id)
     {
-        $this->ticket = Ticket::with(['hijos', 'padre.gestor', 'usuariosParticipantes', 'cliente'])->findOrFail($id);
+        $this->ticket = Ticket::with(['hijos', 'padre.gestor', 'usuariosParticipantes', 'userCliente'])->findOrFail($id);
     }
 
     public function render()

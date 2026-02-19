@@ -41,8 +41,19 @@ class SolicitudEvidenciaPago extends Model
         'slin_evidencia',
         'resuelto_manual',
 
+        //DB ANTIGUO
+        'dni',
+        'nombres',
+        'origen',
+
+        //SUPERVISOR
         'usuario_valida_id',
         'fecha_validacion',
+
+        //AUDITORIA
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     protected $casts = [

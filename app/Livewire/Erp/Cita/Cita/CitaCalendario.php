@@ -82,7 +82,7 @@ class CitaCalendario extends Component
             'anio' => $this->fechaActual->copy()->endOfYear(),
         };
 
-        $this->eventos = Cita::with(['cliente', 'sede', 'motivo', 'area', 'estado'])
+        $this->eventos = Cita::with(['userCliente', 'sede', 'motivo', 'area', 'estado'])
             ->whereBetween('fecha_inicio', [$inicio, $fin])
             ->orderBy('fecha_inicio')
             ->get()

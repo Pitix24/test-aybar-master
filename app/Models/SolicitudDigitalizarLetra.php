@@ -15,6 +15,8 @@ class SolicitudDigitalizarLetra extends Model
         'unidad_negocio_id',
         'proyecto_id',
         'cliente_id',
+        'gestor_id',
+        'estado_solicitud_digitalizar_letra_id',
 
         'lote_completo',
         'codigo_cuota',
@@ -29,7 +31,25 @@ class SolicitudDigitalizarLetra extends Model
         'codigo_venta',
         'fecha_vencimiento',
         'importe_cuota',
-        'estado_solicitud_digitalizar_letra_id',
+
+        'observacion',
+
+        //DB ANTIGUO
+        'dni',
+        'nombres',
+        'email',
+        'celular',
+        'direccion',
+        'origen',
+
+        //SUPERVISOR
+        'usuario_valida_id',
+        'fecha_validacion',
+
+        //AUDITORIA
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     public function estado()
@@ -60,5 +80,52 @@ class SolicitudDigitalizarLetra extends Model
             'solicitud_digitalizar_letras_id',
             'envios_cavali_id'
         );
+    }
+
+    public function gestor()
+    {
+        return $this->belongsTo(User::class, 'gestor_id');
+    }
+
+    public function validadoPor()
+    {
+        return $this->belongsTo(User::class, 'usuario_valida_id');
+    }
+
+    public function creadoPor()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function actualizadoPor()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function eliminadoPor()
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($ticket) {
+            if (auth()->check()) {
+                $ticket->created_by = auth()->id();
+            }
+        });
+
+        static::updating(function ($ticket) {
+            if (auth()->check()) {
+                $ticket->updated_by = auth()->id();
+            }
+        });
+
+        static::deleting(function ($ticket) {
+            if (auth()->check()) {
+                $ticket->deleted_by = auth()->id();
+                $ticket->saveQuietly();
+            }
+        });
     }
 }

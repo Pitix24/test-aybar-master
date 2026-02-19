@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->foreignId('unidad_negocio_id')->constrained('unidad_negocios')->cascadeOnDelete();
             $table->foreignId('proyecto_id')->constrained('proyectos')->cascadeOnDelete();
             $table->foreignId('cliente_id')->nullable()->constrained('users')->nullOnDelete(); //user_id
+            $table->foreignId('gestor_id')->nullable()->constrained('users')->nullOnDelete(); //quien atiende al cliente //asignado
 
             $table->foreignId('estado_solicitud_digitalizar_letra_id')->default(1)->constrained('estado_solicitud_digitalizar_letras', indexName: 'sdl_estado_sdl_fk')->onDelete('restrict');
 
@@ -34,6 +35,25 @@ return new class extends Migration {
             $table->string('codigo_venta')->nullable();
             $table->string('fecha_vencimiento')->nullable();
             $table->string('importe_cuota')->nullable();
+
+            $table->text('observacion')->nullable();
+
+            //DB ANTIGUO
+            $table->string('dni')->nullable();
+            $table->string('nombres')->nullable();
+            $table->string('email')->nullable();
+            $table->string('celular')->nullable();
+            $table->string('direccion')->nullable();
+            $table->string('origen')->default('portal')->nullable(); //antiguo:clientes_2 o slin
+
+            //SUPERVISOR
+            $table->foreignId('usuario_valida_id')->nullable()->constrained('users')->nullOnDelete(); //CERRADO POR
+            $table->dateTime('fecha_validacion')->nullable(); //FECHA CIERRE
+
+            //AUDITORIA
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete(); //CREADO POR
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();
             $table->softDeletes();

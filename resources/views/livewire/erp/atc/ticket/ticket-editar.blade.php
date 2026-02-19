@@ -23,6 +23,11 @@
                 </a>
             @endcan
 
+            @can('cita.crear')
+                <a href="{{ route('erp.cita.vista.crear', $ticket->id) }}" class="g_boton secondary">
+                    Crear cita <i class="fa-solid fa-calendar-days"></i></a>
+            @endcan
+
             @can('ticket.eliminar')
                 <button type="button" class="g_boton danger" onclick="alertaEliminarTicket()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>

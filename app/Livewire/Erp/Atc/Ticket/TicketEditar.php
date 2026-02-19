@@ -41,7 +41,7 @@ class TicketEditar extends Component
 
     public function mount($id)
     {
-        $this->ticket = Ticket::with(['hijos', 'padre.gestor', 'usuariosParticipantes', 'cliente'])->findOrFail($id);
+        $this->ticket = Ticket::with(['hijos', 'padre.gestor', 'usuariosParticipantes', 'userCliente'])->findOrFail($id);
 
         $this->email = $this->ticket->email;
         $this->celular = $this->ticket->celular;

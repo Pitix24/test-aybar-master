@@ -32,15 +32,16 @@ class Cita extends Model
         'asunto_respuesta',
         'descripcion_respuesta',
 
+        //DB ANTIGUO
         'dni',
         'nombres',
         'origen',
 
-        // valida
+        //SUPERVISOR
         'usuario_valida_id',
         'fecha_validacion',
 
-        // auditoría
+        //AUDITORIA
         'created_by',
         'updated_by',
         'deleted_by',
@@ -63,7 +64,7 @@ class Cita extends Model
         return $this->belongsTo(Proyecto::class);
     }
 
-    public function cliente()
+    public function userCliente()
     {
         return $this->belongsTo(User::class, 'cliente_id');
     }

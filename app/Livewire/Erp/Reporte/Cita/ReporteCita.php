@@ -159,7 +159,7 @@ class ReporteCita extends Component
 
     private function cargarTablasRecientes()
     {
-        $this->ultimasCitas = Cita::with(['cliente', 'sede', 'estado', 'motivo', 'gestor'])
+        $this->ultimasCitas = Cita::with(['userCliente', 'sede', 'estado', 'motivo', 'gestor'])
             ->latest('fecha_inicio')
             ->take(5)
             ->get();

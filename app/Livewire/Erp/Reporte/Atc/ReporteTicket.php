@@ -187,7 +187,7 @@ class ReporteTicket extends Component
 
     private function cargarTablasRecientes()
     {
-        $this->ultimosTickets = Ticket::with(['cliente', 'area', 'estado', 'prioridad'])
+        $this->ultimosTickets = Ticket::with(['userCliente', 'area', 'estado', 'prioridad'])
             ->latest()
             ->take(5)
             ->get();
