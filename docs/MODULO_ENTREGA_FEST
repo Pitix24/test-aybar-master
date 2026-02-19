@@ -148,3 +148,87 @@ EntregaFest
          ├── Envios (historial contacto)
          ├── Acompanantes
          └── Asistencia (único registro)
+
+---
+
+# 📋 TAREAS
+
+## 1. 🧪 ANÁLISIS FUNCIONAL INTEGRAL
+
+### A. Ciclo de Vida del Invitado y Acompañantes
+*   **Conversión Directa**: Proceso para pasar de `Prospecto` (aprobado) a `Invitado`.
+*   **Gestión de Acompañantes**: 
+    *   Implementar un **Formulario de Registro de Acompañantes** accesible por el invitado (link único o QR).
+    *   Control estricto de la `cantidad_acompanantes_permitidos` definida en la tabla `invitado_entrega_fests`.
+    *   Validación de DNI para evitar duplicidad de acompañantes en el mismo evento.
+*   **Control de Envíos**: Registro de contactos vía WhatsApp/Correo (`invitado_envio_entrega_fests`) para confirmar asistencia.
+
+### B. Gestión Logística (Nuevos Requerimientos)
+*   **Staff del Evento**: 
+    *   Control de personal asignado (Coordinadores, Anfitriones, Seguridad).
+    *   Diferenciación entre staff interno (usuarios del ERP) y externo.
+*   **Partners y Proveedores**:
+    *   Registro de empresas que brindan servicios (Catering, Toldos, Seguridad tercerizada).
+    *   Vínculo de servicios específicos a cada `EntregaFest`.
+*   **Logística de Transporte (Buses)**:
+    *   Gestión de unidades (Buses/Vans) contratadas para el evento.
+    *   Control de itinerarios y capacidades de transporte.
+
+---
+
+## 2. ⚙️ EJECUCIÓN Y DESARROLLO
+
+### 🗄️ Fase Base de Datos y Modelos
+
+#### A. Tablas Administrativas y de Operación (Existentes)
+*   **EntregaFest** (`entrega_fests` → `Models\EntregaFest.php`)
+    *   `unidad_negocio_id`, `proyecto_id`, `cliente_id`, `user_id` (responsable).
+    *   `nombre`, `descripcion`, `codigo` (único), `fecha_entrega`, `activo`.
+*   **Prospecto** (`prospecto_entrega_fests` → `Models\ProspectoEntregaFest.php`)
+    *   `entrega_fest_id`, `user_id` (quien registró).
+    *   `dni`, `nombre`, `apellidos`.
+    *   `estado` (pendiente, observado, aprobado, rechazado), `observacion`.
+*   **Invitado** (`invitado_entrega_fests` → `Models\InvitadoEntregaFest.php`)
+    *   `entrega_fest_id`, `prospecto_entrega_fest_id` (FK única).
+    *   `codigo_invitado` (QR), `cantidad_acompanantes_permitidos`, `confirmado`.
+*   **Acompañante** (`invitado_acompanante_entrega_fests` → `Models\InvitadoAcompananteEntregaFest.php`)
+    *   `invitado_entrega_fest_id`, `dni` (opcional), `nombre`, `apellidos`, `asistio`.
+*   **Asistencia** (`asistencia_entrega_fests` → `Models\AsistenciaEntregaFest.php`)
+    *   `invitado_entrega_fest_id` (unique), `user_id` (quien valida), `fecha_checkin`, `metodo` (qr/manual).
+*   **Envío de Invitación** (`invitado_envio_entrega_fests` → `Models\InvitadoEnvioEntregaFest.php`)
+    *   `invitado_entrega_fest_id`, `canal` (correo/ws/llamada), `estado`, `detalle`, `user_id`, `fecha_envio`.
+
+#### B. Nuevas Tablas Logísticas (Por Implementar)
+*   **Staff** (`staff_entrega_fests` → `Models\StaffEntregaFest.php`)
+    *   `entrega_fest_id`, `user_id` (si es interno), `tipo_personal` (interno/externo).
+    *   `nombre_externo` (si no es usuario ERP), `rol_evento`, `notas`.
+*   **Empresas Partner** (`empresa_entrega_fests` → `Models\EmpresaEntregaFest.php`)
+    *   `entrega_fest_id`, `ruc`, `razon_social`, `servicio_contratado`, `contacto`, `monto_contrato`.
+*   **Transporte** (`transporte_entrega_fests` → `Models\TransporteEntregaFest.php`)
+    *   `entrega_fest_id`, `empresa_transporte`, `placa`, `conductor`, `capacidad`, `costo`.
+
+### 🧠 Fase Modelos y Relaciones
+*   [ ] **Modelos**: Crear `StaffEntregaFest`, `EmpresaEntregaFest`, `TransporteEntregaFest`.
+*   [ ] **Relaciones**: 
+    *   `EntregaFest` → `hasMany` (Prospectos, Invitados, Staff, Empresas, Transporte).
+    *   `Invitado` → `hasMany` (Acompañantes, Envíos).
+    *   `Invitado` → `hasOne` (Asistencia).
+
+### 💻 Fase Componentes Livewire
+*   [ ] **Gestión Administrativa (`EntregaFestEditar`)**:
+    *   Crear pestañas para: **Staff**, **Proveedores** y **Transporte**.
+    *   Implementar mini-CRUDs para agregar/quitar elementos en cada pestaña.
+*   [ ] **Módulo Invitados**:
+    *   Vista de lista con filtros por `estado_envio` y `confirmación`.
+    *   Acción de "Enviar Invitación" que registre en `invitado_envio_entrega_fests`.
+*   [ ] **Formulario Público de Acompañantes**:
+    *   Crear una vista Livewire (fuera del dashboard) donde el invitado ingrese su DNI y complete los datos de sus acompañantes hasta el límite permitido.
+
+---
+
+## 3. 🚀 DESPLIEGUE Y VALIDACIÓN
+*   [ ] **Ejecución de Migraciones**: Actualizar esquema en producción.
+*   [ ] **Generación de QR**: Lógica para generar `codigo_invitado` único.
+*   [ ] **Dashboard de Métricas**:
+    *   Total Invitados vs Asistencia Real (basado en `asistencia_entrega_fests` e `invitado_acompanante_entrega_fests.asistio`).
+    *   Resumen logístico (Costo total de empresas + transporte).
