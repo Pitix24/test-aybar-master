@@ -29,7 +29,8 @@
             set open(val) { menuAbierto = val ? 'perfil' : null } 
         }">
             <button type="button" class="header_dropdown_trigger" @click="open = !open">
-                <img src="{{ asset('assets/imagen/default.jpg') }}" class="header_profile_avatar">
+                <img src="{{ auth()->user()->profile_photo_path ? asset('storage/' . auth()->user()->profile_photo_path) : asset('assets/imagen/default.jpg') }}"
+                    class="header_profile_avatar">
 
                 <div class="header_profile_info">
                     <span>{{ auth()->user()->name }}</span>

@@ -15,6 +15,8 @@ use Livewire\Attributes\Title;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Cache;
+use OpenAI;
 
 #[Layout('layouts.erp.layout-erp')]
 #[Title('Panel de Control - ERP Aybar')]
@@ -22,22 +24,20 @@ class InicioLivewire extends Component
 {
     use WithFileUploads;
 
-    // Propiedades de Perfil
     public $usuario;
     public $name;
     public $email;
     public $photo;
 
-    // Propiedades de Seguridad
     public $password_actual;
     public $password_nuevo;
     public $password_confirmacion;
 
-    // Estadísticas y Datos
     public $metricas = [];
     public $areasUsuario = [];
     public $rolesConPermisos = [];
     public $saludo;
+    public $mensajeBienvenida;
 
     public function mount()
     {
@@ -46,6 +46,7 @@ class InicioLivewire extends Component
         $this->email = $this->usuario->email;
 
         $this->setSaludo();
+        $this->generarMensajeBienvenida();
         $this->cargarMetricas();
         $this->cargarAreasYRoles();
     }
@@ -62,13 +63,53 @@ class InicioLivewire extends Component
         }
     }
 
+    private function generarMensajeBienvenida()
+    {
+        $cacheKey = 'bienvenida_ai_motivacional_v3_' . $this->usuario->id . '_' . date('Ymd_') . (floor(date('H') / 8));
+
+        $this->mensajeBienvenida = Cache::remember($cacheKey, now()->addHours(8), function () {
+            try {
+                $client = OpenAI::client(config('services.openai.key'));
+
+                $roles = $this->usuario->roles->pluck('name')->implode(', ');
+
+                $prompt = "Actúa como la empresa 'Aybar ERP' felicitando a un colaborador estrella.
+                           Usuario: {$this->usuario->name}.
+                           Roles: {$roles}.
+                           Momento del día: {$this->saludo}.
+                           
+                           Instrucciones:
+                           1. NO incluyas un saludo inicial ni el nombre del usuario.
+                           2. Empieza DIRECTAMENTE con un mensaje de reconocimiento y apoyo total.
+                           3. Frase clave: 'Lo estás haciendo muy bien, estamos orgullosos de tu esfuerzo. Sigue adelante porque sabemos que alcanzarás todos tus sueños y metas.'
+                           4. Personaliza el mensaje motivacional de forma humana basándote en su rol ({$roles}).
+                           5. Hazle sentir que su trabajo impacta positivamente y que la empresa está con él.
+                           6. Máximo 180 caracteres. Tono inspirador, cálido y heroico.";
+
+                $response = $client->chat()->create([
+                    'model' => 'gpt-4o-mini',
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'Eres un mentor de productividad experto en gestión de equipos de soporte y validación.'],
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                    'max_tokens' => 120,
+                    'temperature' => 0.8, // Un poco más de creatividad para la motivación
+                ]);
+
+                return $response->choices[0]->message->content;
+            } catch (\Exception $e) {
+                return "¡Hola, {$this->usuario->name}! Es un excelente momento para avanzar con tus gestiones. Revisa tus indicadores y hagamos que hoy sea un día productivo.";
+            }
+        });
+    }
+
     private function cargarMetricas()
     {
         $this->metricas = [
             'tickets_asignados' => Ticket::where('gestor_id', $this->usuario->id)->whereIn('estado_ticket_id', [1, 2])->count(),
             'proximas_citas' => Cita::where('gestor_id', $this->usuario->id)->where('fecha_inicio', '>=', now())->count(),
-            'proyectos_activos' => 0, // Placeholder
-            'participaciones' => $this->usuario->usuariosParticipantes ?? 0 // Placeholder
+            'proyectos_activos' => 0,
+            'participaciones' => $this->usuario->usuariosParticipantes ?? 0
         ];
     }
 
@@ -90,7 +131,7 @@ class InicioLivewire extends Component
     {
         $this->validate([
             'name' => 'required|string|max:255',
-            'photo' => 'nullable|image|max:2048', // 2MB Max
+            'photo' => 'nullable|image|max:2048',
         ]);
 
         $this->usuario->name = $this->name;
@@ -108,7 +149,7 @@ class InicioLivewire extends Component
             'text' => 'Sus datos básicos han sido guardados correctamente.'
         ]);
 
-        $this->photo = null; // Limpiar preview
+        $this->photo = null;
     }
 
     public function actualizarPassword()

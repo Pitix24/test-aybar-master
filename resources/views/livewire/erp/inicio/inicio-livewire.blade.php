@@ -5,8 +5,7 @@
         <div class="g_dashboard_hero_content">
             <h1 class="g_dashboard_hero_title">{{ $saludo }}, <span>{{ $usuario->name }}</span>!</h1>
             <p class="g_dashboard_hero_text">
-                Bienvenido al centro de control de Aybar ERP. Aquí puedes gestionar tu perfil, revisar tus estadísticas
-                y monitorear tus tareas asignadas.
+                {{ $mensajeBienvenida }}
             </p>
         </div>
         <div class="g_dashboard_hero_decor_1"></div>
