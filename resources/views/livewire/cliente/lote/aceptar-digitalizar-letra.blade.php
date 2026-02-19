@@ -35,7 +35,7 @@
         </ul>
     </div>
 
-    <div class="g_resaltado_caja info">
+    <div class="g_resaltado_caja info g_margin_bottom_10">
         <span class="g_resaltado_caja_titulo">Detalle de la cuota</span>
         <div class="informacion_resumen_grid">
             <div class="informacion_resumen_item">
@@ -57,6 +57,66 @@
             </div>
         </div>
     </div>
+
+    @if (Auth::user()->rol === 'admin')
+        <div class="g_panel g_margin_bottom_10">
+            <div class="g_panel_titulo">Información del Cliente (Modo Admin)</div>
+
+            <div class="formulario">
+
+                <p class="g_resaltado_indicacion info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>
+                        Como administrador, puede <strong>completar o corregir los datos</strong> de contacto del cliente
+                        antes de enviar la solicitud.
+                    </span>
+                </p>
+
+                <div class="g_fila g_margin_bottom_10">
+                    <div class="g_columna_12">
+                        <label for="nombres">Nombres completos</label>
+                        <input type="text" id="nombres" wire:model="nombres"
+                            class="g_input @error('nombres') input-error @enderror">
+                        @error('nombres')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="g_fila g_margin_bottom_10">
+                    <div class="g_columna_6">
+                        <label for="dni">DNI/RUC/CE</label>
+                        <input type="text" id="dni" wire:model="dni" class="g_input @error('dni') input-error @enderror">
+                        @error('dni')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="g_columna_6">
+                        <label for="celular">Celular</label>
+                        <input type="text" id="celular" wire:model="celular"
+                            class="g_input @error('celular') input-error @enderror">
+                    </div>
+                </div>
+
+                <div class="g_fila g_margin_bottom_10">
+                    <div class="g_columna_12">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" wire:model="email"
+                            class="g_input @error('email') input-error @enderror">
+                    </div>
+                </div>
+
+                <div class="g_fila g_margin_bottom_10">
+                    <div class="g_columna_12">
+                        <label for="direccion">Dirección</label>
+                        <input type="text" id="direccion" wire:model="direccion"
+                            class="g_input @error('direccion') input-error @enderror">
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="formulario_botones">
         <button wire:click="guardar" class="g_boton guardar g_boton_largo" wire:loading.attr="disabled"

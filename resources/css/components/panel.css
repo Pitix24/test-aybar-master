@@ -4,13 +4,13 @@
     background-clip: border-box;
     border: var(--borde-card);
     border-radius: var(--borde-radius);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /*transition: transform 0.2s ease, box-shadow 0.2s ease;*/
 }
 
-.g_panel:hover {
+/*.g_panel:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
-}
+}*/
 
 .g_panel_titulo {
     font-size: var(--fs-subtitulo);

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Proyecto;
 use App\Models\EstadoSolicitudDigitalizarLetra;
 use Illuminate\Support\Facades\Log;
-use League\Config\Exception\ValidationException;
+use Illuminate\Validation\ValidationException;
 
 class AceptarDigitalizarLetra extends Component
 {
@@ -19,18 +19,37 @@ class AceptarDigitalizarLetra extends Component
     public $unidad_negocio_id = null;
     public $proyecto_id = null;
 
+    // Campos adicionales para Admin
+    public $dni = '';
+    public $nombres = '';
+    public $email = '';
+    public $celular = '';
+    public $direccion = '';
+
     protected function rules()
     {
-        return [
+        $rules = [
             'unidad_negocio_id' => 'required',
             'proyecto_id' => 'required',
         ];
+
+        if (Auth::user()->rol === 'admin') {
+            $rules['dni'] = 'required';
+            $rules['nombres'] = 'required';
+            $rules['email'] = 'required';
+            $rules['celular'] = 'required';
+            $rules['direccion'] = 'required';
+        }
+
+        return $rules;
     }
 
     public function mount($cuota, $lote)
     {
         $this->cuota = $cuota;
         $this->lote = $lote;
+        $this->dni = $this->lote['nit'];
+        $this->nombres = $this->lote['apellidos_nombres'] ?? '';
 
         $proyecto = Proyecto::select('id', 'unidad_negocio_id')
             ->where('slin_id', $this->lote['id_proyecto'])
@@ -47,7 +66,16 @@ class AceptarDigitalizarLetra extends Component
 
     public function guardar()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        }
 
         try {
             DB::beginTransaction();
@@ -101,6 +129,15 @@ class AceptarDigitalizarLetra extends Component
                         ($this->lote['id_etapa'] ?? '') . '-' .
                         ($this->lote['id_manzana'] ?? '') . '-' .
                         ($this->lote['id_lote'] ?? ''),
+
+                    // Campos de Admin
+                    'gestor_id' => Auth::user()->rol === 'admin' ? Auth::id() : null,
+                    'dni' => $this->dni ?: ($this->lote['nit'] ?? null),
+                    'nombres' => $this->nombres ?: null,
+                    'email' => $this->email ?: null,
+                    'celular' => $this->celular ?: null,
+                    'direccion' => $this->direccion ?: null,
+                    'origen' => 'slin',
                 ]
             );
 
