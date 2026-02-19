@@ -1,18 +1,17 @@
 <div class="g_gap_pagina">
     <!-- Fila 1: KPIs -->
     <div class="g_fila">
-        <div class="g_panel_dashboard_grid"
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; width: 100%;">
+        <div class="g_panel_dashboard_grid">
             <div class="g_panel">
-                <div class="g_panel_dashboard">
+                <div class="g_panel_dashboard" style="border-left-color: #0da8dcff;">
                     <div class="g_panel_dashboard_1">
                         <h2>Total Clientes</h2>
                         <p class="g_negrita">{{ number_format($totalClientes) }}</p>
                     </div>
-                    <i class="fa-solid fa-users" style="color: var(--color-primario);"></i>
+                    <i class="fa-solid fa-users" style="color: #0da8dcff;"></i>
                 </div>
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #64748b;">
-                    <span style="color: {{ $crecimientoMensual >= 0 ? '#10B981' : '#EF4444' }}; font-weight: 600;">
+                <div class="g_panel_dashboard_trend">
+                    <span class="g_trend_valor {{ $crecimientoMensual >= 0 ? 'g_trend_up' : 'g_trend_down' }}">
                         <i class="fa-solid fa-arrow-{{ $crecimientoMensual >= 0 ? 'up' : 'down' }}"></i>
                         {{ round($crecimientoMensual, 1) }}%
                     </span>
@@ -21,40 +20,41 @@
             </div>
 
             <div class="g_panel">
-                <div class="g_panel_dashboard">
+                <div class="g_panel_dashboard" style="border-left-color: #10B981;">
                     <div class="g_panel_dashboard_1">
                         <h2>Nuevos este Mes</h2>
                         <p class="g_negrita">{{ $clientesEsteMes }}</p>
                     </div>
                     <i class="fa-solid fa-user-plus" style="color: #10B981;"></i>
                 </div>
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #64748b;">
+                <div class="g_panel_dashboard_trend">
                     Meta mensual: 50 (ejemplo)
                 </div>
             </div>
 
             <div class="g_panel">
-                <div class="g_panel_dashboard">
+                <div class="g_panel_dashboard" style="border-left-color: #3B82F6;">
                     <div class="g_panel_dashboard_1">
                         <h2>Activos / Inactivos</h2>
                         <p class="g_negrita">{{ $clientesActivos }} / {{ $clientesInactivos }}</p>
                     </div>
                     <i class="fa-solid fa-toggle-on" style="color: #3B82F6;"></i>
                 </div>
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #64748b;">
-                    Tasa de actividad: {{ $totalClientes > 0 ? round(($clientesActivos / $totalClientes) * 100, 1) : 0 }}%
+                <div class="g_panel_dashboard_trend">
+                    Tasa de actividad:
+                    {{ $totalClientes > 0 ? round(($clientesActivos / $totalClientes) * 100, 1) : 0 }}%
                 </div>
             </div>
 
             <div class="g_panel">
-                <div class="g_panel_dashboard">
+                <div class="g_panel_dashboard" style="border-left-color: #F59E0B;">
                     <div class="g_panel_dashboard_1">
                         <h2>Email Verificado</h2>
                         <p class="g_negrita">{{ $clientesEmailVerificado['data'][0] }}</p>
                     </div>
                     <i class="fa-solid fa-envelope-circle-check" style="color: #F59E0B;"></i>
                 </div>
-                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #64748b;">
+                <div class="g_panel_dashboard_trend">
                     Pendientes: {{ $clientesEmailVerificado['data'][1] }}
                 </div>
             </div>
@@ -65,11 +65,10 @@
     <div class="g_fila">
         <div class="g_columna_12">
             <div class="g_panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h2 style="font-size: 1.1rem; margin: 0;"><i class="fa-solid fa-chart-line"></i> Tendencia de registros</h2>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 0.85rem; color: #64748b;">Filtrar Mes:</span>
-                        <input type="month" wire:model.live="mesSeleccionado" class="g_input" style="padding: 0.3rem 0.5rem; width: 160px; font-size: 0.9rem;">
+                <div>
+                    <h2><i class="fa-solid fa-chart-line"></i> Tendencia de registros</h2>
+                    <div>
+                        <input type="month" wire:model.live="mesSeleccionado">
                     </div>
                 </div>
                 <div style="height: 250px; width: 100%; position: relative;" wire:ignore>
@@ -168,7 +167,8 @@
                                     <td>
                                         <div>{{ $cliente->created_at->format('d/m/Y') }}</div>
                                         <div style="font-size: 0.75rem; color: #64748b;">
-                                            {{ $cliente->created_at->format('H:i') }}</div>
+                                            {{ $cliente->created_at->format('H:i') }}
+                                        </div>
                                     </td>
                                     <td>
                                         <div style="display: flex; gap: 5px;">
@@ -210,7 +210,7 @@
 
     document.addEventListener('livewire:init', () => {
         const colores = ['#4F46E5', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
-        
+
         Chart.defaults.font.family = "'Instrument Sans', sans-serif";
         Chart.defaults.color = '#64748b';
 
@@ -261,7 +261,7 @@
                     maintainAspectRatio: false,
                     animation: false,
                     plugins: { legend: { display: false } },
-                    scales: { 
+                    scales: {
                         y: { beginAtZero: true, ticks: { precision: 0 } },
                         x: { grid: { display: false } }
                     }
@@ -375,7 +375,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: { 
+                    scales: {
                         x: { beginAtZero: true, max: 100 },
                         y: { grid: { display: false } }
                     }
@@ -398,7 +398,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: { 
+                    scales: {
                         y: { beginAtZero: true, ticks: { stepSize: 5 } },
                         x: { grid: { display: false }, ticks: { font: { size: 9 } } }
                     }
@@ -421,7 +421,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: { 
+                    scales: {
                         y: { beginAtZero: true },
                         x: { grid: { display: false } }
                     }

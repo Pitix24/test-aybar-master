@@ -1,9 +1,15 @@
 .g_panel {
-    padding: 10px;
+    padding: var(--gap-item, 15px);
     background-color: var(--color-light-contraste);
     background-clip: border-box;
     border: var(--borde-card);
     border-radius: var(--borde-radius);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.g_panel:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
 }
 
 .g_panel_titulo {
@@ -34,9 +40,11 @@
 .g_panel_dashboard {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     border-left-width: 4px;
     border-left-style: solid;
-    padding-left: 10px;
+    padding-left: 15px;
+    min-height: 60px;
 }
 
 .g_panel_dashboard_valor {
@@ -45,9 +53,55 @@
 }
 
 .g_panel_dashboard h2 {
-    font-size: var(--fs-subtitulo);
+    font-size: 0.85rem;
     color: var(--color-light-texto);
-    font-weight: var(--fw-bold);
+    opacity: 0.7;
+    font-weight: var(--fw-semibold);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.g_panel_dashboard_trend {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.g_trend_valor {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.g_trend_up {
+    color: #10B981;
+}
+
+.g_trend_down {
+    color: #EF4444;
+}
+
+.g_panel_dashboard p.g_negrita {
+    font-size: 1.5rem;
+    margin: 5px 0 0 0;
+    line-height: 1;
+}
+
+.g_panel_dashboard i {
+    font-size: 1.8rem;
+    opacity: 0.8;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.03);
 }
 
 @media (max-width: 768px) {
