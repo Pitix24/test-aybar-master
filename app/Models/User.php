@@ -67,6 +67,13 @@ class User extends Authenticatable
         return $this->hasOne(Direccion::class);
     }
 
+    public function ticketsParticipantes()
+    {
+        return $this->belongsToMany(Ticket::class, 'ticket_participantes')
+            ->withPivot('activo')
+            ->withTimestamps();
+    }
+
     /**
      * Get the attributes that should be cast.
      *

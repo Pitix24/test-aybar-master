@@ -24,10 +24,11 @@
     font-weight: var(--fw-semibold);
 }
 
-.g_panel_4_grid {
+.g_panel_dashboard_grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
+    width: 100%;
 }
 
 .g_panel_dashboard {
@@ -35,7 +36,7 @@
     justify-content: space-between;
 }
 
-.g_panel_dashboard_1 {
+.g_panel_dashboard_valor {
     display: flex;
     flex-direction: column;
 }
@@ -43,9 +44,5 @@
 @media (max-width: 768px) {
     .g_panel {
         padding: 10px;
-    }
-
-    .g_panel_4_grid {
-        grid-template-columns: repeat(2, 1fr);
     }
 }
