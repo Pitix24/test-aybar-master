@@ -26,7 +26,7 @@
 </head>
 
 <body x-data="xDataLayout()" x-init="initLayout()" x-cloak @keydown.escape.window="closeSidebarLayout()"
-    @keydown.ctrl.a.window.prevent="toggleSidebarLayout()" class="contenedor_layout_general">
+    @keydown.ctrl.q.window.prevent="toggleSidebarLayout()" class="contenedor_layout_general">
 
     <!--MENU PRINCIPAL-->
     @include('layouts.erp.menu-erp')

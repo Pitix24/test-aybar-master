@@ -8,9 +8,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use App\Services\AybarSlinService;
 
 #[Layout('layouts.web.layout-web')]
 class ClienteRegistrarLivewire extends Component
@@ -37,7 +37,7 @@ class ClienteRegistrarLivewire extends Component
         'politica_dos.accepted' => 'Debes aceptar los términos y condiciones.',
     ];
 
-    public function buscarCliente()
+    public function buscarCliente(AybarSlinService $slinService)
     {
         $this->cliente_encontrado = null;
 
@@ -56,19 +56,15 @@ class ClienteRegistrarLivewire extends Component
             return;
         }
 
-        $response = Http::timeout(10)
-            ->acceptJson()
-            ->get("https://aybarcorp.com/slin/cliente/{$this->dni}");
+        $cliente = $slinService->getCliente($this->dni);
 
-        if ($response->failed()) {
+        if (empty($cliente)) {
             session()->flash(
                 'error',
                 'No se pudo validar el DNI en este momento. Intente más tarde.'
             );
             return;
         }
-
-        $cliente = $response->json();
 
         if (
             isset($cliente['error']) &&
@@ -146,7 +142,6 @@ class ClienteRegistrarLivewire extends Component
             return;
         }
     }
-
 
     public function render()
     {

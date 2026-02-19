@@ -21,7 +21,7 @@ class AybarSlinService
     {
         try {
             $response = Http::timeout(10)->get("{$this->baseUrl}/cliente/{$dni}");
-            return $response->successful() ? $response->json() : null;
+            return $response->json();
         } catch (\Exception $e) {
             Log::error("AybarSlinService@getCliente: " . $e->getMessage());
             return null;
@@ -74,6 +74,65 @@ class AybarSlinService
             return $response->successful() ? $response->json() : null;
         } catch (\Exception $e) {
             Log::error("AybarSlinService@getCronogramaEstadoCuenta: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Ver y descargar el comprobante en PDF decodificado desde Base64
+     */
+    public function verComprobante(\Illuminate\Http\Request $request)
+    {
+        $empresa = $request->query('empresa');
+        $comprobante = $request->query('comprobante');
+
+        if (!$empresa || !$comprobante) {
+            abort(400, 'Parámetros inválidos');
+        }
+
+        try {
+            $response = Http::timeout(20)->get("{$this->baseUrl}/comprobante", [
+                'empresa' => $empresa,
+                'comprobante' => $comprobante,
+            ]);
+
+            if ($response->failed()) {
+                abort(404, 'No se pudo obtener el comprobante');
+            }
+
+            $json = $response->json();
+
+            if (empty($json['base64'])) {
+                abort(500, 'Comprobante inválido');
+            }
+
+            $pdfBinary = base64_decode($json['base64']);
+
+            return response($pdfBinary, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="comprobante.pdf"');
+        } catch (\Exception $e) {
+            Log::error("AybarSlinService@verComprobante: " . $e->getMessage());
+            abort(500, 'Error interno al procesar el comprobante');
+        }
+    }
+
+    /**
+     * Guardar evidencia de pago en el sistema externo
+     */
+    public function postGuardarEvidencia(array $params): ?array
+    {
+        try {
+            $url = config('services.slin.url') ?? "{$this->baseUrl}/evidencia";
+
+            $response = Http::acceptJson()
+                ->contentType('application/json')
+                ->timeout(30)
+                ->post($url, $params);
+
+            return $response->successful() ? $response->json() : null;
+        } catch (\Exception $e) {
+            Log::error("AybarSlinService@postGuardarEvidencia: " . $e->getMessage());
             return null;
         }
     }
