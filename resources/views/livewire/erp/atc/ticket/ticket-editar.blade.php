@@ -176,14 +176,16 @@
                     <div class="g_margin_bottom_10">
                         @can('cliente.consultar')
                             <a href="{{ route('erp.cliente.vista.consultar', $ticket->dni) }}" class="g_boton primary">
-                                <i class="fa-solid fa-border-all"></i> Estado cuenta
+                                <i class="fa-solid fa-border-all"></i> Portal cliente
                             </a>
                         @endcan
 
                         @can('cliente.ver')
-                            <a href="{{ route('erp.cliente.vista.ver', $ticket->userCliente->id) }}" class="g_boton info">
-                                <i class="fa-solid fa-circle-user"></i> Perfil
-                            </a>
+                            @if(isset($ticket->userCliente))
+                                <a href="{{ route('erp.cliente.vista.ver', $ticket->userCliente->id) }}" class="g_boton info">
+                                    <i class="fa-solid fa-circle-user"></i> Perfil
+                                </a>
+                            @endif
                         @endcan
                     </div>
                     <div class="g_fila">

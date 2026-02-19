@@ -106,7 +106,7 @@
                          <div class="g_margin_bottom_10">
                             @can('cliente.consultar')
                                 <a href="{{ route('erp.cliente.vista.consultar', $solicitud->userCliente->perfilCliente->dni) }}" class="g_boton primary">
-                                    <i class="fa-solid fa-border-all"></i> Estado cuenta
+                                    <i class="fa-solid fa-border-all"></i> Portal cliente
                                 </a>
                             @endcan
     
