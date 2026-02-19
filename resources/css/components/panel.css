@@ -34,11 +34,20 @@
 .g_panel_dashboard {
     display: flex;
     justify-content: space-between;
+    border-left-width: 4px;
+    border-left-style: solid;
+    padding-left: 10px;
 }
 
 .g_panel_dashboard_valor {
     display: flex;
     flex-direction: column;
+}
+
+.g_panel_dashboard h2 {
+    font-size: var(--fs-subtitulo);
+    color: var(--color-light-texto);
+    font-weight: var(--fw-bold);
 }
 
 @media (max-width: 768px) {

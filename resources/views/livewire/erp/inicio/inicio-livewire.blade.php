@@ -15,7 +15,7 @@
     <div class="g_fila">
         <div class="g_panel_dashboard_grid" style="">
             <div class="g_panel" title="Total tickets históricos">
-                <div class="g_panel_dashboard">
+                <div class="g_panel_dashboard" style="border-left-color: var(--color-primario);">
                     <div class="g_panel_dashboard_1">
                         <h2>Tickets Activo</h2>
                         <p class="g_negrita">{{ $metricas['tickets_asignados'] }}</p>
@@ -25,7 +25,7 @@
             </div>
 
             <div class="g_panel" title="Tickets con estado Cerrado">
-                <div class="g_panel_dashboard">
+                <div class="g_panel_dashboard" style="border-left-color: #10B981;">
                     <div class="g_panel_dashboard_valor">
                         <h2>Citas Próximas</h2>
                         <p class="g_negrita">{{  $metricas['proximas_citas'] }}</p>
@@ -35,7 +35,7 @@
             </div>
 
             <div class="g_panel" title="Tickets que no están cerrados">
-                <div class="g_panel_dashboard">
+                <div class="g_panel_dashboard" style="border-left-color: #3B82F6;">
                     <div class="g_panel_dashboard_valor">
                         <h2>Roles Asignados</h2>
                         <p class="g_negrita">{{ $rolesConPermisos->count() }}</p>
@@ -45,7 +45,7 @@
             </div>
 
             <div class="g_panel" title="Tickets sin cierre con más de 3 días de antigüedad">
-                <div class="g_panel_dashboard">
+                <div class="g_panel_dashboard" style="border-left-color: #EF4444;">
                     <div class="g_panel_dashboard_valor">
                         <h2>Áreas</h2>
                         <p class="g_negrita" style="color: #EF4444;">{{ $areasUsuario->count()}}</p>
