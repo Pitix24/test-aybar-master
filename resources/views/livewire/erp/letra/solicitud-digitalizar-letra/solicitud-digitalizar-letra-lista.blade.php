@@ -135,8 +135,8 @@
                             <td class="g_resumir">{{ $item->manzana }} / {{ $item->lote }}</td>
                             <td class="g_celda_centro">{{ $item->numero_cuota }}</td>
                             <td class="g_negrita g_resumir">{{ $item->codigo_cuota }}</td>
-                            <td class="g_resaltar g_resumir">{{ $item->userCliente?->name ?? '—' }}</td>
-                            <td> {{ $item->userCliente?->perfilCliente?->dni ?? '—' }}</td>
+                            <td class="g_resaltar g_resumir">{{ $item->nombres}}</td>
+                            <td> {{ $item->dni }}</td>
                             <td class="g_celda_centro">
                                 @if ($item->estado)
                                     <span class="g_badge g_badge_soft" style="color: {{ $item->estado->color ?? '#666' }}">
