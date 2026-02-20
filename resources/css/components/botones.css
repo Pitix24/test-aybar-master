@@ -25,69 +25,69 @@
 }
 
 .g_boton.primary {
-    background-color: #635bff;
-    color: white;
+    background-color: var(--color-vivo);
+    color: var(--color-vivo-contraste);
 }
 
 .g_boton.secondary {
-    background-color: #16cdc7;
-    color: white;
+    background-color: var(--color-brillo);
+    color: var(--color-brillo-contraste);
 }
 
 .g_boton.success {
-    background-color: #36c76c;
-    color: white;
+    background-color: var(--color-success);
+    color: var(--color-success-contraste);
 }
 
 .g_boton.danger {
-    background-color: #ff6692;
-    color: white;
+    background-color: var(--color-danger);
+    color: var(--color-danger-contraste);
 }
 
 .g_boton.warning {
-    background-color: #f8c20a;
-    color: white;
+    background-color: var(--color-warning);
+    color: var(--color-warning-contraste);
 }
 
 .g_boton.info {
-    background-color: #46caeb;
-    color: white;
+    background-color: var(--color-info);
+    color: var(--color-info-contraste);
 }
 
 .g_boton.light {
-    background-color: #eff4fa;
-    color: #1a1f36;
-    border: 1px solid #e3e8ee;
+    background-color: var(--color-light);
+    color: var(--color-light-texto);
+    border: 1px solid var(--color-light);
 }
 
 .g_boton.dark {
-    background-color: #0a2540;
-    color: white;
+    background-color: var(--color-oscuro);
+    color: var(--color-oscuro-contraste);
 }
 
 .g_boton.guardar {
-    background-color: #02424e;
-    color: white;
+    background-color: var(--color-primario);
+    color: var(--color-primario-contraste-1);
 }
 
 .g_boton.cancelar {
-    background-color: #ffa726;
-    color: #02424e;
+    background-color: var(--color-secundario);
+    color: var(--color-secundario-contraste-1);
 }
 
 .g_boton.agregar {
-    background-color: #dddbff;
-    color: #02424e;
+    background-color: var(--color-agregar);
+    color: var(--color-agregar-contraste);
 }
 
 .g_boton.pdf {
-    background-color: #ff6692;
-    color: white;
+    background-color: var(--color-pdf);
+    color: var(--color-pdf-contraste);
 }
 
 .g_boton.excel {
-    background-color: #36c76c;
-    color: white;
+    background-color: var(--color-excel);
+    color: var(--color-excel-contraste);
 }
 
 .g_boton_largo {
@@ -111,51 +111,51 @@
 }
 
 .g_accion.ver {
-    color: #f8c20a;
+    color: var(--color-ver);
 }
 
 .g_accion.ver:hover {
-    background-color: #f8c20a15;
+    background-color: var(--background-ver);
 }
 
 .g_accion.editar {
-    color: #46caeb;
+    color: var(--color-editar);
 }
 
 .g_accion.editar:hover {
-    background-color: #46caeb15;
+    background-color: var(--background-editar);
 }
 
 .g_accion.eliminar {
-    color: #ff6692;
+    color: var(--color-eliminar);
 }
 
 .g_accion.eliminar:hover {
-    background-color: #ff669215;
+    background-color: var(--background-eliminar);
 }
 
 .g_accion.info {
-    color: #46caeb;
+    color: var(--color-info);
 }
 
 .g_accion.info:hover {
-    background-color: #46caeb15;
+    background-color: var(--background-info);
 }
 
 .g_accion.alerta {
-    color: #ff6692;
+    color: var(--color-alerta);
 }
 
 .g_accion.alerta:hover {
-    background-color: #ff669215;
+    background-color: var(--background-alerta);
 }
 
 .g_accion.success {
-    color: #36c76c;
+    color: var(--color-success);
 }
 
 .g_accion.success:hover {
-    background-color: #36c76c15;
+    background-color: var(--background-success);
 }
 
 .boton_personalizado {

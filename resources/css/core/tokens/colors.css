@@ -7,7 +7,73 @@
     --color-negro: #333333;
     --color-gris: #e3e3e3;
     --color-blanco: #fff;
-    /* Neutrals */
+
+    --color-primario-contraste-1: #ffffff;
+    --color-primario-contraste-2: #FFA726;
+
+    --color-secundario-contraste-1: #02424E;
+    --color-secundario-contraste-2: #333333;
+
+    --color-success: #36c76c;
+    --background-success: #f0fdf4;
+    --color-success-contraste: #ffffff;
+
+    --color-info: #2196f3;
+    --color-info-strong: #0c4a6e;
+    --background-info: #eff6ff;
+    --color-info-contraste: #ffffff;
+
+    --color-warning: #ff9800;
+    --color-warning-strong: #78350f;
+    --background-warning: #fff7ed;
+    --color-warning-contraste: #ffffff;
+
+    --color-error: #f44336;
+    --color-error-strong: #7f1d1d;
+    --background-error: #fef2f2;
+    --color-error-contraste: #ffffff;
+
+    --color-danger: #ff6692;
+    --background-danger: #fff1f6;
+    --color-danger-contraste: #ffffff;
+
+    --color-light: #f1f5f9;
+    --background-light: #f8fafc;
+    --color-light-contraste: #f1f5f9;
+
+    --color-oscuro: #0a2540;
+    --color-oscuro-contraste: #f1f5f9;
+
+    --color-vivo: #635bff;
+    --background-vivo: #c3c0f8;
+    --color-vivo-contraste: #ffffff;
+
+    --color-brillo: #635bff;
+    --background-brillo: #c3c0f8;
+    --color-brillo-contraste: #ffffff;
+
+    --color-pdf: #ff6692;
+    --color-pdf-contraste: #ffffff;
+
+    --color-excel: #36c76c;
+    --color-excel-contraste: #ffffff;
+
+    --color-ver: #f8c20a;
+    --background-ver: #f8c20a15;
+
+    --color-editar: #46caeb;
+    --background-editar: #46caeb15;
+
+    --color-eliminar: #ff6692;
+    --background-eliminar: #ff669215;
+
+    --color-alerta: #ff6692;
+    --background-alerta: #ff669215;
+
+    --color-agregar: #02424E;
+    --background-agregar: #dddbff;
+
+    /* THEMES */
     --color-light: #fafafa;
     --color-light-texto: #334155;
     --color-light-border: #e2e8f0;
