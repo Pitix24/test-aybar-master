@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 class CitaCrear extends Component
 {
     public ?int $citaPadreId = null; // En rutas se definió como citaPadre? pero aybarcorp usa ticketId

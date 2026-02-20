@@ -40,8 +40,7 @@
                             </div>
 
                             <div class="evento_acciones">
-                                <a href="{{ route('erp.cita.vista.editar', $ev['id']) }}"
-                                    class="g_boton g_boton_soft_primary g_boton_sm">
+                                <a href="{{ route('erp.cita.vista.editar', $ev['id']) }}" class="g_boton primary">
                                     <i class="fa-solid fa-eye"></i> Atender
                                 </a>
                             </div>

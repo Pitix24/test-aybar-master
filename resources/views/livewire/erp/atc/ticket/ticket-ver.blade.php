@@ -10,19 +10,8 @@
                 </a>
             @endcan
 
-            @can('ticket.crear')
-                <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton primary">
-                    Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
-            @endcan
-
-            @can('ticket.derivar')
-                <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton secondary">
-                    Derivar <i class="fa-solid fa-route"></i>
-                </a>
-            @endcan
-
             @can('ticket.editar')
-                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton warning">
+                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton primary">
                     Editar <i class="fa-solid fa-pencil"></i>
                 </a>
             @endcan

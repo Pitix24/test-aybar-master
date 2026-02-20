@@ -18,13 +18,13 @@
             @endcan
 
             @can('ticket.derivar')
-                <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton secondary">
+                <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton success">
                     Derivar <i class="fa-solid fa-route"></i>
                 </a>
             @endcan
 
             @can('cita.crear')
-                <a href="{{ route('erp.cita.vista.crear', $ticket->id) }}" class="g_boton secondary">
+                <a href="{{ route('erp.cita.vista.crear', $ticket->id) }}" class="g_boton cancelar">
                     Crear cita <i class="fa-solid fa-calendar-days"></i></a>
             @endcan
 

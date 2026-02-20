@@ -6,7 +6,7 @@
         <div class="cabecera_control">
             <h2 class="g_negrita">Calendario</h2>
             <div class="control_navegacion">
-                <button wire:click="navegar(-1)" class="g_boton g_boton_light g_boton_icon"><i class="fa-solid fa-chevron-left"></i></button>
+                <button wire:click="navegar(-1)" class="g_boton light"><i class="fa-solid fa-chevron-left"></i></button>
                 <div class="control_periodo">
                     @switch($vista)
                         @case('mes') {{ $fechaActual->translatedFormat('F Y') }} @break
@@ -15,9 +15,9 @@
                         @case('anio') {{ $fechaActual->year }} @break
                     @endswitch
                 </div>
-                <button wire:click="navegar(1)" class="g_boton g_boton_light g_boton_icon"><i class="fa-solid fa-chevron-right"></i></button>
+                <button wire:click="navegar(1)" class="g_boton light"><i class="fa-solid fa-chevron-right"></i></button>
                 
-                <button wire:click="irHoy()" class="g_boton {{ $fechaActual->isToday() && $vista == 'dia' ? 'g_boton_primary' : 'g_boton_light' }}" style="margin-left: 10px;">
+                <button wire:click="irHoy()" class="g_boton {{ $fechaActual->isToday() && $vista == 'dia' ? 'primary' : 'light' }}" style="margin-left: 10px;">
                     Hoy
                 </button>
             </div>
@@ -30,10 +30,6 @@
                 <button wire:click="cambiarVista('semana')" class="{{ $vista === 'semana' ? 'activo' : '' }}">Semana</button>
                 <button wire:click="cambiarVista('dia')" class="{{ $vista === 'dia' ? 'activo' : '' }}">Día</button>
             </div>
-
-            <a href="{{ route('erp.cita.vista.todo') }}" class="g_boton g_boton_dark" style="margin-left: 15px;">
-                Regresar <i class="fa-solid fa-list"></i>
-            </a>
         </div>
     </div>
 

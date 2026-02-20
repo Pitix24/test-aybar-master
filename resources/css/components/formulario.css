@@ -10,6 +10,7 @@
 .formulario input[type="password"],
 .formulario input[type="number"],
 .formulario input[type="date"],
+.formulario input[type="time"],
 .formulario input[type="month"],
 .formulario input[type="datetime-local"],
 .formulario input[type="tel"],

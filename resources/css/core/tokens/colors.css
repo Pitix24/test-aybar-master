@@ -23,10 +23,10 @@
     --background-info: #eff6ff;
     --color-info-contraste: #ffffff;
 
-    --color-warning: #ff9800;
+    --color-warning: #f8c20a;
     --color-warning-strong: #78350f;
     --background-warning: #fff7ed;
-    --color-warning-contraste: #ffffff;
+    --color-warning-contraste: #333333;
 
     --color-error: #f44336;
     --color-error-strong: #7f1d1d;
@@ -48,7 +48,7 @@
     --background-vivo: #c3c0f8;
     --color-vivo-contraste: #ffffff;
 
-    --color-brillo: #635bff;
+    --color-brillo: #16cdc7;
     --background-brillo: #c3c0f8;
     --color-brillo-contraste: #ffffff;
 

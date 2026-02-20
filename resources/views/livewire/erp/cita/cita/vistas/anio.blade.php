@@ -17,7 +17,7 @@
 
             <div class="bloque_contenido">
                 @if($totalMes > 0)
-                    <div class="g_badge g_badge_success">
+                    <div class="g_badge success">
                         <i class="fa-solid fa-calendar-check"></i> {{ $totalMes }} {{ $totalMes == 1 ? 'cita' : 'citas' }}
                     </div>
                 @else
