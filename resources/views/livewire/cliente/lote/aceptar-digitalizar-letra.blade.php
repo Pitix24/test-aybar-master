@@ -1,4 +1,4 @@
-<div class="informacion_contenedor">
+<div>
     @if (session('success'))
         <div class="g_alerta success g_margin_bottom_10">
             <i class="fa-solid fa-circle-check"></i>
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <ul class="informacion_beneficios_lista">
+        <ul class="informacion_beneficios_lista g_margin_bottom_10">
             <li class="informacion_beneficio_item">
                 <i class="fa-solid fa-check-circle"></i> 100% Digital y Seguro
             </li>
@@ -76,7 +76,7 @@
                     <div class="g_columna_12">
                         <label for="nombres">Nombres completos</label>
                         <input type="text" id="nombres" wire:model="nombres"
-                            class="g_input @error('nombres') input-error @enderror">
+                            class="g_input @error('nombres') input-error @enderror" autocomplete="off">
                         @error('nombres')
                             <p class="mensaje_error">{{ $message }}</p>
                         @enderror
@@ -86,7 +86,8 @@
                 <div class="g_fila g_margin_bottom_10">
                     <div class="g_columna_6">
                         <label for="dni">DNI/RUC/CE</label>
-                        <input type="text" id="dni" wire:model="dni" class="g_input @error('dni') input-error @enderror">
+                        <input type="text" id="dni" wire:model="dni" class="g_input @error('dni') input-error @enderror"
+                            autocomplete="off">
                         @error('dni')
                             <p class="mensaje_error">{{ $message }}</p>
                         @enderror
@@ -95,7 +96,10 @@
                     <div class="g_columna_6">
                         <label for="celular">Celular</label>
                         <input type="text" id="celular" wire:model="celular"
-                            class="g_input @error('celular') input-error @enderror">
+                            class="g_input @error('celular') input-error @enderror" autocomplete="off">
+                        @error('celular')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
@@ -103,7 +107,10 @@
                     <div class="g_columna_12">
                         <label for="email">Email</label>
                         <input type="email" id="email" wire:model="email"
-                            class="g_input @error('email') input-error @enderror">
+                            class="g_input @error('email') input-error @enderror" autocomplete="off">
+                        @error('email')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
@@ -111,7 +118,10 @@
                     <div class="g_columna_12">
                         <label for="direccion">Dirección</label>
                         <input type="text" id="direccion" wire:model="direccion"
-                            class="g_input @error('direccion') input-error @enderror">
+                            class="g_input @error('direccion') input-error @enderror" autocomplete="off">
+                        @error('direccion')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -119,14 +129,20 @@
     @endif
 
     <div class="formulario_botones">
-        <button wire:click="guardar" class="g_boton guardar g_boton_largo" wire:loading.attr="disabled"
-            wire:target="guardar">
-            <span wire:loading.remove wire:target="guardar">
-                <i class="fa-solid fa-file-contract"></i> SOLICITAR LETRA DIGITAL
-            </span>
-            <span wire:loading wire:target="guardar">
-                <i class="fa-solid fa-spinner fa-spin"></i> PROCESANDO SOLICITUD...
-            </span>
-        </button>
+        @if (session('success'))
+            <button type="button" class="g_boton cancelar g_boton_largo" wire:click="$dispatch('cerrarModalCavaliOn')">
+                <i class="fa-solid fa-circle-xmark"></i> CERRAR
+            </button>
+        @else
+            <button wire:click="guardar" class="g_boton guardar g_boton_largo" wire:loading.attr="disabled"
+                wire:target="guardar">
+                <span wire:loading.remove wire:target="guardar">
+                    <i class="fa-solid fa-file-contract"></i> SOLICITAR LETRA DIGITAL
+                </span>
+                <span wire:loading wire:target="guardar">
+                    <i class="fa-solid fa-spinner fa-spin"></i> PROCESANDO SOLICITUD...
+                </span>
+            </button>
+        @endif
     </div>
 </div>

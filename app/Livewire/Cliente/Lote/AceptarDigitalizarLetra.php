@@ -36,9 +36,9 @@ class AceptarDigitalizarLetra extends Component
         if (Auth::user()->rol === 'admin') {
             $rules['dni'] = 'required';
             $rules['nombres'] = 'required';
-            $rules['email'] = 'required';
-            $rules['celular'] = 'required';
-            $rules['direccion'] = 'required';
+            $rules['email'] = 'required|email';
+            $rules['celular'] = 'required|min:9';
+            $rules['direccion'] = 'required|min:10';
         }
 
         return $rules;
@@ -69,41 +69,21 @@ class AceptarDigitalizarLetra extends Component
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', [
-                'type' => 'warning',
-                'title' => 'Advertencia',
-                'text' => 'Verifique los errores de los campos resaltados.'
-            ]);
+            session()->flash('error', 'Verifique los errores de los campos resaltados.');
             throw $e;
         }
 
         try {
             DB::beginTransaction();
 
-            // 1. Validar que venga el NIT
-            if (empty($this->lote['nit'])) {
-                throw ValidationException::withMessages([
-                    'cliente' => 'No se pudo identificar al cliente (NIT vacío).'
-                ]);
-            }
+            // 1. Validar que venga el NIT (Opcional, pero útil para identificar)
+            $nit = $this->lote['nit'] ?? null;
 
-            // 2. Buscar cliente por DNI / NIT
-            $cliente = Cliente::where('dni', $this->lote['nit'])->first();
+            // 2. Intentar buscar cliente por DNI / NIT
+            $cliente = $nit ? Cliente::where('dni', $nit)->first() : null;
+            $cliente_id = $cliente ? $cliente->user_id : null;
 
-            if (!$cliente) {
-                throw ValidationException::withMessages([
-                    'cliente' => 'El cliente no existe en el sistema.'
-                ]);
-            }
-
-            // 3. Validar que tenga user asociado
-            if (!$cliente->user_id) {
-                throw ValidationException::withMessages([
-                    'cliente' => 'El cliente no tiene un usuario asociado.'
-                ]);
-            }
-
-            // 4. Guardar solicitud
+            // 4. Guardar solicitud (cliente_id ahora puede ser null)
             SolicitudDigitalizarLetra::updateOrCreate(
                 [
                     'codigo_cuota' => $this->cuota['idCuota'] ?? null,
@@ -111,7 +91,7 @@ class AceptarDigitalizarLetra extends Component
                 [
                     'unidad_negocio_id' => $this->unidad_negocio_id,
                     'proyecto_id' => $this->proyecto_id,
-                    'cliente_id' => $cliente->user_id,
+                    'cliente_id' => $cliente_id,
                     'estado_solicitud_digitalizar_letra_id' => EstadoSolicitudDigitalizarLetra::id(EstadoSolicitudDigitalizarLetra::PENDIENTE) ?? 1,
 
                     'razon_social' => $this->lote['razon_social'] ?? null,
@@ -145,22 +125,20 @@ class AceptarDigitalizarLetra extends Component
 
             session()->flash('success', 'Solicitud enviada correctamente.');
             $this->dispatch('actualizarCronograma');
+
         } catch (ValidationException $e) {
             DB::rollBack();
             throw $e;
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
 
-            Log::error('Error al guardar SolicitudDigitalizarLetra', [
-                'error' => $e->getMessage(),
-                'lote' => $this->lote,
-                'cuota' => $this->cuota,
+            Log::channel('letra')->error("[LETRA] Error al registrar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
             ]);
 
-            $this->dispatch('alertaLivewire', [
-                'title' => 'Error',
-                'text' => 'No se pudo registrar la solicitud.'
-            ]);
+            session()->flash('error', 'No se pudo registrar la solicitud.');
         }
     }
 

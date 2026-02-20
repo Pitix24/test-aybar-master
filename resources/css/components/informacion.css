@@ -1,16 +1,9 @@
-.informacion_contenedor {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
 .informacion_beneficios_lista {
     list-style: none;
     padding: 0;
-    margin: 15px 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 3px;
 }
 
 .informacion_beneficio_item {
@@ -22,7 +15,7 @@
 }
 
 .informacion_beneficio_item i {
-    color: var(--color-success);
+    color: #4caf50;
     font-size: 16px;
 }
 
