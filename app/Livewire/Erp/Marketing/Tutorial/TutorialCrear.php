@@ -110,7 +110,7 @@ class TutorialCrear extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('marketing')->error("[TUTORIAL] Error al crear: " . $e->getMessage(), [
+            Log::channel('tutorial')->error("[TUTORIAL] Error al crear: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()

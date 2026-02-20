@@ -277,6 +277,13 @@ return [
             'days' => 14,
         ],
 
+        'tutorial' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/tutorial.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
