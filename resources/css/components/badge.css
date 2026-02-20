@@ -38,9 +38,9 @@
 }
 
 .g_badge.light {
-    background: var(--color-light);
-    color: var(--color-light-contraste);
-    border-color: var(--color-light);
+    background: var(--color-claro);
+    color: var(--color-claro-contraste);
+    border-color: var(--color-claro);
 }
 
 .g_badge_soft {

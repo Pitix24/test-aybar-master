@@ -15,7 +15,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
+#[Layout('layouts.erp.layout-erp')]
 #[Title('Crear Tutorial')]
 class TutorialCrear extends Component
 {
@@ -36,7 +36,7 @@ class TutorialCrear extends Component
             'video_id' => 'required|string|max:50',
             'orden' => 'required|integer',
             'activo' => 'boolean',
-            'imagen' => 'nullable|image|max:1024',
+            'imagen' => 'required|image|max:1024',
         ];
     }
 
