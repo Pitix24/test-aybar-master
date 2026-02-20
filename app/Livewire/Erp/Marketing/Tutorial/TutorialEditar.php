@@ -10,18 +10,19 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
+#[Layout('layouts.erp.layout-erp')]
 #[Title('Editar Tutorial')]
 class TutorialEditar extends Component
 {
     use WithFileUploads;
 
-    public Tutorial $tutorial;
+    public Tutorial $tutorial_model;
 
     public $titulo;
     public $descripcion;
@@ -30,6 +31,22 @@ class TutorialEditar extends Component
     public $activo;
     public $imagen;
     public $imagenActual;
+
+    public function mount($id)
+    {
+        $this->tutorial_model = Tutorial::findOrFail($id);
+
+        $this->titulo = $this->tutorial_model->titulo;
+        $this->descripcion = $this->tutorial_model->descripcion;
+        $this->video_id = $this->tutorial_model->video_id;
+        $this->orden = $this->tutorial_model->orden;
+        $this->activo = (bool) $this->tutorial_model->activo;
+
+        $miniatura = $this->tutorial_model->miniatura;
+        if ($miniatura) {
+            $this->imagenActual = $miniatura->url ?? asset($miniatura->path);
+        }
+    }
 
     protected function rules()
     {
@@ -43,34 +60,20 @@ class TutorialEditar extends Component
         ];
     }
 
-    protected $validationAttributes = [
-        'titulo' => 'título',
-        'descripcion' => 'descripción',
-        'video_id' => 'ID de video',
-        'orden' => 'orden',
-        'imagen' => 'miniatura',
-    ];
-
-    public function mount(Tutorial $tutorial)
+    protected function validationAttributes()
     {
-        $this->tutorial = $tutorial;
-        $this->titulo = $tutorial->titulo;
-        $this->descripcion = $tutorial->descripcion;
-        $this->video_id = $tutorial->video_id;
-        $this->orden = $tutorial->orden;
-        $this->activo = (bool) $tutorial->activo;
-
-        $miniatura = $tutorial->miniatura;
-        if ($miniatura) {
-            $this->imagenActual = $miniatura->url ?? asset($miniatura->path);
-        }
+        return [
+            'titulo' => 'título',
+            'descripcion' => 'descripción',
+            'video_id' => 'ID de video',
+            'orden' => 'orden',
+            'imagen' => 'miniatura',
+        ];
     }
 
-    public function placeholder()
+    public function updated($propertyName)
     {
-        return <<<'HTML'
-        <x-placeholder />
-        HTML;
+        $this->validateOnly($propertyName);
     }
 
     public function update()
@@ -91,26 +94,25 @@ class TutorialEditar extends Component
         try {
             DB::beginTransaction();
 
-            $this->tutorial->update([
-                'titulo' => $this->titulo,
-                'descripcion' => $this->descripcion,
-                'video_id' => $this->video_id,
+            $this->tutorial_model->update([
+                'titulo' => trim($this->titulo),
+                'descripcion' => trim($this->descripcion),
+                'video_id' => trim($this->video_id),
                 'orden' => $this->orden,
                 'activo' => $this->activo,
             ]);
 
             if ($this->imagen) {
-                // Eliminar anterior si existe
-                if ($this->tutorial->miniatura) {
-                    Storage::disk('public')->delete($this->tutorial->miniatura->path);
-                    $this->tutorial->miniatura->delete();
+                if ($this->tutorial_model->miniatura) {
+                    Storage::disk('public')->delete($this->tutorial_model->miniatura->path);
+                    $this->tutorial_model->miniatura->delete();
                 }
 
                 $path = $this->imagen->store('marketing/tutoriales', 'public');
                 $url = Storage::url($path);
 
                 MarketingArchivo::create([
-                    'archivable_id' => $this->tutorial->id,
+                    'archivable_id' => $this->tutorial_model->id,
                     'archivable_type' => Tutorial::class,
                     'user_id' => auth()->id(),
                     'nombre_original' => $this->imagen->getClientOriginalName(),
@@ -126,14 +128,19 @@ class TutorialEditar extends Component
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
-                'title' => 'Actualizado',
+                'title' => '¡Actualizado!',
                 'text' => 'Tutorial actualizado correctamente.'
             ]);
 
+            $this->tutorial_model->load('miniatura');
+            $this->imagenActual = $this->tutorial_model->miniatura->url ?? asset($this->tutorial_model->miniatura->path);
+            $this->imagen = null;
+
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('marketing')->error("[TUTORIAL] Error en update: " . $e->getMessage(), [
+            Log::channel('tutorial')->error("[TUTORIAL] Error al actualizar: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
+                'target_id' => $this->tutorial_model->id,
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -141,30 +148,31 @@ class TutorialEditar extends Component
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',
-                'text' => 'Ocurrió un error al actualizar el tutorial.'
+                'text' => 'No se pudo actualizar el tutorial.'
             ]);
         }
     }
 
-    public function destroy()
+    #[On('eliminarTutorialOn')]
+    public function eliminarTutorialOn()
     {
         $this->authorize('tutorial.eliminar');
 
         try {
             DB::beginTransaction();
 
-            if ($this->tutorial->miniatura) {
-                Storage::disk('public')->delete($this->tutorial->miniatura->path);
-                $this->tutorial->miniatura->delete();
+            if ($this->tutorial_model->miniatura) {
+                Storage::disk('public')->delete($this->tutorial_model->miniatura->path);
+                $this->tutorial_model->miniatura->delete();
             }
 
-            $this->tutorial->delete();
+            $this->tutorial_model->delete();
 
             DB::commit();
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
-                'title' => 'Éxito',
+                'title' => '¡Eliminado!',
                 'text' => 'Tutorial eliminado correctamente.'
             ]);
 
@@ -172,16 +180,16 @@ class TutorialEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('marketing')->error("[TUTORIAL] Error en destroy: " . $e->getMessage(), [
+            Log::channel('tutorial')->error("[TUTORIAL] Error al eliminar: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
-                'tutorial_id' => $this->tutorial->id,
+                'target_id' => $this->tutorial_model->id,
                 'trace' => $e->getTraceAsString()
             ]);
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',
-                'text' => 'Ocurrió un error al eliminar el tutorial.'
+                'text' => 'No se pudo eliminar el tutorial.'
             ]);
         }
     }
@@ -189,5 +197,12 @@ class TutorialEditar extends Component
     public function render()
     {
         return view('livewire.erp.marketing.tutorial.tutorial-editar');
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }

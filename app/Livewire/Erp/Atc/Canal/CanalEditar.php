@@ -24,7 +24,6 @@ class CanalEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('canal.editar');
         $this->canal_model = Canal::findOrFail($id);
 
         $this->nombre = $this->canal_model->nombre;

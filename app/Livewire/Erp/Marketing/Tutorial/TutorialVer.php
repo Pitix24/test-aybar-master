@@ -9,15 +9,20 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
+#[Layout('layouts.erp.layout-erp')]
 #[Title('Detalle del Tutorial')]
 class TutorialVer extends Component
 {
     public Tutorial $tutorial;
 
-    public function mount(Tutorial $tutorial)
+    public function mount($id)
     {
-        $this->tutorial = $tutorial->load('miniatura');
+        $this->tutorial = Tutorial::findOrFail($id);
+    }
+
+    public function render()
+    {
+        return view('livewire.erp.marketing.tutorial.tutorial-ver');
     }
 
     public function placeholder()
@@ -25,12 +30,5 @@ class TutorialVer extends Component
         return <<<'HTML'
         <x-placeholder />
         HTML;
-    }
-
-    public function render()
-    {
-        $this->authorize('tutorial.ver');
-
-        return view('livewire.erp.marketing.tutorial.tutorial-ver');
     }
 }
