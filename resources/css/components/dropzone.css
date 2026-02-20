@@ -80,3 +80,22 @@
     align-items: center;
     gap: 5px;
 }
+
+.contenedor_dropzone.mediano {
+    height: 160px;
+    cursor: pointer;
+    position: relative;
+}
+
+.g_imagen_actual {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.g_cambiar_imagen {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+}

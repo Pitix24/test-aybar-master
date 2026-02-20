@@ -112,9 +112,8 @@
                         <input type="file" id="tutorialImagen" wire:model="imagen" accept="image/*"
                             style="display: none;">
 
-                        <div class="contenedor_dropzone @error('imagen') dropzone-error @enderror"
-                            onclick="document.getElementById('tutorialImagen').click()"
-                            style="height: 160px; cursor: pointer; position: relative;">
+                        <div class="contenedor_dropzone mediano @error('imagen') dropzone-error @enderror"
+                            onclick="document.getElementById('tutorialImagen').click()">
                             @if ($imagen)
                                 <div class="dropzone_item">
                                     <i class="fa-solid fa-file-image"></i>
@@ -125,10 +124,8 @@
                                     </button>
                                 </div>
                             @elseif ($imagenActual)
-                                <img src="{{ $imagenActual }}"
-                                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
-                                <div
-                                    style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.5); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem;">
+                                <img src="{{ $imagenActual }}" class="g_imagen_actual">
+                                <div class="g_cambiar_imagen g_boton danger">
                                     Click para cambiar
                                 </div>
                             @else
