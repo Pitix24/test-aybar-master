@@ -16,10 +16,14 @@
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    aspect-ratio: 16 / 9;
+    background: #000;
 }
 
 .tutorial_videos_grid .video_thumb img {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
     transition: transform 0.3s ease;
 }
@@ -33,11 +37,12 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     background: rgba(0, 0, 0, 0.65);
     border-radius: 50%;
     transform: translate(-50%, -50%);
+    z-index: 2;
 }
 
 .tutorial_videos_grid .play_icon::before {
@@ -47,16 +52,17 @@
     left: 55%;
     transform: translate(-50%, -50%);
     border-style: solid;
-    border-width: 14px 0 14px 22px;
+    border-width: 12px 0 12px 20px;
     border-color: transparent transparent transparent #fff;
 }
 
 /* Title */
 .tutorial_videos_grid .video_title {
     margin-top: 10px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     text-align: center;
+    color: var(--color-oscuro);
 }
 
 [x-cloak] {
@@ -68,24 +74,28 @@
     position: fixed;
     z-index: 9999;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
 }
+
 .video_modal_content {
     position: relative;
-    width: 90%;
-    max-width: 900px;
+    width: 100%;
+    max-width: 1000px;
     background: #000;
-    border-radius: 12px;
+    border-radius: 15px;
     overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 /* Iframe */
 .video_modal_content iframe {
     width: 100%;
-    height: 500px;
+    aspect-ratio: 16 / 9;
+    display: block;
 }
 
 /* Close button */
@@ -103,9 +113,5 @@
 @media (max-width: 768px) {
     .tutorial_videos_grid {
         grid-template-columns: 1fr;
-    }
-
-    .video_modal_content iframe {
-        height: 250px;
     }
 }

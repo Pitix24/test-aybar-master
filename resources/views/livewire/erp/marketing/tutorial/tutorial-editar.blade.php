@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <form wire:submit="update" class="formulario g_gap_pagina">
+    <form wire:submit="update" class="formulario g_panel g_gap_pagina">
         <div class="g_fila">
             <div class="g_columna_8">
                 <div class="g_panel">
@@ -83,24 +83,6 @@
                             class="@error('descripcion') input-error @enderror"></textarea>
                         @error('descripcion') <p class="mensaje_error">{{ $message }}</p> @enderror
                     </div>
-
-
-                    <div class="formulario_botones">
-                        @can('tutorial.editar')
-                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
-                                <span wire:loading.remove wire:target="update">
-                                    <i class="fa-solid fa-save"></i> Actualizar
-                                </span>
-                                <span wire:loading wire:target="update">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                                </span>
-                            </button>
-                        @endcan
-
-                        <button type="button" class="g_boton cancelar" onclick="history.back()">
-                            <i class="fa-solid fa-times"></i> Cancelar
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -144,6 +126,23 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="formulario_botones">
+            @can('tutorial.editar')
+                <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                    <span wire:loading.remove wire:target="update">
+                        <i class="fa-solid fa-save"></i> Actualizar
+                    </span>
+                    <span wire:loading wire:target="update">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                    </span>
+                </button>
+            @endcan
+
+            <button type="button" class="g_boton cancelar" onclick="history.back()">
+                <i class="fa-solid fa-times"></i> Cancelar
+            </button>
         </div>
     </form>
 

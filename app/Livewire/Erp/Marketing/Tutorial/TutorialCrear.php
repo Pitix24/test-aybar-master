@@ -106,7 +106,7 @@ class TutorialCrear extends Component
                 'text' => 'Tutorial creado correctamente.'
             ]);
 
-            return redirect()->route('erp.tutorial.vista.editar', $tutorial->id);
+            return redirect()->route('erp.tutorial.vista.todo');
 
         } catch (\Exception $e) {
             DB::rollBack();
