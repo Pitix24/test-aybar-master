@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->foreignId('proyecto_id')->constrained('proyectos')->cascadeOnDelete();
             $table->foreignId('cliente_id')->nullable()->constrained('users')->nullOnDelete(); //user_id
             $table->foreignId('gestor_id')->nullable()->constrained('users')->nullOnDelete(); //asignado
+            $table->foreignId('adjuntado_por_id')->nullable()->constrained('users')->nullOnDelete(); //quien subio la evidencia
             $table->foreignId('estado_solicitud_evidencia_pago_id')->default(1)->constrained('estado_solicitud_evidencia_pagos', indexName: 'sol_evid_pago_estado_fk')->onDelete('restrict');
 
             // Identidad de la cuota

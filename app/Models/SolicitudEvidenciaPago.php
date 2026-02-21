@@ -16,6 +16,7 @@ class SolicitudEvidenciaPago extends Model
         'proyecto_id',
         'cliente_id',
         'gestor_id',
+        'adjuntado_por_id',
         'estado_solicitud_evidencia_pago_id',
 
         'razon_social',

@@ -87,6 +87,16 @@
                     </button>
                 @endcan
 
+                @can('solicitud-digitalizar-letra.ejecutar-cron-letra')
+                    <button wire:click="ejecutarCronLetra" class="g_boton warning" wire:loading.attr="disabled"
+                        wire:target="ejecutarCronLetra">
+                        <span wire:loading.remove wire:target="ejecutarCronLetra">Ejecutar Cron Letra <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="ejecutarCronLetra">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
                 <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>

@@ -115,6 +115,50 @@
                 </div>
 
                 <div class="g_fila g_margin_bottom_10">
+                    <div class="g_columna_4">
+                        <label for="region_id">Región</label>
+                        <select id="region_id" wire:model.live="region_id"
+                            class="g_input @error('region_id') input-error @enderror">
+                            <option value="">Seleccione...</option>
+                            @foreach ($regions as $region)
+                                <option value="{{ $region->id }}">{{ $region->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('region_id')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="g_columna_4">
+                        <label for="provincia_id">Provincia</label>
+                        <select id="provincia_id" wire:model.live="provincia_id"
+                            class="g_input @error('provincia_id') input-error @enderror">
+                            <option value="">Seleccione...</option>
+                            @foreach ($provincias as $provincia)
+                                <option value="{{ $provincia->id }}">{{ $provincia->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('provincia_id')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="g_columna_4">
+                        <label for="distrito_id">Distrito</label>
+                        <select id="distrito_id" wire:model="distrito_id"
+                            class="g_input @error('distrito_id') input-error @enderror">
+                            <option value="">Seleccione...</option>
+                            @foreach ($distritos as $distrito)
+                                <option value="{{ $distrito->id }}">{{ $distrito->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('distrito_id')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="g_fila g_margin_bottom_10">
                     <div class="g_columna_12">
                         <label for="direccion">Dirección</label>
                         <input type="text" id="direccion" wire:model="direccion"

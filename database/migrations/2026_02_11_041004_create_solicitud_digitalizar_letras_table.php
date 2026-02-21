@@ -44,6 +44,9 @@ return new class extends Migration {
             $table->string('email')->nullable();
             $table->string('celular')->nullable();
             $table->string('direccion')->nullable();
+            $table->string('region')->nullable();
+            $table->string('provincia')->nullable();
+            $table->string('distrito')->nullable();
             $table->string('origen')->default('portal')->nullable(); //antiguo:clientes_2 o slin
 
             //SUPERVISOR

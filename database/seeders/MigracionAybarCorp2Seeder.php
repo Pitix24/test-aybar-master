@@ -15,12 +15,11 @@ class MigracionAybarCorp2Seeder extends Seeder
         $dbDestino = 'aybar';
         $dbOrigen = 'aybarcorp';
 
-        DB::transaction(function () use ($dbDestino, $dbOrigen) {
 
-            /* --- MODULO USUARIO --- */
-            $this->command->info('Migrando Módulo Usuario...');
+        /* --- MODULO USUARIO --- */
+        $this->command->info('Migrando Módulo Usuario...');
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.users (
                     id, name, email, email_verified_at, password, must_change_password, 
                     password_changed_at, profile_photo_path, rol, politica_uno, 
@@ -34,7 +33,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE au.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.model_has_roles (role_id, model_type, model_id)
                 SELECT 1, 'App\\Models\\User', u.id
                 FROM {$dbDestino}.users u
@@ -45,7 +44,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                     )
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.clientes (
                     id, user_id, nombre, email, dni, telefono_principal, 
                     telefono_alternativo, created_at, updated_at, deleted_at
@@ -58,7 +57,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE u.rol = 'cliente' AND ac.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.direccions (
                     id, user_id, region_id, provincia_id, distrito_id, direccion, 
                     direccion_numero, opcional, codigo_postal, referencia, created_at, updated_at
@@ -72,10 +71,10 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE u.rol = 'cliente' AND ad.id IS NULL
             ");
 
-            //MODULO NEGOCIO
-            $this->command->info('Migrando Módulo Negocio...');
+        //MODULO NEGOCIO
+        $this->command->info('Migrando Módulo Negocio...');
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.unidad_negocios (
                     id, nombre, razon_social, ruc, slin_id, cavali_girador_tipo_documento,
                     cavali_girador_documento, cavali_girador_nombre, cavali_girador_apellido,
@@ -87,12 +86,12 @@ class MigracionAybarCorp2Seeder extends Seeder
                 FROM {$dbOrigen}.unidad_negocios
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.grupo_proyectos (id, nombre, activo, created_at, updated_at, deleted_at)
                 SELECT id, nombre, activo, created_at, updated_at, deleted_at FROM {$dbOrigen}.grupo_proyectos
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.proyectos (
                     id, unidad_negocio_id, grupo_proyecto_id, nombre, slin_id, activo, 
                     created_at, updated_at, deleted_at
@@ -104,7 +103,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE ap.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.areas (
                     id, nombre, email_buzon, color, icono, activo, created_at, updated_at, deleted_at
                 )
@@ -115,7 +114,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE aa.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.area_user (id, area_id, user_id, is_principal, created_at, updated_at)
                 SELECT au.id, au.area_id, au.user_id, au.is_principal, au.created_at, au.updated_at
                 FROM {$dbOrigen}.area_user au
@@ -123,10 +122,10 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE a2.id IS NULL
             ");
 
-            //MODULO ATC
-            $this->command->info('Migrando Módulo ATC...');
+        //MODULO ATC
+        $this->command->info('Migrando Módulo ATC...');
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.tipo_solicituds (id, nombre, tiempo_solucion, activo, created_at, updated_at, deleted_at)
                 SELECT ts.id, ts.nombre, ts.tiempo_solucion, ts.activo, ts.created_at, ts.updated_at, ts.deleted_at
                 FROM {$dbOrigen}.tipo_solicituds ts
@@ -134,7 +133,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE ats.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.sub_tipo_solicituds (
                     id, tipo_solicitud_id, nombre, tiempo_solucion, activo, created_at, updated_at, deleted_at
                 )
@@ -145,7 +144,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE asts.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.area_tipo_solicitud (id, area_id, tipo_solicitud_id, created_at, updated_at)
                 SELECT ats.id, ats.area_id, ats.tipo_solicitud_id, ats.created_at, ats.updated_at
                 FROM {$dbOrigen}.area_tipo_solicitud ats
@@ -153,7 +152,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE a2.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.estado_tickets (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
                 SELECT etc.id, etc.nombre, etc.color, etc.icono, etc.activo, etc.created_at, etc.updated_at, etc.deleted_at
                 FROM {$dbOrigen}.estado_tickets etc
@@ -161,7 +160,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE aet.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.prioridad_tickets (
                     id, nombre, tiempo_permitido, color, icono, activo, created_at, updated_at, deleted_at
                 )
@@ -172,7 +171,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE pta.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.canals (id, nombre, activo, created_at, updated_at, deleted_at)
                 SELECT c2.id, c2.nombre, c2.activo, c2.created_at, c2.updated_at, c2.deleted_at
                 FROM {$dbOrigen}.canals c2
@@ -180,7 +179,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE c1.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.tickets (
                     id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, area_id, 
                     ticket_padre_id, tipo_solicitud_id, sub_tipo_solicitud_id, canal_id, 
@@ -200,7 +199,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE at.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.ticket_archivos (
                     id, archivable_type, archivable_id, user_id, nombre_original, 
                     path, url, titulo, descripcion, extension, size, mime_type, 
@@ -213,7 +212,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 FROM {$dbOrigen}.archivos a
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.ticket_historials (id, ticket_id, user_id, accion, detalle, created_at, updated_at)
                 SELECT th.id, th.ticket_id, th.user_id, th.accion, th.detalle, th.created_at, th.updated_at
                 FROM {$dbOrigen}.ticket_historials th
@@ -221,7 +220,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE th.deleted_at IS NULL AND ath.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.ticket_derivados (
                     id, ticket_id, de_area_id, a_area_id, usuario_deriva_id, 
                     usuario_recibe_id, motivo, created_at, updated_at, deleted_at
@@ -233,14 +232,14 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE atd.id IS NULL
             ");
 
-            //MODULO CITAS
-            $this->command->info('Migrando Módulo Citas...');
+        //MODULO CITAS
+        $this->command->info('Migrando Módulo Citas...');
 
-            DB::statement("DROP TABLE IF EXISTS {$dbDestino}.clientes_2");
-            DB::statement("CREATE TABLE {$dbDestino}.clientes_2 LIKE {$dbOrigen}.clientes_2");
-            DB::statement("INSERT INTO {$dbDestino}.clientes_2 SELECT * FROM {$dbOrigen}.clientes_2");
+        DB::statement("DROP TABLE IF EXISTS {$dbDestino}.clientes_2");
+        DB::statement("CREATE TABLE {$dbDestino}.clientes_2 LIKE {$dbOrigen}.clientes_2");
+        DB::statement("INSERT INTO {$dbDestino}.clientes_2 SELECT * FROM {$dbOrigen}.clientes_2");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.motivo_citas (id, nombre, activo, created_at, updated_at, deleted_at)
                 SELECT mc.id, mc.nombre, mc.activo, mc.created_at, mc.updated_at, mc.deleted_at
                 FROM {$dbOrigen}.motivo_citas mc
@@ -248,7 +247,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE mc2.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.estado_citas (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
                 SELECT ec.id, ec.nombre, ec.color, ec.icono, ec.activo, ec.created_at, ec.updated_at, ec.deleted_at
                 FROM {$dbOrigen}.estado_citas ec
@@ -256,7 +255,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE ec2.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.sedes (id, nombre, direccion, activo, created_at, updated_at, deleted_at)
                 SELECT s.id, s.nombre, s.direccion, s.activo, s.created_at, s.updated_at, s.deleted_at
                 FROM {$dbOrigen}.sedes s
@@ -264,7 +263,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE sc.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.citas (
                     id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, area_id, 
                     ticket_id, usuario_crea_id, sede_id, motivo_cita_id, estado_cita_id, 
@@ -284,10 +283,10 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE cc.id IS NULL
             ");
 
-            //MODULO BACKOFFICE
-            $this->command->info('Migrando Módulo Backoffice...');
+        //MODULO BACKOFFICE
+        $this->command->info('Migrando Módulo Backoffice...');
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.estado_solicitud_evidencia_pagos (id, nombre, color, icono, activo, created_at, updated_at, deleted_at)
                 SELECT e2.id, e2.nombre, e2.color, e2.icono, e2.activo, e2.created_at, e2.updated_at, e2.deleted_at
                 FROM {$dbOrigen}.estado_evidencia_pagos e2
@@ -295,7 +294,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE e1.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.solicitud_evidencia_pagos (
                     id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, 
                     estado_solicitud_evidencia_pago_id, lote_completo, codigo_cuota, razon_social, 
@@ -320,7 +319,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE s1.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.evidencia_pagos (
                     id, solicitud_evidencia_pago_id, estado_solicitud_evidencia_pago_id, path, 
                     url, extension, numero_operacion, banco, monto, fecha, es_reenvio, 
@@ -335,7 +334,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE e1.id IS NULL
             ");
 
-            DB::statement("
+        DB::statement("
     INSERT INTO {$dbDestino}.solicitud_evidencia_pago_emails (
         id,
         solicitud_evidencia_pago_id,
@@ -365,32 +364,32 @@ class MigracionAybarCorp2Seeder extends Seeder
     WHERE c1.id IS NULL
 ");
 
-            /*DB::statement("
-                INSERT INTO {$dbDestino}.evidencia_pago_antiguos (
-                    id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, imagen_url, 
-                    operacion_numero, operacion_hora, `union`, cuota_fija, monto, pago_de, 
-                    codigo_cuenta, nombre_archivo, moneda, medio_pago, fecha_deposito, 
-                    observacion, estado_evidencia_pago_id, estado_registro, dni_cliente, 
-                    codigo_cliente, nombres_cliente, razon_social, proyecto_nombre, 
-                    etapa, lote, numero_cuota, gestor, fecha_registro, usuario_valida_id, 
-                    validador, fecha_validacion, created_by, updated_by, deleted_by, created_at, updated_at
-                )
-                SELECT e2.id, e2.unidad_negocio_id, e2.proyecto_id, e2.cliente_id, e2.gestor_id, e2.imagen_url,
-                    e2.operacion_numero, e2.operacion_hora, e2.`union`, e2.cuota_fija, e2.monto, e2.pago_de,
-                    e2.codigo_cuenta, e2.nombre_archivo, e2.moneda, e2.medio_pago, e2.fecha_deposito,
-                    e2.observacion, e2.estado_evidencia_pago_id, e2.estado_registro, e2.dni_cliente,
-                    e2.codigo_cliente, e2.nombres_cliente, e2.razon_social, e2.proyecto_nombre,
-                    e2.etapa, e2.lote, e2.numero_cuota, e2.gestor, e2.fecha_registro, e2.usuario_valida_id,
-                    e2.validador, e2.fecha_validacion, e2.created_by, e2.updated_by, e2.deleted_by, e2.created_at, e2.updated_at
-                FROM {$dbOrigen}.evidencia_pago_antiguos e2
-                LEFT JOIN {$dbDestino}.evidencia_pago_antiguos e1 ON e1.id = e2.id
-                WHERE e1.id IS NULL
-            ");*/
+        /*DB::statement("
+            INSERT INTO {$dbDestino}.evidencia_pago_antiguos (
+                id, unidad_negocio_id, proyecto_id, cliente_id, gestor_id, imagen_url, 
+                operacion_numero, operacion_hora, `union`, cuota_fija, monto, pago_de, 
+                codigo_cuenta, nombre_archivo, moneda, medio_pago, fecha_deposito, 
+                observacion, estado_evidencia_pago_id, estado_registro, dni_cliente, 
+                codigo_cliente, nombres_cliente, razon_social, proyecto_nombre, 
+                etapa, lote, numero_cuota, gestor, fecha_registro, usuario_valida_id, 
+                validador, fecha_validacion, created_by, updated_by, deleted_by, created_at, updated_at
+            )
+            SELECT e2.id, e2.unidad_negocio_id, e2.proyecto_id, e2.cliente_id, e2.gestor_id, e2.imagen_url,
+                e2.operacion_numero, e2.operacion_hora, e2.`union`, e2.cuota_fija, e2.monto, e2.pago_de,
+                e2.codigo_cuenta, e2.nombre_archivo, e2.moneda, e2.medio_pago, e2.fecha_deposito,
+                e2.observacion, e2.estado_evidencia_pago_id, e2.estado_registro, e2.dni_cliente,
+                e2.codigo_cliente, e2.nombres_cliente, e2.razon_social, e2.proyecto_nombre,
+                e2.etapa, e2.lote, e2.numero_cuota, e2.gestor, e2.fecha_registro, e2.usuario_valida_id,
+                e2.validador, e2.fecha_validacion, e2.created_by, e2.updated_by, e2.deleted_by, e2.created_at, e2.updated_at
+            FROM {$dbOrigen}.evidencia_pago_antiguos e2
+            LEFT JOIN {$dbDestino}.evidencia_pago_antiguos e1 ON e1.id = e2.id
+            WHERE e1.id IS NULL
+        ");*/
 
-            //MODULO LETRAS
-            $this->command->info('Migrando Módulo Letras...');
+        //MODULO LETRAS
+        $this->command->info('Migrando Módulo Letras...');
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.estado_solicitud_digitalizar_letras (id, nombre, color, icono, activo, created_at, updated_at)
                 VALUES (1, 'PENDIENTE', NULL, NULL, 1, NOW(), NOW()),
                        (2, 'RECHAZADO', NULL, NULL, 1, NOW(), NOW()),
@@ -399,7 +398,7 @@ class MigracionAybarCorp2Seeder extends Seeder
                 ON DUPLICATE KEY UPDATE nombre = VALUES(nombre)
             ");
 
-            DB::statement("
+        DB::statement("
                 INSERT INTO {$dbDestino}.solicitud_digitalizar_letras (
                     id, unidad_negocio_id, proyecto_id, cliente_id, lote_completo, 
                     codigo_cuota, razon_social, nombre_proyecto, etapa, manzana, 
@@ -415,7 +414,6 @@ class MigracionAybarCorp2Seeder extends Seeder
                 WHERE s1.id IS NULL
             ");
 
-            $this->command->info('✓ ¡Migración completada con éxito!');
-        });
+        $this->command->info('✓ ¡Migración completada con éxito!');
     }
 }

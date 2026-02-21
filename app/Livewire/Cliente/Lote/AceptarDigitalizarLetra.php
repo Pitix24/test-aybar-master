@@ -3,6 +3,9 @@
 namespace App\Livewire\Cliente\Lote;
 
 use App\Models\Cliente;
+use App\Models\Distrito;
+use App\Models\Provincia;
+use App\Models\Region;
 use Livewire\Component;
 use App\Models\SolicitudDigitalizarLetra;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +28,13 @@ class AceptarDigitalizarLetra extends Component
     public $email = '';
     public $celular = '';
     public $direccion = '';
+    public $region_id = '';
+    public $provincia_id = '';
+    public $distrito_id = '';
+
+    public $regions = [];
+    public $provincias = [];
+    public $distritos = [];
 
     protected function rules()
     {
@@ -39,6 +49,9 @@ class AceptarDigitalizarLetra extends Component
             $rules['email'] = 'required|email';
             $rules['celular'] = 'required|min:9';
             $rules['direccion'] = 'required|min:10';
+            $rules['region_id'] = 'required';
+            $rules['provincia_id'] = 'required';
+            $rules['distrito_id'] = 'required';
         }
 
         return $rules;
@@ -62,6 +75,24 @@ class AceptarDigitalizarLetra extends Component
             $this->proyecto_id = $proyecto->id;
             $this->unidad_negocio_id = $proyecto->unidad_negocio_id;
         }
+
+        if (Auth::user()->rol === 'admin') {
+            $this->regions = Region::all();
+        }
+    }
+
+    public function updatedRegionId($value)
+    {
+        $this->provincia_id = '';
+        $this->distrito_id = '';
+        $this->distritos = [];
+        $this->provincias = $value ? Provincia::where('region_id', $value)->get() : [];
+    }
+
+    public function updatedProvinciaId($value)
+    {
+        $this->distrito_id = '';
+        $this->distritos = $value ? Distrito::where('provincia_id', $value)->get() : [];
     }
 
     public function guardar()
@@ -76,14 +107,20 @@ class AceptarDigitalizarLetra extends Component
         try {
             DB::beginTransaction();
 
-            // 1. Validar que venga el NIT (Opcional, pero útil para identificar)
             $nit = $this->lote['nit'] ?? null;
-
-            // 2. Intentar buscar cliente por DNI / NIT
             $cliente = $nit ? Cliente::where('dni', $nit)->first() : null;
             $cliente_id = $cliente ? $cliente->user_id : null;
 
-            // 4. Guardar solicitud (cliente_id ahora puede ser null)
+            $region_nombre = '';
+            $provincia_nombre = '';
+            $distrito_nombre = '';
+
+            if (Auth::user()->rol === 'admin') {
+                $region_nombre = Region::find($this->region_id)?->nombre ?? '';
+                $provincia_nombre = Provincia::find($this->provincia_id)?->nombre ?? '';
+                $distrito_nombre = Distrito::find($this->distrito_id)?->nombre ?? '';
+            }
+
             SolicitudDigitalizarLetra::updateOrCreate(
                 [
                     'codigo_cuota' => $this->cuota['idCuota'] ?? null,
@@ -117,6 +154,9 @@ class AceptarDigitalizarLetra extends Component
                     'email' => $this->email ?: null,
                     'celular' => $this->celular ?: null,
                     'direccion' => $this->direccion ?: null,
+                    'region' => $region_nombre,
+                    'provincia' => $provincia_nombre,
+                    'distrito' => $distrito_nombre,
                     'origen' => 'slin',
                 ]
             );

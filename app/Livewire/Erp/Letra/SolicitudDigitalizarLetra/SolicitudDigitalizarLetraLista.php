@@ -14,6 +14,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Exports\Letra\SolicitudDigitalizarLetraExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\GenerarEnviosCavaliDiariosJob;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -107,6 +108,27 @@ class SolicitudDigitalizarLetraLista extends Component
         $this->fecha_fin = now()->format('Y-m-d');
         $this->perPage = 20;
         $this->resetPage();
+    }
+
+    public function ejecutarCronLetra()
+    {
+        $this->authorize('solicitud-digitalizar-letra.ejecutar-cron-letra');
+
+        try {
+            GenerarEnviosCavaliDiariosJob::dispatch();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Proceso Iniciado',
+                'text' => 'El cron de letras ha sido enviado a la cola de ejecución correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo iniciar el proceso: ' . $e->getMessage()
+            ]);
+        }
     }
 
     public function exportExcelFiltro()
