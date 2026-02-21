@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Erp\Letra\SolicitudDigitalizarLetra;
 
+use App\Jobs\ValidarEnviosCavaliDiariosJob;
 use App\Models\EstadoSolicitudDigitalizarLetra;
 use App\Models\Proyecto;
 use App\Models\SolicitudDigitalizarLetra;
@@ -115,12 +116,33 @@ class SolicitudDigitalizarLetraLista extends Component
         $this->authorize('solicitud-digitalizar-letra.ejecutar-cron-letra');
 
         try {
-            GenerarEnviosCavaliDiariosJob::dispatch();
+            GenerarEnviosCavaliDiariosJob::dispatchSync();
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
-                'title' => 'Proceso Iniciado',
-                'text' => 'El cron de letras ha sido enviado a la cola de ejecución correctamente.'
+                'title' => 'Proceso Completado',
+                'text' => 'El cron de letras se ha ejecutado exitosamente.'
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo iniciar el proceso: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function validarCronLetra()
+    {
+        $this->authorize('solicitud-digitalizar-letra.validar-cron-letra');
+
+        try {
+            ValidarEnviosCavaliDiariosJob::dispatchSync();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Proceso Completado',
+                'text' => 'El cron de letras se ha ejecutado exitosamente.'
             ]);
         } catch (\Exception $e) {
             $this->dispatch('alertaLivewire', [

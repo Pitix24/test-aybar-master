@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, fecha_inicio, fecha_fin, resetFiltros, exportExcelFiltro, exportExcelTodo, gotoPage, nextPage, previousPage"
+        wire:target="buscar, perPage, estado_id, unidad_negocio_id, proyecto_id, fecha_inicio, fecha_fin, resetFiltros, exportExcelFiltro, validarCronLetra, ejecutarCronLetra, exportExcelTodo, gotoPage, nextPage, previousPage"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -10,6 +10,26 @@
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
+
+            @can('solicitud-digitalizar-letra.ejecutar-cron-letra')
+                <button wire:click="ejecutarCronLetra" class="g_boton primary" wire:loading.attr="disabled"
+                    wire:target="ejecutarCronLetra">
+                    <span wire:loading.remove wire:target="ejecutarCronLetra">Ejecutar Cron Letra <i
+                            class="fa-solid fa-file-export"></i></span>
+                    <span wire:loading wire:target="ejecutarCronLetra">Ejecutando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+            @endcan
+
+            @can('solicitud-digitalizar-letra.validar-cron-letra')
+                <button wire:click="validarCronLetra" class="g_boton warning" wire:loading.attr="disabled"
+                    wire:target="validarCronLetra">
+                    <span wire:loading.remove wire:target="validarCronLetra">Validar Cron Letra <i
+                            class="fa-solid fa-file-export"></i></span>
+                    <span wire:loading wire:target="validarCronLetra">Validando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+            @endcan
         </div>
     </div>
 
@@ -83,16 +103,6 @@
                         <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
                                 class="fa-solid fa-file-export"></i></span>
                         <span wire:loading wire:target="exportExcelTodo">Generando... <i
-                                class="fa-solid fa-spinner fa-spin"></i></span>
-                    </button>
-                @endcan
-
-                @can('solicitud-digitalizar-letra.ejecutar-cron-letra')
-                    <button wire:click="ejecutarCronLetra" class="g_boton warning" wire:loading.attr="disabled"
-                        wire:target="ejecutarCronLetra">
-                        <span wire:loading.remove wire:target="ejecutarCronLetra">Ejecutar Cron Letra <i
-                                class="fa-solid fa-file-export"></i></span>
-                        <span wire:loading wire:target="ejecutarCronLetra">Generando... <i
                                 class="fa-solid fa-spinner fa-spin"></i></span>
                     </button>
                 @endcan
