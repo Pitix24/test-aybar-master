@@ -12,6 +12,30 @@
             <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
+
+            @can('solicitud-digitalizar-letra.ejecutar-cron-letra')
+                @if($solicitud->estado_solicitud_digitalizar_letra_id === \App\Models\EstadoSolicitudDigitalizarLetra::id(\App\Models\EstadoSolicitudDigitalizarLetra::PENDIENTE))
+                    <button wire:click="enviarIndividual" class="g_boton primary" wire:loading.attr="disabled"
+                        wire:target="enviarIndividual">
+                        <span wire:loading.remove wire:target="enviarIndividual">Enviar a Digitalizar <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="enviarIndividual">Enviando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endif
+            @endcan
+
+            @can('solicitud-digitalizar-letra.validar-cron-letra')
+                @if($solicitud->estado_solicitud_digitalizar_letra_id === \App\Models\EstadoSolicitudDigitalizarLetra::id(\App\Models\EstadoSolicitudDigitalizarLetra::ENVIADO))
+                    <button wire:click="validarIndividual" class="g_boton warning" wire:loading.attr="disabled"
+                        wire:target="validarIndividual">
+                        <span wire:loading.remove wire:target="validarIndividual">Validar en Cavali <i
+                                class="fa-solid fa-circle-check"></i></span>
+                        <span wire:loading wire:target="validarIndividual">Validando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endif
+            @endcan
         </div>
     </div>
 
