@@ -5,13 +5,9 @@
         <h2>Editar Solicitud de Letra Digital</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.solicitar-letra-digital.vista.todo') }}" class="g_boton g_boton_light">
+            <a href="{{ route('erp.solicitar-letra-digital.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
-
-            <button type="button" class="g_boton g_boton_dark" onclick="history.back()">
-                <i class="fa-solid fa-arrow-left"></i> Regresar
-            </button>
 
             @can('solicitud-digitalizar-letra.ejecutar-cron-letra')
                 @if($solicitud->estado_solicitud_digitalizar_letra_id === \App\Models\EstadoSolicitudDigitalizarLetra::id(\App\Models\EstadoSolicitudDigitalizarLetra::PENDIENTE))
@@ -36,12 +32,16 @@
                     </button>
                 @endif
             @endcan
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
     <div class="g_fila">
         <div class="g_columna_12">
-            <form wire:submit="update" class="formulario g_panel" x-data="{ activeTab: 'general' }">
+            <div class="formulario g_panel" x-data="{ activeTab: 'general' }">
                 <div class="g_tab_navegacion">
                     <div class="g_tab_botones">
                         <button type="button" @click="activeTab = 'general'"
@@ -69,17 +69,8 @@
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Estado Solicitud <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
-                            <select wire:model.live="estado_solicitud_digitalizar_letra_id"
-                                class="@error('estado_solicitud_digitalizar_letra_id') input-error @enderror">
-                                <option value="">Seleccionar...</option>
-                                @foreach($estados as $es)
-                                    <option value="{{ $es->id }}">{{ $es->nombre }}</option>
-                                @endforeach
-                            </select>
-                            @error('estado_solicitud_digitalizar_letra_id') <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
+                            <label>Estado Solicitud</label>
+                            <input type="text" disabled value="{{ $solicitud->estado->nombre ?? '—' }}">
                         </div>
                     </div>
 
@@ -133,22 +124,7 @@
                     </div>
                 </div>
 
-                <div class="formulario_botones">
-                    <button type="submit" class="g_boton g_boton_guardar" wire:loading.attr="disabled"
-                        wire:target="update">
-                        <span wire:loading.remove wire:target="update">
-                            <i class="fa-solid fa-pencil"></i> Guardar Cambios
-                        </span>
-                        <span wire:loading wire:target="update">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                        </span>
-                    </button>
-
-                    <a href="{{ route('erp.solicitar-letra-digital.vista.todo') }}" class="g_boton g_boton_cancelar">
-                        <i class="fa-solid fa-times"></i> Cancelar
-                    </a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

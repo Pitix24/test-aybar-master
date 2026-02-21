@@ -24,43 +24,9 @@ class SolicitudDigitalizarLetraVer extends Component
 {
     public SolicitudDigitalizarLetra $solicitud;
 
-    // Campos editables
-    public $estado_solicitud_digitalizar_letra_id;
-
-    protected function rules()
-    {
-        return [
-            'estado_solicitud_digitalizar_letra_id' => 'required|exists:estado_solicitud_digitalizar_letras,id',
-        ];
-    }
-
     public function mount($id)
     {
         $this->solicitud = SolicitudDigitalizarLetra::with(['unidadNegocio', 'proyecto', 'userCliente.perfilCliente', 'estado'])->findOrFail($id);
-        $this->estado_solicitud_digitalizar_letra_id = $this->solicitud->estado_solicitud_digitalizar_letra_id;
-    }
-
-    public function update()
-    {
-        abort_unless(auth()->user()->can('solicitud-digitalizar-letra.editar'), 403);
-
-        $this->validate();
-
-        try {
-            DB::beginTransaction();
-
-            $this->solicitud->update([
-                'estado_solicitud_digitalizar_letra_id' => $this->estado_solicitud_digitalizar_letra_id,
-            ]);
-
-            DB::commit();
-
-            $this->dispatch('alertaLivewire', ['title' => 'Actualizado', 'text' => 'Cambios guardados correctamente.']);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error SolicitudDigitalizarLetraEditar@update: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudieron guardar los cambios.']);
-        }
     }
 
     public function enviarIndividual()
@@ -201,9 +167,7 @@ class SolicitudDigitalizarLetraVer extends Component
 
     public function render()
     {
-        return view('livewire.erp.letra.solicitud-digitalizar-letra.solicitud-digitalizar-letra-ver', [
-            'estados' => EstadoSolicitudDigitalizarLetra::where('activo', true)->get(),
-        ]);
+        return view('livewire.erp.letra.solicitud-digitalizar-letra.solicitud-digitalizar-letra-ver');
     }
 
     public function placeholder()

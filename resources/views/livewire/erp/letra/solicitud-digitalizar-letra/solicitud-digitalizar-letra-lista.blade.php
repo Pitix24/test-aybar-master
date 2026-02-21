@@ -7,10 +7,6 @@
         <h2>Solicitudes de Letras Digitales</h2>
 
         <div class="cabecera_titulo_botones">
-            <button type="button" class="g_boton dark" onclick="history.back()">
-                <i class="fa-solid fa-arrow-left"></i> Regresar
-            </button>
-
             @can('solicitud-digitalizar-letra.ejecutar-cron-letra')
                 <button wire:click="ejecutarCronLetra" class="g_boton primary" wire:loading.attr="disabled"
                     wire:target="ejecutarCronLetra">
@@ -30,6 +26,10 @@
                             class="fa-solid fa-spinner fa-spin"></i></span>
                 </button>
             @endcan
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
