@@ -29,7 +29,7 @@
         <!-- COLUMNA IZQUIERDA: PERFIL -->
         <div class="g_columna_4">
             <div class="g_panel">
-                <h4 class="g_panel_titulo">Perfil del Cliente</h4>
+                <h4 class="g_panel_titulo">Perfil Portal Cliente</h4>
                 @if ($user_model)
                     <div class="informacion_resumen_grid">
                         <div class="informacion_resumen_item g_columna_8">

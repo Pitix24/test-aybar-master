@@ -11,6 +11,9 @@
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </a>
 
+            <a href="{{ route('erp.cliente.vista.ver', $dni) }}" class="g_boton secondary">
+                Ver Movimientos <i class="fa-solid fa-right-left"></i></a>
+
             <button wire:click="resetFiltros" class="g_boton danger">
                 Refresh Campos <i class="fa-solid fa-rotate-left"></i>
             </button>
@@ -63,8 +66,7 @@
                     </div>
                 </div>
             </div>
-
-            @if ($mostrar_form_email)
+            @if ($cliente_encontrado)
                 <div class="g_columna_4 g_gap_pagina">
                     <div class="g_panel">
                         <h4 class="g_panel_titulo">Registrar cliente</h4>
@@ -78,26 +80,27 @@
                             <label>Celular</label>
                             <input type="text" disabled value="{{ $cliente_encontrado['telefono'] }}">
                         </div>
-                        <div class="g_margin_bottom_10">
+
+                        {{--<div class="g_margin_bottom_10">
                             <label for="email">Email <span class="obligatorio">*</span></label>
                             <input type="email" id="email" wire:model="email" required>
                             @error('email')
-                                <p class="mensaje_error">{{ $message }}</p>
+                            <p class="mensaje_error">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div>--}}
 
-                        <div class="formulario_botones">
-                            <button wire:click="store" class="g_boton guardar" wire:loading.attr="disabled"
-                                wire:target="store">
-                                <span wire:loading.remove wire:target="store">Registrar cliente</span>
-                                <span wire:loading wire:target="store">Registrando...</span>
-                            </button>
-                        </div>
-
+                        @if ($mostrar_form_email)
+                            <div class="formulario_botones">
+                                <button wire:click="store" class="g_boton guardar" wire:loading.attr="disabled"
+                                    wire:target="store">
+                                    <span wire:loading.remove wire:target="store">Registrar cliente</span>
+                                    <span wire:loading wire:target="store">Registrando...</span>
+                                </button>
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endif
-
         </div>
 
         @if ($cliente_encontrado)
