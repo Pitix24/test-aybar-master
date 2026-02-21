@@ -21,7 +21,6 @@ class CavaliGiradorExport implements FromCollection, WithHeadings, WithTitle
     public function collection()
     {
         return $this->envio->solicitudes
-            ->unique('unidad_negocio_id')
             ->map(function ($s) {
                 $u = $s->unidadNegocio;
 

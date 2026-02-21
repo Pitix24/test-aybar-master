@@ -82,17 +82,26 @@ class SolicitudDigitalizarLetraVer extends Component
             $this->estado_solicitud_digitalizar_letra_id = $idEstadoEnviado;
 
             // Enviar correo (simplificado para individual)
-            Mail::raw(
-                "Estimados, se ha enviado una letra individual a desmaterializar.\n\nEmpresa: {$unidad->razon_social}\nLetra: {$this->solicitud->codigo_venta}-{$this->solicitud->numero_cuota}",
-                function ($message) use ($path, $fileName, $razonSocialSanitizada) {
-                    $message->to('PROGRAMADOR@aybarsac.com')
-                        ->cc(['mersmith14@gmail.com'])
-                        ->subject("Letra Individual - {$razonSocialSanitizada}")
-                        ->attach(Storage::path($path), [
-                            'as' => $fileName,
-                        ]);
-                }
+            $to = config('cavali.notifications.to');
+            $cc = config('cavali.notifications.cc');
+            $subjectTpl = config('cavali.notifications.individual_send.subject');
+            $bodyTpl = config('cavali.notifications.individual_send.body');
+
+            $subject = str_replace(':razonSocial', $razonSocialSanitizada, $subjectTpl);
+            $body = str_replace(
+                [':razonSocial', ':letra'],
+                [$unidad->razon_social, "{$this->solicitud->codigo_venta}-{$this->solicitud->numero_cuota}"],
+                $bodyTpl
             );
+
+            Mail::raw($body, function ($message) use ($path, $fileName, $to, $cc, $subject) {
+                $message->to(array_filter(explode(',', $to)))
+                    ->cc(array_filter(explode(',', $cc)))
+                    ->subject($subject)
+                    ->attach(Storage::path($path), [
+                        'as' => $fileName,
+                    ]);
+            });
 
             DB::commit();
 

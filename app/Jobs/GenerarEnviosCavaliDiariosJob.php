@@ -102,17 +102,26 @@ class GenerarEnviosCavaliDiariosJob implements ShouldQueue
                     ->update(['estado_solicitud_digitalizar_letra_id' => $idEstadoEnviado]);
 
                 // Enviar correo
-                Mail::raw(
-                    "Estimados, se hace llegar la base de letras pagadas físicas a desmaterializar. {$fecha}\n\nEmpresa: {$unidad->razon_social}\nTotal de solicitudes: {$solicitudes->count()}",
-                    function ($message) use ($path, $fileName, $razonSocialSanitizada) {
-                        $message->to('PROGRAMADOR@aybarsac.com')
-                            ->cc(['mersmith14@gmail.com'])
-                            ->subject("Letras físicas pagadas - {$razonSocialSanitizada}")
-                            ->attach(Storage::path($path), [
-                                'as' => $fileName,
-                            ]);
-                    }
+                $to = config('cavali.notifications.to');
+                $cc = config('cavali.notifications.cc');
+                $subjectTpl = config('cavali.notifications.daily_job.subject');
+                $bodyTpl = config('cavali.notifications.daily_job.body');
+
+                $subject = str_replace(':razonSocial', $razonSocialSanitizada, $subjectTpl);
+                $body = str_replace(
+                    [':fecha', ':razonSocial', ':count'],
+                    [$fecha, $unidad->razon_social, $solicitudes->count()],
+                    $bodyTpl
                 );
+
+                Mail::raw($body, function ($message) use ($path, $fileName, $to, $cc, $subject) {
+                    $message->to(array_filter(explode(',', $to)))
+                        ->cc(array_filter(explode(',', $cc)))
+                        ->subject($subject)
+                        ->attach(Storage::path($path), [
+                            'as' => $fileName,
+                        ]);
+                });
 
                 DB::commit();
 
