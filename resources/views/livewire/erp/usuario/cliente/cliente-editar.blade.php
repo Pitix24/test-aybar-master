@@ -13,7 +13,7 @@
             @endcan
 
             <a href="{{ route('erp.cliente.vista.consultar', $dni) }}" class="g_boton secondary">
-                Consultar <i class="fa-solid fa-magnifying-glass"></i></a>
+                Portal Cliente <i class="fa-solid fa-user"></i></a>
 
             @can('cliente.eliminar')
                 <button type="button" class="g_boton danger" onclick="confirmarEliminarCliente()">

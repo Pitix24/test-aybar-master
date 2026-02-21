@@ -27,7 +27,7 @@ Route::group(['middleware' => ['permission:modulo-usuarios.ver']], function () {
     Route::group(['middleware' => ['permission:cliente.navegacion']], function () {
         Route::prefix('cliente')->name('cliente.vista.')->group(function () {
             Route::get('/', ClienteLista::class)->middleware('permission:cliente.lista')->name('todo');
-            Route::get('/ver/{id}', ClienteVer::class)->middleware('permission:cliente.ver')->name('ver');
+            Route::get('/ver/{dni?}', ClienteVer::class)->middleware('permission:cliente.ver')->name('ver');
             Route::get('/crear', ClienteCrear::class)->middleware('permission:cliente.crear')->name('crear');
             Route::get('/editar/{id}', ClienteEditar::class)->middleware('permission:cliente.editar')->name('editar');
             Route::get('/consultar/{dni?}', ClienteConsultar::class)->middleware('permission:cliente.consultar')->name('consultar');

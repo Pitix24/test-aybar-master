@@ -39,17 +39,13 @@
 
                         <div class="g_switch-wrapper">
                             <label class="g_switch">
-                                <input id="estado_activo" type="checkbox" wire:model.live="activo">
+                                <input id="estado_activo" type="checkbox" value="{{ $activo }}" @disabled(true)>
                                 <span class="g_switch-slider"></span>
                             </label>
 
                             <span class="g_switch-label">
                                 {{ $activo ? 'Activo' : 'Inactivo' }}
                             </span>
-
-                            @error('activo')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
                         </div>
                     </div>
 

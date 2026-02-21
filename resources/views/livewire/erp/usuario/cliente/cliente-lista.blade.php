@@ -169,7 +169,7 @@
 
                             <td class="g_celda_centro">
                                 @can('cliente.ver')
-                                    <a href="{{ route('erp.cliente.vista.ver', $item->id) }}" class="g_accion ver" title="Ver">
+                                    <a href="{{ route('erp.cliente.vista.ver', $item->dni) }}" class="g_accion ver" title="Ver">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 @endcan
