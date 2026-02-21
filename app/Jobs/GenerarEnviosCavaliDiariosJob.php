@@ -6,7 +6,7 @@ use App\Models\EnvioCavali;
 use App\Models\SolicitudDigitalizarLetra;
 use App\Models\UnidadNegocio;
 use App\Models\EstadoSolicitudDigitalizarLetra;
-use App\Exports\CavaliExport;
+use App\Exports\Letra\CavaliExport;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;

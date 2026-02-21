@@ -92,6 +92,7 @@
                 <thead>
                     <tr>
                         <th class="g_celda_centro">Nº</th>
+                        <th>LETRA</th>
                         <th>Proyecto</th>
                         <th>Etapa</th>
                         <th>Mz. / Lt.</th>
@@ -108,6 +109,7 @@
                     @foreach ($envio->solicitudes as $index => $solicitud)
                         <tr wire:key="solicitud-{{ $solicitud->id }}">
                             <td class="g_celda_centro">{{ $index + 1 }}</td>
+                            <td>{{ $solicitud->codigo_venta }}-{{ $solicitud->numero_cuota }}</td>
                             <td class="g_resumir">{{ $solicitud->proyecto?->nombre ?? '—' }}</td>
                             <td class="g_resumir">{{ $solicitud->etapa }}</td>
                             <td class="g_resumir">{{ $solicitud->manzana }} / {{ $solicitud->lote }}</td>

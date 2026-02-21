@@ -21,21 +21,18 @@ class CavaliAceptanteExport implements FromCollection, WithHeadings, WithTitle
     public function collection()
     {
         return $this->envio->solicitudes->map(function ($s) {
-            $cliente = $s->userCliente;
-            $persona = $cliente?->perfilCliente;
-            $direccion = $cliente?->direccion; // En aybar es hasOne direccion
 
             return [
                 'codigo_venta' => $s->codigo_venta,
                 'tipo_documento_aceptante' => 'DNI',
-                'numero_documento_aceptante' => $persona?->dni ?? '—',
-                'nombres_aceptante' => $persona?->nombre ?? $cliente?->name,
+                'numero_documento_aceptante' => $s->dni,
+                'nombres_aceptante' => $s->nombres,
                 'apellidos_aceptante' => '',
-                'domicilio_aceptante' => $direccion?->direccion,
-                'localidad_aceptante' => $direccion?->distrito?->nombre,
-                'correo_electronico_aceptante' => $cliente?->email,
+                'domicilio_aceptante' => $s->direccion,
+                'localidad_aceptante' => $s->distrito,
+                'correo_electronico_aceptante' => $s->email,
                 'telefono_casa_aceptante' => '',
-                'celular_aceptante' => $persona?->telefono_principal,
+                'celular_aceptante' => $s->celular,
                 'tipo_firmante_aceptante' => '',
             ];
         });
