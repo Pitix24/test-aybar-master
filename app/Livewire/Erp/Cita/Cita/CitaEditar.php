@@ -49,7 +49,7 @@ class CitaEditar extends Component
 
     public function update()
     {
-        abort_unless(auth()->user()->can('cita.editar'), 403);
+        $this->authorize('cita.editar');
 
         $this->validate();
 
@@ -77,7 +77,7 @@ class CitaEditar extends Component
     #[On('eliminarCitaOn')]
     public function eliminarCitaOn()
     {
-        abort_unless(auth()->user()->can('cita.eliminar'), 403);
+        $this->authorize('cita.eliminar');
 
         try {
             DB::beginTransaction();

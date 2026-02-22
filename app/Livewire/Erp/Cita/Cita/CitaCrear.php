@@ -140,7 +140,7 @@ class CitaCrear extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('cita.crear'), 403);
+        $this->authorize('cita.crear');
 
         try {
             $this->validate();

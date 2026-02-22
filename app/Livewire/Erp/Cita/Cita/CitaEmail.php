@@ -39,7 +39,7 @@ class CitaEmail extends Component
 
     public function store()
     {
-        abort_unless(auth()->user()->can('cita.enviar-correo'), 403);
+        $this->authorize('cita.enviar-correo');
 
         try {
             $this->validate([

@@ -12,8 +12,8 @@
         </div>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.cita.vista.todo') }}" class="g_boton g_boton_dark">
-                <i class="fa-solid fa-arrow-left"></i> Regresar</a>
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar</button>
         </div>
     </div>
 
@@ -147,13 +147,21 @@
                         </div>
                     </div>
 
-                    <div class="g_margin_top_20">
-                        <div class="formulario_botones">
-                            <button wire:click="store" class="g_boton guardar"
-                                wire:loading.attr="disabled">Guardar</button>
+                    <div class="formulario_botones">
+                        @can('cita.crear')
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
+                                <span wire:loading.remove wire:target="store">
+                                    <i class="fa-solid fa-save"></i> Crear
+                                </span>
+                                <span wire:loading wire:target="store">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                                </span>
+                            </button>
+                        @endcan
 
-                            <a href="{{ route('erp.cita.vista.todo') }}" class="g_boton cancelar">Cancelar</a>
-                        </div>
+                        <button type="button" class="g_boton cancelar" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </div>
