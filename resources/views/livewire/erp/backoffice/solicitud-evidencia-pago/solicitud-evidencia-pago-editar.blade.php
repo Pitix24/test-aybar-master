@@ -6,13 +6,17 @@
         <h2>Solicitud de Evidencia #{{ $solicitud->id }}</h2>
 
         <div class="cabecera_titulo_botones">
+            @can('solicitud-evidencia-pago.lista')
             <a href="{{ route('erp.solicitud-evidencia-pago.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
+            @endcan
 
+            @can('solicitud-evidencia-pago.chat')
             <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
                 Chat <i class="fa-solid fa-comments"></i>
             </button>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</button>

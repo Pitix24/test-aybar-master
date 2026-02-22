@@ -31,24 +31,25 @@ class EnvioCavaliDetalle extends Component
 
     public function descargarAceptantes()
     {
-        abort_unless(auth()->user()->can('envio-cavali-solicitud.exportar'), 403);
+        $this->authorize('envio-cavali.exportar-envios');
         return Excel::download(new CavaliAceptanteExport($this->envio), "ACEPTANTE_{$this->envio->id}.xlsx");
     }
 
     public function descargarLetras()
     {
-        abort_unless(auth()->user()->can('envio-cavali-solicitud.exportar'), 403);
+        $this->authorize('envio-cavali.exportar-envios');
         return Excel::download(new CavaliLetrasExport($this->envio), "LETRAS_{$this->envio->id}.xlsx");
     }
 
     public function descargarGirador()
     {
-        abort_unless(auth()->user()->can('envio-cavali-solicitud.exportar'), 403);
+        $this->authorize('envio-cavali.exportar-envios');
         return Excel::download(new CavaliGiradorExport($this->envio), "GIRADOR_{$this->envio->id}.xlsx");
     }
 
     public function descargarArchivo()
     {
+        $this->authorize('envio-cavali.exportar-envios');
         if (!$this->envio->archivo_zip) {
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',

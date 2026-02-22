@@ -222,15 +222,18 @@
                             </td>
                             <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
                             <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.solicitud-evidencia-pago.vista.ver', $item->id) }}"
-                                    class="g_accion ver" title="Ver Detalle">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
-
-                                <a href="{{ route('erp.solicitud-evidencia-pago.vista.editar', $item->id) }}"
-                                    class="g_accion editar" title="Editar">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
+                                @can('solicitud-evidencia-pago.ver')
+                                    <a href="{{ route('erp.solicitud-evidencia-pago.vista.ver', $item->id) }}"
+                                        class="g_accion ver" title="Ver Detalle">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                @endcan
+                                @can('solicitud-evidencia-pago.editar')
+                                    <a href="{{ route('erp.solicitud-evidencia-pago.vista.editar', $item->id) }}"
+                                        class="g_accion editar" title="Editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

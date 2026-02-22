@@ -26,7 +26,6 @@ class EstadoSolicitudDigitalizarLetraEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('estado-solicitud-digitalizar-letra.editar');
         $this->estado_model = EstadoSolicitudDigitalizarLetra::findOrFail($id);
 
         $this->nombre = $this->estado_model->nombre;

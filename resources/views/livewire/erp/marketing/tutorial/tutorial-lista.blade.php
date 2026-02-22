@@ -111,11 +111,13 @@
                                 <span class="g_badge primary">{{ $item->clicks }}</span>
                             </td>
                             <td class="g_celda_centro">
-                                <button wire:click="toggleActivo({{ $item->id }})"
-                                    class="g_badge {{ $item->activo ? 'success' : 'error' }}"
-                                    title="Click para cambiar estado">
-                                    {{ $item->activo ? 'Activo' : 'Inactivo' }}
-                                </button>
+                                @can('tutorial.editar')
+                                    <button wire:click="toggleActivo({{ $item->id }})"
+                                        class="g_badge {{ $item->activo ? 'success' : 'error' }}"
+                                        title="Click para cambiar estado">
+                                        {{ $item->activo ? 'Activo' : 'Inactivo' }}
+                                    </button>
+                                @endcan
                             </td>
                             <td class="g_celda_centro">
                                 @can('tutorial.ver')

@@ -33,7 +33,7 @@ class SolicitudEvidenciaChat extends Component
 
     public function enviar()
     {
-        abort_unless(auth()->user()->can('solicitud-evidencia-pago.ver'), 403);
+        $this->authorize('solicitud-evidencia-pago.chat');
 
         if (trim($this->mensaje) == '') {
             return;

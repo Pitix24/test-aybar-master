@@ -27,7 +27,6 @@ Route::group(['middleware' => ['permission:modulo-backoffice.ver']], function ()
         Route::prefix('solicitud-evidencia-pago')->name('solicitud-evidencia-pago.vista.')->group(function () {
             Route::get('/', SolicitudEvidenciaPagoLista::class)->middleware('permission:solicitud-evidencia-pago.ver')->name('todo');
             Route::get('/ver/{id}', SolicitudEvidenciaPagoVer::class)->middleware('permission:solicitud-evidencia-pago.ver')->name('ver');
-            Route::get('/crear', SolicitudEvidenciaPagoCrear::class)->middleware('permission:solicitud-evidencia-pago.crear')->name('crear');
             Route::get('/editar/{id}', SolicitudEvidenciaPagoEditar::class)->middleware('permission:solicitud-evidencia-pago.editar')->name('editar');
         });
     });

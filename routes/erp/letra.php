@@ -60,6 +60,8 @@ SOLICITUD DIGITALIZAR LETRA
 3. solicitud-digitalizar-letra.ver
 4. solicitud-digitalizar-letra.exportar-filtro
 5. solicitud-digitalizar-letra.exportar-todo
+6. solicitud-digitalizar-letra.ejecutar-cron-letra
+7. solicitud-digitalizar-letra.validar-cron-letra
 
 ENVIO CAVALI
 1. envio-cavali.navegacion
@@ -67,4 +69,5 @@ ENVIO CAVALI
 3. envio-cavali.detalle
 4. envio-cavali.exportar-filtro
 5. envio-cavali.exportar-todo
+6. envio-cavali.exportar-envios
 */

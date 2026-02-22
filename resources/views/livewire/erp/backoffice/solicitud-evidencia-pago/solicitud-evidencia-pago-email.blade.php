@@ -36,9 +36,11 @@
                 @error('mensaje_correo') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
             <div class="formulario_botones">
-                <button type="button" wire:click="enviarCorreo(false)" class="g_boton guardar">
-                    Enviar Solo Correo <i class="fa-solid fa-envelope"></i>
-                </button>
+                @can('solicitud-evidencia-pago.enviar-correo')
+                    <button type="button" wire:click="enviarCorreo(false)" class="g_boton guardar">
+                        Enviar Solo Correo <i class="fa-solid fa-envelope"></i>
+                    </button>
+                @endcan
             </div>
         </div>
     </div>
@@ -58,9 +60,11 @@
                     @error('mensaje_correo') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
                 <div class="formulario_botones">
-                    <button type="button" wire:click="enviarCorreo(true)" class="g_boton guardar">
-                        Enviar y Rechazar Solicitud <i class="fa-solid fa-ban"></i>
-                    </button>
+                    @can('solicitud-evidencia-pago.enviar-correo')
+                        <button type="button" wire:click="enviarCorreo(true)" class="g_boton guardar">
+                            Enviar y Rechazar Solicitud <i class="fa-solid fa-ban"></i>
+                        </button>
+                    @endcan
                 </div>
             @else
                 <div class="g_vacio">

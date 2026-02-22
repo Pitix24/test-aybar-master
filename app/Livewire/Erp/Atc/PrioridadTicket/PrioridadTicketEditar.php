@@ -27,7 +27,6 @@ class PrioridadTicketEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('prioridad-ticket.editar');
         $this->prioridad_model = PrioridadTicket::findOrFail($id);
 
         $this->nombre = $this->prioridad_model->nombre;

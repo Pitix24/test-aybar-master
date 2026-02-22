@@ -17,7 +17,6 @@ class ProyectoVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('proyecto.ver');
         $this->proyecto = Proyecto::with(['unidadNegocio', 'grupoProyecto'])->findOrFail($id);
     }
 

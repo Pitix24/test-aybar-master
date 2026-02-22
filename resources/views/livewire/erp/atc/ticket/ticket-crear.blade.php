@@ -4,10 +4,12 @@
         message="Guardando cambios..." />
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear ticket
-            @if ($ticket_padre_id)
-                <span>Asociado al ticket: <a href="{{ route('erp.ticket.vista.editar', $ticket_padre_id) }}" target="_blank"
-                        class="g_negrita">#{{ $ticket_padre_id }}</a></span>
-            @endif
+            @can('ticket.ver')
+                @if ($ticket_padre_id)
+                    <span>Asociado al ticket: <a href="{{ route('erp.ticket.vista.editar', $ticket_padre_id) }}" target="_blank"
+                            class="g_negrita">#{{ $ticket_padre_id }}</a></span>
+                @endif
+            @endcan
         </h2>
 
         <div class="cabecera_titulo_botones">

@@ -17,7 +17,6 @@ class EstadoSolicitudDigitalizarLetraVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('estado-solicitud-digitalizar-letra.ver');
         $this->estado = EstadoSolicitudDigitalizarLetra::findOrFail($id);
     }
 

@@ -17,7 +17,6 @@ class SedeVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('sede.ver');
         $this->sede_model = Sede::findOrFail($id);
     }
 

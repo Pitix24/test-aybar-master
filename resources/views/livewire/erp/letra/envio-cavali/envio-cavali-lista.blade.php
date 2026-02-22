@@ -123,17 +123,19 @@
                             <td class="g_inferior">{{ $item->enviado_at?->format('d/m/Y H:i') ?? '—' }}</td>
                             <td class="g_resumir g_inferior">{{ $item->archivo_nombre ?? '—' }}</td>
                             <td class="g_celda_acciones g_celda_centro">
-                                @can('envio-cavali-solicitud.exportar')
+                                @can('envio-cavali.exportar-envios')
                                     <button wire:click="exportCavali({{ $item->id }})" class="g_accion excel"
                                         title="Cavali Excel">
                                         <i class="fa-regular fa-file-excel"></i>
                                     </button>
                                 @endcan
 
-                                <a href="{{ route('erp.envio-cavali.vista.detalle', $item->id) }}" class="g_accion editar"
-                                    title="Ver Detalle">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
+                                @can('envio-cavali.detalle')
+                                    <a href="{{ route('erp.envio-cavali.vista.detalle', $item->id) }}" class="g_accion editar"
+                                        title="Ver Detalle">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

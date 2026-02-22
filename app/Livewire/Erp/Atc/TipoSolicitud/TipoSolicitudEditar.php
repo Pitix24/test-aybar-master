@@ -27,7 +27,6 @@ class TipoSolicitudEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('tipo-solicitud.editar');
         $this->tipo_model = TipoSolicitud::with('areas')->findOrFail($id);
 
         $this->nombre = $this->tipo_model->nombre;

@@ -17,7 +17,6 @@ class UnidadNegocioVer extends Component
 
     public function mount($id)
     {
-        $this->authorize('unidad-negocio.ver');
         $this->unidad_model = UnidadNegocio::findOrFail($id);
     }
 

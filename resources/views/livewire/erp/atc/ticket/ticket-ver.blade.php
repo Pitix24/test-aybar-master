@@ -210,10 +210,12 @@
                                     <td class="g_negrita">#{{ $ticket->padre->id }}</td>
                                     <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
                                     <td class="g_celda_centro">
-                                        <a href="{{ route('erp.ticket.vista.ver', $ticket->padre->id) }}"
-                                            class="g_accion ver" title="Ver Ticket Padre">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
+                                        @can('ticket.ver')
+                                            <a href="{{ route('erp.ticket.vista.ver', $ticket->padre->id) }}"
+                                                class="g_accion ver" title="Ver Ticket Padre">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                        @endcan
                                     </td>
                                 </tr>
                             </tbody>
@@ -240,10 +242,12 @@
                                         <td class="g_negrita">#{{ $hijo->id }}</td>
                                         <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
                                         <td class="g_celda_centro">
-                                            <a href="{{ route('erp.ticket.vista.ver', $hijo->id) }}" class="g_accion ver"
-                                                title="Ver Ticket Hijo">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </a>
+                                            @can('ticket.ver')
+                                                <a href="{{ route('erp.ticket.vista.ver', $hijo->id) }}" class="g_accion ver"
+                                                    title="Ver Ticket Hijo">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach

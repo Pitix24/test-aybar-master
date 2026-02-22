@@ -29,7 +29,6 @@ class SubTipoSolicitudEditar extends Component
 
     public function mount($id)
     {
-        $this->authorize('sub-tipo-solicitud.editar');
         $this->sub_tipo_model = SubTipoSolicitud::findOrFail($id);
 
         $this->tipo_solicitud_id = $this->sub_tipo_model->tipo_solicitud_id;

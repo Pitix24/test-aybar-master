@@ -57,9 +57,11 @@
                 <div class="g_columna_3">
                     <label>Archivo Generado</label>
                     @if ($envio->archivo_zip)
-                        <button wire:click="descargarArchivo" class="g_boton success g_boton_sm">
-                            <i class="fa-solid fa-download"></i> {{ $envio->archivo_nombre }}
-                        </button>
+                        @can('envio-cavali.exportar-envios')
+                            <button wire:click="descargarArchivo" class="g_boton success g_boton_sm">
+                                <i class="fa-solid fa-download"></i> {{ $envio->archivo_nombre }}
+                            </button>
+                        @endcan
                     @else
                         <p class="g_texto_muted">No disponible</p>
                     @endif
@@ -69,17 +71,23 @@
 
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="descargarAceptantes" class="g_boton excel">
-                    <i class="fa-solid fa-download"></i> Aceptantes
-                </button>
+                @can('envio-cavali.exportar-envios')
+                    <button wire:click="descargarAceptantes" class="g_boton excel">
+                        <i class="fa-solid fa-download"></i> Aceptantes
+                    </button>
+                @endcan
 
-                <button wire:click="descargarLetras" class="g_boton excel">
-                    <i class="fa-solid fa-download"></i> Letras
-                </button>
+                @can('envio-cavali.exportar-envios')
+                    <button wire:click="descargarLetras" class="g_boton excel">
+                        <i class="fa-solid fa-download"></i> Letras
+                    </button>
+                @endcan
 
-                <button wire:click="descargarGirador" class="g_boton excel">
-                    <i class="fa-solid fa-download"></i> Girador
-                </button>
+                @can('envio-cavali.exportar-envios')
+                    <button wire:click="descargarGirador" class="g_boton excel">
+                        <i class="fa-solid fa-download"></i> Girador
+                    </button>
+                @endcan
             </div>
         </div>
     </div>

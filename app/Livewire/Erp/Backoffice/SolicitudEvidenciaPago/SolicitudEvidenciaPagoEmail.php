@@ -32,7 +32,7 @@ class SolicitudEvidenciaPagoEmail extends Component
 
     public function enviarCorreo($cambiarEstado = false)
     {
-        abort_unless(auth()->user()->can('solicitud-evidencia-pago.editar'), 403);
+        $this->authorize('solicitud-evidencia-pago.enviar-correo');
 
         $this->validate([
             'mensaje_correo' => 'required|min:10',

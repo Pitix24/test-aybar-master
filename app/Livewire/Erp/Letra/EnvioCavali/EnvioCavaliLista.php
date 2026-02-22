@@ -86,7 +86,7 @@ class EnvioCavaliLista extends Component
 
     public function exportCavali($id)
     {
-        $this->authorize('envio-cavali-solicitud.exportar');
+        $this->authorize('envio-cavali.exportar-envios');
 
         $envio = EnvioCavali::findOrFail($id);
         $nombreArchivo = 'Cavali_' . $envio->unidadNegocio->nombre . '_' . $envio->fecha_corte->format('Y-m-d') . '.xlsx';

@@ -169,7 +169,7 @@
                             </td>
                             <td class="g_inferior g_celda_centro">{{ $item->created_at->format('d/m/Y H:i') }}</td>
                             <td class="g_celda_acciones g_celda_centro">
-                                @can('solicitud-digitalizar-letra.editar')
+                                @can('solicitud-digitalizar-letra.ver')
                                     <a href="{{ route('erp.solicitar-letra-digital.vista.ver', $item->id) }}"
                                         class="g_accion ver" title="Ver">
                                         <i class="fa-solid fa-eye"></i>
