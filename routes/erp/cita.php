@@ -86,4 +86,5 @@ CITA
 7. cita.exportar-filtro
 8. cita.exportar-todo
 9. cita.enviar-correo
+10. cita.calendario
 */

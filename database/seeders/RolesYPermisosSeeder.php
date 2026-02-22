@@ -198,23 +198,23 @@ class RolesYPermisosSeeder extends Seeder
                 'ticket.chat',//ok
             ],
             'Módulo Cita' => [
-                'modulo-cita.ver',
-                'estado-cita.navegacion',
-                'estado-cita.lista',
-                'estado-cita.ver',
-                'estado-cita.crear',
-                'estado-cita.editar',
-                'estado-cita.eliminar',
-                'estado-cita.exportar-filtro',
-                'estado-cita.exportar-todo',
-                'motivo-cita.navegacion',
-                'motivo-cita.lista',
-                'motivo-cita.ver',
-                'motivo-cita.crear',
-                'motivo-cita.editar',
-                'motivo-cita.eliminar',
-                'motivo-cita.exportar-filtro',
-                'motivo-cita.exportar-todo',
+                'modulo-cita.ver',//ok
+                'estado-cita.navegacion',//ok
+                'estado-cita.lista',//ok
+                'estado-cita.ver',//ok
+                'estado-cita.crear',//ok
+                'estado-cita.editar',//ok
+                'estado-cita.eliminar',//ok
+                'estado-cita.exportar-filtro',//ok
+                'estado-cita.exportar-todo',//ok
+                'motivo-cita.navegacion',//ok
+                'motivo-cita.lista',//ok
+                'motivo-cita.ver',//ok
+                'motivo-cita.crear',//ok
+                'motivo-cita.editar',//ok
+                'motivo-cita.eliminar',//ok
+                'motivo-cita.exportar-filtro',//ok
+                'motivo-cita.exportar-todo',//ok
                 'cita.navegacion',
                 'cita.lista',
                 'cita.ver',
@@ -224,6 +224,7 @@ class RolesYPermisosSeeder extends Seeder
                 'cita.exportar-filtro',
                 'cita.exportar-todo',
                 'cita.enviar-correo',
+                'cita.calendario',
             ],
             'Módulo Backoffice' => [
                 'modulo-backoffice.ver',//ok

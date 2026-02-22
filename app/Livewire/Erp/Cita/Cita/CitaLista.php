@@ -17,6 +17,9 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Cita\CitaExport;
+
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Citas')]
@@ -132,6 +135,52 @@ class CitaLista extends Component
         ]);
         $this->perPage = 20;
         $this->resetPage();
+    }
+
+    public function exportExcelFiltro()
+    {
+        $this->authorize('cita.exportar-filtro');
+
+        return Excel::download(
+            new CitaExport(
+                $this->buscar,
+                $this->unidad_negocio_id,
+                $this->proyecto_id,
+                $this->sede_id,
+                $this->motivo_cita_id,
+                $this->estado_cita_id,
+                $this->gestor_id,
+                $this->area_id,
+                $this->fecha_inicio,
+                $this->fecha_fin,
+                false,
+                $this->perPage,
+                $this->getPage()
+            ),
+            'citas_filtradas.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('cita.exportar-todo');
+
+        return Excel::download(
+            new CitaExport(
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                $this->fecha_inicio,
+                $this->fecha_fin,
+                true
+            ),
+            'citas_todo.xlsx'
+        );
     }
 
     public function render()
