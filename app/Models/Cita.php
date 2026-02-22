@@ -104,6 +104,11 @@ class Cita extends Model
         return $this->belongsTo(Ticket::class);
     }
 
+    public function archivos()
+    {
+        return $this->hasMany(CitaArchivo::class);
+    }
+
     // valida
     public function usuarioValida()
     {

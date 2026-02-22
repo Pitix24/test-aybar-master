@@ -7,7 +7,7 @@
         <div>
             <h2>Cita #{{ $cita->id }}</h2>
             <p style="margin: 0; color: #64748b;">
-                Programada por: <span class="g_negrita">{{ $cita->creadoPor?->name ?? 'Sistema' }}</span>
+                Programada por: <span class="g_negrita">{{ $cita->creador?->name ?? 'Sistema' }}</span>
             </p>
         </div>
 
@@ -18,78 +18,57 @@
                 </button>
             @endcan
 
-            <a href="{{ route('erp.cita.vista.todo') }}" class="g_boton g_boton_dark">
+            <a href="{{ route('erp.cita.vista.todo') }}" class="g_boton dark">
                 <i class="fa-solid fa-arrow-left"></i> Regresar</a>
         </div>
     </div>
 
-    <form wire:submit="update" class="formulario">
-        <div class="g_fila">
-            <div class="g_columna_8 g_gap_pagina">
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">General / Solicitud</h4>
 
+
+    <div class="g_fila">
+        <div class="g_columna_8 g_gap_pagina">
+            <form wire:submit="update" class="formulario g_panel" x-data="{ activeTab: 'general' }">
+                <div class="g_tab_navegacion">
+                    <div class="g_tab_botones">
+                        <button type="button" @click="activeTab = 'general'"
+                            :class="activeTab === 'general' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-file-invoice"></i> Información General
+                        </button>
+
+                        <button type="button" @click="activeTab = 'cliente'"
+                            :class="activeTab === 'cliente' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-user"></i> Cliente
+                        </button>
+
+                        <button type="button" @click="activeTab = 'asunto'"
+                            :class="activeTab === 'asunto' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-message"></i> Asunto final
+                        </button>
+                    </div>
+                </div>
+
+                <div x-show="activeTab === 'general'" x-transition class="g_tab_content">
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label for="sede_id">
-                                Sede <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                            </label>
-                            <select id="sede_id" wire:model.live="sede_id" required>
-                                <option value="" selected disabled>Seleccionar una sede</option>
-                                @foreach ($sedes as $sede)
-                                    <option value="{{ $sede->id }}">{{ $sede->nombre }}</option>
-                                @endforeach
-                            </select>
-                            @error('sede_id')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
+                            <label>Sede</label>
+                            <input type="text" value="{{ $cita->sede->nombre ?? 'N/A' }}" readonly disabled>
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label for="motivo_cita_id">
-                                Motivo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                            </label>
-                            <select id="motivo_cita_id" wire:model.live="motivo_cita_id" required>
-                                <option value="" selected disabled>Seleccionar un motivo</option>
-                                @foreach ($motivos as $motivo)
-                                    <option value="{{ $motivo->id }}">{{ $motivo->nombre }}</option>
-                                @endforeach
-                            </select>
-                            @error('motivo_cita_id')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
+                            <label>Motivo</label>
+                            <input type="text" value="{{ $cita->motivo->nombre ?? 'N/A' }}" readonly disabled>
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label for="area_id">
-                                Area <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                            </label>
-                            <select id="area_id" wire:model.live="area_id" required>
-                                <option value="" selected disabled>Seleccionar un area</option>
-                                @foreach ($areas as $area)
-                                    <option value="{{ $area->id }}">{{ $area->nombre }}</option>
-                                @endforeach
-                            </select>
-                            @error('area_id')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
+                            <label>Área</label>
+                            <input type="text" value="{{ $cita->area->nombre ?? 'N/A' }}" readonly disabled>
                         </div>
                     </div>
 
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_6">
-                            <label for="gestor_id">
-                                Gestor <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                            </label>
-                            <select id="gestor_id" wire:model.live="gestor_id" required>
-                                <option value="" selected disabled>Seleccionar un asignado</option>
-                                @foreach ($gestores as $usuario)
-                                    <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('gestor_id')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
+                            <label>Gestor (Asignado)</label>
+                            <input type="text" value="{{ $cita->gestor->name ?? 'Sin asignar' }}" readonly disabled>
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_6">
@@ -109,56 +88,82 @@
 
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label for="fecha">Fecha<span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
-                            <input type="date" id="fecha" wire:model.live="fecha" required>
-                            @error('fecha') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            <label>Fecha</label>
+                            <input type="date" value="{{ $cita->fecha_inicio?->format('Y-m-d') }}" readonly disabled>
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label for="hora_inicio">Hora inicio <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
-                            <input type="time" id="hora_inicio" wire:model.live="hora_inicio" required>
-                            @error('hora_inicio') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            <label>Hora Inicio</label>
+                            <input type="time" value="{{ $cita->fecha_inicio?->format('H:i') }}" readonly disabled>
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label for="hora_fin">Hora fin <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
-                            <input type="time" id="hora_fin" wire:model.live="hora_fin" required>
-                            @error('hora_fin') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            <label>Hora fin</label>
+                            <input type="time" value="{{ $cita->fecha_fin?->format('H:i') }}" readonly disabled>
                         </div>
                     </div>
 
                     <div class="g_fila">
                         <div class="g_columna_12">
-                            <label for="asunto_solicitud">Asunto (Solicitud) <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
-                            <textarea id="asunto_solicitud" wire:model.live="asunto_solicitud" rows="4"></textarea>
-                            @error('asunto_solicitud')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
+                            <label>Asunto (Solicitud)</label>
+                            <textarea rows="4" readonly disabled>{{ $cita->asunto_solicitud }}</textarea>
                         </div>
                     </div>
 
                     <div class="g_fila">
                         <div class="g_columna_12">
-                            <label for="descripcion_solicitud">Descripción (Solicitud) <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
-                            <textarea id="descripcion_solicitud" wire:model.live="descripcion_solicitud"
-                                rows="6"></textarea>
-                            @error('descripcion_solicitud')
-                                <p class="mensaje_error">{{ $message }}</p>
-                            @enderror
+                            <label>Descripción (Solicitud)</label>
+                            <textarea rows="6" readonly disabled>{{ $cita->descripcion_solicitud }}</textarea>
                         </div>
                     </div>
                 </div>
 
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo" style="color: var(--primary);">Atención y Respuesta</h4>
+                <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
+                    <div class="g_margin_bottom_10">
+                        @can('cliente.consultar')
+                            <a href="{{ route('erp.cliente.vista.consultar', $cita->ticket->dni) }}"
+                                class="g_boton primary">
+                                <i class="fa-solid fa-border-all"></i> Portal cliente
+                            </a>
+                        @endcan
+
+                        @can('cliente.ver')
+                            @if(isset($cita->ticket->userCliente))
+                                <a href="{{ route('erp.cliente.vista.ver', $cita->ticket->userCliente->id) }}"
+                                    class="g_boton info">
+                                    <i class="fa-solid fa-circle-user"></i> Perfil
+                                </a>
+                            @endif
+                        @endcan
+                    </div>
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Cliente</label>
+                            <input type="text" disabled value="{{ $cita->ticket->nombres ?? 'Sin asignar' }}">
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>DNI</label>
+                            <input type="text" disabled value="{{ $cita->ticket->dni ?? 'Sin asignar' }}">
+                        </div>
+                    </div>
 
                     <div class="g_fila">
-                        <div class="g_columna_12">
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Correo</label>
+                            <input type="text" disabled value="{{ $cita->ticket->email ?? 'Sin asignar' }}">
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Celular</label>
+                            <input type="text" disabled value="{{ $cita->ticket->celular ?? 'Sin asignar' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="activeTab === 'asunto'" x-transition class="g_tab_content">
+                    <div class="g_fila">
+                        <div class="g_columna_12 g_margin_bottom_10">
                             <label for="asunto_respuesta">Asunto (Respuesta)</label>
                             <input type="text" id="asunto_respuesta" wire:model.live="asunto_respuesta">
                             @error('asunto_respuesta')
@@ -177,152 +182,136 @@
                             @enderror
                         </div>
                     </div>
+                </div>
 
-                    <div class="g_margin_top_20">
-                        <div class="formulario_botones">
-                            <button type="submit" class="g_boton guardar"
-                                wire:loading.attr="disabled">Actualizar</button>
+                <div class="formulario_botones">
+                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">Actualizar</button>
 
-                            <a href="{{ route('erp.cita.vista.todo') }}" class="g_boton cancelar">Cancelar</a>
+                    <a href="{{ route('erp.cita.vista.todo') }}" class="g_boton cancelar">Cancelar</a>
+                </div>
+            </form>
+
+            @livewire('erp.cita.cita.cita-email', ['cita' => $cita])
+        </div>
+
+        <div class="g_columna_4 formulario">
+            <div class="g_panel">
+                <h4 class="g_panel_titulo">Ticket asociado</h4>
+
+                @if($ticket)
+                    <div class="g_margin_bottom_10">
+                        @can('ticket.ver')
+                            <a href="{{ route('erp.ticket.vista.ver', $ticket->id) }}" class="g_boton warning">
+                                <i class="fa-solid fa-eye"></i> Ver ticket
+                            </a>
+                        @endcan
+
+                        @can('ticket.editar')
+                            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton info">
+                                <i class="fa-solid fa-pencil"></i> Editar ticket
+                            </a>
+                        @endcan
+                    </div>
+
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Empresa</label>
+                            <input type="text" disabled value="{{ $ticket->unidadNegocio->nombre ?? 'Sin asignar' }}">
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Proyecto</label>
+                            <input type="text" disabled value="{{ $ticket->proyecto->nombre ?? 'Sin asignar' }}">
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="g_columna_4 formulario">
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Ticket asociado</h4>
-
-                    @if($ticket)
-                        <div class="g_margin_bottom_10">
-                            @can('ticket.ver')
-                                <a href="{{ route('erp.ticket.vista.ver', $ticket->id) }}" class="g_boton warning">
-                                    <i class="fa-solid fa-eye"></i> Ver ticket
-                                </a>
-                            @endcan
-
-                            @can('ticket.editar')
-                                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton info">
-                                    <i class="fa-solid fa-pencil"></i> Editar ticket
-                                </a>
-                            @endcan
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Área origen</label>
+                            <input type="text" disabled value="{{ $ticket->area->nombre ?? 'Sin asignar' }}">
                         </div>
 
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Tipo solicitud</label>
+                            <input type="text" disabled value="{{ $ticket->tipoSolicitud->nombre ?? 'Sin asignar' }}">
+                        </div>
+                    </div>
+
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Sub tipo solicitud</label>
+                            <input type="text" disabled value="{{ $ticket->subTipoSolicitud->nombre ?? 'Sin asignar' }}">
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Canal</label>
+                            <input type="text" disabled value="{{ $ticket->canal->nombre ?? 'Sin asignar' }}">
+                        </div>
+                    </div>
+
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Cliente</label>
+                            <input type="text" disabled value="{{ $ticket->nombres ?? 'Sin asignar' }}">
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_6">
+                            <label>Asignado </label>
+                            <input type="text" disabled value="{{ $ticket->gestor->name ?? 'Sin asignar' }}">
+                        </div>
+                    </div>
+
+                    <div class="g_fila">
+                        <div class="g_columna_12 g_margin_bottom_10">
+                            <label>Asunto </label>
+                            <textarea disabled>{{ $ticket->asunto_inicial ?? 'Sin asunto' }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="g_fila">
+                        <div class="g_columna_12 g_margin_bottom_10">
+                            <label>Descripción </label>
+                            <textarea disabled>{{ $ticket->descripcion_inicial ?? 'Sin descripción' }}</textarea>
+                        </div>
+                    </div>
+
+                    @if (!empty($ticket->lotes))
                         <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Empresa</label>
-                                <input type="text" disabled value="{{ $ticket->unidadNegocio->nombre ?? 'Sin asignar' }}">
-                            </div>
+                            <div class="g_columna_12">
+                                <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
 
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Proyecto</label>
-                                <input type="text" disabled value="{{ $ticket->proyecto->nombre ?? 'Sin asignar' }}">
-                            </div>
-                        </div>
-
-                        <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Área origen</label>
-                                <input type="text" disabled value="{{ $ticket->area->nombre ?? 'Sin asignar' }}">
-                            </div>
-
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Tipo solicitud</label>
-                                <input type="text" disabled value="{{ $ticket->tipoSolicitud->nombre ?? 'Sin asignar' }}">
-                            </div>
-                        </div>
-
-                        <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Sub tipo solicitud</label>
-                                <input type="text" disabled
-                                    value="{{ $ticket->subTipoSolicitud->nombre ?? 'Sin asignar' }}">
-                            </div>
-
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Canal</label>
-                                <input type="text" disabled value="{{ $ticket->canal->nombre ?? 'Sin asignar' }}">
-                            </div>
-                        </div>
-
-                        <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Cliente</label>
-                                <input type="text" disabled value="{{ $ticket->nombres ?? 'Sin asignar' }}">
-                            </div>
-
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Asignado </label>
-                                <input type="text" disabled value="{{ $ticket->gestor->name ?? 'Sin asignar' }}">
-                            </div>
-                        </div>
-
-                        <div class="g_fila">
-                            <div class="g_columna_12 g_margin_bottom_10">
-                                <label>Asunto </label>
-                                <textarea disabled>{{ $ticket->asunto_inicial ?? 'Sin asunto' }}</textarea>
-                            </div>
-                        </div>
-
-                        <div class="g_fila">
-                            <div class="g_columna_12 g_margin_bottom_10">
-                                <label>Descripción </label>
-                                <textarea disabled>{{ $ticket->descripcion_inicial ?? 'Sin descripción' }}</textarea>
-                            </div>
-                        </div>
-
-                        @if (!empty($ticket->lotes))
-                            <div class="g_fila">
-                                <div class="g_columna_12">
-                                    <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
-
-                                    <div class="g_contenedor_tabla">
-                                        <table class="g_tabla">
-                                            <thead>
-                                                <tr>
-                                                    <th>Razón Social</th>
-                                                    <th>Proyecto</th>
-                                                    <th>Mz./Lt.</th>
+                                <div class="g_contenedor_tabla">
+                                    <table class="g_tabla">
+                                        <thead>
+                                            <tr>
+                                                <th>Razón Social</th>
+                                                <th>Proyecto</th>
+                                                <th>Mz./Lt.</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($ticket->lotes as $index => $l)
+                                                <tr wire:key="lote-parent-{{ $index }}">
+                                                    <td> {{ $l['razon_social'] }} </td>
+                                                    <td> {{ $l['proyecto'] }} </td>
+                                                    <td> {{ $l['numero_lote'] }} </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($ticket->lotes as $index => $l)
-                                                    <tr wire:key="lote-parent-{{ $index }}">
-                                                        <td> {{ $l['razon_social'] }} </td>
-                                                        <td> {{ $l['proyecto'] }} </td>
-                                                        <td> {{ $l['numero_lote'] }} </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        @endif
-                    @else
-                        <div class="g_vacio">
-                            <i class="fa-solid fa-ticket-simple"></i>
-                            <p>Esta cita no está vinculada a un ticket.</p>
                         </div>
                     @endif
-                </div>
-
-                <div class="g_panel g_margin_top_20">
-                    <h4 class="g_panel_titulo">Datos del Cliente (Referencia)</h4>
-                    <div class="g_margin_bottom_10">
-                        <label>DNI / RUC</label>
-                        <input type="text" disabled value="{{ $dni }}">
+                @else
+                    <div class="g_vacio">
+                        <i class="fa-solid fa-ticket-simple"></i>
+                        <p>Esta cita no está vinculada a un ticket.</p>
                     </div>
-                    <div class="g_margin_bottom_10">
-                        <label>Nombres / Razón Social</label>
-                        <input type="text" disabled value="{{ $nombres }}">
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
-    </form>
-
-    @livewire('erp.cita.cita.cita-calendario')
+    </div>
 
     @script
     <script>

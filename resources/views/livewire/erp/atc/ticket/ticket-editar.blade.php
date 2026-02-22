@@ -128,7 +128,7 @@
 
                         <div class="g_margin_bottom_10 g_columna_4">
                             <label>Estado <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                            <select wire:model.live="estado_ticket_id"
+                            <select wire:model="estado_ticket_id"
                                 class="@error('estado_ticket_id') input-error @enderror">
                                 <option value="">Seleccionar...</option>
                                 @foreach($estados as $es)
@@ -208,12 +208,12 @@
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_6">
                             <label>Correo</label>
-                            <input type="text" wire:model.live="email">
+                            <input type="text" wire:model="email">
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_6">
                             <label>Celular</label>
-                            <input type="text" wire:model.live="celular">
+                            <input type="text" wire:model="celular">
                         </div>
                     </div>
                 </div>
