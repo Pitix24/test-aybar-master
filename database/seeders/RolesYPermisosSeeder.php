@@ -327,6 +327,15 @@ class RolesYPermisosSeeder extends Seeder
                 'asistencia-entrega-fest.eliminar',
                 'asistencia-entrega-fest.exportar-filtro',
                 'asistencia-entrega-fest.exportar-todo',
+            ],
+            'Módulo WhatsApp CRM' => [
+                'whatsapp.ver',
+                'whatsapp.navegacion',
+                'whatsapp.lista',
+                'whatsapp.chat',
+                'whatsapp.plantillas',
+                'whatsapp.campanas',
+                'whatsapp.conocimiento',
             ]
         ];
 

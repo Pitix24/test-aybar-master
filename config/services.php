@@ -57,4 +57,11 @@ return [
         'url' => env('AYBAR_SLIN_URL', 'https://aybarcorp.com/slin'),
     ],
 
+    'whatsapp' => [
+        'token' => env('WHATSAPP_TOKEN'),
+        'phone_id' => env('WHATSAPP_PHONE_ID'),
+        'business_id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID'),
+        'verify_token' => env('WHATSAPP_VERIFY_TOKEN', 'aybar_crm_secret_token'),
+    ],
+
 ];

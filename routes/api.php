@@ -4,6 +4,7 @@ use App\Http\Controllers\SlinController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WhatsappController;
 
 Route::middleware('api')->group(function () {
 
@@ -39,4 +40,8 @@ Route::middleware('api')->group(function () {
     Route::get('/slin/cuota-estado-cuenta', [SlinController::class, 'getCuotaEstadoCuenta'])->name('slin.cuota-estado-cuenta');
     Route::get('/slin/comprobante', [SlinController::class, 'getComprobante'])->name('slin.comprobante');
     Route::post('/slin/guardar-evidencia', [SlinController::class, 'postGuardarEvidencia'])->name('slin.guardar-evidencia');
+
+    // WhatsApp CRM Webhook
+    Route::get('/whatsapp/webhook', [WhatsappController::class, 'verifyWebhook']);
+    Route::post('/whatsapp/webhook', [WhatsappController::class, 'handleWebhook']);
 });
