@@ -72,22 +72,20 @@
                         <h4 class="g_panel_titulo">Registrar cliente</h4>
 
                         <div class="g_margin_bottom_10">
-                            <label>Email</label>
-                            <input type="text" disabled value="{{ $cliente_encontrado['correo'] }}">
-                        </div>
-
-                        <div class="g_margin_bottom_10">
-                            <label>Celular</label>
-                            <input type="text" disabled value="{{ $cliente_encontrado['telefono'] }}">
-                        </div>
-
-                        {{--<div class="g_margin_bottom_10">
                             <label for="email">Email <span class="obligatorio">*</span></label>
                             <input type="email" id="email" wire:model="email" required>
                             @error('email')
-                            <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                             @enderror
-                        </div>--}}
+                        </div>
+
+                        <div class="g_margin_bottom_10">
+                            <label for="celular">Celular</label>
+                            <input type="text" id="celular" wire:model="celular">
+                            @error('celular')
+                                <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         @if ($mostrar_form_email)
                             <div class="formulario_botones">

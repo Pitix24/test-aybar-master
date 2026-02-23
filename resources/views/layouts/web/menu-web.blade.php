@@ -45,6 +45,21 @@
                             </li>
 
                             <li class="menu_item menu_cliente">
+                                <a href="{{ route('cliente.lote') }}" class="boton_personalizado boton_personalizado_blanco_v2">
+                                    <i class="fa-solid fa-border-all"></i>
+                                    MIS PROYECTOS
+                                </a>
+                            </li>
+
+                            <li class="menu_item menu_cliente">
+                                <a href="{{ route('cliente.tutorial') }}"
+                                    class="boton_personalizado boton_personalizado_amarillo_v2">
+                                    <i class="fa-solid fa-circle-play"></i>
+                                    TUTORIALES
+                                </a>
+                            </li>
+
+                            <li class="menu_item menu_cliente">
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="boton_personalizado boton_personalizado_negro">

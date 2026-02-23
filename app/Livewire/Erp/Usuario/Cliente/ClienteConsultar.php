@@ -23,6 +23,7 @@ class ClienteConsultar extends Component
     public $dni;
     public $existingCliente;
     public $email;
+    public $celular;
     public $mostrar_form_email = false;
     public $cliente_encontrado = null;
     public $razones_sociales = [];
@@ -79,6 +80,7 @@ class ClienteConsultar extends Component
 
         $this->cliente_encontrado = $cliente;
         $this->email = $this->cliente_encontrado['correo'];
+        $this->celular = $this->cliente_encontrado['telefono'];
         $this->razones_sociales = $cliente['empresas'] ?? [];
 
         $this->existingCliente = Cliente::where('dni', $this->dni)->first();
@@ -122,7 +124,7 @@ class ClienteConsultar extends Component
             'user_id' => $user->id,
             'nombre' => $user->name,
             'email' => $user->email,
-            'telefono_principal' => $this->cliente_encontrado['telefono'] ?? null,
+            'telefono_principal' => $this->celular,
             'dni' => $this->dni,
         ]);
 

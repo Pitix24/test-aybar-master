@@ -40,8 +40,8 @@ class ValidarEnviosCavaliDiariosJob implements ShouldQueue
 
         foreach ($solicitudes as $solicitud) {
             try {
-                // nroCavali = codigo_cuota + numero_cuota (según lógica previa)
-                $nroCavali = ($solicitud->codigo_cuota ?? '') . ($solicitud->numero_cuota ?? '');
+                // nroCavali = codigo_venta + numero_cuota (según lógica previa)
+                $nroCavali = ($solicitud->codigo_venta ?? '') . '-' . ($solicitud->numero_cuota ?? '');
 
                 if (empty($nroCavali)) {
                     Log::channel('cavali')->warning('JOB VALIDAR: Solicitud sin nroCavali (codigo_cuota + numero_cuota)', [
