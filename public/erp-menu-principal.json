@@ -1080,5 +1080,15 @@
         "nivel": 1,
         "permiso": "whatsapp.ver",
         "submenus": []
+    },
+    {
+        "id": 11,
+        "nombre": "Módulo Email CRM",
+        "ruta": "erp.correo.vista.todo",
+        "url": null,
+        "icono": "fa-solid fa-envelope",
+        "nivel": 1,
+        "permiso": "correo.ver",
+        "submenus": []
     }
 ]
