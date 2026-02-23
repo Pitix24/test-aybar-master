@@ -131,7 +131,9 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="g_negrita">{{ $e->proyecto->nombre ?? 'N/A' }}</div>
+                                <div class="g_negrita">
+                                    {{ $e->proyectos->pluck('nombre')->implode(', ') ?: 'N/A' }}
+                                </div>
                                 <div class="g_texto_pequeno">{{ $e->cliente->nombre_completo ?? 'N/A' }}</div>
                             </td>
                             <td class="g_celda_centro">

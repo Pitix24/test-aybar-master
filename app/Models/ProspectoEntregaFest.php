@@ -12,10 +12,16 @@ class ProspectoEntregaFest extends Model
 
     protected $fillable = [
         'entrega_fest_id',
+        'proyecto_id',
         'user_id',
         'dni',
         'nombre',
         'apellidos',
+        'codigo_cliente',
+        'codigo_cuota',
+        'lote',
+        'manzana',
+        'etapa',
         'estado',
         'observacion',
     ];
@@ -23,6 +29,11 @@ class ProspectoEntregaFest extends Model
     public function entregaFest()
     {
         return $this->belongsTo(EntregaFest::class);
+    }
+
+    public function proyecto()
+    {
+        return $this->belongsTo(Proyecto::class);
     }
 
     public function invitado()

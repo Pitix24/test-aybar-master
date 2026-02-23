@@ -21,7 +21,8 @@ use Livewire\Component;
 class EntregaFestCrear extends Component
 {
     public $nombre, $descripcion, $codigo, $fecha_entrega;
-    public $unidad_negocio_id, $proyecto_id, $cliente_id;
+    public $unidad_negocio_id, $cliente_id;
+    public $proyectos_seleccionados = [];
     public $activo = true;
 
     // Catálogos
@@ -37,7 +38,8 @@ class EntregaFestCrear extends Component
             'codigo' => 'required|string|max:50|unique:entrega_fests,codigo',
             'fecha_entrega' => 'required|date',
             'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
-            'proyecto_id' => 'required|exists:proyectos,id',
+            'proyectos_seleccionados' => 'required|array|min:1',
+            'proyectos_seleccionados.*' => 'exists:proyectos,id',
             'cliente_id' => 'required|exists:clientes,id',
             'activo' => 'boolean',
         ];
@@ -47,7 +49,7 @@ class EntregaFestCrear extends Component
     {
         return [
             'unidad_negocio_id' => 'Unidad de Negocio',
-            'proyecto_id' => 'Proyecto',
+            'proyectos_seleccionados' => 'Proyectos',
             'cliente_id' => 'Cliente Responsable',
             'fecha_entrega' => 'Fecha de Entrega',
             'codigo' => 'Código Único',
@@ -67,7 +69,7 @@ class EntregaFestCrear extends Component
 
     public function updatedUnidadNegocioId($value)
     {
-        $this->proyecto_id = '';
+        $this->proyectos_seleccionados = [];
         if ($value) {
             $this->loadProyectos();
         }
@@ -101,9 +103,8 @@ class EntregaFestCrear extends Component
         try {
             DB::beginTransaction();
 
-            EntregaFest::create([
+            $evento = EntregaFest::create([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
-                'proyecto_id' => $this->proyecto_id,
                 'cliente_id' => $this->cliente_id,
                 'user_id' => Auth::id(),
                 'nombre' => $this->nombre,
@@ -112,6 +113,8 @@ class EntregaFestCrear extends Component
                 'fecha_entrega' => $this->fecha_entrega,
                 'activo' => $this->activo,
             ]);
+
+            $evento->proyectos()->sync($this->proyectos_seleccionados);
 
             DB::commit();
 

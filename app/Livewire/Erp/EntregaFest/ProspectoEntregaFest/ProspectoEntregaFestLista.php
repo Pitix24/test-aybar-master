@@ -84,7 +84,7 @@ class ProspectoEntregaFestLista extends Component
         $eventos = EntregaFest::orderBy('fecha_entrega', 'desc')->get();
 
         $items = ProspectoEntregaFest::query()
-            ->with(['entregaFest', 'user'])
+            ->with(['entregaFest', 'proyecto', 'user'])
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
                     $q->where('nombre', 'like', '%' . $this->buscar . '%')

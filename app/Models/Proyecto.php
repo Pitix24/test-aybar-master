@@ -37,4 +37,9 @@ class Proyecto extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    public function entregaFests()
+    {
+        return $this->belongsToMany(EntregaFest::class, 'entrega_fest_proyecto');
+    }
 }

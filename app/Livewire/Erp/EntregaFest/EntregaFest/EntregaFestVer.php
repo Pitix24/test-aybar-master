@@ -19,7 +19,7 @@ class EntregaFestVer extends Component
     {
         $this->evento = EntregaFest::with([
             'unidadNegocio',
-            'proyecto',
+            'proyectos',
             'cliente',
             'user',
             'prospectos.user',

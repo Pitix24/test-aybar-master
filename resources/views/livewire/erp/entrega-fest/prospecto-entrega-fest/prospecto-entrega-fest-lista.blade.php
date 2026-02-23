@@ -114,10 +114,16 @@
                                 <td class="g_negrita">{{ $p->dni }}</td>
                                 <td>
                                     <div class="g_negrita">{{ $p->nombre_completo }}</div>
+                                    <div class="g_texto_pequeno">
+                                        @if($p->etapa || $p->manzana || $p->lote)
+                                            Etapa: {{ $p->etapa ?? '-' }} | Mz: {{ $p->manzana ?? '-' }} | Lt:
+                                            {{ $p->lote ?? '-' }}
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="g_negrita">{{ $p->entregaFest->nombre }}</div>
-                                    <div class="g_texto_pequeno">{{ $p->entregaFest->proyecto->nombre ?? 'Sin proyecto' }}
+                                    <div class="g_texto_pequeno">{{ $p->proyecto->nombre ?? 'Sin proyecto' }}
                                     </div>
                                 </td>
                                 <td class="g_celda_centro">
@@ -137,9 +143,10 @@
                                 </td>
                                 <td class="g_celda_acciones g_celda_centro">
                                     @can('prospecto-entrega-fest.editar')
-                                        <button type="button" class="g_accion editar" title="Editar / Evaluar">
+                                        <a href="{{ route('erp.prospecto-entrega-fest.vista.editar', $p->id) }}"
+                                            class="g_accion editar" title="Editar / Evaluar">
                                             <i class="fa-solid fa-magnifying-glass-chart"></i>
-                                        </button>
+                                        </a>
                                     @endcan
                                     @if($p->estado == 'aprobado' && !$p->invitado)
                                         @can('invitado-entrega-fest.crear')

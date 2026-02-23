@@ -65,14 +65,27 @@
                                 @error('unidad_negocio_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
                             <div class="g_margin_bottom_15 g_columna_6">
-                                <label>Proyecto</label>
-                                <select wire:model="proyecto_id" {{ !$unidad_negocio_id ? 'disabled' : '' }}>
-                                    <option value="">Seleccione...</option>
-                                    @foreach ($proyectos as $p)
-                                        <option value="{{ $p->id }}">{{ $p->nombre }}</option>
-                                    @endforeach
-                                </select>
-                                @error('proyecto_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                                <label>Proyectos <span class="obligatorio">*</span></label>
+                                <div class="g_checkbox_list"
+                                    style="border: 1px solid #ddd; padding: 10px; border-radius: 5px; max-height: 150px; overflow-y: auto; background: white;">
+                                    @forelse ($proyectos as $p)
+                                        <div class="g_checkbox_item" style="margin-bottom: 5px;">
+                                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                                <input type="checkbox" wire:model="proyectos_seleccionados"
+                                                    value="{{ $p->id }}"
+                                                    {{ in_array($p->id, $proyectos_seleccionados) ? 'checked' : '' }}>
+                                                {{ $p->nombre }}
+                                            </label>
+                                        </div>
+                                    @empty
+                                        <p class="g_texto_secundario" style="font-size: 0.8rem;">
+                                            {{ $unidad_negocio_id ? 'No hay proyectos disponibles.' : 'Seleccione una Unidad de Negocio primero.' }}
+                                        </p>
+                                    @endforelse
+                                </div>
+                                @error('proyectos_seleccionados')
+                                    <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 

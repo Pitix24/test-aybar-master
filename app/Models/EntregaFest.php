@@ -13,7 +13,6 @@ class EntregaFest extends Model
 
     protected $fillable = [
         'unidad_negocio_id',
-        'proyecto_id',
         'cliente_id',
         'user_id',
         'nombre',
@@ -32,9 +31,9 @@ class EntregaFest extends Model
         return $this->belongsTo(UnidadNegocio::class);
     }
 
-    public function proyecto()
+    public function proyectos()
     {
-        return $this->belongsTo(Proyecto::class);
+        return $this->belongsToMany(Proyecto::class, 'entrega_fest_proyecto');
     }
 
     public function cliente()

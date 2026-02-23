@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->id();
 
             $table->foreignId('unidad_negocio_id')->constrained();
-            $table->foreignId('proyecto_id')->nullable()->constrained();
             $table->foreignId('cliente_id')->constrained();
             $table->foreignId('user_id')->constrained();
 

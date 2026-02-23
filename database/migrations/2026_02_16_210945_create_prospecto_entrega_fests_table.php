@@ -14,11 +14,19 @@ return new class extends Migration {
             $table->id();
 
             $table->foreignId('entrega_fest_id')->constrained();
+            $table->foreignId('proyecto_id')->nullable()->constrained();
             $table->foreignId('user_id')->nullable()->constrained(); // quien lo registró
 
             $table->string('dni', 15);
             $table->string('nombre');
             $table->string('apellidos');
+
+            // Campos de contexto inmobiliario
+            $table->string('codigo_cliente')->nullable();
+            $table->string('codigo_cuota')->nullable();
+            $table->string('lote')->nullable();
+            $table->string('manzana')->nullable();
+            $table->string('etapa')->nullable();
 
             $table->enum('estado', [
                 'pendiente',

@@ -28,8 +28,9 @@
                                 class="g_negrita">{{ $evento->unidadNegocio->nombre }}</span></p>
                     </div>
                     <div class="g_columna_6">
-                        <p class="g_texto_secundario">Proyecto: <span
-                                class="g_negrita">{{ $evento->proyecto->nombre ?? 'N/A' }}</span></p>
+                        <p class="g_texto_secundario">Proyectos: <span
+                                class="g_negrita">{{ $evento->proyectos->pluck('nombre')->implode(', ') ?: 'N/A' }}</span>
+                        </p>
                         <p class="g_texto_secundario">Cliente Responsable: <span
                                 class="g_negrita">{{ $evento->cliente->nombre_completo }}</span></p>
                         <p class="g_texto_secundario">Estado: <span

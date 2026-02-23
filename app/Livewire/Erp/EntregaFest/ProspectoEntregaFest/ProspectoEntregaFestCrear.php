@@ -13,21 +13,48 @@ use Livewire\Component;
 #[Title('Registrar Prospecto - Entrega Fest')]
 class ProspectoEntregaFestCrear extends Component
 {
-    public $entrega_fest_id, $dni, $nombre, $apellidos, $observacion;
+    public $entrega_fest_id, $proyecto_id, $dni, $nombre, $apellidos, $observacion;
+    public $codigo_cliente, $codigo_cuota, $lote, $manzana, $etapa;
     public $estado = 'pendiente';
+    public $proyectos = [];
 
     protected $rules = [
         'entrega_fest_id' => 'required|exists:entrega_fests,id',
+        'proyecto_id' => 'required|exists:proyectos,id',
         'dni' => 'required|string|max:15',
         'nombre' => 'required|string|max:255',
         'apellidos' => 'required|string|max:255',
         'estado' => 'required|in:pendiente,observado,aprobado,rechazado',
         'observacion' => 'nullable|string',
+        'codigo_cliente' => 'nullable|string|max:50',
+        'codigo_cuota' => 'nullable|string|max:50',
+        'lote' => 'nullable|string|max:20',
+        'manzana' => 'nullable|string|max:20',
+        'etapa' => 'nullable|string|max:50',
     ];
 
     public function mount($eventoId = null)
     {
         $this->entrega_fest_id = $eventoId;
+        if ($this->entrega_fest_id) {
+            $this->loadProyectos();
+        }
+    }
+
+    public function updatedEntregaFestId()
+    {
+        $this->proyecto_id = '';
+        $this->loadProyectos();
+    }
+
+    public function loadProyectos()
+    {
+        if ($this->entrega_fest_id) {
+            $evento = EntregaFest::find($this->entrega_fest_id);
+            $this->proyectos = $evento ? $evento->proyectos : [];
+        } else {
+            $this->proyectos = [];
+        }
     }
 
     public function store()
@@ -46,10 +73,16 @@ class ProspectoEntregaFestCrear extends Component
 
         ProspectoEntregaFest::create([
             'entrega_fest_id' => $this->entrega_fest_id,
+            'proyecto_id' => $this->proyecto_id,
             'user_id' => Auth::id(),
             'dni' => $this->dni,
             'nombre' => $this->nombre,
             'apellidos' => $this->apellidos,
+            'codigo_cliente' => $this->codigo_cliente,
+            'codigo_cuota' => $this->codigo_cuota,
+            'lote' => $this->lote,
+            'manzana' => $this->manzana,
+            'etapa' => $this->etapa,
             'estado' => $this->estado,
             'observacion' => $this->observacion,
         ]);

@@ -14,9 +14,9 @@
     <form wire:submit.prevent="update">
         <div class="g_panel">
             <div class="g_fila">
-                <div class="g_margin_bottom_15 g_columna_6">
+                <div class="g_margin_bottom_15 g_columna_4">
                     <label>Evento / Entrega Fest <span class="obligatorio">*</span></label>
-                    <select wire:model="entrega_fest_id" class="@error('entrega_fest_id') select-error @enderror">
+                    <select wire:model.live="entrega_fest_id" class="@error('entrega_fest_id') select-error @enderror">
                         @foreach ($eventos as $e)
                             <option value="{{ $e->id }}">{{ $e->nombre }} ({{ $e->codigo }})</option>
                         @endforeach
@@ -24,7 +24,18 @@
                     @error('entrega_fest_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="g_margin_bottom_15 g_columna_6">
+                <div class="g_margin_bottom_15 g_columna_4">
+                    <label>Proyecto <span class="obligatorio">*</span></label>
+                    <select wire:model="proyecto_id" class="@error('proyecto_id') select-error @enderror" {{ !$entrega_fest_id ? 'disabled' : '' }}>
+                        <option value="">Seleccione el proyecto...</option>
+                        @foreach ($proyectos as $p)
+                            <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                        @endforeach
+                    </select>
+                    @error('proyecto_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="g_margin_bottom_15 g_columna_4">
                     <label>DNI / Documento <span class="obligatorio">*</span></label>
                     <input type="text" wire:model="dni" class="@error('dni') input-error @enderror">
                     @error('dni') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -32,15 +43,43 @@
             </div>
 
             <div class="g_fila">
-                <div class="g_margin_bottom_15 g_columna_6">
+                <div class="g_margin_bottom_15 g_columna_4">
                     <label>Nombres <span class="obligatorio">*</span></label>
                     <input type="text" wire:model="nombre" class="@error('nombre') input-error @enderror">
                     @error('nombre') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
-                <div class="g_margin_bottom_15 g_columna_6">
+                <div class="g_margin_bottom_15 g_columna_4">
                     <label>Apellidos <span class="obligatorio">*</span></label>
                     <input type="text" wire:model="apellidos" class="@error('apellidos') input-error @enderror">
                     @error('apellidos') <p class="mensaje_error">{{ $message }}</p> @enderror
+                </div>
+                <div class="g_margin_bottom_15 g_columna_4">
+                    <label>DNI / Documento <span class="obligatorio">*</span></label>
+                    <input type="text" wire:model="dni" class="@error('dni') input-error @enderror">
+                    @error('dni') <p class="mensaje_error">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_15 g_columna_3">
+                    <label>Cód. Cliente</label>
+                    <input type="text" wire:model="codigo_cliente" placeholder="Opcional">
+                </div>
+                <div class="g_margin_bottom_15 g_columna_3">
+                    <label>Cód. Cuota</label>
+                    <input type="text" wire:model="codigo_cuota" placeholder="Opcional">
+                </div>
+                <div class="g_margin_bottom_15 g_columna_2">
+                    <label>Etapa</label>
+                    <input type="text" wire:model="etapa" placeholder="Ej: 1">
+                </div>
+                <div class="g_margin_bottom_15 g_columna_2">
+                    <label>Manzana</label>
+                    <input type="text" wire:model="manzana" placeholder="Ej: A">
+                </div>
+                <div class="g_margin_bottom_15 g_columna_2">
+                    <label>Lote</label>
+                    <input type="text" wire:model="lote" placeholder="Ej: 15">
                 </div>
             </div>
 

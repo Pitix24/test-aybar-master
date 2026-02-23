@@ -23,7 +23,8 @@ class EntregaFestEditar extends Component
 
     // Campos del formulario
     public $nombre, $descripcion, $codigo, $fecha_entrega;
-    public $unidad_negocio_id, $proyecto_id, $cliente_id;
+    public $unidad_negocio_id, $cliente_id;
+    public $proyectos_seleccionados = [];
     public $activo;
 
     // Catálogos
@@ -39,7 +40,8 @@ class EntregaFestEditar extends Component
             'codigo' => 'required|string|max:50|unique:entrega_fests,codigo,' . $this->evento->id,
             'fecha_entrega' => 'required|date',
             'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
-            'proyecto_id' => 'required|exists:proyectos,id',
+            'proyectos_seleccionados' => 'required|array|min:1',
+            'proyectos_seleccionados.*' => 'exists:proyectos,id',
             'cliente_id' => 'required|exists:clientes,id',
             'activo' => 'boolean',
         ];
@@ -49,7 +51,7 @@ class EntregaFestEditar extends Component
     {
         return [
             'unidad_negocio_id' => 'Unidad de Negocio',
-            'proyecto_id' => 'Proyecto',
+            'proyectos_seleccionados' => 'Proyectos',
             'cliente_id' => 'Cliente Responsable',
             'fecha_entrega' => 'Fecha de Entrega',
             'codigo' => 'Código Único',
@@ -59,7 +61,7 @@ class EntregaFestEditar extends Component
 
     public function mount($id)
     {
-        $this->evento = EntregaFest::with(['unidadNegocio', 'proyecto', 'cliente'])->findOrFail($id);
+        $this->evento = EntregaFest::with(['unidadNegocio', 'proyectos', 'cliente'])->findOrFail($id);
 
         // Carga de datos iniciales
         $this->nombre = $this->evento->nombre;
@@ -67,7 +69,7 @@ class EntregaFestEditar extends Component
         $this->codigo = $this->evento->codigo;
         $this->fecha_entrega = $this->evento->fecha_entrega->format('Y-m-d');
         $this->unidad_negocio_id = $this->evento->unidad_negocio_id;
-        $this->proyecto_id = $this->evento->proyecto_id;
+        $this->proyectos_seleccionados = $this->evento->proyectos->pluck('id')->toArray();
         $this->cliente_id = $this->evento->cliente_id;
         $this->activo = $this->evento->activo;
 
@@ -80,7 +82,7 @@ class EntregaFestEditar extends Component
 
     public function updatedUnidadNegocioId($value)
     {
-        $this->proyecto_id = '';
+        $this->proyectos_seleccionados = [];
         $this->proyectos = [];
         if ($value) {
             $this->loadProyectos();
@@ -117,15 +119,16 @@ class EntregaFestEditar extends Component
 
             $this->evento->update([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
-                'proyecto_id' => $this->proyecto_id,
                 'cliente_id' => $this->cliente_id,
                 'nombre' => $this->nombre,
                 'descripcion' => $this->descripcion,
                 'codigo' => $this->codigo,
                 'fecha_entrega' => $this->fecha_entrega,
                 'activo' => $this->activo,
-                'updated_by' => auth()->id() // Asumiendo que añadimos esta columna o similar
+                'updated_by' => auth()->id()
             ]);
+
+            $this->evento->proyectos()->sync($this->proyectos_seleccionados);
 
             DB::commit();
 
