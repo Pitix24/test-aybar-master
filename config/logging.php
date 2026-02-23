@@ -249,6 +249,13 @@ return [
             'days' => 14,
         ],
 
+        'cita' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/cita.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'estado_solicitud_evidencia_pago' => [
             'driver' => 'daily',
             'path' => storage_path('logs/estado_solicitud_evidencia_pago.log'),

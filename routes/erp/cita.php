@@ -43,7 +43,7 @@ Route::group(['middleware' => ['permission:modulo-cita.ver']], function () {
                 Route::get('/', CitaLista::class)->middleware('permission:cita.lista')->name('todo');
                 Route::get('/crear/{citaPadre?}', CitaCrear::class)->middleware('permission:cita.crear')->name('crear');
                 Route::get('/editar/{id}', CitaEditar::class)->middleware('permission:cita.editar')->name('editar');
-                Route::get('/calendario', CitaCalendario::class)->middleware('permission:cita.ver')->name('calendario');
+                Route::get('/calendario', CitaCalendario::class)->middleware('permission:cita.calendario')->name('calendario');
             });
     });
 });

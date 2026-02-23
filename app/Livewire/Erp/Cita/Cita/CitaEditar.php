@@ -69,7 +69,12 @@ class CitaEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar cita: ' . $e->getMessage());
+            Log::channel('cita')->error("[CITA] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->cita->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'Ocurrió un error al actualizar la cita.']);
         }
     }
@@ -89,7 +94,11 @@ class CitaEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar cita: ' . $e->getMessage());
+            Log::channel('cita')->error("[CITA] Error al eliminar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'target_id' => $this->cita->id,
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se pudo eliminar la cita.']);
         }
     }

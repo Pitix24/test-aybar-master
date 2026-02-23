@@ -110,7 +110,7 @@ class CitaEmail extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('[CITA] Error CitaEmail@store: ' . $e->getMessage(), [
+            Log::channel('cita')->error('[CITA] Error CitaEmail@store: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
             $this->dispatch('alertaLivewire', [

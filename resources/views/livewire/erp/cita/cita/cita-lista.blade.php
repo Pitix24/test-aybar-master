@@ -7,8 +7,10 @@
         <h2>Listado de Citas</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.cita.vista.calendario') }}" class="g_boton primary">
-                Calendario <i class="fa-solid fa-calendar-days"></i></a>
+            @can('cita.calendario')
+                <a href="{{ route('erp.cita.vista.calendario') }}" class="g_boton primary">
+                    Calendario <i class="fa-solid fa-calendar-days"></i></a>
+            @endcan
         </div>
     </div>
 

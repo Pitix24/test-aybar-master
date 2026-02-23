@@ -22,7 +22,7 @@ class RolesYPermisosSeeder extends Seeder
         // 1. ESTRUCTURA DE PERMISOS POR MÓDULO
         // ----------------------------------------
         $modulos = [
-            'Módulo Sistema' => [
+            'Módulo Sistema' => [//ok
                 'modulo-sistema.ver',//ok
                 /* ROLES */
                 'rol.navegacion',//ok
@@ -53,16 +53,16 @@ class RolesYPermisosSeeder extends Seeder
                 'menu.exportar-todo',//ok
             ],
             'Módulo Usuario' => [
-                'modulo-usuarios.ver',
-                'admin.navegacion',
-                'admin.lista',
-                'admin.ver',
-                'admin.crear',
-                'admin.editar',
-                'admin.eliminar',
-                'admin.exportar-filtro',
-                'admin.exportar-todo',
-                'admin.cambiar-clave',
+                'modulo-usuarios.ver',//ok
+                'admin.navegacion',//ok
+                'admin.lista',//ok
+                'admin.ver',//ok
+                'admin.crear',//ok
+                'admin.editar',//ok
+                'admin.eliminar',//ok
+                'admin.exportar-filtro',//ok
+                'admin.exportar-todo',//ok
+                'admin.cambiar-clave',//ok
                 'cliente.navegacion',
                 'cliente.lista',
                 'cliente.ver',
@@ -83,7 +83,7 @@ class RolesYPermisosSeeder extends Seeder
                 'cliente-antiguo.exportar-filtro',
                 'cliente-antiguo.exportar-todo',
             ],
-            'Módulo Negocio' => [
+            'Módulo Negocio' => [//ok
                 'modulo-negocio.ver',
                 /* ROLES */
                 'unidad-negocio.navegacion',//ok
@@ -140,7 +140,7 @@ class RolesYPermisosSeeder extends Seeder
                 'area.exportar-usuarios',//ok
                 'area.exportar-solicitudes',//ok
             ],
-            'Módulo ATC' => [
+            'Módulo ATC' => [//ok
                 'modulo-atc.ver',//ok
                 'tipo-solicitud.navegacion',//ok
                 'tipo-solicitud.lista',//ok
@@ -197,7 +197,7 @@ class RolesYPermisosSeeder extends Seeder
                 'ticket.enviar-correo',//ok
                 'ticket.chat',//ok
             ],
-            'Módulo Cita' => [
+            'Módulo Cita' => [//ok
                 'modulo-cita.ver',//ok
                 'estado-cita.navegacion',//ok
                 'estado-cita.lista',//ok
@@ -215,16 +215,16 @@ class RolesYPermisosSeeder extends Seeder
                 'motivo-cita.eliminar',//ok
                 'motivo-cita.exportar-filtro',//ok
                 'motivo-cita.exportar-todo',//ok
-                'cita.navegacion',
-                'cita.lista',
-                'cita.ver',
-                'cita.crear',
-                'cita.editar',
-                'cita.eliminar',
-                'cita.exportar-filtro',
-                'cita.exportar-todo',
-                'cita.enviar-correo',
-                'cita.calendario',
+                'cita.navegacion',//ok
+                'cita.lista',//ok
+                'cita.ver',//ok
+                'cita.crear',//ok
+                'cita.editar',//ok
+                'cita.eliminar',//ok
+                'cita.exportar-filtro',//ok
+                'cita.exportar-todo',//ok
+                'cita.enviar-correo',//ok
+                'cita.calendario',//ok
             ],
             'Módulo Backoffice' => [
                 'modulo-backoffice.ver',//ok
@@ -253,7 +253,7 @@ class RolesYPermisosSeeder extends Seeder
                 'evidencia-pago-antiguo.exportar-todo',
                 'evidencia-pago-antiguo.validar',
             ],
-            'Módulo Letras' => [
+            'Módulo Letras' => [//ok
                 'modulo-letras.ver',//ok
                 'estado-solicitud-digitalizar-letra.navegacion',//ok
                 'estado-solicitud-digitalizar-letra.lista',//ok
@@ -277,22 +277,22 @@ class RolesYPermisosSeeder extends Seeder
                 'envio-cavali.exportar-todo',//ok
                 'envio-cavali.exportar-envios',//ok
             ],
-            'Módulo Reportes' => [
-                'modulo-reporte.ver',
-                'reporte-usuario.navegacion',
-                'reporte-usuario.admin.ver',
-                'reporte-usuario.cliente.ver',
-                'reporte-usuario.direccion.ver',
-                'reporte-backoffice.navegacion',
-                'reporte-backoffice.solicitud-evidencia-pago.ver',
-                'reporte-backoffice.evidencia-pago.ver',
-                'reporte-backoffice.evidencia-pago-antiguo.ver',
-                'reporte-atc.navegacion',
-                'reporte-atc.ticket.ver',
-                'reporte-cita.navegacion',
-                'reporte-cita.cita.ver',
-                'reporte-letra.navegacion',
-                'reporte-letra.letra.ver',
+            'Módulo Reportes' => [//ok
+                'modulo-reporte.ver',//ok
+                'reporte-usuario.navegacion',//ok
+                'reporte-usuario.admin.ver',//ok
+                'reporte-usuario.cliente.ver',//ok
+                'reporte-usuario.direccion.ver',//ok
+                'reporte-backoffice.navegacion',//ok
+                'reporte-backoffice.solicitud-evidencia-pago.ver',//ok
+                'reporte-backoffice.evidencia-pago.ver',//ok
+                'reporte-backoffice.evidencia-pago-antiguo.ver',//ok
+                'reporte-atc.navegacion',//ok
+                'reporte-atc.ticket.ver',//ok
+                'reporte-cita.navegacion',//ok
+                'reporte-cita.cita.ver',//ok
+                'reporte-letra.navegacion',//ok
+                'reporte-letra.letra.ver',//ok
             ],
             'Módulo Marketing' => [
                 'modulo-marketing.ver',//ok

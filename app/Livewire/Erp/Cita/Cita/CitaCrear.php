@@ -188,7 +188,11 @@ class CitaCrear extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al crear cita: ' . $e->getMessage());
+            Log::channel('cita')->error("[CITA] Error al crear: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'Ocurrió un error al guardar la cita.']);
             return;
         }
