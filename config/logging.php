@@ -165,6 +165,13 @@ return [
             'days' => 14,
         ],
 
+        'clientes-antiguo' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/clientes-antiguo.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'negocio' => [
             'driver' => 'daily',
             'path' => storage_path('logs/negocio.log'),
