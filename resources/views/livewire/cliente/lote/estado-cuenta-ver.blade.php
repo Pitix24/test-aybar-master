@@ -163,7 +163,8 @@
                                 @endif
                             </td>
                             <td>
-                                @if (!empty($item['NroCavali']) && ($item['SaldoPendiente'] ?? 0) == 0)
+                                {{--@if (!empty($item['NroCavali']) && ($item['SaldoPendiente'] ?? 0) == 0)--}}
+                                @if (($item['Comprobante'] || $item['Ticket']) && ($item['SaldoPendiente'] ?? 0) == 0)
                                     @if ($item['tiene_constancia_cavali'] ?? false)
                                         <button wire:click="verConstanciaCavali({{ json_encode($item) }})" class="g_boton guardar"
                                             title="Ver letra digital firmada" wire:loading.attr="disabled"
@@ -213,15 +214,15 @@
     </div>
 
     @if ($cuota)
-        <x-modal title="Subir Evidencia de Pago" wireClose="cerrarModalEvidenciaPago">
-            @livewire('cliente.lote.adjuntar-voucher-pago', [
-                'cuota' => $cuota,
-                'lote' => $lote
-            ], 'modal-adjuntar-' . ($cuota['idCuota'] ?? 'new'))
-            </x-modal>
+            <x-modal title="Subir Evidencia de Pago" wireClose="cerrarModalEvidenciaPago">
+                @livewire('cliente.lote.adjuntar-voucher-pago', [
+                    'cuota' => $cuota,
+                    'lote' => $lote
+                ], 'modal-adjuntar-' . ($cuota['idCuota'] ?? 'new'))
+        </x-modal>
      @endif
 @if ($cuotaCavali)
-    <x-modal title="Digitalización de Letra" wireClose="cerrarModalCavali">
+                    <x-modal title="Digitalización de Letra" wireClose="cerrarModalCavali">
         @livewire('cliente.lote.aceptar-digitalizar-letra', [
             'cuota' => $cuotaCavali,
             'lote' => $lote

@@ -24,6 +24,18 @@ class ProspectoEntregaFest extends Model
         'etapa',
         'estado',
         'observacion',
+        'grupo',
+        'gestor_backoffice_id',
+        'fecha_culminacion_eecc',
+        'link_carpeta_eecc',
+        'link_eecc_firmado',
+        'validador_backoffice_id',
+        'fecha_validacion_eecc',
+        'estado_backoffice',
+        'estado_contrato_preeliminar_emitido',
+        'estado_firma_contrato_firmado',
+        'fecha_firma',
+        'fecha_generacion_contrato',
     ];
 
     public function entregaFest()

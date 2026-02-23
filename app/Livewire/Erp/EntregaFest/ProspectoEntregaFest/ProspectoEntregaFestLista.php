@@ -28,6 +28,12 @@ class ProspectoEntregaFestLista extends Component
     #[Url(history: true)]
     public $estado = '';
 
+    #[Url(history: true)]
+    public $grupo = '';
+
+    #[Url(history: true)]
+    public $estado_backoffice = '';
+
     public $perPage = 15;
 
     public function updated($property)
@@ -39,7 +45,7 @@ class ProspectoEntregaFestLista extends Component
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'entrega_fest_id', 'estado']);
+        $this->reset(['buscar', 'entrega_fest_id', 'estado', 'grupo', 'estado_backoffice']);
         $this->resetPage();
     }
 
@@ -97,6 +103,12 @@ class ProspectoEntregaFestLista extends Component
             })
             ->when($this->estado, function ($query) {
                 $query->where('estado', $this->estado);
+            })
+            ->when($this->grupo, function ($query) {
+                $query->where('grupo', $this->grupo);
+            })
+            ->when($this->estado_backoffice, function ($query) {
+                $query->where('estado_backoffice', $this->estado_backoffice);
             })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);

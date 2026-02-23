@@ -37,6 +37,43 @@ return new class extends Migration {
 
             $table->text('observacion')->nullable();
 
+            // BackOffice
+            $table->enum('grupo', [
+                'A',
+                'B',
+                'C',
+                'D'
+            ])->default('A');
+            $table->foreignId('gestor_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //gestor backoffice
+            $table->dateTime('fecha_culminacion_eecc')->nullable(); //fecha culminación estado de cuenta
+            $table->string('link_carpeta_eecc')->nullable(); // esto será un link
+            $table->string('link_eecc_firmado')->nullable(); // esto será un link
+            $table->foreignId('validador_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //validador backoffice
+            $table->dateTime('fecha_validacion_eecc')->nullable(); //fecha validación estado de cuenta
+            $table->enum('estado_backoffice', [
+                'pendiente',
+                'observado',
+                'aprobado',
+                'rechazado'
+            ])->default('pendiente');
+
+            // Legal
+            $table->enum('estado_contrato_preeliminar_emitido', [
+                'pendiente',
+                'observado',
+                'aprobado',
+                'rechazado'
+            ])->default('pendiente');
+
+            $table->enum('estado_firma_contrato_firmado', [
+                'pendiente',
+                'observado',
+                'aprobado',
+                'rechazado'
+            ])->default('pendiente');
+            $table->dateTime('fecha_firma')->nullable(); //fecha firma contrato
+            $table->dateTime('fecha_generacion_contrato')->nullable(); //fecha generacion contrato
+
             $table->timestamps();
             $table->unique(['entrega_fest_id', 'dni']);
         });

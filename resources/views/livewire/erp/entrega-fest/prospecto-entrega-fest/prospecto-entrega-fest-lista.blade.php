@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Estado</label>
+                    <label>Estado Prospecto</label>
                     <select wire:model.live="estado">
                         <option value="">Todos</option>
                         <option value="pendiente">Pendiente</option>
@@ -45,12 +45,35 @@
                     </select>
                 </div>
 
+                <div class="g_margin_bottom_10 g_columna_1">
+                    <label>Grupo</label>
+                    <select wire:model.live="grupo">
+                        <option value="">Todos</option>
+                        <option value="A">Grupo A</option>
+                        <option value="B">Grupo B</option>
+                        <option value="C">Grupo C</option>
+                        <option value="D">Grupo D</option>
+                    </select>
+                </div>
+
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Registros</label>
+                    <label>E. BackOffice</label>
+                    <select wire:model.live="estado_backoffice">
+                        <option value="">Todos</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="observado">Observado</option>
+                        <option value="aprobado">Aprobado</option>
+                        <option value="rechazado">Rechazado</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_1">
+                    <label>Reg.</label>
                     <select wire:model.live="perPage">
-                        <option value="15">15 registros</option>
-                        <option value="30">30 registros</option>
-                        <option value="50">50 registros</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
                     </select>
                 </div>
             </div>
@@ -103,8 +126,9 @@
                             <th style="width: 100px;">DNI</th>
                             <th>Nombres y Apellidos</th>
                             <th>Evento / Proyecto</th>
-                            <th class="g_celda_centro">Estado</th>
-                            <th>Registrado por / Fecha</th>
+                            <th class="g_celda_centro">Grupo</th>
+                            <th class="g_celda_centro">Est. B.O.</th>
+                            <th class="g_celda_centro">Estado Fing.</th>
                             <th class="g_celda_centro">Acciones</th>
                         </tr>
                     </thead>
@@ -127,6 +151,20 @@
                                     </div>
                                 </td>
                                 <td class="g_celda_centro">
+                                    <span class="g_badge dark">Grupo {{ $p->grupo }}</span>
+                                </td>
+                                <td class="g_celda_centro">
+                                    @php
+                                        $boClass = match ($p->estado_backoffice) {
+                                            'aprobado' => 'success',
+                                            'rechazado' => 'error',
+                                            'observado' => 'warning',
+                                            default => 'primary'
+                                        };
+                                    @endphp
+                                    <span class="g_badge {{ $boClass }}">{{ ucfirst($p->estado_backoffice) }}</span>
+                                </td>
+                                <td class="g_celda_centro">
                                     @php
                                         $badgeClass = match ($p->estado) {
                                             'aprobado' => 'success',
@@ -136,10 +174,6 @@
                                         };
                                     @endphp
                                     <span class="g_badge {{ $badgeClass }}">{{ ucfirst($p->estado) }}</span>
-                                </td>
-                                <td>
-                                    <div class="g_texto_secundario">{{ $p->user->name ?? 'Sistema' }}</div>
-                                    <div class="g_texto_pequeno">{{ $p->created_at->format('d/m/Y H:i') }}</div>
                                 </td>
                                 <td class="g_celda_acciones g_celda_centro">
                                     @can('prospecto-entrega-fest.editar')

@@ -82,9 +82,110 @@
                 </div>
             </div>
 
+            <hr class="g_margin_top_20 g_margin_bottom_20">
+            <h4 class="g_margin_bottom_15"><i class="fa-solid fa-briefcase"></i> Información BackOffice</h4>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_15 g_columna_3">
+                    <label>Grupo <span class="obligatorio">*</span></label>
+                    <select wire:model="grupo">
+                        <option value="A">Grupo A</option>
+                        <option value="B">Grupo B</option>
+                        <option value="C">Grupo C</option>
+                        <option value="D">Grupo D</option>
+                    </select>
+                </div>
+                <div class="g_margin_bottom_15 g_columna_5">
+                    <label>Gestor BackOffice</label>
+                    <select wire:model="gestor_backoffice_id">
+                        <option value="">Seleccione...</option>
+                        @foreach ($usuarios as $u)
+                            <option value="{{ $u->id }}">{{ $u->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="g_margin_bottom_15 g_columna_4">
+                    <label>Fecha Culminación EECC</label>
+                    <input type="datetime-local" wire:model="fecha_culminacion_eecc">
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_15 g_columna_6">
+                    <label>Link Carpeta EECC</label>
+                    <input type="text" wire:model="link_carpeta_eecc" placeholder="https://...">
+                </div>
+                <div class="g_margin_bottom_15 g_columna_6">
+                    <label>Link EECC Firmado</label>
+                    <input type="text" wire:model="link_eecc_firmado" placeholder="https://...">
+                </div>
+            </div>
+
             <div class="g_fila">
                 <div class="g_margin_bottom_15 g_columna_4">
-                    <label>Estado Inicial</label>
+                    <label>Estado BackOffice <span class="obligatorio">*</span></label>
+                    <select wire:model="estado_backoffice">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="observado">Observado</option>
+                        <option value="aprobado">Aprobado</option>
+                        <option value="rechazado">Rechazado</option>
+                    </select>
+                </div>
+                <div class="g_margin_bottom_15 g_columna_4">
+                    <label>Validador BackOffice</label>
+                    <select wire:model="validador_backoffice_id">
+                        <option value="">Seleccione...</option>
+                        @foreach ($usuarios as $u)
+                            <option value="{{ $u->id }}">{{ $u->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="g_margin_bottom_15 g_columna_4">
+                    <label>Fecha Validación EECC</label>
+                    <input type="datetime-local" wire:model="fecha_validacion_eecc">
+                </div>
+            </div>
+
+            <hr class="g_margin_top_20 g_margin_bottom_20">
+            <h4 class="g_margin_bottom_15"><i class="fa-solid fa-file-contract"></i> Información Legal</h4>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_15 g_columna_6">
+                    <label>Cto. Preliminar Emitido <span class="obligatorio">*</span></label>
+                    <select wire:model="estado_contrato_preeliminar_emitido">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="observado">Observado</option>
+                        <option value="aprobado">Aprobado</option>
+                        <option value="rechazado">Rechazado</option>
+                    </select>
+                </div>
+                <div class="g_margin_bottom_15 g_columna_6">
+                    <label>Firma Cto. Firmado <span class="obligatorio">*</span></label>
+                    <select wire:model="estado_firma_contrato_firmado">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="observado">Observado</option>
+                        <option value="aprobado">Aprobado</option>
+                        <option value="rechazado">Rechazado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_15 g_columna_6">
+                    <label>Fecha Generación Contrato</label>
+                    <input type="datetime-local" wire:model="fecha_generacion_contrato">
+                </div>
+                <div class="g_margin_bottom_15 g_columna_6">
+                    <label>Fecha Firma</label>
+                    <input type="datetime-local" wire:model="fecha_firma">
+                </div>
+            </div>
+
+            <hr class="g_margin_top_20 g_margin_bottom_20">
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_15 g_columna_4">
+                    <label>Estado Prospecto <span class="obligatorio">*</span></label>
                     <select wire:model="estado">
                         <option value="pendiente">Pendiente</option>
                         <option value="observado">Observado</option>
