@@ -305,6 +305,12 @@ return [
             'days' => 14,
         ],
 
+        'entrega-fest' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/entrega-fest.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
 
         'whatsapp' => [
             'driver' => 'daily',

@@ -22,7 +22,8 @@ class EntregaFestCrear extends Component
 {
     public $nombre, $descripcion, $codigo, $fecha_entrega;
     public $unidad_negocio_id, $cliente_id;
-    public $proyectos_seleccionados = [];
+    public $proyecto_id = ""; // Para el select
+    public $proyectos_agregados = []; // Para la tabla
     public $activo = true;
 
     // Catálogos
@@ -38,8 +39,8 @@ class EntregaFestCrear extends Component
             'codigo' => 'required|string|max:50|unique:entrega_fests,codigo',
             'fecha_entrega' => 'required|date',
             'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
-            'proyectos_seleccionados' => 'required|array|min:1',
-            'proyectos_seleccionados.*' => 'exists:proyectos,id',
+            'proyectos_agregados' => 'required|array|min:1',
+            'proyectos_agregados.*.id' => 'exists:proyectos,id',
             'cliente_id' => 'required|exists:clientes,id',
             'activo' => 'boolean',
         ];
@@ -49,8 +50,8 @@ class EntregaFestCrear extends Component
     {
         return [
             'unidad_negocio_id' => 'Unidad de Negocio',
-            'proyectos_seleccionados' => 'Proyectos',
-            'cliente_id' => 'Cliente Responsable',
+            'proyectos_agregados' => 'Proyectos del Evento',
+            'cliente_id' => 'Responsable (Cliente)',
             'fecha_entrega' => 'Fecha de Entrega',
             'codigo' => 'Código Único',
             'nombre' => 'Nombre del Evento'
@@ -69,7 +70,10 @@ class EntregaFestCrear extends Component
 
     public function updatedUnidadNegocioId($value)
     {
-        $this->proyectos_seleccionados = [];
+        $this->proyectos_agregados = [];
+        $this->proyecto_id = "";
+        $this->proyectos = [];
+
         if ($value) {
             $this->loadProyectos();
         }
@@ -85,6 +89,42 @@ class EntregaFestCrear extends Component
         }
     }
 
+    public function agregarProyecto()
+    {
+        if (!$this->proyecto_id)
+            return;
+
+        $proyecto = $this->proyectos->firstWhere('id', $this->proyecto_id);
+        if (!$proyecto)
+            return;
+
+        // Evitar duplicados
+        if (collect($this->proyectos_agregados)->contains('id', $proyecto->id)) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Información',
+                'text' => 'El proyecto ya ha sido agregado.'
+            ]);
+            return;
+        }
+
+        $this->proyectos_agregados[] = [
+            'id' => $proyecto->id,
+            'nombre' => $proyecto->nombre,
+            'codigo' => $proyecto->codigo ?? 'N/A'
+        ];
+
+        $this->proyecto_id = "";
+    }
+
+    public function quitarProyecto($id)
+    {
+        $this->proyectos_agregados = collect($this->proyectos_agregados)
+            ->reject(fn($p) => $p['id'] == $id)
+            ->values()
+            ->toArray();
+    }
+
     public function store()
     {
         $this->authorize('entrega-fest.crear');
@@ -95,7 +135,7 @@ class EntregaFestCrear extends Component
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => 'Advertencia',
-                'text' => 'Verifique los campos obligatorios.'
+                'text' => 'Verifique los campos obligatorios y asegurese de agregar al menos un proyecto.'
             ]);
             throw $e;
         }
@@ -114,7 +154,8 @@ class EntregaFestCrear extends Component
                 'activo' => $this->activo,
             ]);
 
-            $evento->proyectos()->sync($this->proyectos_seleccionados);
+            $idsProyectos = collect($this->proyectos_agregados)->pluck('id')->toArray();
+            $evento->proyectos()->sync($idsProyectos);
 
             DB::commit();
 
@@ -128,12 +169,19 @@ class EntregaFestCrear extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('[ENTREGA-FEST] Error en Creación: ' . $e->getMessage());
+            Log::channel('entrega-fest')->error('[ENTREGA-FEST] Error en Creación: ' . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'data' => [
+                    'nombre' => $this->nombre,
+                    'codigo' => $this->codigo
+                ],
+                'trace' => $e->getTraceAsString()
+            ]);
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',
-                'text' => 'Ocurrió un problema inesperado al guardar el evento.'
+                'text' => 'Ocurrió un problema inesperado al guardar el evento. Revise los registros.'
             ]);
         }
     }
