@@ -1,33 +1,39 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\ProspectoEntregaFest;
+namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
-#[Title('Evaluar Prospecto - Entrega Fest')]
-class ProspectoEntregaFestEditar extends Component
+#[Title('Registrar Prospecto - Entrega Fest')]
+class EntregaFestProspectoCrear extends Component
 {
-    public $prospectoId;
-    public $entrega_fest_id, $proyecto_id, $dni, $nombre, $apellidos, $estado, $observacion;
+    public EntregaFest $evento;
+
+    // Campos del prospecto
+    public $proyecto_id, $dni, $nombre, $apellidos, $observacion;
     public $codigo_cliente, $codigo_cuota, $lote, $manzana, $etapa;
+    public $estado = 'pendiente';
 
     // BackOffice
-    public $grupo, $gestor_backoffice_id, $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
-    public $validador_backoffice_id, $fecha_validacion_eecc, $estado_backoffice;
+    public $grupo = 'A', $gestor_backoffice_id, $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
+    public $validador_backoffice_id, $fecha_validacion_eecc, $estado_backoffice = 'pendiente';
 
     // Legal
-    public $estado_contrato_preeliminar_emitido, $estado_firma_contrato_firmado;
+    public $estado_contrato_preeliminar_emitido = 'pendiente', $estado_firma_contrato_firmado = 'pendiente';
     public $fecha_firma, $fecha_generacion_contrato;
 
     public $proyectos = [];
 
     protected $rules = [
-        'entrega_fest_id' => 'required|exists:entrega_fests,id',
         'proyecto_id' => 'required|exists:proyectos,id',
         'dni' => 'required|string|max:15',
         'nombre' => 'required|string|max:255',
@@ -59,64 +65,27 @@ class ProspectoEntregaFestEditar extends Component
 
     public function mount($id)
     {
-        $prospecto = ProspectoEntregaFest::findOrFail($id);
-        $this->prospectoId = $prospecto->id;
-        $this->entrega_fest_id = $prospecto->entrega_fest_id;
-        $this->proyecto_id = $prospecto->proyecto_id;
-        $this->dni = $prospecto->dni;
-        $this->nombre = $prospecto->nombre;
-        $this->apellidos = $prospecto->apellidos;
-        $this->estado = $prospecto->estado;
-        $this->observacion = $prospecto->observacion;
-        $this->codigo_cliente = $prospecto->codigo_cliente;
-        $this->codigo_cuota = $prospecto->codigo_cuota;
-        $this->lote = $prospecto->lote;
-        $this->manzana = $prospecto->manzana;
-        $this->etapa = $prospecto->etapa;
-
-        // BackOffice
-        $this->grupo = $prospecto->grupo;
-        $this->gestor_backoffice_id = $prospecto->gestor_backoffice_id;
-        $this->fecha_culminacion_eecc = $prospecto->fecha_culminacion_eecc;
-        $this->link_carpeta_eecc = $prospecto->link_carpeta_eecc;
-        $this->link_eecc_firmado = $prospecto->link_eecc_firmado;
-        $this->validador_backoffice_id = $prospecto->validador_backoffice_id;
-        $this->fecha_validacion_eecc = $prospecto->fecha_validacion_eecc;
-        $this->estado_backoffice = $prospecto->estado_backoffice;
-
-        // Legal
-        $this->estado_contrato_preeliminar_emitido = $prospecto->estado_contrato_preeliminar_emitido;
-        $this->estado_firma_contrato_firmado = $prospecto->estado_firma_contrato_firmado;
-        $this->fecha_firma = $prospecto->fecha_firma;
-        $this->fecha_generacion_contrato = $prospecto->fecha_generacion_contrato;
-
-        $this->loadProyectos();
+        $this->evento = EntregaFest::with('proyectos')->findOrFail($id);
+        $this->proyectos = $this->evento->proyectos;
     }
 
-    public function updatedEntregaFestId()
-    {
-        $this->proyecto_id = '';
-        $this->loadProyectos();
-    }
-
-    public function loadProyectos()
-    {
-        if ($this->entrega_fest_id) {
-            $evento = EntregaFest::find($this->entrega_fest_id);
-            $this->proyectos = $evento ? $evento->proyectos : [];
-        } else {
-            $this->proyectos = [];
-        }
-    }
-
-    public function update()
+    public function store()
     {
         $this->validate();
 
-        $prospecto = ProspectoEntregaFest::findOrFail($this->prospectoId);
-        $prospecto->update([
-            'entrega_fest_id' => $this->entrega_fest_id,
+        $existe = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->where('dni', $this->dni)
+            ->exists();
+
+        if ($existe) {
+            $this->addError('dni', 'Esta persona ya está registrada para este evento.');
+            return;
+        }
+
+        ProspectoEntregaFest::create([
+            'entrega_fest_id' => $this->evento->id,
             'proyecto_id' => $this->proyecto_id,
+            'user_id' => Auth::id(),
             'dni' => $this->dni,
             'nombre' => $this->nombre,
             'apellidos' => $this->apellidos,
@@ -127,8 +96,6 @@ class ProspectoEntregaFestEditar extends Component
             'etapa' => $this->etapa,
             'estado' => $this->estado,
             'observacion' => $this->observacion,
-
-            // BackOffice
             'grupo' => $this->grupo,
             'gestor_backoffice_id' => $this->gestor_backoffice_id,
             'fecha_culminacion_eecc' => $this->fecha_culminacion_eecc,
@@ -137,8 +104,6 @@ class ProspectoEntregaFestEditar extends Component
             'validador_backoffice_id' => $this->validador_backoffice_id,
             'fecha_validacion_eecc' => $this->fecha_validacion_eecc,
             'estado_backoffice' => $this->estado_backoffice,
-
-            // Legal
             'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
             'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
             'fecha_firma' => $this->fecha_firma,
@@ -147,18 +112,25 @@ class ProspectoEntregaFestEditar extends Component
 
         $this->dispatch('alertaLivewire', [
             'type' => 'success',
-            'title' => 'Actualizado',
-            'text' => 'Prospecto actualizado y evaluado correctamente.'
+            'title' => 'Registrado',
+            'text' => 'Prospecto registrado correctamente.'
         ]);
+
+        return redirect()->route('erp.entrega-fest.vista.prospectos', $this->evento->id);
     }
 
     public function render()
     {
-        $eventos = EntregaFest::where('activo', true)->orderBy('fecha_entrega', 'desc')->get();
-        $usuarios = \App\Models\User::orderBy('name')->get();
-        return view('livewire.erp.entrega-fest.prospecto-entrega-fest.prospecto-entrega-fest-editar', [
-            'eventos' => $eventos,
+        $usuarios = User::orderBy('name')->get();
+        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-prospecto-crear', [
             'usuarios' => $usuarios
         ]);
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }

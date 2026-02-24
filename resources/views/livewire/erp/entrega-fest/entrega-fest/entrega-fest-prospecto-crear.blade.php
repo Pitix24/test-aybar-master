@@ -2,32 +2,23 @@
     <x-loading-overlay wire:loading message="Procesando registro..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Registrar Nuevo Prospecto</h2>
+        <h2>Añadir Prospecto: <span style="color: var(--color-primary);">{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.prospecto-entrega-fest.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
+            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton dark">
+                <i class="fa-solid fa-arrow-left"></i> Cancelar y Volver
             </a>
         </div>
     </div>
 
     <form wire:submit.prevent="store">
         <div class="g_panel">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-user-tag"></i> Datos del Prospecto</h4>
+
             <div class="g_fila">
                 <div class="g_margin_bottom_15 g_columna_4">
-                    <label>Evento / Entrega Fest <span class="obligatorio">*</span></label>
-                    <select wire:model.live="entrega_fest_id" class="@error('entrega_fest_id') select-error @enderror">
-                        <option value="">Seleccione el evento...</option>
-                        @foreach ($eventos as $e)
-                            <option value="{{ $e->id }}">{{ $e->nombre }} ({{ $e->codigo }})</option>
-                        @endforeach
-                    </select>
-                    @error('entrega_fest_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="g_margin_bottom_15 g_columna_4">
                     <label>Proyecto <span class="obligatorio">*</span></label>
-                    <select wire:model="proyecto_id" class="@error('proyecto_id') select-error @enderror" {{ !$entrega_fest_id ? 'disabled' : '' }}>
+                    <select wire:model="proyecto_id" class="@error('proyecto_id') select-error @enderror">
                         <option value="">Seleccione el proyecto...</option>
                         @foreach ($proyectos as $p)
                             <option value="{{ $p->id }}">{{ $p->nombre }}</option>

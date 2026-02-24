@@ -1,32 +1,24 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading message="Guardando evaluación..." />
+    <x-loading-overlay wire:loading message="Actualizando registro..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Evaluar Prospecto: {{ $nombre }} {{ $apellidos }}</h2>
+        <h2>Editar Prospecto: <span style="color: var(--color-primary);">{{ $prospecto->nombre_completo }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.prospecto-entrega-fest.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
+            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton dark">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
             </a>
         </div>
     </div>
 
     <form wire:submit.prevent="update">
         <div class="g_panel">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-user-edit"></i> Información del Prospecto</h4>
+
             <div class="g_fila">
                 <div class="g_margin_bottom_15 g_columna_4">
-                    <label>Evento / Entrega Fest <span class="obligatorio">*</span></label>
-                    <select wire:model.live="entrega_fest_id" class="@error('entrega_fest_id') select-error @enderror">
-                        @foreach ($eventos as $e)
-                            <option value="{{ $e->id }}">{{ $e->nombre }} ({{ $e->codigo }})</option>
-                        @endforeach
-                    </select>
-                    @error('entrega_fest_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="g_margin_bottom_15 g_columna_4">
                     <label>Proyecto <span class="obligatorio">*</span></label>
-                    <select wire:model="proyecto_id" class="@error('proyecto_id') select-error @enderror" {{ !$entrega_fest_id ? 'disabled' : '' }}>
+                    <select wire:model="proyecto_id" class="@error('proyecto_id') select-error @enderror">
                         <option value="">Seleccione el proyecto...</option>
                         @foreach ($proyectos as $p)
                             <option value="{{ $p->id }}">{{ $p->nombre }}</option>
@@ -37,26 +29,24 @@
 
                 <div class="g_margin_bottom_15 g_columna_4">
                     <label>DNI / Documento <span class="obligatorio">*</span></label>
-                    <input type="text" wire:model="dni" class="@error('dni') input-error @enderror">
+                    <input type="text" wire:model="dni" placeholder="Ej: 71234567"
+                        class="@error('dni') input-error @enderror">
                     @error('dni') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
             </div>
 
             <div class="g_fila">
-                <div class="g_margin_bottom_15 g_columna_4">
+                <div class="g_margin_bottom_15 g_columna_6">
                     <label>Nombres <span class="obligatorio">*</span></label>
-                    <input type="text" wire:model="nombre" class="@error('nombre') input-error @enderror">
+                    <input type="text" wire:model="nombre" placeholder="Ej: Juan Pedro"
+                        class="@error('nombre') input-error @enderror">
                     @error('nombre') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
-                <div class="g_margin_bottom_15 g_columna_4">
+                <div class="g_margin_bottom_15 g_columna_6">
                     <label>Apellidos <span class="obligatorio">*</span></label>
-                    <input type="text" wire:model="apellidos" class="@error('apellidos') input-error @enderror">
+                    <input type="text" wire:model="apellidos" placeholder="Ej: Pérez García"
+                        class="@error('apellidos') input-error @enderror">
                     @error('apellidos') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-                <div class="g_margin_bottom_15 g_columna_4">
-                    <label>DNI / Documento <span class="obligatorio">*</span></label>
-                    <input type="text" wire:model="dni" class="@error('dni') input-error @enderror">
-                    @error('dni') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
             </div>
 
@@ -114,25 +104,11 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_15 g_columna_6">
                     <label>Link Carpeta EECC</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="text" wire:model="link_carpeta_eecc" placeholder="https://...">
-                        @if($link_carpeta_eecc)
-                            <a href="{{ $link_carpeta_eecc }}" target="_blank" class="g_boton light" title="Ir al link">
-                                <i class="fa-solid fa-external-link"></i>
-                            </a>
-                        @endif
-                    </div>
+                    <input type="text" wire:model="link_carpeta_eecc" placeholder="https://...">
                 </div>
                 <div class="g_margin_bottom_15 g_columna_6">
                     <label>Link EECC Firmado</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="text" wire:model="link_eecc_firmado" placeholder="https://...">
-                        @if($link_eecc_firmado)
-                            <a href="{{ $link_eecc_firmado }}" target="_blank" class="g_boton light" title="Ir al link">
-                                <i class="fa-solid fa-external-link"></i>
-                            </a>
-                        @endif
-                    </div>
+                    <input type="text" wire:model="link_eecc_firmado" placeholder="https://...">
                 </div>
             </div>
 
@@ -201,7 +177,7 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_15 g_columna_4">
                     <label>Estado Prospecto <span class="obligatorio">*</span></label>
-                    <select wire:model="estado" style="font-weight: bold; color: var(--color-primary);">
+                    <select wire:model="estado">
                         <option value="pendiente">Pendiente</option>
                         <option value="observado">Observado</option>
                         <option value="aprobado">Aprobado</option>
@@ -209,15 +185,15 @@
                     </select>
                 </div>
                 <div class="g_margin_bottom_15 g_columna_8">
-                    <label>Observaciones / Motivo</label>
-                    <textarea wire:model="observacion" rows="3"
-                        placeholder="Explique el motivo del estado si es observado o rechazado..."></textarea>
+                    <label>Observaciones</label>
+                    <input type="text" wire:model="observacion"
+                        placeholder="Opcional: motivo de estado, nota interna...">
                 </div>
             </div>
 
             <div class="formulario_botones">
                 <button type="submit" class="g_boton guardar">
-                    Actualizar Evaluación <i class="fa-solid fa-floppy-disk"></i>
+                    <i class="fa-solid fa-save"></i> Guardar Cambios
                 </button>
             </div>
         </div>

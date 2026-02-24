@@ -150,10 +150,17 @@
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>
                                 @endcan
-                                @can('prospecto-entrega-fest.lista')
-                                    <a href="{{ route('erp.prospecto-entrega-fest.vista.todo', ['entrega_fest_id' => $e->id]) }}"
-                                        class="g_accion primary" title="Ver Prospectos">
+                                @can('entrega-fest.prospectos')
+                                    <a href="{{ route('erp.entrega-fest.vista.prospectos', $e->id) }}" class="g_accion primary"
+                                        title="Ver Prospectos">
                                         <i class="fa-solid fa-users-viewfinder"></i>
+                                    </a>
+                                @endcan
+
+                                @can('entrega-fest.invitados')
+                                    <a href="{{ route('erp.entrega-fest.vista.invitados', $e->id) }}" class="g_accion success"
+                                        title="Ver Invitados">
+                                        <i class="fa-solid fa-id-card"></i>
                                     </a>
                                 @endcan
                             </td>
