@@ -8,6 +8,14 @@
             <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
+
+            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton primary">
+                Prospectos <i class="fa-solid fa-user-plus"></i></a>
+
+            <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_boton success">
+                Invitados <i class="fa-solid fa-users"></i>
+            </a>
+
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>

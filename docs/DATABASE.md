@@ -224,6 +224,9 @@ php artisan make:livewire erp.entrega-fest.entrega-fest.entrega-fest-lista --cla
 php artisan make:livewire erp.entrega-fest.entrega-fest.entrega-fest-crear --class
 php artisan make:livewire erp.entrega-fest.entrega-fest.entrega-fest-editar --class
 
+php artisan make:livewire erp.entrega-fest.entrega-fest.entrega-fest-prospecto --class
+php artisan make:livewire erp.entrega-fest.entrega-fest.entrega-fest-invitado --class
+
 php artisan make:model ProspectoEntregaFest -mfsc
 php artisan make:livewire erp.entrega-fest.prospecto-entrega-fest.prospecto-entrega-fest-lista --class
 php artisan make:livewire erp.entrega-fest.prospecto-entrega-fest.prospecto-entrega-fest-crear --class
