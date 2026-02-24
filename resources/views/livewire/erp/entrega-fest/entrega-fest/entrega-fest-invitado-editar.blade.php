@@ -3,7 +3,8 @@
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar Invitado: <span
-                style="color: var(--color-primary);">{{ $invitado->prospecto->nombre_completo }}</span></h2>
+                style="color: var(--color-primary);">{{ $invitado->prospecto?->nombre_completo ?? 'N/A' }}</span>
+        </h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_boton dark">

@@ -29,7 +29,7 @@ class InvitadoEntregaFest extends Model
 
     public function prospecto()
     {
-        return $this->belongsTo(ProspectoEntregaFest::class);
+        return $this->belongsTo(ProspectoEntregaFest::class, 'prospecto_entrega_fest_id');
     }
 
     public function acompanantes()
