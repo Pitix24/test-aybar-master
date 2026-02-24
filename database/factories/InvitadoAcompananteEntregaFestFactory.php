@@ -18,7 +18,7 @@ class InvitadoAcompananteEntregaFestFactory extends Factory
     public function definition(): array
     {
         return [
-            'invitado_entrega_fest_id' => InvitadoEntregaFest::factory(),
+            'invitado_entrega_fest_id' => InvitadoEntregaFest::exists() ? InvitadoEntregaFest::inRandomOrder()->first()->id : InvitadoEntregaFest::factory(),
             'dni' => $this->faker->optional(0.8)->numerify('########'),
             'nombre' => $this->faker->firstName(),
             'apellidos' => $this->faker->lastName() . ' ' . $this->faker->lastName(),

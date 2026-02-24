@@ -19,11 +19,11 @@ class InvitadoEnvioEntregaFestFactory extends Factory
     public function definition(): array
     {
         return [
-            'invitado_entrega_fest_id' => InvitadoEntregaFest::factory(),
+            'invitado_entrega_fest_id' => InvitadoEntregaFest::exists() ? InvitadoEntregaFest::inRandomOrder()->first()->id : InvitadoEntregaFest::factory(),
             'canal' => $this->faker->randomElement(['correo', 'whatsapp', 'llamada']),
             'estado' => $this->faker->randomElement(['pendiente', 'enviado', 'fallido', 'confirmado']),
             'detalle' => $this->faker->optional(0.5)->sentence(),
-            'user_id' => User::factory(),
+            'user_id' => User::exists() ? User::inRandomOrder()->first()->id : User::factory(),
             'fecha_envio' => $this->faker->dateTimeThisMonth(),
         ];
     }

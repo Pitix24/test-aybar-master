@@ -2,12 +2,12 @@
     <x-loading-overlay wire:loading message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Módulo Entrega Fest</h2>
+        <h2>Entrega Fest</h2>
 
         <div class="cabecera_titulo_botones">
             @can('entrega-fest.crear')
                 <a href="{{ route('erp.entrega-fest.vista.crear') }}" class="g_boton primary">
-                    Nuevo Evento <i class="fa-solid fa-plus"></i>
+                    Crear <i class="fa-solid fa-square-plus"></i></a>
                 </a>
             @endcan
         </div>
@@ -17,17 +17,14 @@
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Buscar</label>
-                    <div class="g_input_con_icono_derecha">
-                        <input type="text" wire:model.live.debounce.400ms="buscar" placeholder="Nombre o código...">
-                        <i class="fa-solid fa-search"></i>
-                    </div>
+                    <label>Código</label>
+                    <input type="text" wire:model.live.debounce.400ms="buscar">
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Unidad de Negocio</label>
+                    <label>Empresa</label>
                     <select wire:model.live="unidad_negocio_id">
-                        <option value="">Todas</option>
+                        <option value="">Todos</option>
                         @foreach ($unidades_negocios as $u)
                             <option value="{{ $u->id }}">{{ $u->nombre }}</option>
                         @endforeach
@@ -50,16 +47,6 @@
                         <option value="">Todos</option>
                         <option value="1">Activos</option>
                         <option value="0">Inactivos</option>
-                    </select>
-                </div>
-
-                <div class="g_columna_2">
-                    <label>Mostrar</label>
-                    <select wire:model.live="perPage">
-                        <option value="15">15 registros</option>
-                        <option value="30">30 registros</option>
-                        <option value="50">50 registros</option>
-                        <option value="100">100 registros</option>
                     </select>
                 </div>
             </div>
@@ -122,25 +109,24 @@
                 </thead>
 
                 <tbody>
-                    @forelse ($items as $e)
+                    @foreach ($items as $e)
                         <tr wire:key="evento-{{ $e->id }}">
                             <td class="g_negrita" style="color: var(--color-primary);">#{{ $e->codigo }}</td>
                             <td>
                                 <div class="g_negrita">{{ $e->nombre }}</div>
-                                <div class="g_texto_pequeno" style="max-width: 300px;">{{ Str::limit($e->descripcion, 70) }}
-                                </div>
+                                <div>{{ Str::limit($e->descripcion, 70) }}</div>
                             </td>
                             <td>
                                 <div class="g_negrita">
                                     {{ $e->proyectos->pluck('nombre')->implode(', ') ?: 'N/A' }}
                                 </div>
-                                <div class="g_texto_pequeno">{{ $e->cliente->nombre_completo ?? 'N/A' }}</div>
+                                <div>{{ $e->cliente->nombre_completo ?? 'N/A' }}</div>
                             </td>
                             <td class="g_celda_centro">
                                 <span class="g_negrita">{{ $e->fecha_entrega->format('d/m/Y') }}</span>
                             </td>
                             <td class="g_celda_centro">
-                                <span class="g_badge dark">{{ $e->prospectos_count }}</span>
+                                <span class="g_badge info">{{ $e->prospectos_count }}</span>
                             </td>
                             <td class="g_celda_centro">
                                 <span class="g_badge primary">{{ $e->invitados_count }}</span>
@@ -165,16 +151,7 @@
                                 @endcan
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8">
-                                <div class="g_vacio">
-                                    <i class="fa-solid fa-champagne-glasses"></i>
-                                    <p>No se encontraron eventos registrados.</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>

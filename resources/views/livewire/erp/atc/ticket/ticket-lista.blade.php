@@ -7,7 +7,7 @@
         <h2>Listado de Tickets</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('erp.ticket.vista.crear')
+            @can('ticket.crear')
                 <a href="{{ route('erp.ticket.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan

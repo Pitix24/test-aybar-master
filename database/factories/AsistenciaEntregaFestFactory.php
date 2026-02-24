@@ -19,8 +19,8 @@ class AsistenciaEntregaFestFactory extends Factory
     public function definition(): array
     {
         return [
-            'invitado_entrega_fest_id' => InvitadoEntregaFest::factory(['confirmado' => true]),
-            'user_id' => User::factory(),
+            'invitado_entrega_fest_id' => InvitadoEntregaFest::exists() ? InvitadoEntregaFest::inRandomOrder()->first()->id : InvitadoEntregaFest::factory(['confirmado' => true]),
+            'user_id' => User::exists() ? User::inRandomOrder()->first()->id : User::factory(),
             'fecha_checkin' => $this->faker->dateTimeThisMonth(),
             'metodo' => $this->faker->randomElement(['qr', 'manual', 'dni']),
         ];
