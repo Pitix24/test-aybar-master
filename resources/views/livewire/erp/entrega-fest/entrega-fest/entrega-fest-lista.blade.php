@@ -120,7 +120,7 @@
                                 <div class="g_negrita">
                                     {{ $e->proyectos->pluck('nombre')->implode(', ') ?: 'N/A' }}
                                 </div>
-                                <div>{{ $e->cliente->nombre_completo ?? 'N/A' }}</div>
+                                <div>{{ $e->gestor->name ?? 'N/A' }}</div>
                             </td>
                             <td class="g_celda_centro">
                                 <span class="g_negrita">{{ $e->fecha_entrega->format('d/m/Y') }}</span>
@@ -137,6 +137,13 @@
                                 </span>
                             </td>
                             <td class="g_celda_acciones g_celda_centro">
+                                @can('entrega-fest.ver')
+                                    <a href="{{ route('erp.entrega-fest.vista.ver', $e->id) }}" class="g_accion ver"
+                                        title="Ver Evento">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                @endcan
+
                                 @can('entrega-fest.editar')
                                     <a href="{{ route('erp.entrega-fest.vista.editar', $e->id) }}" class="g_accion editar"
                                         title="Editar">

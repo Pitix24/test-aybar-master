@@ -3,6 +3,9 @@
 namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
 use App\Models\EntregaFest;
+use App\Models\User;
+use App\Models\UnidadNegocio;
+use App\Models\Proyecto;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Attributes\Lazy;
@@ -18,10 +21,8 @@ class EntregaFestVer extends Component
     public function mount($id)
     {
         $this->evento = EntregaFest::with([
-            'unidadNegocio',
-            'proyectos',
-            'cliente',
-            'user',
+            'proyectos.unidadNegocio',
+            'gestor',
             'prospectos.user',
             'invitados.prospecto'
         ])->findOrFail($id);

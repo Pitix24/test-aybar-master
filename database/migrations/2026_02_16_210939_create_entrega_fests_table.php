@@ -13,9 +13,7 @@ return new class extends Migration {
         Schema::create('entrega_fests', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('unidad_negocio_id')->constrained();
-            $table->foreignId('cliente_id')->constrained();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('gestor_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->string('nombre');
             $table->text('descripcion')->nullable();

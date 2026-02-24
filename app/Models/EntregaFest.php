@@ -12,9 +12,7 @@ class EntregaFest extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'unidad_negocio_id',
-        'cliente_id',
-        'user_id',
+        'gestor_id',
         'nombre',
         'descripcion',
         'codigo',
@@ -26,24 +24,14 @@ class EntregaFest extends Model
         'fecha_entrega' => 'date',
     ];
 
-    public function unidadNegocio()
+    public function gestor()
     {
-        return $this->belongsTo(UnidadNegocio::class);
+        return $this->belongsTo(User::class, 'gestor_id');
     }
 
     public function proyectos()
     {
         return $this->belongsToMany(Proyecto::class, 'entrega_fest_proyecto');
-    }
-
-    public function cliente()
-    {
-        return $this->belongsTo(Cliente::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 
     public function prospectos()

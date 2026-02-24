@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
-use App\Models\Cliente;
+use App\Models\User;
 use App\Models\EntregaFest;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
@@ -23,14 +23,15 @@ class EntregaFestEditar extends Component
 
     // Campos del formulario
     public $nombre, $descripcion, $codigo, $fecha_entrega;
-    public $unidad_negocio_id, $cliente_id;
-    public $proyectos_seleccionados = [];
+    public $unidad_negocio_id, $gestor_id;
+    public $proyecto_id = ""; // Para el select
+    public $proyectos_agregados = []; // Para la tabla
     public $activo;
 
     // Catálogos
     public $unidades_negocios = [];
     public $proyectos = [];
-    public $clientes = [];
+    public $gestores = [];
 
     protected function rules()
     {
@@ -39,10 +40,9 @@ class EntregaFestEditar extends Component
             'descripcion' => 'nullable|string',
             'codigo' => 'required|string|max:50|unique:entrega_fests,codigo,' . $this->evento->id,
             'fecha_entrega' => 'required|date',
-            'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
-            'proyectos_seleccionados' => 'required|array|min:1',
-            'proyectos_seleccionados.*' => 'exists:proyectos,id',
-            'cliente_id' => 'required|exists:clientes,id',
+            'proyectos_agregados' => 'required|array|min:1',
+            'proyectos_agregados.*.id' => 'exists:proyectos,id',
+            'gestor_id' => 'nullable|exists:users,id',
             'activo' => 'boolean',
         ];
     }
@@ -51,8 +51,8 @@ class EntregaFestEditar extends Component
     {
         return [
             'unidad_negocio_id' => 'Unidad de Negocio',
-            'proyectos_seleccionados' => 'Proyectos',
-            'cliente_id' => 'Cliente Responsable',
+            'proyectos_agregados' => 'Proyectos del Evento',
+            'gestor_id' => 'Gestor Responsable',
             'fecha_entrega' => 'Fecha de Entrega',
             'codigo' => 'Código Único',
             'nombre' => 'Nombre del Evento'
@@ -61,28 +61,38 @@ class EntregaFestEditar extends Component
 
     public function mount($id)
     {
-        $this->evento = EntregaFest::with(['unidadNegocio', 'proyectos', 'cliente'])->findOrFail($id);
+        $this->evento = EntregaFest::with(['proyectos.unidadNegocio', 'gestor'])->findOrFail($id);
 
         // Carga de datos iniciales
         $this->nombre = $this->evento->nombre;
         $this->descripcion = $this->evento->descripcion;
         $this->codigo = $this->evento->codigo;
         $this->fecha_entrega = $this->evento->fecha_entrega->format('Y-m-d');
-        $this->unidad_negocio_id = $this->evento->unidad_negocio_id;
-        $this->proyectos_seleccionados = $this->evento->proyectos->pluck('id')->toArray();
-        $this->cliente_id = $this->evento->cliente_id;
+        $this->gestor_id = $this->evento->gestor_id;
         $this->activo = $this->evento->activo;
+
+        // Carga de proyectos vinculados
+        foreach ($this->evento->proyectos as $p) {
+            $this->proyectos_agregados[] = [
+                'id' => $p->id,
+                'nombre' => $p->nombre,
+                'unidad_negocio_nombre' => $p->unidadNegocio->nombre ?? 'N/A',
+                'codigo' => $p->codigo ?? 'N/A'
+            ];
+        }
 
         // Carga de catálogos
         $this->unidades_negocios = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
-        $this->clientes = Cliente::orderBy('nombre')->limit(200)->get();
+        $this->gestores = User::role(['asesor-backoffice', 'supervisor-backoffice', 'super-admin'])->get();
 
-        $this->loadProyectos();
+        if (empty($this->gestores)) {
+            $this->gestores = User::where('activo', true)->orderBy('name')->limit(100)->get();
+        }
     }
 
     public function updatedUnidadNegocioId($value)
     {
-        $this->proyectos_seleccionados = [];
+        $this->proyecto_id = "";
         $this->proyectos = [];
         if ($value) {
             $this->loadProyectos();
@@ -92,11 +102,49 @@ class EntregaFestEditar extends Component
     public function loadProyectos()
     {
         if ($this->unidad_negocio_id) {
-            $this->proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)
+            $this->proyectos = Proyecto::with('unidadNegocio')
+                ->where('unidad_negocio_id', $this->unidad_negocio_id)
                 ->where('activo', true)
                 ->orderBy('nombre')
                 ->get();
         }
+    }
+
+    public function agregarProyecto()
+    {
+        if (!$this->proyecto_id)
+            return;
+
+        $proyecto = $this->proyectos->firstWhere('id', $this->proyecto_id);
+        if (!$proyecto)
+            return;
+
+        // Evitar duplicados
+        if (collect($this->proyectos_agregados)->contains('id', $proyecto->id)) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Información',
+                'text' => 'El proyecto ya ha sido agregado.'
+            ]);
+            return;
+        }
+
+        $this->proyectos_agregados[] = [
+            'id' => $proyecto->id,
+            'nombre' => $proyecto->nombre,
+            'unidad_negocio_nombre' => $proyecto->unidadNegocio->nombre ?? 'N/A',
+            'codigo' => $proyecto->codigo ?? 'N/A'
+        ];
+
+        $this->proyecto_id = "";
+    }
+
+    public function quitarProyecto($id)
+    {
+        $this->proyectos_agregados = collect($this->proyectos_agregados)
+            ->reject(fn($p) => $p['id'] == $id)
+            ->values()
+            ->toArray();
     }
 
     public function update()
@@ -118,17 +166,16 @@ class EntregaFestEditar extends Component
             DB::beginTransaction();
 
             $this->evento->update([
-                'unidad_negocio_id' => $this->unidad_negocio_id,
-                'cliente_id' => $this->cliente_id,
+                'gestor_id' => $this->gestor_id,
                 'nombre' => $this->nombre,
                 'descripcion' => $this->descripcion,
                 'codigo' => $this->codigo,
                 'fecha_entrega' => $this->fecha_entrega,
                 'activo' => $this->activo,
-                'updated_by' => auth()->id()
             ]);
 
-            $this->evento->proyectos()->sync($this->proyectos_seleccionados);
+            $idsProyectos = collect($this->proyectos_agregados)->pluck('id')->toArray();
+            $this->evento->proyectos()->sync($idsProyectos);
 
             DB::commit();
 
@@ -140,12 +187,16 @@ class EntregaFestEditar extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('[ENTREGA-FEST] Error en Edición: ' . $e->getMessage());
+            Log::channel('entrega-fest')->error('[ENTREGA-FEST] Error en Edición: ' . $e->getMessage(), [
+                'evento_id' => $this->evento->id,
+                'usuario_id' => auth()->id(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',
-                'text' => 'No se pudo actualizar el evento. Intente nuevamente.'
+                'text' => 'No se pudo actualizar el evento: ' . $e->getMessage()
             ]);
         }
     }

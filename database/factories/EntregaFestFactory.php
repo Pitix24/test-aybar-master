@@ -21,9 +21,7 @@ class EntregaFestFactory extends Factory
     public function definition(): array
     {
         return [
-            'unidad_negocio_id' => UnidadNegocio::exists() ? UnidadNegocio::inRandomOrder()->first()->id : UnidadNegocio::factory(),
-            'cliente_id' => Cliente::exists() ? Cliente::inRandomOrder()->first()->id : Cliente::factory(),
-            'user_id' => User::exists() ? User::inRandomOrder()->first()->id : User::factory(),
+            'gestor_id' => User::exists() ? User::inRandomOrder()->first()->id : User::factory(),
             'nombre' => $this->faker->sentence(3) . ' Fest',
             'descripcion' => $this->faker->paragraph(),
             'codigo' => 'EF-' . $this->faker->unique()->numberBetween(1000, 9999),

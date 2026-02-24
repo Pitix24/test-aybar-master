@@ -45,12 +45,8 @@ class EntregaFestSeeder extends Seeder
         ];
 
         foreach ($festivales as $data) {
-            $unidad = UnidadNegocio::inRandomOrder()->first() ?? UnidadNegocio::factory()->create();
-
             $evento = EntregaFest::create([
-                'unidad_negocio_id' => $unidad->id,
-                'cliente_id' => Cliente::inRandomOrder()->first()?->id ?? Cliente::factory()->create()->id,
-                'user_id' => $admin->id,
+                'gestor_id' => $gestores->random()->id,
                 'nombre' => $data['nombre'],
                 'descripcion' => $data['descripcion'],
                 'codigo' => $data['codigo'],

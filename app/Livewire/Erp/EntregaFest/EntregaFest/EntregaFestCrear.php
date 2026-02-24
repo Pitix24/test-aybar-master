@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
-use App\Models\Cliente;
+use App\Models\User;
 use App\Models\EntregaFest;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
@@ -21,7 +21,7 @@ use Livewire\Component;
 class EntregaFestCrear extends Component
 {
     public $nombre, $descripcion, $codigo, $fecha_entrega;
-    public $unidad_negocio_id, $cliente_id;
+    public $unidad_negocio_id, $gestor_id;
     public $proyecto_id = ""; // Para el select
     public $proyectos_agregados = []; // Para la tabla
     public $activo = true;
@@ -29,7 +29,7 @@ class EntregaFestCrear extends Component
     // Catálogos
     public $unidades_negocios = [];
     public $proyectos = [];
-    public $clientes = [];
+    public $gestores = [];
 
     protected function rules()
     {
@@ -38,10 +38,9 @@ class EntregaFestCrear extends Component
             'descripcion' => 'nullable|string',
             'codigo' => 'required|string|max:50|unique:entrega_fests,codigo',
             'fecha_entrega' => 'required|date',
-            'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
             'proyectos_agregados' => 'required|array|min:1',
             'proyectos_agregados.*.id' => 'exists:proyectos,id',
-            'cliente_id' => 'required|exists:clientes,id',
+            'gestor_id' => 'nullable|exists:users,id',
             'activo' => 'boolean',
         ];
     }
@@ -51,7 +50,7 @@ class EntregaFestCrear extends Component
         return [
             'unidad_negocio_id' => 'Unidad de Negocio',
             'proyectos_agregados' => 'Proyectos del Evento',
-            'cliente_id' => 'Responsable (Cliente)',
+            'gestor_id' => 'Gestor Responsable',
             'fecha_entrega' => 'Fecha de Entrega',
             'codigo' => 'Código Único',
             'nombre' => 'Nombre del Evento'
@@ -61,16 +60,17 @@ class EntregaFestCrear extends Component
     public function mount()
     {
         $this->unidades_negocios = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
-        $this->clientes = Cliente::orderBy('nombre')->limit(200)->get();
+        $this->gestores = User::role(['asesor-backoffice', 'supervisor-backoffice', 'super-admin'])->get();
 
         $this->fecha_entrega = date('Y-m-d');
         // Autogenerar código sugerido
         $this->codigo = 'EF-' . date('Y') . '-' . str_pad(EntregaFest::withTrashed()->count() + 1, 3, '0', STR_PAD_LEFT);
+
+        $this->gestor_id = Auth::id();
     }
 
     public function updatedUnidadNegocioId($value)
     {
-        $this->proyectos_agregados = [];
         $this->proyecto_id = "";
         $this->proyectos = [];
 
@@ -82,7 +82,8 @@ class EntregaFestCrear extends Component
     public function loadProyectos()
     {
         if ($this->unidad_negocio_id) {
-            $this->proyectos = Proyecto::where('unidad_negocio_id', $this->unidad_negocio_id)
+            $this->proyectos = Proyecto::with('unidadNegocio')
+                ->where('unidad_negocio_id', $this->unidad_negocio_id)
                 ->where('activo', true)
                 ->orderBy('nombre')
                 ->get();
@@ -111,6 +112,7 @@ class EntregaFestCrear extends Component
         $this->proyectos_agregados[] = [
             'id' => $proyecto->id,
             'nombre' => $proyecto->nombre,
+            'unidad_negocio_nombre' => $proyecto->unidadNegocio->nombre ?? 'N/A',
             'codigo' => $proyecto->codigo ?? 'N/A'
         ];
 
@@ -144,9 +146,7 @@ class EntregaFestCrear extends Component
             DB::beginTransaction();
 
             $evento = EntregaFest::create([
-                'unidad_negocio_id' => $this->unidad_negocio_id,
-                'cliente_id' => $this->cliente_id,
-                'user_id' => Auth::id(),
+                'gestor_id' => $this->gestor_id,
                 'nombre' => $this->nombre,
                 'descripcion' => $this->descripcion,
                 'codigo' => $this->codigo,
@@ -165,7 +165,7 @@ class EntregaFestCrear extends Component
                 'text' => 'El evento se ha creado correctamente.'
             ]);
 
-            return redirect()->route('entrega-fest.vista.todo');
+            return redirect()->route('erp.entrega-fest.vista.todo');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -181,7 +181,7 @@ class EntregaFestCrear extends Component
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',
-                'text' => 'Ocurrió un problema inesperado al guardar el evento. Revise los registros.'
+                'text' => 'Ocurrió un problema: ' . $e->getMessage()
             ]);
         }
     }

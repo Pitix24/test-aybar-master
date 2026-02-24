@@ -90,7 +90,7 @@ class EntregaFestLista extends Component
     public function render()
     {
         $items = EntregaFest::query()
-            ->with(['unidadNegocio', 'proyectos', 'user', 'cliente'])
+            ->with(['gestor', 'proyectos'])
             ->withCount(['prospectos', 'invitados'])
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
@@ -102,7 +102,9 @@ class EntregaFestLista extends Component
                 $query->where('activo', $this->activo);
             })
             ->when($this->unidad_negocio_id, function ($query) {
-                $query->where('unidad_negocio_id', $this->unidad_negocio_id);
+                $query->whereHas('proyectos', function ($q) {
+                    $q->where('unidad_negocio_id', $this->unidad_negocio_id);
+                });
             })
             ->when($this->proyecto_id, function ($query) {
                 $query->whereHas('proyectos', function ($q) {

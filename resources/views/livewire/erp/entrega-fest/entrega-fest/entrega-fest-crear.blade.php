@@ -1,6 +1,5 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="store, unidad_negocio_id, agregarProyecto, quitarProyecto"
-        message="Procesando..." />
+    <x-loading-overlay wire:loading wire:target="store, agregarProyecto, quitarProyecto" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear Entrega Fest</h2>
@@ -77,13 +76,13 @@
 
                     <div class="g_margin_bottom_10 g_columna_6">
                         <label>Responsable <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                        <select wire:model="cliente_id" class="@error('cliente_id') select-error @enderror">
+                        <select wire:model="gestor_id" class="@error('gestor_id') select-error @enderror">
                             <option value="">Seleccione...</option>
-                            @foreach ($clientes as $c)
-                                <option value="{{ $c->id }}">{{ $c->nombre_completo ?? $c->dni }}</option>
+                            @foreach ($gestores as $g)
+                                <option value="{{ $g->id }}">{{ $g->name }}</option>
                             @endforeach
                         </select>
-                        @error('cliente_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        @error('gestor_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
@@ -95,7 +94,7 @@
                             <table class="g_tabla">
                                 <thead>
                                     <tr>
-                                        <th>Código</th>
+                                        <th>Empresa</th>
                                         <th>Proyecto</th>
                                         <th class="g_celda_centro">Acciones</th>
                                     </tr>
@@ -103,7 +102,7 @@
                                 <tbody>
                                     @foreach ($proyectos_agregados as $p)
                                         <tr wire:key="p-agregado-{{ $p['id'] }}">
-                                            <td class="g_negrita">{{ $p['codigo'] }}</td>
+                                            <td class="g_negrita">{{ $p['unidad_negocio_nombre'] }}</td>
                                             <td>{{ $p['nombre'] }}</td>
                                             <td class="g_celda_acciones g_celda_centro">
                                                 <button type="button" wire:click="quitarProyecto({{ $p['id'] }})"
