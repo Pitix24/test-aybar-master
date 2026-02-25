@@ -5,6 +5,9 @@ namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
@@ -19,12 +22,12 @@ class EntregaFestProspectoEditar extends Component
     public ProspectoEntregaFest $prospecto;
 
     // Campos del prospecto
-    public $proyecto_id, $dni, $nombre, $apellidos, $estado, $observacion;
-    public $codigo_cliente, $codigo_cuota, $lote, $manzana, $etapa;
+    public $proyecto_id = '', $dni = '', $nombres = '', $email = '', $celular = '', $estado = '', $observacion = '';
+    public $lote = '', $manzana = '';
 
     // BackOffice
-    public $grupo, $gestor_backoffice_id, $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
-    public $validador_backoffice_id, $fecha_validacion_eecc, $estado_backoffice;
+    public $grupo, $gestor_backoffice_id = '', $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
+    public $validador_backoffice_id = '', $fecha_validacion_eecc, $estado_backoffice;
 
     // Legal
     public $estado_contrato_preeliminar_emitido, $estado_firma_contrato_firmado;
@@ -32,35 +35,57 @@ class EntregaFestProspectoEditar extends Component
 
     public $proyectos = [];
 
-    protected $rules = [
-        'proyecto_id' => 'required|exists:proyectos,id',
-        'dni' => 'required|string|max:15',
-        'nombre' => 'required|string|max:255',
-        'apellidos' => 'required|string|max:255',
-        'estado' => 'required|in:pendiente,observado,aprobado,rechazado',
-        'observacion' => 'nullable|string',
-        'codigo_cliente' => 'nullable|string|max:50',
-        'codigo_cuota' => 'nullable|string|max:50',
-        'lote' => 'nullable|string|max:20',
-        'manzana' => 'nullable|string|max:20',
-        'etapa' => 'nullable|string|max:50',
+    protected function rules()
+    {
+        return [
+            'proyecto_id' => 'required|exists:proyectos,id',
+            'dni' => 'required|string|max:15',
+            'nombres' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'celular' => 'required|string|max:20',
+            'estado' => 'required|in:pendiente,observado,aprobado,rechazado',
+            'observacion' => 'nullable|string',
+            'lote' => 'nullable|string|max:20',
+            'manzana' => 'nullable|string|max:20',
 
-        // BackOffice
-        'grupo' => 'required|in:A,B,C,D',
-        'gestor_backoffice_id' => 'nullable|exists:users,id',
-        'fecha_culminacion_eecc' => 'nullable|date',
-        'link_carpeta_eecc' => 'nullable|string|max:255',
-        'link_eecc_firmado' => 'nullable|string|max:255',
-        'validador_backoffice_id' => 'nullable|exists:users,id',
-        'fecha_validacion_eecc' => 'nullable|date',
-        'estado_backoffice' => 'required|in:pendiente,observado,aprobado,rechazado',
+            // BackOffice
+            'grupo' => 'required|in:A,B,C,D',
+            'gestor_backoffice_id' => 'nullable|exists:users,id',
+            'fecha_culminacion_eecc' => 'nullable|date',
+            'link_carpeta_eecc' => 'nullable|string|max:255',
+            'link_eecc_firmado' => 'nullable|string|max:255',
+            'validador_backoffice_id' => 'nullable|exists:users,id',
+            'fecha_validacion_eecc' => 'nullable|date',
+            'estado_backoffice' => 'required|in:pendiente,observado,aprobado,rechazado',
 
-        // Legal
-        'estado_contrato_preeliminar_emitido' => 'required|in:pendiente,observado,aprobado,rechazado',
-        'estado_firma_contrato_firmado' => 'required|in:pendiente,observado,aprobado,rechazado',
-        'fecha_firma' => 'nullable|date',
-        'fecha_generacion_contrato' => 'nullable|date',
-    ];
+            // Legal
+            'estado_contrato_preeliminar_emitido' => 'required|in:pendiente,observado,aprobado,rechazado',
+            'estado_firma_contrato_firmado' => 'required|in:pendiente,observado,aprobado,rechazado',
+            'fecha_firma' => 'nullable|date',
+            'fecha_generacion_contrato' => 'nullable|date',
+        ];
+    }
+
+    protected function validationAttributes()
+    {
+        return [
+            'proyecto_id' => 'proyecto',
+            'dni' => 'DNI',
+            'nombres' => 'nombres completos',
+            'email' => 'correo electrónico',
+            'celular' => 'número de celular',
+            'estado' => 'estado del prospecto',
+            'grupo' => 'grupo backoffice',
+            'estado_backoffice' => 'estado backoffice',
+            'estado_contrato_preeliminar_emitido' => 'estado contrato preliminar',
+            'estado_firma_contrato_firmado' => 'estado firma contrato',
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
 
     public function mount($id, $prospectoId)
     {
@@ -69,15 +94,13 @@ class EntregaFestProspectoEditar extends Component
 
         $this->proyecto_id = $this->prospecto->proyecto_id;
         $this->dni = $this->prospecto->dni;
-        $this->nombre = $this->prospecto->nombre;
-        $this->apellidos = $this->prospecto->apellidos;
+        $this->nombres = $this->prospecto->nombres;
+        $this->email = $this->prospecto->email;
+        $this->celular = $this->prospecto->celular;
         $this->estado = $this->prospecto->estado;
         $this->observacion = $this->prospecto->observacion;
-        $this->codigo_cliente = $this->prospecto->codigo_cliente;
-        $this->codigo_cuota = $this->prospecto->codigo_cuota;
         $this->lote = $this->prospecto->lote;
         $this->manzana = $this->prospecto->manzana;
-        $this->etapa = $this->prospecto->etapa;
 
         // BackOffice
         $this->grupo = $this->prospecto->grupo;
@@ -100,39 +123,71 @@ class EntregaFestProspectoEditar extends Component
 
     public function update()
     {
-        $this->validate();
+        $this->authorize('entrega-fest.prospectos');
 
-        $this->prospecto->update([
-            'proyecto_id' => $this->proyecto_id,
-            'dni' => $this->dni,
-            'nombre' => $this->nombre,
-            'apellidos' => $this->apellidos,
-            'codigo_cliente' => $this->codigo_cliente,
-            'codigo_cuota' => $this->codigo_cuota,
-            'lote' => $this->lote,
-            'manzana' => $this->manzana,
-            'etapa' => $this->etapa,
-            'estado' => $this->estado,
-            'observacion' => $this->observacion,
-            'grupo' => $this->grupo,
-            'gestor_backoffice_id' => $this->gestor_backoffice_id,
-            'fecha_culminacion_eecc' => $this->fecha_culminacion_eecc,
-            'link_carpeta_eecc' => $this->link_carpeta_eecc,
-            'link_eecc_firmado' => $this->link_eecc_firmado,
-            'validador_backoffice_id' => $this->validador_backoffice_id,
-            'fecha_validacion_eecc' => $this->fecha_validacion_eecc,
-            'estado_backoffice' => $this->estado_backoffice,
-            'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
-            'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
-            'fecha_firma' => $this->fecha_firma,
-            'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
-        ]);
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        }
 
-        $this->dispatch('alertaLivewire', [
-            'type' => 'success',
-            'title' => 'Actualizado',
-            'text' => 'Prospecto actualizado correctamente.'
-        ]);
+        try {
+            DB::beginTransaction();
+
+            $this->prospecto->update([
+                'proyecto_id' => $this->proyecto_id,
+                'dni' => $this->dni,
+                'nombres' => trim($this->nombres),
+                'email' => trim($this->email),
+                'celular' => trim($this->celular),
+                'lote' => $this->lote,
+                'manzana' => $this->manzana,
+                'estado' => $this->estado,
+                'observacion' => $this->observacion,
+                'grupo' => $this->grupo,
+                'gestor_backoffice_id' => $this->gestor_backoffice_id ?: null,
+                'fecha_culminacion_eecc' => $this->fecha_culminacion_eecc,
+                'link_carpeta_eecc' => $this->link_carpeta_eecc,
+                'link_eecc_firmado' => $this->link_eecc_firmado,
+                'validador_backoffice_id' => $this->validador_backoffice_id ?: null,
+                'fecha_validacion_eecc' => $this->fecha_validacion_eecc,
+                'estado_backoffice' => $this->estado_backoffice,
+                'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
+                'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
+                'fecha_firma' => $this->fecha_firma,
+                'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
+            ]);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'Prospecto ' . $this->nombres . ' actualizado correctamente.'
+            ]);
+
+            return redirect()->route('erp.entrega-fest.vista.prospectos', $this->evento->id);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('entrega-fest')->error("[PROSPECTO EDITAR] Error al actualizar: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'prospecto_id' => $this->prospecto->id,
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo actualizar el prospecto.'
+            ]);
+        }
     }
 
     public function render()

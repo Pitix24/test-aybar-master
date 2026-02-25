@@ -5,6 +5,9 @@ namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 use App\Models\EntregaFest;
 use App\Models\InvitadoEntregaFest;
 use App\Models\ProspectoEntregaFest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
@@ -17,16 +20,34 @@ class EntregaFestInvitadoCrear extends Component
 {
     public EntregaFest $evento;
 
-    public $prospecto_entrega_fest_id;
+    public $prospecto_entrega_fest_id = '';
     public $cantidad_acompanantes_permitidos = 0;
     public $confirmado = false;
 
     public $prospectos = [];
 
-    protected $rules = [
-        'prospecto_entrega_fest_id' => 'required|exists:prospecto_entrega_fests,id',
-        'cantidad_acompanantes_permitidos' => 'required|integer|min:0',
-    ];
+    protected function rules()
+    {
+        return [
+            'prospecto_entrega_fest_id' => 'required|exists:prospecto_entrega_fests,id',
+            'cantidad_acompanantes_permitidos' => 'required|integer|min:0',
+            'confirmado' => 'boolean',
+        ];
+    }
+
+    protected function validationAttributes()
+    {
+        return [
+            'prospecto_entrega_fest_id' => 'prospecto',
+            'cantidad_acompanantes_permitidos' => 'cantidad de acompañantes',
+            'confirmado' => 'confirmación',
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
+    }
 
     public function mount($id)
     {
@@ -39,32 +60,63 @@ class EntregaFestInvitadoCrear extends Component
         // Solo prospectos del evento que NO sean invitados ya
         $this->prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->whereDoesntHave('invitado')
-            ->orderBy('nombre')
+            ->orderBy('nombres')
             ->get();
     }
 
     public function store()
     {
-        $this->validate();
+        $this->authorize('entrega-fest.invitados');
 
-        // Generar código único: INV-EVENT-ID
-        $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'Verifique los errores de los campos resaltados.'
+            ]);
+            throw $e;
+        }
 
-        InvitadoEntregaFest::create([
-            'entrega_fest_id' => $this->evento->id,
-            'prospecto_entrega_fest_id' => $this->prospecto_entrega_fest_id,
-            'codigo_invitado' => $codigo,
-            'cantidad_acompanantes_permitidos' => $this->cantidad_acompanantes_permitidos,
-            'confirmado' => $this->confirmado,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $this->dispatch('alertaLivewire', [
-            'type' => 'success',
-            'title' => 'Generado',
-            'text' => 'Invitación generada con código: ' . $codigo
-        ]);
+            // Generar código único: INV-EVENT-ID-RAND
+            $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
 
-        return redirect()->route('erp.entrega-fest.vista.invitados', $this->evento->id);
+            InvitadoEntregaFest::create([
+                'entrega_fest_id' => $this->evento->id,
+                'prospecto_entrega_fest_id' => $this->prospecto_entrega_fest_id,
+                'codigo_invitado' => $codigo,
+                'cantidad_acompanantes_permitidos' => $this->cantidad_acompanantes_permitidos,
+                'confirmado' => $this->confirmado,
+            ]);
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Generado!',
+                'text' => 'Invitación generada con código: ' . $codigo
+            ]);
+
+            return redirect()->route('erp.entrega-fest.vista.invitados', $this->evento->id);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::channel('entrega-fest')->error("[INVITADO CREAR] Error al generar invitación: " . $e->getMessage(), [
+                'usuario_id' => auth()->id(),
+                'datos' => $this->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo generar la invitación.'
+            ]);
+        }
     }
 
     public function render()

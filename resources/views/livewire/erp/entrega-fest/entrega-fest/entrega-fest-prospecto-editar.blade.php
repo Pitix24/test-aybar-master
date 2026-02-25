@@ -16,7 +16,7 @@
             <h4 class="g_panel_titulo"><i class="fa-solid fa-user-edit"></i> Información del Prospecto</h4>
 
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_3">
+                <div class="g_margin_bottom_10 g_columna_4">
                     <label>Proyecto <span class="obligatorio">*</span></label>
                     <select wire:model="proyecto_id" class="@error('proyecto_id') select-error @enderror">
                         <option value="">Seleccione el proyecto...</option>
@@ -27,51 +27,31 @@
                     @error('proyecto_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
+                <div class="g_margin_bottom_10 g_columna_4">
                     <label>DNI / Documento <span class="obligatorio">*</span></label>
                     <input type="text" wire:model="dni" class="@error('dni') input-error @enderror">
                     @error('dni') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Nombres <span class="obligatorio">*</span></label>
-                    <input type="text" wire:model="nombre" class="@error('nombre') input-error @enderror">
-                    @error('nombre') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Apellidos <span class="obligatorio">*</span></label>
-                    <input type="text" wire:model="apellidos" class="@error('apellidos') input-error @enderror">
-                    @error('apellidos') <p class="mensaje_error">{{ $message }}</p> @enderror
+                <div class="g_margin_bottom_10 g_columna_4">
+                    <label>Nombres Completos <span class="obligatorio">*</span></label>
+                    <input type="text" wire:model="nombres" class="@error('nombres') input-error @enderror">
+                    @error('nombres') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
             </div>
 
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Cód. Cliente</label>
-                    <input type="text" wire:model="codigo_cliente">
+                <div class="g_margin_bottom_10 g_columna_4">
+                    <label>Correo Electrónico <span class="obligatorio">*</span></label>
+                    <input type="email" wire:model="email" class="@error('email') input-error @enderror">
+                    @error('email') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Cód. Cuota</label>
-                    <input type="text" wire:model="codigo_cuota">
+                <div class="g_margin_bottom_10 g_columna_4">
+                    <label>Celular <span class="obligatorio">*</span></label>
+                    <input type="text" wire:model="celular" class="@error('celular') input-error @enderror">
+                    @error('celular') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Etapa</label>
-                    <input type="text" wire:model="etapa">
-                </div>
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Manzana</label>
-                    <input type="text" wire:model="manzana">
-                </div>
-            </div>
-
-            <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_3">
-                    <label>Lote</label>
-                    <input type="text" wire:model="lote">
-                </div>
-
-                <div class="g_margin_bottom_10 g_columna_3">
+                <div class="g_margin_bottom_10 g_columna_4">
                     <label>Estado Prospecto <span class="obligatorio">*</span></label>
                     <select wire:model="estado">
                         <option value="pendiente">Pendiente</option>
@@ -79,6 +59,17 @@
                         <option value="aprobado">Aprobado</option>
                         <option value="rechazado">Rechazado</option>
                     </select>
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Manzana</label>
+                    <input type="text" wire:model="manzana">
+                </div>
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Lote</label>
+                    <input type="text" wire:model="lote">
                 </div>
             </div>
 
