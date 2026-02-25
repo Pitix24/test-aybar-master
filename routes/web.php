@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CavaliController;
 use App\Http\Controllers\SlinController;
+use App\Livewire\Public\EntregaFest\AsistenciaPublica;
 use App\Livewire\Web\Sesion\ClienteRegistrarLivewire;
 use App\Http\Controllers\Web\VerificationController;
 use App\Http\Controllers\Web\ConsultaCodigoClienteController;
@@ -23,3 +24,7 @@ Route::post('/email/verification-notification', [VerificationController::class, 
 Route::get('/slin/comprobante/ver', [SlinController::class, 'verComprobante'])->name('slin.comprobante.ver');
 Route::get('/cavali/constancia/ver/{numeroLetra}', [CavaliController::class, 'verLetra'])->name('cavali.constancia.ver');
 Route::post('/consulta-codigo-cliente', [ConsultaCodigoClienteController::class, 'consultarClienteDbApi'])->name('consulta-codigo-cliente');
+
+// Entrega Fest - Asistencia Pública
+Route::get('/evento/{slug}/{uuid}', AsistenciaPublica::class)
+    ->name('public.entrega-fest.asistencia');

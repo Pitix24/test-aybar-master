@@ -11,6 +11,7 @@ class ProspectoEntregaFest extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'entrega_fest_id',
         'proyecto_id',
         'user_id',
@@ -35,6 +36,13 @@ class ProspectoEntregaFest extends Model
         'fecha_firma',
         'fecha_generacion_contrato',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($prospecto) {
+            $prospecto->uuid = (string) \Illuminate\Support\Str::uuid();
+        });
+    }
 
     public function entregaFest()
     {

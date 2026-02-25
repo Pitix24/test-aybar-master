@@ -106,8 +106,7 @@
                         <th>Proyecto</th>
                         <th>Lote/Mz</th>
                         <th class="g_celda_centro">Estado Prospecto</th>
-                        <th class="g_celda_centro">Carpeta EECC</th>
-                        <th class="g_celda_centro">Firma EECC</th>
+                        <th class="g_celda_centro">BackOffice</th>
                         <th class="g_celda_centro">Estado Contrato Preliminar</th>
                         <th class="g_celda_centro">Fecha Firma</th>
                         <th class="g_celda_centro">Invitado</th>
@@ -135,8 +134,18 @@
                                 @endphp
                                 <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado) }}</span>
                             </td>
-                            <td class="g_resumir">{{ $p->link_carpeta_eecc ?? 'N/A' }}</td>
-                            <td class="g_resumir">{{ $p->link_eecc_firmado ?? 'N/A' }}</td>
+                            <td class="g_celda_centro">
+                                @php
+                                    $claseBO = match ($p->estado_backoffice) {
+                                        'pendiente' => 'primary',
+                                        'observado' => 'warning',
+                                        'aprobado' => 'success',
+                                        'rechazado' => 'danger',
+                                        default => 'light',
+                                    };
+                                @endphp
+                                <span class="g_badge {{ $claseBO }}">{{ strtoupper($p->estado_backoffice) }}</span>
+                            </td>
                             <td class="g_celda_centro">
                                 @php
                                     $claseEstado = match ($p->estado_firma_contrato_firmado) {
@@ -149,10 +158,10 @@
                                 @endphp
                                 <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado_firma_contrato_firmado) }}</span>
                             </td>
-                            <td>{{ $p->fecha_firma ?? 'N/A' }}</td>
+                            <td>{{ $p->fecha_firma ? date('d/m/Y', strtotime($p->fecha_firma)) : 'N/A' }}</td>
                             <td class="g_celda_centro">
-                                @if($p->invitado)
-                                    <span class="g_badge success">SÍ</span>
+                                @if ($p->invitado)
+                                    <span class="g_badge success" title="{{ $p->invitado->estado_confirmacion }}">SÍ</span>
                                 @else
                                     <span class="g_badge danger">NO</span>
                                 @endif
@@ -160,9 +169,20 @@
                             <td class="g_celda_acciones g_celda_centro">
                                 @can('entrega-fest.prospectos')
                                     <a href="{{ route('erp.entrega-fest.vista.prospectos.editar', [$evento->id, $p->id]) }}"
-                                        class="g_accion editar" title="Editar">
+                                        class="g_accion editar" title="Editar / Evaluar">
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>
+
+                                    @if ($p->estado_backoffice === 'aprobado' && !$p->invitado)
+                                         <a href="{{ route('public.entrega-fest.asistencia', [$evento->slug, $p->uuid]) }}" target="_blank"
+                                             class="g_accion info" title="Ver Link de Asistencia">
+                                             <i class="fa-solid fa-link"></i>
+                                         </a>
+                                         <a href="https://wa.me/{{ preg_replace('/\D/', '', $p->celular) }}?text={{ urlencode('Hola ' . $p->nombres . ', confirma tu asistencia al evento ' . $evento->nombre . ' aquí: ' . route('public.entrega-fest.asistencia', [$evento->slug, $p->uuid])) }}"
+                                             target="_blank" class="g_accion success" title="Enviar por WhatsApp">
+                                             <i class="fa-brands fa-whatsapp"></i>
+                                         </a>
+                                     @endif
                                 @endcan
                             </td>
                         </tr>

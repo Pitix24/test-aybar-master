@@ -14,11 +14,19 @@ class EntregaFest extends Model
     protected $fillable = [
         'gestor_id',
         'nombre',
+        'slug',
         'descripcion',
         'codigo',
         'fecha_entrega',
         'activo',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($evento) {
+            $evento->slug = \Illuminate\Support\Str::slug($evento->nombre) . '-' . uniqid();
+        });
+    }
 
     protected $casts = [
         'fecha_entrega' => 'date',
