@@ -42,16 +42,11 @@ class InvitadoEntregaFest extends Model
 
     public function asistencia()
     {
-        return $this->hasOne(AsistenciaEntregaFest::class);
-    }
-
-    public function envios()
-    {
-        return $this->hasMany(InvitadoEnvioEntregaFest::class);
+        return $this->hasOne(AsistenciaEntregaFest::class, 'invitado_entrega_fest_id');
     }
 
     public function getNombreCompletoAttribute()
     {
-        return $this->prospecto?->nombre . ' ' . $this->prospecto?->apellidos;
+        return $this->prospecto?->nombres;
     }
 }

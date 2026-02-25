@@ -46,17 +46,19 @@ class EntregaFestAsistencia extends Component
 
     public function procesarCheckin()
     {
+        $this->authorize('entrega-fest.asistencia');
+
         $invitado = InvitadoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->where('codigo_invitado', $this->codigo_qr)
+            ->where('codigo_invitado', strtoupper(trim($this->codigo_qr)))
             ->with('prospecto')
             ->first();
 
         if (!$invitado) {
-            $this->mensaje = 'Código QR no reconocido para este evento.';
+            $this->mensaje = 'Código no reconocido para este evento.';
             $this->mensajeTipo = 'error';
         } else {
             if ($invitado->asistencia) {
-                $this->mensaje = 'El invitado ' . ($invitado->prospecto->nombre_completo) . ' ya registró su ingreso a las ' . $invitado->asistencia->fecha_checkin->format('H:i');
+                $this->mensaje = 'El invitado ' . ($invitado->nombre_completo) . ' ya registró su ingreso a las ' . $invitado->asistencia->fecha_checkin->format('H:i');
                 $this->mensajeTipo = 'warning';
             } else {
                 AsistenciaEntregaFest::create([
@@ -65,7 +67,7 @@ class EntregaFestAsistencia extends Component
                     'fecha_checkin' => now(),
                     'metodo' => 'qr',
                 ]);
-                $this->mensaje = '¡Bienvenido(a) ' . ($invitado->prospecto->nombre_completo) . '! Ingreso registrado.';
+                $this->mensaje = '¡Bienvenido(a) ' . ($invitado->nombre_completo) . '! Ingreso registrado.';
                 $this->mensajeTipo = 'success';
             }
         }
@@ -97,14 +99,13 @@ class EntregaFestAsistencia extends Component
     public function render()
     {
         $items = AsistenciaEntregaFest::query()
-            ->with(['invitado.prospecto', 'user'])
+            ->with(['invitado.prospecto.proyecto', 'user'])
             ->whereHas('invitado', function ($q) {
                 $q->where('entrega_fest_id', $this->evento->id);
             })
             ->when($this->buscar, function ($query) {
                 $query->whereHas('invitado.prospecto', function ($q) {
-                    $q->where('nombre', 'like', '%' . $this->buscar . '%')
-                        ->orWhere('apellidos', 'like', '%' . $this->buscar . '%')
+                    $q->where('nombres', 'like', '%' . $this->buscar . '%')
                         ->orWhere('dni', 'like', '%' . $this->buscar . '%');
                 })->orWhereHas('invitado', function ($q) {
                     $q->where('codigo_invitado', 'like', '%' . $this->buscar . '%');

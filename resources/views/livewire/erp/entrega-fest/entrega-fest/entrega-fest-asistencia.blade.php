@@ -11,8 +11,6 @@
         </div>
     </div>
 
-    @include('livewire.erp.entrega-fest.entrega-fest.entrega-fest-navegacion')
-
     <div class="g_fila">
         <div class="g_columna_4">
             <div class="g_panel">
@@ -20,16 +18,51 @@
                 <div class="formulario">
                     <div class="g_margin_bottom_10">
                         <label>Código QR / Manual</label>
-                        <input type="text" wire:model.live="codigo_qr" placeholder="Escanee o escriba el código..."
+                        <input type="text" 
+                            wire:model.live="codigo_qr" 
+                            id="scanner_input"
+                            placeholder="Escanee o escriba el código..."
+                            class="g_negrita"
+                            style="font-size: 1.2rem; text-align: center; border: 2px solid var(--color-primary);"
                             autofocus>
                     </div>
 
                     @if ($mensaje)
-                        <div class="alert alert-{{ $mensajeTipo }}"
-                            style="margin-top: 10px; padding: 10px; border-radius: 4px; border: 1px solid;">
-                            {{ $mensaje }}
+                        @php
+                            $icon = match($mensajeTipo) {
+                                'success' => 'fa-circle-check',
+                                'warning' => 'fa-triangle-exclamation',
+                                'error' => 'fa-circle-xmark',
+                                default => 'fa-info-circle'
+                            };
+                            $colorAlert = match($mensajeTipo) {
+                                'success' => '#d4edda',
+                                'warning' => '#fff3cd',
+                                'error' => '#f8d7da',
+                                default => '#e2e3e5'
+                            };
+                            $borderColor = match($mensajeTipo) {
+                                'success' => '#c3e6cb',
+                                'warning' => '#ffeeba',
+                                'error' => '#f5c6cb',
+                                default => '#d6d8db'
+                            };
+                            $txtColor = match($mensajeTipo) {
+                                'success' => '#155724',
+                                'warning' => '#856404',
+                                'error' => '#721c24',
+                                default => '#383d41'
+                            };
+                        @endphp
+                        <div style="margin-top: 15px; padding: 15px; border-radius: 12px; background-color: {{ $colorAlert }}; border: 1px solid {{ $borderColor }}; color: {{ $txtColor }}; display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid {{ $icon }} fa-lg"></i>
+                            <div class="g_negrita">{{ $mensaje }}</div>
                         </div>
                     @endif
+
+                    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; font-size: 0.9rem; color: #666;">
+                        <p style="margin: 0;"><i class="fa-solid fa-circle-info"></i> El cursor debe estar en el campo de texto para que el lector QR funcione automáticamente.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -38,19 +71,23 @@
             <div class="g_panel">
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-clock-rotate-left"></i> Registros Recientes</h4>
 
-                <div class="formulario g_margin_bottom_15">
-                    <div class="g_fila">
-                        <div class="g_columna_8">
-                            <input type="text" wire:model.live.debounce.400ms="buscar"
-                                placeholder="Buscar por nombre, dni o código...">
-                        </div>
-                        <div class="g_columna_4">
-                            <select wire:model.live="perPage">
-                                <option value="20">20 registros</option>
-                                <option value="50">50 registros</option>
-                                <option value="100">100 registros</option>
-                            </select>
-                        </div>
+                <div class="g_tabla_cabecera">
+                    <div class="g_tabla_cabecera_botones">
+                        <button wire:click="resetFiltros" class="g_boton danger" title="Limpiar">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+
+                    <div class="g_tabla_cabecera_filtro formulario" style="flex: 1;">
+                        <input type="text" wire:model.live.debounce.400ms="buscar"
+                                placeholder="Buscar en registrados (Nombre, DNI o Código)...">
+                    </div>
+                    
+                    <div class="g_tabla_cabecera_filtro formulario">
+                        <select wire:model.live="perPage">
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
                     </div>
                 </div>
 
@@ -58,28 +95,41 @@
                     <table class="g_tabla">
                         <thead>
                             <tr>
-                                <th>Cód. Inv</th>
-                                <th>Prospecto / DNI</th>
-                                <th>Fecha / Hora</th>
-                                <th>Registrado por</th>
+                                <th>Cód.</th>
+                                <th>Invitado / DNI</th>
+                                <th>Proyecto</th>
+                                <th class="g_celda_centro">Fecha / Hora</th>
+                                <th>Responsable</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($items as $a)
+                            @forelse ($items as $a)
                                 <tr wire:key="asistencia-{{ $a->id }}">
-                                    <td class="g_negrita">{{ $a->invitado->codigo_invitado }}</td>
+                                    <td class="g_negrita" style="color: var(--color-primary);">{{ $a->invitado->codigo_invitado }}</td>
                                     <td>
-                                        <div class="g_negrita">{{ $a->invitado->prospecto->nombre_completo ?? 'N/A' }}</div>
-                                        <div style="font-size: 0.8rem; color: #666;">DNI:
-                                            {{ $a->invitado->prospecto->dni ?? 'N/A' }}</div>
+                                        <div class="g_negrita">{{ $a->invitado->nombre_completo ?? 'N/A' }}</div>
+                                        <div style="font-size: 0.8rem; color: #666;">DNI: {{ $a->invitado->prospecto->dni ?? 'N/A' }}</div>
                                     </td>
                                     <td>
-                                        <span class="g_badge light">{{ $a->fecha_checkin->format('d/m/Y') }}</span>
-                                        <span class="g_negrita">{{ $a->fecha_checkin->format('H:i') }}</span>
+                                        <div style="font-size: 0.85rem;">{{ $a->invitado->prospecto->proyecto->nombre ?? 'N/A' }}</div>
+                                        <div style="font-size: 0.75rem; color: #777;">{{ $a->invitado->prospecto->lote }} {{ $a->invitado->prospecto->manzana }}</div>
                                     </td>
-                                    <td>{{ $a->user->name ?? 'Sistema' }}</td>
+                                    <td class="g_celda_centro">
+                                        <div class="g_badge light" style="font-size: 0.75rem;">{{ $a->created_at->format('d/m/Y') }}</div>
+                                        <div class="g_negrita" style="margin-top: 4px;">{{ $a->created_at->format('H:i:s') }}</div>
+                                    </td>
+                                    <td>
+                                        <div style="font-size: 0.85rem;">{{ $a->user->name ?? 'Sistema' }}</div>
+                                        <div style="font-size: 0.75rem; color: #999;">Método: {{ strtoupper($a->metodo) }}</div>
+                                    </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="g_celda_centro" style="padding: 40px; color: #999;">
+                                        No hay registros de ingreso aún.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
