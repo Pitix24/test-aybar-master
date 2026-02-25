@@ -15,24 +15,16 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
+#[Layout('layouts.erp.layout-erp')]
 #[Title('Registrar Prospecto - Entrega Fest')]
 class EntregaFestProspectoCrear extends Component
 {
     public EntregaFest $evento;
 
-    // Campos del prospecto (Sincronizados con migración)
+    // Campos del prospecto (Simplificado para registro inicial)
     public $proyecto_id = '', $dni = '', $nombres = '', $email = '', $celular = '', $observacion = '';
     public $lote = '', $manzana = '';
     public $estado = 'pendiente';
-
-    // BackOffice
-    public $grupo = 'A', $gestor_backoffice_id = '', $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
-    public $validador_backoffice_id = '', $fecha_validacion_eecc, $estado_backoffice = 'pendiente';
-
-    // Legal
-    public $estado_contrato_preeliminar_emitido = 'pendiente', $estado_firma_contrato_firmado = 'pendiente';
-    public $fecha_firma, $fecha_generacion_contrato;
 
     public $proyectos = [];
 
@@ -48,22 +40,6 @@ class EntregaFestProspectoCrear extends Component
             'observacion' => 'nullable|string',
             'lote' => 'nullable|string|max:20',
             'manzana' => 'nullable|string|max:20',
-
-            // BackOffice
-            'grupo' => 'required|in:A,B,C,D',
-            'gestor_backoffice_id' => 'nullable|exists:users,id',
-            'fecha_culminacion_eecc' => 'nullable|date',
-            'link_carpeta_eecc' => 'nullable|string|max:255',
-            'link_eecc_firmado' => 'nullable|string|max:255',
-            'validador_backoffice_id' => 'nullable|exists:users,id',
-            'fecha_validacion_eecc' => 'nullable|date',
-            'estado_backoffice' => 'required|in:pendiente,observado,aprobado,rechazado',
-
-            // Legal
-            'estado_contrato_preeliminar_emitido' => 'required|in:pendiente,observado,aprobado,rechazado',
-            'estado_firma_contrato_firmado' => 'required|in:pendiente,observado,aprobado,rechazado',
-            'fecha_firma' => 'nullable|date',
-            'fecha_generacion_contrato' => 'nullable|date',
         ];
     }
 
@@ -76,10 +52,6 @@ class EntregaFestProspectoCrear extends Component
             'email' => 'correo electrónico',
             'celular' => 'número de celular',
             'estado' => 'estado del prospecto',
-            'grupo' => 'grupo backoffice',
-            'estado_backoffice' => 'estado backoffice',
-            'estado_contrato_preeliminar_emitido' => 'estado contrato preliminar',
-            'estado_firma_contrato_firmado' => 'estado firma contrato',
         ];
     }
 
@@ -139,18 +111,6 @@ class EntregaFestProspectoCrear extends Component
                 'manzana' => $this->manzana,
                 'estado' => $this->estado,
                 'observacion' => $this->observacion,
-                'grupo' => $this->grupo,
-                'gestor_backoffice_id' => $this->gestor_backoffice_id ?: null,
-                'fecha_culminacion_eecc' => $this->fecha_culminacion_eecc,
-                'link_carpeta_eecc' => $this->link_carpeta_eecc,
-                'link_eecc_firmado' => $this->link_eecc_firmado,
-                'validador_backoffice_id' => $this->validador_backoffice_id ?: null,
-                'fecha_validacion_eecc' => $this->fecha_validacion_eecc,
-                'estado_backoffice' => $this->estado_backoffice,
-                'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
-                'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
-                'fecha_firma' => $this->fecha_firma,
-                'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
             ]);
 
             DB::commit();
@@ -181,10 +141,7 @@ class EntregaFestProspectoCrear extends Component
 
     public function render()
     {
-        $usuarios = User::orderBy('name')->get();
-        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-prospecto-crear', [
-            'usuarios' => $usuarios
-        ]);
+        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-prospecto-crear');
     }
 
     public function placeholder()

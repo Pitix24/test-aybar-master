@@ -105,89 +105,126 @@ class EntregaFestProspectoEditar extends Component
         // BackOffice
         $this->grupo = $this->prospecto->grupo;
         $this->gestor_backoffice_id = $this->prospecto->gestor_backoffice_id;
-        $this->fecha_culminacion_eecc = $this->prospecto->fecha_culminacion_eecc;
+        $this->fecha_culminacion_eecc = $this->prospecto->fecha_culminacion_eecc ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_culminacion_eecc)) : null;
         $this->link_carpeta_eecc = $this->prospecto->link_carpeta_eecc;
         $this->link_eecc_firmado = $this->prospecto->link_eecc_firmado;
         $this->validador_backoffice_id = $this->prospecto->validador_backoffice_id;
-        $this->fecha_validacion_eecc = $this->prospecto->fecha_validacion_eecc;
+        $this->fecha_validacion_eecc = $this->prospecto->fecha_validacion_eecc ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_eecc)) : null;
         $this->estado_backoffice = $this->prospecto->estado_backoffice;
 
         // Legal
         $this->estado_contrato_preeliminar_emitido = $this->prospecto->estado_contrato_preeliminar_emitido;
         $this->estado_firma_contrato_firmado = $this->prospecto->estado_firma_contrato_firmado;
-        $this->fecha_firma = $this->prospecto->fecha_firma;
-        $this->fecha_generacion_contrato = $this->prospecto->fecha_generacion_contrato;
+        $this->fecha_firma = $this->prospecto->fecha_firma ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_firma)) : null;
+        $this->fecha_generacion_contrato = $this->prospecto->fecha_generacion_contrato ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_generacion_contrato)) : null;
 
         $this->proyectos = $this->evento->proyectos;
     }
 
-    public function update()
+    private function handleUpdate(array $data, string $logContext)
     {
         $this->authorize('entrega-fest.prospectos');
 
         try {
-            $this->validate();
-        } catch (ValidationException $e) {
-            $this->dispatch('alertaLivewire', [
-                'type' => 'warning',
-                'title' => 'Advertencia',
-                'text' => 'Verifique los errores de los campos resaltados.'
-            ]);
-            throw $e;
-        }
-
-        try {
             DB::beginTransaction();
-
-            $this->prospecto->update([
-                'proyecto_id' => $this->proyecto_id,
-                'dni' => $this->dni,
-                'nombres' => trim($this->nombres),
-                'email' => trim($this->email),
-                'celular' => trim($this->celular),
-                'lote' => $this->lote,
-                'manzana' => $this->manzana,
-                'estado' => $this->estado,
-                'observacion' => $this->observacion,
-                'grupo' => $this->grupo,
-                'gestor_backoffice_id' => $this->gestor_backoffice_id ?: null,
-                'fecha_culminacion_eecc' => $this->fecha_culminacion_eecc,
-                'link_carpeta_eecc' => $this->link_carpeta_eecc,
-                'link_eecc_firmado' => $this->link_eecc_firmado,
-                'validador_backoffice_id' => $this->validador_backoffice_id ?: null,
-                'fecha_validacion_eecc' => $this->fecha_validacion_eecc,
-                'estado_backoffice' => $this->estado_backoffice,
-                'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
-                'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
-                'fecha_firma' => $this->fecha_firma,
-                'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
-            ]);
-
+            $this->prospecto->update($data);
             DB::commit();
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => '¡Actualizado!',
-                'text' => 'Prospecto ' . $this->nombres . ' actualizado correctamente.'
+                'text' => 'Información actualizada correctamente.'
             ]);
-
-            return redirect()->route('erp.entrega-fest.vista.prospectos', $this->evento->id);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('entrega-fest')->error("[PROSPECTO EDITAR] Error al actualizar: " . $e->getMessage(), [
+            Log::channel('entrega-fest')->error("[$logContext] Error: " . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'prospecto_id' => $this->prospecto->id,
-                'datos' => $this->all(),
+                'datos' => $data,
                 'trace' => $e->getTraceAsString()
             ]);
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
                 'title' => 'Error',
-                'text' => 'No se pudo actualizar el prospecto.'
+                'text' => 'No se pudo actualizar la información.'
             ]);
         }
+    }
+
+    public function updateProspecto()
+    {
+        $rules = [
+            'proyecto_id' => 'required|exists:proyectos,id',
+            'dni' => 'required|string|max:15',
+            'nombres' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'celular' => 'required|string|max:20',
+            'estado' => 'required|in:pendiente,observado,aprobado,rechazado',
+            'observacion' => 'nullable|string',
+            'lote' => 'nullable|string|max:20',
+            'manzana' => 'nullable|string|max:20',
+        ];
+
+        $this->validate($rules);
+
+        $this->handleUpdate([
+            'proyecto_id' => $this->proyecto_id,
+            'dni' => $this->dni,
+            'nombres' => trim($this->nombres),
+            'email' => trim($this->email),
+            'celular' => trim($this->celular),
+            'estado' => $this->estado,
+            'observacion' => $this->observacion,
+            'lote' => $this->lote,
+            'manzana' => $this->manzana,
+        ], 'PROSPECTO EDITAR - BASICO');
+    }
+
+    public function updateBackoffice()
+    {
+        $rules = [
+            'grupo' => 'required|in:A,B,C,D',
+            'gestor_backoffice_id' => 'nullable|exists:users,id',
+            'fecha_culminacion_eecc' => 'nullable|date',
+            'link_carpeta_eecc' => 'nullable|string|max:255',
+            'link_eecc_firmado' => 'nullable|string|max:255',
+            'validador_backoffice_id' => 'nullable|exists:users,id',
+            'fecha_validacion_eecc' => 'nullable|date',
+            'estado_backoffice' => 'required|in:pendiente,observado,aprobado,rechazado',
+        ];
+
+        $this->validate($rules);
+
+        $this->handleUpdate([
+            'grupo' => $this->grupo,
+            'gestor_backoffice_id' => $this->gestor_backoffice_id ?: null,
+            'fecha_culminacion_eecc' => $this->fecha_culminacion_eecc,
+            'link_carpeta_eecc' => $this->link_carpeta_eecc,
+            'link_eecc_firmado' => $this->link_eecc_firmado,
+            'validador_backoffice_id' => $this->validador_backoffice_id ?: null,
+            'fecha_validacion_eecc' => $this->fecha_validacion_eecc,
+            'estado_backoffice' => $this->estado_backoffice,
+        ], 'PROSPECTO EDITAR - BACKOFFICE');
+    }
+
+    public function updateLegal()
+    {
+        $rules = [
+            'estado_contrato_preeliminar_emitido' => 'required|in:pendiente,observado,aprobado,rechazado',
+            'estado_firma_contrato_firmado' => 'required|in:pendiente,observado,aprobado,rechazado',
+            'fecha_firma' => 'nullable|date',
+            'fecha_generacion_contrato' => 'nullable|date',
+        ];
+
+        $this->validate($rules);
+
+        $this->handleUpdate([
+            'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
+            'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
+            'fecha_firma' => $this->fecha_firma,
+            'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
+        ], 'PROSPECTO EDITAR - LEGAL');
     }
 
     public function render()
