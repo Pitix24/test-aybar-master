@@ -17,6 +17,8 @@ class ProspectoEntregaFest extends Model
         'dni',
         'nombre',
         'apellidos',
+        'email',
+        'celular',
         'codigo_cliente',
         'codigo_cuota',
         'lote',

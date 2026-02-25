@@ -18,15 +18,12 @@ return new class extends Migration {
             $table->foreignId('user_id')->nullable()->constrained(); // quien lo registró
 
             $table->string('dni', 15);
-            $table->string('nombre');
-            $table->string('apellidos');
+            $table->string('nombres');
+            $table->string('email');
+            $table->string('celular');
 
-            // Campos de contexto inmobiliario
-            $table->string('codigo_cliente')->nullable();
-            $table->string('codigo_cuota')->nullable();
             $table->string('lote')->nullable();
             $table->string('manzana')->nullable();
-            $table->string('etapa')->nullable();
 
             $table->enum('estado', [
                 'pendiente',
