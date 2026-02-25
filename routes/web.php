@@ -26,5 +26,5 @@ Route::get('/cavali/constancia/ver/{numeroLetra}', [CavaliController::class, 've
 Route::post('/consulta-codigo-cliente', [ConsultaCodigoClienteController::class, 'consultarClienteDbApi'])->name('consulta-codigo-cliente');
 
 // Entrega Fest - Asistencia Pública
-Route::get('/evento/{slug}/{uuid}', AsistenciaPublica::class)
+Route::get('/evento/{slug}/{id}', AsistenciaPublica::class)
     ->name('public.entrega-fest.asistencia');

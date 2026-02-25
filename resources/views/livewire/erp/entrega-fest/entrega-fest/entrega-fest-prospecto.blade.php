@@ -174,11 +174,11 @@
                                     </a>
 
                                     @if ($p->estado_backoffice === 'aprobado' && !$p->invitado)
-                                         <a href="{{ route('public.entrega-fest.asistencia', [$evento->slug, $p->uuid]) }}" target="_blank"
+                                         <a href="{{ route('public.entrega-fest.asistencia', [$evento->slug, $p->id]) }}" target="_blank"
                                              class="g_accion info" title="Ver Link de Asistencia">
                                              <i class="fa-solid fa-link"></i>
                                          </a>
-                                         <a href="https://wa.me/{{ preg_replace('/\D/', '', $p->celular) }}?text={{ urlencode('Hola ' . $p->nombres . ', confirma tu asistencia al evento ' . $evento->nombre . ' aquí: ' . route('public.entrega-fest.asistencia', [$evento->slug, $p->uuid])) }}"
+                                         <a href="https://wa.me/{{ preg_replace('/\D/', '', $p->celular) }}?text={{ urlencode('Hola ' . $p->nombres . ', confirma tu asistencia al evento ' . $evento->nombre . ' aquí: ' . route('public.entrega-fest.asistencia', [$evento->slug, $p->id])) }}"
                                              target="_blank" class="g_accion success" title="Enviar por WhatsApp">
                                              <i class="fa-brands fa-whatsapp"></i>
                                          </a>

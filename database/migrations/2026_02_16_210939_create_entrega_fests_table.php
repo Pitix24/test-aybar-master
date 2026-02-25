@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->foreignId('gestor_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->string('nombre');
+            $table->string('slug')->unique();
             $table->text('descripcion')->nullable();
             $table->string('codigo')->unique();
             $table->date('fecha_entrega');

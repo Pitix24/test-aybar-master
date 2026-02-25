@@ -15,7 +15,7 @@ use Livewire\Component;
 class AsistenciaPublica extends Component
 {
     public $slug;
-    public $uuid;
+    public $id;
     public $prospecto;
     public $evento;
 
@@ -28,14 +28,13 @@ class AsistenciaPublica extends Component
     public $enviado = false;
     public $mensaje_exito = '';
 
-    public function mount($slug, $uuid)
+    public function mount($slug, $id)
     {
         $this->slug = $slug;
-        $this->uuid = $uuid;
+        $this->id = $id;
 
-        $this->prospecto = ProspectoEntregaFest::where('uuid', $uuid)
-            ->with(['entregaFest', 'proyecto'])
-            ->firstOrFail();
+        $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
+            ->findOrFail($id);
 
         $this->evento = $this->prospecto->entregaFest;
 
