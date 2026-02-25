@@ -22,7 +22,7 @@ class EntregaFestSeeder extends Seeder
     public function run(): void
     {
         // Obtener o crear usuarios para auditoría
-        $admin = User::where('email', 'admin@example.com')->first() ?? User::factory()->create(['email' => 'admin@example.com', 'name' => 'Admin']);
+        $admin = User::where('email', 'admin@aybar.com')->first() ?? User::factory()->create(['email' => 'admin@aybar.com', 'name' => 'Admin']);
         $gestores = User::count() > 3 ? User::inRandomOrder()->take(3)->get() : User::factory()->count(3)->create();
 
         // Limpiar datos previos del seeder para evitar duplicados

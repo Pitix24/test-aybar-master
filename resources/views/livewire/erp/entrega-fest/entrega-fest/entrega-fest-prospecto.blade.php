@@ -2,7 +2,7 @@
     <x-loading-overlay wire:loading message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Prospectos: <span style="color: var(--color-primary);">{{ $evento->nombre }}</span></h2>
+        <h2>Prospectos: <span>{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
@@ -20,7 +20,7 @@
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Buscar (Nombre, Apellidos, DNI, Cód. Cliente)</label>
+                    <label>Buscar (Nombres, Celular, Email)</label>
                     <input type="text" wire:model.live.debounce.400ms="buscar">
                 </div>
 
@@ -33,6 +33,39 @@
                         @endforeach
                     </select>
                 </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado Prospecto</label>
+                    <select wire:model.live="estado">
+                        <option value="">Todos</option>
+                        <option value="pendiente">PENDIENTE</option>
+                        <option value="observado">OBSERVADO</option>
+                        <option value="aprobado">APROBADO</option>
+                        <option value="rechazado">RECHAZADO</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Firma Contrato</label>
+                    <select wire:model.live="estado_firma_contrato_firmado">
+                        <option value="">Todos</option>
+                        <option value="pendiente">PENDIENTE</option>
+                        <option value="observado">OBSERVADO</option>
+                        <option value="aprobado">APROBADO</option>
+                        <option value="rechazado">RECHAZADO</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Grupo</label>
+                    <select wire:model.live="grupo">
+                        <option value="">Todos</option>
+                        <option value="A">Grupo A</option>
+                        <option value="B">Grupo B</option>
+                        <option value="C">Grupo C</option>
+                        <option value="D">Grupo D</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -42,6 +75,12 @@
             <div class="g_tabla_cabecera_botones">
                 <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar Filtros <i class="fa-solid fa-rotate-left"></i>
+                </button>
+                <button wire:click="exportExcelFiltro" class="g_boton success">
+                    Exportar Filtro <i class="fa-solid fa-file-excel"></i>
+                </button>
+                <button wire:click="exportExcelTodo" class="g_boton info">
+                    Exportar Todo <i class="fa-solid fa-file-excel"></i>
                 </button>
             </div>
 
@@ -61,41 +100,61 @@
             <table class="g_tabla">
                 <thead>
                     <tr>
-                        <th>Cód. Cliente</th>
+                        <th>N°</th>
                         <th>DNI</th>
-                        <th>Nombre Completo</th>
+                        <th>Cliente</th>
                         <th>Proyecto</th>
-                        <th>Lp/Mz/Etapa</th>
-                        <th class="g_celda_centro">Estado</th>
+                        <th>Lote/Mz</th>
+                        <th class="g_celda_centro">Estado Prospecto</th>
+                        <th class="g_celda_centro">Carpeta EECC</th>
+                        <th class="g_celda_centro">Firma EECC</th>
+                        <th class="g_celda_centro">Estado Contrato Preliminar</th>
+                        <th class="g_celda_centro">Fecha Firma</th>
                         <th class="g_celda_centro">Invitado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach ($items as $p)
+                    @foreach ($items as $index => $p)
                         <tr wire:key="prospecto-{{ $p->id }}">
-                            <td class="g_negrita">{{ $p->codigo_cliente }}</td>
+                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
                             <td>{{ $p->dni }}</td>
-                            <td>
-                                <div class="g_negrita">{{ $p->nombre_completo }}</div>
-                                <div style="font-size: 0.8rem; color: #666;">Registrado por: {{ $p->user->name ?? 'N/A' }}
-                                </div>
-                            </td>
+                            <td class="g_negrita">{{ $p->nombre_completo }}</td>
                             <td>{{ $p->proyecto->nombre ?? 'N/A' }}</td>
-                            <td>
-                                <span class="g_badge light">{{ $p->lote }}</span>
-                                <span class="g_badge light">{{ $p->manzana }}</span>
-                                <span class="g_badge light">{{ $p->etapa }}</span>
-                            </td>
+                            <td>{{ $p->lote }}{{ $p->manzana }}</td>
                             <td class="g_celda_centro">
-                                <span class="g_badge primary">{{ $p->estado }}</span>
+                                @php
+                                    $claseEstado = match ($p->estado) {
+                                        'pendiente' => 'primary',
+                                        'observado' => 'warning',
+                                        'aprobado' => 'success',
+                                        'rechazado' => 'danger',
+                                        default => 'light',
+                                    };
+                                @endphp
+                                <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado) }}</span>
                             </td>
+                            <td class="g_resumir">{{ $p->link_carpeta_eecc ?? 'N/A' }}</td>
+                            <td class="g_resumir">{{ $p->link_eecc_firmado ?? 'N/A' }}</td>
+                            <td class="g_celda_centro">
+                                @php
+                                    $claseEstado = match ($p->estado_firma_contrato_firmado) {
+                                        'pendiente' => 'primary',
+                                        'observado' => 'warning',
+                                        'aprobado' => 'success',
+                                        'rechazado' => 'danger',
+                                        default => 'light',
+                                    };
+                                @endphp
+                                <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado_firma_contrato_firmado) }}</span>
+                            </td>
+                            <td>{{ $p->fecha_firma ?? 'N/A' }}</td>
                             <td class="g_celda_centro">
                                 @if($p->invitado)
                                     <span class="g_badge success">SÍ</span>
                                 @else
-                                    <span class="g_badge error">NO</span>
+                                    <span class="g_badge danger">NO</span>
                                 @endif
                             </td>
                             <td class="g_celda_acciones g_celda_centro">

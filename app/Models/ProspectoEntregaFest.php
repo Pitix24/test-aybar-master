@@ -15,15 +15,11 @@ class ProspectoEntregaFest extends Model
         'proyecto_id',
         'user_id',
         'dni',
-        'nombre',
-        'apellidos',
+        'nombres',
         'email',
         'celular',
-        'codigo_cliente',
-        'codigo_cuota',
         'lote',
         'manzana',
-        'etapa',
         'estado',
         'observacion',
         'grupo',
@@ -62,6 +58,6 @@ class ProspectoEntregaFest extends Model
 
     public function getNombreCompletoAttribute()
     {
-        return "{$this->nombre} {$this->apellidos}";
+        return $this->nombres;
     }
 }
