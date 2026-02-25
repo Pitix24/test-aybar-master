@@ -16,8 +16,15 @@ class ValidarEnviosCavaliDiariosJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * El número de segundos que el trabajo puede ejecutarse antes de que se agote el tiempo de espera.
+     * @var int
+     */
+    public $timeout = 3600;
+
     public function handle(CavaliService $service): void
     {
+        set_time_limit(0);
         Log::channel('cavali')->info('JOB VALIDAR: Iniciando validación de envíos');
 
         $idEstadoEnviado = EstadoSolicitudDigitalizarLetra::id(EstadoSolicitudDigitalizarLetra::ENVIADO);
@@ -31,54 +38,33 @@ class ValidarEnviosCavaliDiariosJob implements ShouldQueue
             return;
         }
 
-        $solicitudes = SolicitudDigitalizarLetra::where('estado_solicitud_digitalizar_letra_id', $idEstadoEnviado)->get();
+        // Procesamos por partes para no saturar la memoria ni el tiempo en una sola consulta
+        SolicitudDigitalizarLetra::where('estado_solicitud_digitalizar_letra_id', $idEstadoEnviado)
+            ->chunk(10, function ($solicitudes) use ($service, $idEstadoAprobado) {
+                /** @var SolicitudDigitalizarLetra $solicitud */
+                foreach ($solicitudes as $solicitud) {
+                    try {
+                        // nroCavali = codigo_venta + numero_cuota
+                        $nroCavali = ($solicitud->codigo_venta ?? '') . '-' . ($solicitud->numero_cuota ?? '');
 
-        if ($solicitudes->isEmpty()) {
-            Log::channel('cavali')->info('JOB VALIDAR: No hay solicitudes con estado ENVIADO para validar');
-            return;
-        }
+                        if (empty($nroCavali)) {
+                            Log::channel('cavali')->warning('JOB VALIDAR: Solicitud sin nroCavali', ['id' => $solicitud->id]);
+                            continue;
+                        }
 
-        foreach ($solicitudes as $solicitud) {
-            try {
-                // nroCavali = codigo_venta + numero_cuota (según lógica previa)
-                $nroCavali = ($solicitud->codigo_venta ?? '') . '-' . ($solicitud->numero_cuota ?? '');
+                        $result = $service->obtenerConstanciaCancelacion($nroCavali);
 
-                if (empty($nroCavali)) {
-                    Log::channel('cavali')->warning('JOB VALIDAR: Solicitud sin nroCavali (codigo_cuota + numero_cuota)', [
-                        'id' => $solicitud->id,
-                        'codigo_venta' => $solicitud->codigo_venta
-                    ]);
-                    continue;
+                        if (($result['codigo'] ?? '') === '001' && !empty($result['base64'])) {
+                            $solicitud->update(['estado_solicitud_digitalizar_letra_id' => $idEstadoAprobado]);
+                            Log::channel('cavali')->info('JOB VALIDAR: Solicitud aprobada', ['id' => $solicitud->id, 'nro' => $nroCavali]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::channel('cavali')->error('JOB VALIDAR: Error en solicitud ' . $solicitud->id, ['msg' => $e->getMessage()]);
+                    }
                 }
-
-                $result = $service->obtenerConstanciaCancelacion($nroCavali);
-
-                // '001' es el código de éxito según el servicio Cavali/Canvia
-                if (($result['codigo'] ?? '') === '001' && !empty($result['base64'])) {
-                    $solicitud->update([
-                        'estado_solicitud_digitalizar_letra_id' => $idEstadoAprobado,
-                        // Podríamos guardar el base64 si fuera necesario, pero el usuario no lo pidió explícitamente aquí
-                    ]);
-
-                    Log::channel('cavali')->info('JOB VALIDAR: Solicitud validada correctamente en Cavali', [
-                        'id' => $solicitud->id,
-                        'nroCavali' => $nroCavali,
-                        'nuevo_estado' => 'APROBADO'
-                    ]);
-                } else {
-                    Log::channel('cavali')->info('JOB VALIDAR: Solicitud aún no procesada en Cavali o con error', [
-                        'id' => $solicitud->id,
-                        'nroCavali' => $nroCavali,
-                        'codigo_respuesta' => $result['codigo'] ?? 'N/A'
-                    ]);
-                }
-            } catch (\Exception $e) {
-                Log::channel('cavali')->error('JOB VALIDAR: Error al validar solicitud', [
-                    'id' => $solicitud->id,
-                    'error' => $e->getMessage()
-                ]);
-            }
-        }
+                // Forzamos un pequeño respiro al servidor
+                gc_collect_cycles();
+            });
 
         Log::channel('cavali')->info('JOB VALIDAR: Proceso finalizado');
     }

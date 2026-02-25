@@ -116,12 +116,12 @@ class SolicitudDigitalizarLetraLista extends Component
         $this->authorize('solicitud-digitalizar-letra.ejecutar-cron-letra');
 
         try {
-            GenerarEnviosCavaliDiariosJob::dispatchSync();
+            GenerarEnviosCavaliDiariosJob::dispatch();
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
-                'title' => 'Proceso Completado',
-                'text' => 'El cron de letras se ha ejecutado exitosamente.'
+                'title' => 'Proceso Iniciado',
+                'text' => 'La generación de envíos se está procesando en segundo plano.'
             ]);
         } catch (\Exception $e) {
             $this->dispatch('alertaLivewire', [
@@ -137,12 +137,12 @@ class SolicitudDigitalizarLetraLista extends Component
         $this->authorize('solicitud-digitalizar-letra.validar-cron-letra');
 
         try {
-            ValidarEnviosCavaliDiariosJob::dispatchSync();
+            ValidarEnviosCavaliDiariosJob::dispatch();
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
-                'title' => 'Proceso Completado',
-                'text' => 'El cron de letras se ha ejecutado exitosamente.'
+                'title' => 'Proceso Iniciado',
+                'text' => 'La validación se está procesando en segundo plano. Puede seguir navegando.'
             ]);
         } catch (\Exception $e) {
             $this->dispatch('alertaLivewire', [
