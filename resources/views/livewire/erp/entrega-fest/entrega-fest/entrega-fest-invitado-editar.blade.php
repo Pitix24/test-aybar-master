@@ -28,6 +28,18 @@
                     </div>
                 </div>
 
+                <div
+                    style="text-align: center; margin: 15px 0; padding: 15px; background: white; border-radius: 12px; border: 1px solid #eee;">
+                    <p class="g_negrita" style="font-size: 0.8rem; margin-bottom: 10px; color: #666;">CÓDIGO QR DE
+                        ACCESO</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $codigo_invitado }}"
+                        alt="QR Access"
+                        style="width: 150px; height: 150px; border: 5px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <div class="g_negrita" style="margin-top: 10px; color: var(--color-primary); letter-spacing: 2px;">
+                        {{ $codigo_invitado }}
+                    </div>
+                </div>
+
                 <div class="g_perfil_politicas">
                     <div class="informacion_resumen_grid">
                         <div class="informacion_resumen_item">

@@ -27,6 +27,7 @@ class AsistenciaPublica extends Component
 
     public $enviado = false;
     public $mensaje_exito = '';
+    public $codigo_invitado = '';
 
     public function mount($slug, $id)
     {
@@ -47,6 +48,7 @@ class AsistenciaPublica extends Component
         if ($this->prospecto->invitado) {
             $this->enviado = true;
             $this->mensaje_exito = 'Ya hemos registrado tu respuesta anteriormente. ¡Muchas gracias!';
+            $this->codigo_invitado = $this->prospecto->invitado->codigo_invitado;
         }
 
         // Si no está aprobado en backoffice, no debería estar aquí (opcional)
@@ -85,7 +87,7 @@ class AsistenciaPublica extends Component
                 $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
             }
 
-            InvitadoEntregaFest::create([
+            $invitado = InvitadoEntregaFest::create([
                 'entrega_fest_id' => $this->evento->id,
                 'prospecto_entrega_fest_id' => $this->prospecto->id,
                 'codigo_invitado' => $codigo ?? ('NA-' . uniqid()),
@@ -98,7 +100,18 @@ class AsistenciaPublica extends Component
 
             DB::commit();
 
+            // Enviar correo automático del ticket si confirma
+            if ($confirmado && $this->prospecto->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to($this->prospecto->email)
+                        ->send(new \App\Mail\EntregaFest\TicketAsistenciaMail($invitado));
+                } catch (\Exception $e) {
+                    Log::error("[ASISTENCIA PUBLICA] Error enviando ticket: " . $e->getMessage());
+                }
+            }
+
             $this->enviado = true;
+            $this->codigo_invitado = $codigo;
             $this->mensaje_exito = $confirmado
                 ? '¡Excelente! Tu asistencia ha sido confirmada. Nos vemos en el evento.'
                 : 'Gracias por informarnos. Lamentamos que no puedas asistir esta vez.';

@@ -276,12 +276,31 @@
                         {{ $mensaje_exito }}
                     </p>
 
-                    @if($asistira === 'si')
+                    @if($asistira === 'si' && $codigo_invitado)
                         <div
-                            style="margin-top: 30px; padding: 20px; border: 2px dashed #1a237e; border-radius: 15px; background: #f0f2f5;">
-                            <p style="font-weight: 700; color: #1a237e;">IMPORTANTE</p>
-                            <p style="font-size: 14px; margin-top: 5px;">Tu código de invitación y QR serán enviados a tu correo
-                                registrado próximamente.</p>
+                            style="margin-top: 30px; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #eee;">
+                            <h3 style="color: #1a237e; font-weight: 800; margin-bottom: 20px;">TU PASE DE ENTRADA</h3>
+
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                                <div style="padding: 15px; background: white; border: 2px solid #1a237e; border-radius: 15px;">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ $codigo_invitado }}"
+                                        alt="QR Asistencia" style="width: 180px; height: 180px;">
+                                </div>
+
+                                <div style="text-align: center;">
+                                    <span
+                                        style="display: block; font-size: 14px; text-transform: uppercase; color: #666; letter-spacing: 1px;">Código
+                                        de Invitado</span>
+                                    <span
+                                        style="display: block; font-size: 22px; font-weight: 800; color: #1a237e; letter-spacing: 3px;">{{ $codigo_invitado }}</span>
+                                </div>
+                            </div>
+
+                            <div
+                                style="margin-top: 25px; padding: 15px; background: #e8eaf6; border-radius: 12px; font-size: 14px; color: #1a237e; line-height: 1.5;">
+                                <i class="fa-solid fa-camera"></i> <strong>Toma una captura de pantalla</strong> de este código
+                                y preséntalo en el ingreso el día del evento.
+                            </div>
                         </div>
                     @endif
                 </div>

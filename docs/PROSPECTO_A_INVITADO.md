@@ -1,59 +1,38 @@
-# Proceso de Conversión: Prospecto a Invitado (Auto-gestión)
+# Proceso de Conversión: Prospecto a Invitado, QR y Check-in
 
-Este documento describe el flujo para que un prospecto aprobado en Backoffice pueda confirmar su asistencia y convertirse automáticamente en invitado mediante un formulario público.
+Este documento describe el flujo completo desde que un prospecto es aprobado hasta que ingresa al evento mediante el escaneo de su código QR.
 
-## 1. Requisitos Previos y Reglas
-*   **Filtro:** Solo prospectos con `estado_backoffice = 'aprobado'`.
-*   **Seguridad:** Enlaces únicos basados en UUID para evitar accesos no autorizados.
-*   **MVP:** Una vez enviado el formulario, no se permiten ediciones posteriores.
-*   **Automatización:** Si el prospecto acepta asistir, se crea automáticamente su registro de Invitado con su código QR/interno.
+## 1. El Flujo de Invitación (ERP)
+1.  **Aprobación:** Solo los prospectos con `estado_backoffice = 'aprobado'` son elegibles para recibir la invitación.
+2.  **Envío Masivo:** Desde el listado de Prospectos en el ERP, el gestor utiliza los botones **"Enviar Correos"** o **"Enviar WhatsApp"**.
+3.  **Contenido:** Se envía un link personalizado al cliente: `{APP_URL}/evento/{slug}/{id}`.
 
-## 2. Cambios en la Base de Datos
+## 2. Confirmación del Cliente (Formulario Público)
+1.  **Acceso:** El cliente abre el link desde su celular.
+2.  **Formulario:** El cliente indica si asistirá, cuántos acompañantes lleva (máximo permitido) y su método de transporte.
+3.  **Registro Automático:** Al confirmar, el sistema:
+    *   Crea un registro en `invitado_entrega_fests`.
+    *   Genera un **Código de Invitado único** (Ej: `INV-002-2839`).
+    *   Marca al prospecto como "Invitado".
 
-### Tabla `prospecto_entrega_fests`
-*   Añadir campo `uuid` (string, unique) para el acceso público.
+## 3. El Ticket y Código QR
+1.  **Generación:** El código de invitado es la base para el QR.
+2.  **Visualización:** 
+    *   **En confirmación:** Tras enviar el formulario, el cliente ve su QR en pantalla (su "Ticket Digital").
+    *   **Por Correo (Pendiente):** Se puede implementar un Observer que envíe automáticamente un segundo correo con el ticket adjunto o el QR visible cuando se crea el registro de invitado.
+3.  **Uso:** El cliente debe presentar este QR (o captura de pantalla) el día del evento.
 
-### Tabla `invitado_entrega_fests`
-*   Añadir `estado_confirmacion` (enum: 'pendiente', 'confirmado', 'no_asiste') default 'pendiente'.
-*   Añadir `transporte` (enum: 'bus', 'propio', 'na') default 'na'.
-*   Añadir `observaciones_asistencia` (text, nullable).
+## 4. Control de Asistencia el día del Evento (Check-in)
+1.  **Herramienta:** El personal de Aybar (Vigilancia/Recepción) utiliza la vista **"Asistencia"** en el ERP.
+2.  **Escaneo:**
+    *   Se utiliza un lector QR (pistola USB) o la cámara de una tablet/celular.
+    *   Al escanear el QR, el código entra al sistema automáticamente.
+3.  **Validación en Tiempo Real:**
+    *   **Éxito:** Muestra mensaje de bienvenida y registra el ingreso.
+    *   **Alerta:** Si el QR ya fue usado antes, muestra la hora del primer ingreso (evita fraude).
+    *   **Error:** Si el QR es falso o de otro evento, lanza un error visual.
 
-## 3. Componentes del Sistema
-
-### A. Generación del Link
-*   Al aprobar un prospecto en Backoffice, se debe asegurar que tenga un `uuid`.
-*   El link será: `{APP_URL}/asistencia-evento/{prospecto_uuid}`.
-
-### B. Formulario de Asistencia (Vista Pública)
-Componente Livewire: `EntregaFestAsistenciaPublica`
-*   **Datos fijos (informativos):**
-    *   Nombre completo.
-    *   DNI.
-    *   Proyecto y Lote(s).
-*   **Campos del formulario:**
-    *   `¿Asistirá?`: Toggle/Radio (Sí / No).
-    *   `Nº acompañantes`: Dropdown (0, 1, 2, 3).
-    *   `Transporte`: Select (Bus Aybar / Movilidad Propia).
-    *   `Observaciones`: Textarea opcional.
-*   **Botón:** "Enviar Registro".
-
-### C. Lógica de Conversión
-Al hacer clic en "Enviar":
-1.  **Validación:** Verificar que el prospecto no tenga ya un registro de invitado.
-2.  **Si NO asiste:**
-    *   Se crea el registro en `invitado_entrega_fests`.
-    *   `confirmado = false`.
-    *   `estado_confirmacion = 'no_asiste'`.
-3.  **Si SÍ asiste:**
-    *   Se crea el registro en `invitado_entrega_fests`.
-    *   `confirmado = true`.
-    *   `estado_confirmacion = 'confirmado'`.
-    *   **Generación de código:** Se crea el `codigo_invitado` (ej. INV-001-XXXX).
-    *   Se vinculan acompañantes y transporte.
-
-## 4. Plan de Implementación
-1.  **Migración:** Crear/Actualizar tablas para soportar los nuevos campos.
-2.  **Modelos:** Actualizar fillables y relaciones.
-3.  **Rutas:** Crear la ruta pública `/asistencia-evento/{uuid}`.
-4.  **Livewire Component:** Desarrollar la lógica del formulario y la vista con estética premium (vibrant colors, glassmorphism).
-5.  **Notificación (Opcional):** Preparar el texto para WhatsApp/Email.
+## 5. Resumen Técnico de Tablas
+*   `prospecto_entrega_fests`: Origen de datos y link UUID.
+*   `invitado_entrega_fests`: Registro de confirmación y `codigo_invitado`.
+*   `asistencia_entrega_fests`: Historial de ingresos reales al evento (Check-in).
