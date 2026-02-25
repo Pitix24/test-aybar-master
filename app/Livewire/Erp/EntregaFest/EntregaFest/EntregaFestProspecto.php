@@ -13,6 +13,9 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EntregaFest\EntregaFestProspectoExport;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EntregaFest\AsistenciaLinkMail;
+use App\Services\WhatsappService;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -99,6 +102,80 @@ class EntregaFestProspecto extends Component
             ),
             'prospectos_todo_' . $this->evento->codigo . '.xlsx'
         );
+    }
+
+    public function enviarCorreos()
+    {
+        $prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->where('estado_backoffice', 'aprobado')
+            ->whereDoesntHave('invitado')
+            ->whereNotNull('email')
+            ->get();
+
+        if ($prospectos->isEmpty()) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Información',
+                'text' => 'No hay prospectos aprobados pendientes de invitación con correo registrado.'
+            ]);
+            return;
+        }
+
+        $enviados = 0;
+        foreach ($prospectos as $prospecto) {
+            try {
+                Mail::to($prospecto->email)->send(new AsistenciaLinkMail($prospecto));
+                $enviados++;
+            } catch (\Exception $e) {
+                \Log::error("Error enviando correo a {$prospecto->email}: " . $e->getMessage());
+            }
+        }
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡Completado!',
+            'text' => "Se han enviado $enviados correos correctamente."
+        ]);
+    }
+
+    public function enviarWhatsapp(WhatsappService $whatsapp)
+    {
+        $prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->where('estado_backoffice', 'aprobado')
+            ->whereDoesntHave('invitado')
+            ->whereNotNull('celular')
+            ->get();
+
+        if ($prospectos->isEmpty()) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Información',
+                'text' => 'No hay prospectos aprobados pendientes de invitación con celular registrado.'
+            ]);
+            return;
+        }
+
+        $enviados = 0;
+        foreach ($prospectos as $prospecto) {
+            $link = route('public.entrega-fest.asistencia', [$this->evento->slug, $prospecto->id]);
+            $mensaje = "Hola *{$prospecto->nombres}*, ya tenemos tu evaluación lista para el evento *{$this->evento->nombre}*. Confirma tu asistencia aquí: $link";
+
+            // Limpiar celular (solo números y código de país si falta)
+            $celular = preg_replace('/\D/', '', $prospecto->celular);
+            if (strlen($celular) === 9) {
+                $celular = '51' . $celular; // Asumimos Perú si tiene 9 dígitos
+            }
+
+            if ($whatsapp->sendText($celular, $mensaje)) {
+                $enviados++;
+            }
+        }
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡Completado!',
+            'text' => "Se han enviado $enviados mensajes de WhatsApp correctamente."
+        ]);
     }
 
     public function placeholder()

@@ -8,11 +8,26 @@
             <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
-            @can('entrega-fest.prospectos')
-                <a href="{{ route('erp.entrega-fest.vista.prospectos.crear', $evento->id) }}" class="g_boton primary">
-                    Añadir Prospecto <i class="fa-solid fa-user-plus"></i>
-                </a>
-            @endcan
+
+            <button wire:click="enviarCorreos" class="g_boton dark" wire:loading.attr="disabled"
+                wire:target="enviarCorreos">
+                <span wire:loading.remove wire:target="enviarCorreos">Enviar correos <i
+                        class="fa-solid fa-envelope"></i></span>
+                <span wire:loading wire:target="enviarCorreos">Enviando... <i
+                        class="fa-solid fa-spinner fa-spin"></i></span>
+            </button>
+
+            <button wire:click="enviarWhatsapp" class="g_boton warning" wire:loading.attr="disabled"
+                wire:target="enviarWhatsapp">
+                <span wire:loading.remove wire:target="enviarWhatsapp">Enviar whatsapp <i
+                        class="fa-brands fa-whatsapp"></i></span>
+                <span wire:loading wire:target="enviarWhatsapp">Enviando... <i
+                        class="fa-solid fa-spinner fa-spin"></i></span>
+            </button>
+
+            <a href="{{ route('erp.entrega-fest.vista.prospectos.crear', $evento->id) }}" class="g_boton primary">
+                Añadir Prospecto <i class="fa-solid fa-user-plus"></i>
+            </a>
         </div>
     </div>
 

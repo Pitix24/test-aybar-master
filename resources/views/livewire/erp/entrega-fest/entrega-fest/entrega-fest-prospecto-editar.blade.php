@@ -44,8 +44,7 @@
                         </div>
                         <div class="informacion_resumen_item">
                             <span class="informacion_resumen_label">Registrado por</span>
-                            <span
-                                class="informacion_resumen_valor">{{ $prospecto->usuarioRegistro?->name ?? 'Sistema' }}</span>
+                            <span class="informacion_resumen_valor">{{ $prospecto->user?->name ?? 'Sistema' }}</span>
                         </div>
                     </div>
                 </div>

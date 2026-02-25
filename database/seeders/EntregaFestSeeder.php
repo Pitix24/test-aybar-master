@@ -61,7 +61,7 @@ class EntregaFestSeeder extends Seeder
             // 2. Crear Prospectos para este festival
             foreach ($proyectos as $proyecto) {
                 $prospectos = ProspectoEntregaFest::factory()
-                    ->count(rand(10, 20))
+                    ->count(rand(1, 3))
                     ->create([
                         'entrega_fest_id' => $evento->id,
                         'proyecto_id' => $proyecto->id,
@@ -70,7 +70,7 @@ class EntregaFestSeeder extends Seeder
                     ]);
 
                 // 3. Convertir a Invitados (Solo los aprobados o una parte)
-                $prospectosAprobados = $prospectos->where('estado', 'aprobado');
+                /*$prospectosAprobados = $prospectos->where('estado', 'aprobado');
 
                 foreach ($prospectosAprobados as $prospecto) {
                     $invitado = InvitadoEntregaFest::create([
@@ -107,7 +107,7 @@ class EntregaFestSeeder extends Seeder
                             'metodo' => rand(0, 1) ? 'qr' : 'manual',
                         ]);
                     }
-                }
+                }*/
             }
         }
     }
