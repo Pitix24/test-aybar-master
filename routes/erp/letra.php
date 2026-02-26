@@ -1,7 +1,7 @@
 <?php
 
 
-use App\Livewire\Erp\ConsultarLetra\ConsultarLetraVer;
+use App\Livewire\Erp\Letra\ConsultarLetra\ConsultarLetraVer;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraCrear;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraEditar;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;

@@ -18,7 +18,7 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Buscar (Fecha Y-m-d / Empresa)</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Buscar...">
+                    <input type="text" wire:model.live.debounce.1300ms="buscar">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
@@ -123,15 +123,8 @@
                             <td class="g_inferior">{{ $item->enviado_at?->format('d/m/Y H:i') ?? '—' }}</td>
                             <td class="g_resumir g_inferior">{{ $item->archivo_nombre ?? '—' }}</td>
                             <td class="g_celda_acciones g_celda_centro">
-                                @can('envio-cavali.exportar-envios')
-                                    <button wire:click="exportCavali({{ $item->id }})" class="g_accion excel"
-                                        title="Cavali Excel">
-                                        <i class="fa-regular fa-file-excel"></i>
-                                    </button>
-                                @endcan
-
                                 @can('envio-cavali.detalle')
-                                    <a href="{{ route('erp.envio-cavali.vista.detalle', $item->id) }}" class="g_accion editar"
+                                    <a href="{{ route('erp.envio-cavali.vista.detalle', $item->id) }}" class="g_accion ver"
                                         title="Ver Detalle">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>

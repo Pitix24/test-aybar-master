@@ -37,8 +37,8 @@
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Buscar Cliente/Cuota</label>
-                    <input type="text" wire:model.live.debounce.1300ms="buscar" placeholder="Buscar...">
+                    <label>Buscar (Cliente o Cuota)</label>
+                    <input type="text" wire:model.live.debounce.1300ms="buscar">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">

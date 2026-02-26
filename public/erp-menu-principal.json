@@ -169,7 +169,7 @@
                 "nombre": "Clientes (Antiguo)",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-solid fa-users",
+                "icono": "fa-solid fa-box-archive",
                 "nivel": 2,
                 "permiso": "cliente-antiguo.navegacion",
                 "submenus": [
@@ -678,7 +678,7 @@
                 "nombre": "Evidencia pago(Portal)",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-solid fa-lightbulb",
+                "icono": "fa-solid fa-file-circle-question",
                 "nivel": 2,
                 "permiso": "solicitud-evidencia-pago.ver",
                 "submenus": [
@@ -698,7 +698,7 @@
                 "nombre": "Evidencia pago(Stock)",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-regular fa-image",
+                "icono": "fa-solid fa-box-archive",
                 "nivel": 2,
                 "permiso": "evidencia-pago.ver",
                 "submenus": [
