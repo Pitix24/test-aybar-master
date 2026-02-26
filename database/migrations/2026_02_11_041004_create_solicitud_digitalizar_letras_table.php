@@ -47,7 +47,7 @@ return new class extends Migration {
             $table->string('region')->nullable();
             $table->string('provincia')->nullable();
             $table->string('distrito')->nullable();
-            $table->string('origen')->default('portal')->nullable(); //antiguo:clientes_2 o slin
+            $table->string('origen')->default('portal')->nullable(); //portal o slin
 
             //SUPERVISOR
             $table->foreignId('usuario_valida_id')->nullable()->constrained('users')->nullOnDelete(); //CERRADO POR

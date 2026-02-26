@@ -12,6 +12,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\ValidarEnviosCavaliDiariosJob;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -69,6 +70,27 @@ class EnvioCavaliDetalle extends Component
         }
 
         return Storage::disk('local')->download($this->envio->archivo_zip, $this->envio->archivo_nombre);
+    }
+
+    public function validarCronLetra()
+    {
+        $this->authorize('solicitud-digitalizar-letra.validar-cron-letra');
+
+        try {
+            ValidarEnviosCavaliDiariosJob::dispatch();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Proceso Iniciado',
+                'text' => 'La validación se está procesando en segundo plano. Puede seguir navegando.'
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo iniciar el proceso: ' . $e->getMessage()
+            ]);
+        }
     }
 
     public function render()

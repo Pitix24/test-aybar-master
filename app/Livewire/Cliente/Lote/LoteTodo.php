@@ -72,10 +72,16 @@ class LoteTodo extends Component
                 return;
             }
 
-            $this->lotes = $slinService->getLotes(
+            $lotes = $slinService->getLotes(
                 $this->razon_social_select['codigo'],
                 $this->razon_social_select['id_empresa']
             );
+
+            // ✅ FILTRO SOLO id_servicio = 02
+            $this->lotes = collect($lotes)
+                ->where('id_servicio', '02')
+                ->values()
+                ->toArray();
 
             if (empty($this->lotes)) {
                 session()->flash('info', 'No se encontraron lotes asociados a esta razón social.');

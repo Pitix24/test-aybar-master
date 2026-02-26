@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Erp\Letra\SolicitudDigitalizarLetra;
 
-use App\Jobs\ValidarEnviosCavaliDiariosJob;
 use App\Models\EstadoSolicitudDigitalizarLetra;
 use App\Models\Proyecto;
 use App\Models\SolicitudDigitalizarLetra;
@@ -122,27 +121,6 @@ class SolicitudDigitalizarLetraLista extends Component
                 'type' => 'success',
                 'title' => 'Proceso Iniciado',
                 'text' => 'La generación de envíos se está procesando en segundo plano.'
-            ]);
-        } catch (\Exception $e) {
-            $this->dispatch('alertaLivewire', [
-                'type' => 'error',
-                'title' => 'Error',
-                'text' => 'No se pudo iniciar el proceso: ' . $e->getMessage()
-            ]);
-        }
-    }
-
-    public function validarCronLetra()
-    {
-        $this->authorize('solicitud-digitalizar-letra.validar-cron-letra');
-
-        try {
-            ValidarEnviosCavaliDiariosJob::dispatch();
-
-            $this->dispatch('alertaLivewire', [
-                'type' => 'success',
-                'title' => 'Proceso Iniciado',
-                'text' => 'La validación se está procesando en segundo plano. Puede seguir navegando.'
             ]);
         } catch (\Exception $e) {
             $this->dispatch('alertaLivewire', [

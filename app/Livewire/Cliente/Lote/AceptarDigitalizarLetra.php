@@ -61,8 +61,25 @@ class AceptarDigitalizarLetra extends Component
     {
         $this->cuota = $cuota;
         $this->lote = $lote;
-        $this->dni = $this->lote['nit'];
+        $this->dni = $this->lote['nit'] ?? '';
         $this->nombres = $this->lote['apellidos_nombres'] ?? '';
+
+        // Buscar información del cliente si existe en la DB para pre-llenar datos
+        if ($this->dni) {
+            $cliente = Cliente::with(['user.direccion'])->where('dni', $this->dni)->first();
+            if ($cliente) {
+                $this->email = $cliente->email;
+                $this->celular = $cliente->telefono_principal;
+
+                if ($cliente->user && $cliente->user->direccion) {
+                    $dir = $cliente->user->direccion;
+                    $this->direccion = $dir->direccion;
+                    $this->region_id = $dir->region->id;
+                    $this->provincia_id = $dir->provincia->id;
+                    $this->distrito_id = $dir->distrito->id;
+                }
+            }
+        }
 
         $proyecto = Proyecto::select('id', 'unidad_negocio_id')
             ->where('slin_id', $this->lote['id_proyecto'])
@@ -78,6 +95,14 @@ class AceptarDigitalizarLetra extends Component
 
         if (Auth::user()->rol === 'admin') {
             $this->regions = Region::all();
+
+            // Cargar listas dependientes si hay datos pre-cargados
+            if ($this->region_id) {
+                $this->provincias = Provincia::where('region_id', $this->region_id)->get();
+            }
+            if ($this->provincia_id) {
+                $this->distritos = Distrito::where('provincia_id', $this->provincia_id)->get();
+            }
         }
     }
 
@@ -115,9 +140,13 @@ class AceptarDigitalizarLetra extends Component
             $provincia_nombre = '';
             $distrito_nombre = '';
 
-            if (Auth::user()->rol === 'admin') {
+            if ($this->region_id) {
                 $region_nombre = Region::find($this->region_id)?->nombre ?? '';
+            }
+            if ($this->provincia_id) {
                 $provincia_nombre = Provincia::find($this->provincia_id)?->nombre ?? '';
+            }
+            if ($this->distrito_id) {
                 $distrito_nombre = Distrito::find($this->distrito_id)?->nombre ?? '';
             }
 
@@ -157,7 +186,7 @@ class AceptarDigitalizarLetra extends Component
                     'region' => $region_nombre,
                     'provincia' => $provincia_nombre,
                     'distrito' => $distrito_nombre,
-                    'origen' => 'slin',
+                    'origen' => Auth::user()->rol === 'admin' ? 'slin' : 'portal',
                 ]
             );
 

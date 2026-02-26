@@ -17,16 +17,6 @@
                 </button>
             @endcan
 
-            @can('solicitud-digitalizar-letra.validar-cron-letra')
-                <button wire:click="validarCronLetra" class="g_boton warning" wire:loading.attr="disabled"
-                    wire:target="validarCronLetra">
-                    <span wire:loading.remove wire:target="validarCronLetra">Validar Cron Letra <i
-                            class="fa-solid fa-file-export"></i></span>
-                    <span wire:loading wire:target="validarCronLetra">Validando... <i
-                            class="fa-solid fa-spinner fa-spin"></i></span>
-                </button>
-            @endcan
-
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
