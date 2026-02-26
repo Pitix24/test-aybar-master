@@ -16,6 +16,10 @@ use App\Exports\EntregaFest\EntregaFestProspectoExport;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EntregaFest\AsistenciaLinkMail;
 use App\Services\WhatsappService;
+use App\Models\WhatsappContacto;
+use App\Models\WhatsappConversacion;
+use App\Models\WhatsappMensaje;
+use App\Models\Cliente;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -166,8 +170,46 @@ class EntregaFestProspecto extends Component
                 $celular = '51' . $celular; // Asumimos Perú si tiene 9 dígitos
             }
 
-            if ($whatsapp->sendText($celular, $mensaje)) {
+            $response = $whatsapp->sendText($celular, $mensaje);
+            if ($response) {
                 $enviados++;
+
+                // TRAZABILIDAD: Registrar en el módulo de WhatsApp
+                // 1. Buscar si el prospecto ya es cliente
+                $cliente = Cliente::where('dni', $prospecto->dni)->first();
+
+                // 2. Crear o actualizar contacto de WhatsApp
+                $contacto = WhatsappContacto::updateOrCreate(
+                    ['wa_id' => $celular],
+                    [
+                        'nombre_wa' => $prospecto->nombres,
+                        'numero_celular' => $prospecto->celular,
+                        'cliente_id' => $cliente?->id
+                    ]
+                );
+
+                // 3. Crear o actualizar conversación
+                $conversacion = WhatsappConversacion::firstOrCreate(
+                    ['contacto_id' => $contacto->id],
+                    [
+                        'cliente_id' => $cliente?->id,
+                        'estado' => 'asignado',
+                        'departamento_destino' => 'backoffice',
+                        'agente_id' => auth()->id(),
+                    ]
+                );
+
+                $conversacion->update(['last_message_at' => now()]);
+
+                // 4. Registrar el mensaje saliente
+                WhatsappMensaje::create([
+                    'conversacion_id' => $conversacion->id,
+                    'direccion' => 'saliente',
+                    'tipo' => 'texto',
+                    'contenido' => $mensaje,
+                    'wa_message_id' => $response['messages'][0]['id'] ?? 'PROS_' . uniqid(),
+                    'estado' => 'enviado'
+                ]);
             }
         }
 
