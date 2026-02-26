@@ -5,6 +5,12 @@
         <h2>Evaluación de Prospecto</h2>
 
         <div class="cabecera_titulo_botones">
+            <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_boton cancelar">
+                Invitados <i class="fa-solid fa-users"></i></a>
+
+            <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_boton info">
+                Asistencia <i class="fa-solid fa-user-check"></i></a>
+
             <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton dark">
                 <i class="fa-solid fa-arrow-left"></i> Volver al Listado
             </a>

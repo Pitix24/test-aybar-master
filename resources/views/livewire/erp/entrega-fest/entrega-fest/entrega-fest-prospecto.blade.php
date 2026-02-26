@@ -9,6 +9,13 @@
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
+            <a href="{{route('erp.entrega-fest.vista.invitados', $evento->id)}}" class="g_boton primary">
+               Invitados <i class="fa-solid fa-users"></i>
+            </a>
+
+            <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_boton info">
+                Asistencia <i class="fa-solid fa-user-check"></i></a>
+
             <button wire:click="enviarCorreos" class="g_boton dark" wire:loading.attr="disabled"
                 wire:target="enviarCorreos">
                 <span wire:loading.remove wire:target="enviarCorreos">Enviar correos <i
@@ -120,7 +127,6 @@
                         <th>Cliente</th>
                         <th>Proyecto</th>
                         <th>Lote/Mz</th>
-                        <th class="g_celda_centro">Estado Prospecto</th>
                         <th class="g_celda_centro">BackOffice</th>
                         <th class="g_celda_centro">Estado Contrato Preliminar</th>
                         <th class="g_celda_centro">Fecha Firma</th>
@@ -134,21 +140,15 @@
                         <tr wire:key="prospecto-{{ $p->id }}">
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
                             <td>{{ $p->dni }}</td>
-                            <td class="g_negrita">{{ $p->nombre_completo }}</td>
+                            <td>
+                                <div class="g_negrita">
+                                    {{ $p->nombre_completo }}
+                                </div>
+                                <div>{{ $p->email }}</div>
+                                <div>{{ $p->celular }}</div>
+                            </td>
                             <td>{{ $p->proyecto->nombre ?? 'N/A' }}</td>
                             <td>{{ $p->lote }}{{ $p->manzana }}</td>
-                            <td class="g_celda_centro">
-                                @php
-                                    $claseEstado = match ($p->estado) {
-                                        'pendiente' => 'primary',
-                                        'observado' => 'warning',
-                                        'aprobado' => 'success',
-                                        'rechazado' => 'danger',
-                                        default => 'light',
-                                    };
-                                @endphp
-                                <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado) }}</span>
-                            </td>
                             <td class="g_celda_centro">
                                 @php
                                     $claseBO = match ($p->estado_backoffice) {
@@ -187,17 +187,6 @@
                                         class="g_accion editar" title="Editar / Evaluar">
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>
-
-                                    @if ($p->estado_backoffice === 'aprobado' && !$p->invitado)
-                                         <a href="{{ route('public.entrega-fest.asistencia', [$evento->slug, $p->id]) }}" target="_blank"
-                                             class="g_accion info" title="Ver Link de Asistencia">
-                                             <i class="fa-solid fa-link"></i>
-                                         </a>
-                                         <a href="https://wa.me/{{ preg_replace('/\D/', '', $p->celular) }}?text={{ urlencode('Hola ' . $p->nombres . ', confirma tu asistencia al evento ' . $evento->nombre . ' aquí: ' . route('public.entrega-fest.asistencia', [$evento->slug, $p->id])) }}"
-                                             target="_blank" class="g_accion success" title="Enviar por WhatsApp">
-                                             <i class="fa-brands fa-whatsapp"></i>
-                                         </a>
-                                     @endif
                                 @endcan
                             </td>
                         </tr>

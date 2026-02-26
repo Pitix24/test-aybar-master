@@ -8,6 +8,14 @@
             <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
+
+            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton success">
+                Prospectos <i class="fa-solid fa-users-viewfinder"></i>
+            </a>
+
+            <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_boton info">
+                Asistencia <i class="fa-solid fa-user-check"></i></a>
+
             @can('entrega-fest.invitados')
                 <a href="{{ route('erp.entrega-fest.vista.invitados.crear', $evento->id) }}" class="g_boton primary">
                     Generar Invitado <i class="fa-solid fa-id-card"></i>
