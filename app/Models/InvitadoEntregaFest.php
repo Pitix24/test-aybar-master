@@ -35,10 +35,6 @@ class InvitadoEntregaFest extends Model
         return $this->belongsTo(ProspectoEntregaFest::class, 'prospecto_entrega_fest_id');
     }
 
-    public function acompanantes()
-    {
-        return $this->hasMany(InvitadoAcompananteEntregaFest::class);
-    }
 
     public function asistencia()
     {

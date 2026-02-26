@@ -5,9 +5,7 @@ namespace Database\Seeders;
 use App\Models\AsistenciaEntregaFest;
 use App\Models\Cliente;
 use App\Models\EntregaFest;
-use App\Models\InvitadoAcompananteEntregaFest;
 use App\Models\InvitadoEntregaFest;
-use App\Models\InvitadoEnvioEntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
@@ -69,7 +67,6 @@ class EntregaFestSeeder extends Seeder
                         'gestor_backoffice_id' => $gestores->random()->id,
                     ]);
 
-                // 3. Convertir a Invitados (Solo los aprobados o una parte)
                 /*$prospectosAprobados = $prospectos->where('estado', 'aprobado');
 
                 foreach ($prospectosAprobados as $prospecto) {
@@ -79,23 +76,6 @@ class EntregaFestSeeder extends Seeder
                         'codigo_invitado' => 'QR-' . strtoupper(bin2hex(random_bytes(4))),
                         'cantidad_acompanantes_permitidos' => rand(1, 4),
                         'confirmado' => $this->shouldConfirm(),
-                    ]);
-
-                    // 4. Agregar Acompañantes para algunos invitados
-                    if (rand(0, 1)) {
-                        InvitadoAcompananteEntregaFest::factory()
-                            ->count(rand(1, $invitado->cantidad_acompanantes_permitidos))
-                            ->create(['invitado_entrega_fest_id' => $invitado->id]);
-                    }
-
-                    // 5. Simular Envíos/Contactos
-                    InvitadoEnvioEntregaFest::create([
-                        'invitado_entrega_fest_id' => $invitado->id,
-                        'canal' => $this->randomCanal(),
-                        'estado' => $this->randomEstadoEnvio(),
-                        'detalle' => 'Gestión de invitación realizada.',
-                        'user_id' => $gestores->random()->id,
-                        'fecha_envio' => now()->subDays(rand(1, 10)),
                     ]);
 
                     // 6. Simular Asistencia (si está confirmado y por azar)
