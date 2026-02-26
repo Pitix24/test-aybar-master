@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Livewire\Erp\ConsultarLetra\ConsultarLetraVer;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraCrear;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraEditar;
 use App\Livewire\Erp\Letra\EstadoSolicitudDigitalizarLetra\EstadoSolicitudDigitalizarLetraLista;
@@ -32,6 +33,12 @@ Route::group(['middleware' => ['permission:modulo-letras.ver']], function () {
         Route::prefix('envio-cavali')->name('envio-cavali.vista.')->group(function () {
             Route::get('/', EnvioCavaliLista::class)->middleware('permission:envio-cavali.lista')->name('todo');
             Route::get('/detalle/{id}', EnvioCavaliDetalle::class)->middleware('permission:envio-cavali.detalle')->name('detalle');
+        });
+    });
+
+    Route::group(['middleware' => ['permission:consultar-letra.navegacion']], function () {
+        Route::prefix('consultar-letra')->name('consultar-letra.vista.')->group(function () {
+            Route::get('/', ConsultarLetraVer::class)->middleware('permission:consultar-letra.ver')->name('ver');
         });
     });
 });

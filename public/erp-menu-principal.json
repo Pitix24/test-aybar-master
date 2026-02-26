@@ -720,7 +720,7 @@
         "nombre": "Módulo Letras",
         "ruta": null,
         "url": null,
-        "icono": "fa-solid fa-pen-nib",
+        "icono": "fa-solid fa-file-signature",
         "nivel": 1,
         "permiso": "modulo-letras.ver",
         "submenus": [
@@ -758,7 +758,7 @@
                 "nombre": "Solicitud letras",
                 "ruta": "erp.solicitar-letra-digital.vista.todo",
                 "url": null,
-                "icono": "fa-solid fa-lock-open",
+                "icono": "fa-solid fa-file-circle-plus",
                 "nivel": 2,
                 "permiso": "solicitud-digitalizar-letra.ver",
                 "submenus": []
@@ -768,9 +768,19 @@
                 "nombre": "Envios letras",
                 "ruta": "erp.envio-cavali.vista.todo",
                 "url": null,
-                "icono": "fa-solid fa-file-invoice-dollar",
+                "icono": "fa-solid fa-paper-plane",
                 "nivel": 2,
                 "permiso": "envio-cavali.ver",
+                "submenus": []
+            },
+            {
+                "id": 47,
+                "nombre": "Consultar letra",
+                "ruta": "erp.consultar-letra.vista.ver",
+                "url": null,
+                "icono": "fa-solid fa-magnifying-glass",
+                "nivel": 2,
+                "permiso": "consultar-letra.ver",
                 "submenus": []
             }
         ]
@@ -869,7 +879,7 @@
                 "nombre": "Modulo Usuario",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-solid fa-lock-open",
+                "icono": "fa-solid fa-users-cog",
                 "nivel": 2,
                 "permiso": "reporte-usuario.navegacion",
                 "submenus": [
@@ -907,7 +917,7 @@
                 "nombre": "Modulo Backoffice",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-solid fa-lock-open",
+                "icono": "fa-solid fa-file-invoice-dollar",
                 "nivel": 2,
                 "permiso": "reporte-backoffice.navegacion",
                 "submenus": [
@@ -945,7 +955,7 @@
                 "nombre": "Modulo ATC",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-solid fa-lock-open",
+                "icono": "fa-solid fa-headset",
                 "nivel": 2,
                 "permiso": "reporte-atc.navegacion",
                 "submenus": [
@@ -965,7 +975,7 @@
                 "nombre": "Modulo Cita",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-solid fa-lock-open",
+                "icono": "fa-solid fa-calendar-days",
                 "nivel": 2,
                 "permiso": "reporte-cita.navegacion",
                 "submenus": [
@@ -985,7 +995,7 @@
                 "nombre": "Modulo Letras",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-solid fa-lock-open",
+                "icono": "fa-solid fa-file-signature",
                 "nivel": 2,
                 "permiso": "reporte-letra.navegacion",
                 "submenus": [
