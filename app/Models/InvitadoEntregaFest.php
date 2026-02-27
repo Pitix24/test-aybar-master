@@ -85,4 +85,31 @@ class InvitadoEntregaFest extends Model
     {
         return $this->prospecto_entrega_fest_id ? 'Titular' : 'Copropietario';
     }
+
+    /**
+     * Email del invitado (titular o copropietario).
+     */
+    public function getEmailAttribute(): ?string
+    {
+        return $this->prospecto?->email
+            ?? $this->copropietario?->email;
+    }
+
+    /**
+     * Celular del invitado (titular o copropietario).
+     */
+    public function getCelularAttribute(): ?string
+    {
+        return $this->prospecto?->celular
+            ?? $this->copropietario?->celular;
+    }
+
+    /**
+     * DNI del invitado (titular o copropietario).
+     */
+    public function getDniAttribute(): ?string
+    {
+        return $this->prospecto?->dni
+            ?? $this->copropietario?->dni;
+    }
 }

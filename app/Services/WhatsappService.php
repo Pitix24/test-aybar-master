@@ -50,6 +50,25 @@ class WhatsappService
     }
 
     /**
+     * Envía una imagen por URL pública con caption opcional
+     */
+    public function sendImage($to, string $imageUrl, string $caption = '')
+    {
+        $image = ['link' => $imageUrl];
+        if ($caption !== '') {
+            $image['caption'] = $caption;
+        }
+
+        return $this->apiCall([
+            'messaging_product' => 'whatsapp',
+            'recipient_type' => 'individual',
+            'to' => $to,
+            'type' => 'image',
+            'image' => $image,
+        ]);
+    }
+
+    /**
      * Lógica central de llamadas al API
      */
     private function apiCall($payload)

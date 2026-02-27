@@ -17,6 +17,28 @@
                 Asistencia <i class="fa-solid fa-user-check"></i></a>
 
             @can('entrega-fest.invitados')
+                <button wire:click="enviarCorreoInstrucciones" wire:loading.attr="disabled"
+                    wire:target="enviarCorreoInstrucciones" class="g_boton dark"
+                    title="Enviar correo con instrucciones del evento a todos los invitados">
+                    <span wire:loading.remove wire:target="enviarCorreoInstrucciones">
+                        Instrucciones Correo <i class="fa-solid fa-envelope-open-text"></i>
+                    </span>
+                    <span wire:loading wire:target="enviarCorreoInstrucciones">
+                        Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
+                    </span>
+                </button>
+
+                <button wire:click="enviarWhatsappInstrucciones" wire:loading.attr="disabled"
+                    wire:target="enviarWhatsappInstrucciones" class="g_boton warning"
+                    title="Enviar imagen de instrucciones por WhatsApp a todos los invitados">
+                    <span wire:loading.remove wire:target="enviarWhatsappInstrucciones">
+                        Instrucciones WSP <i class="fa-brands fa-whatsapp"></i>
+                    </span>
+                    <span wire:loading wire:target="enviarWhatsappInstrucciones">
+                        Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
+                    </span>
+                </button>
+
                 <a href="{{ route('erp.entrega-fest.vista.invitados.crear', $evento->id) }}" class="g_boton primary">
                     Generar Invitado <i class="fa-solid fa-id-card"></i>
                 </a>
@@ -114,6 +136,12 @@
                                             <div class="g_negrita">{{ $i->nombre_completo }}</div>
                                             <div style="font-size: 0.8rem; color: #666;">
                                                 DNI: {{ $i->prospecto?->dni ?? $i->copropietario?->dni ?? 'N/A' }}
+                                            </div>
+                                            <div style="font-size: 0.8rem; color: #666;">
+                                                Celular: {{ $i->prospecto?->celular ?? $i->copropietario?->celular ?? 'N/A' }}
+                                            </div>
+                                            <div style="font-size: 0.8rem; color: #666;">
+                                                Correo: {{ $i->prospecto?->email ?? $i->copropietario?->email ?? 'N/A' }}
                                             </div>
                                         </td>
                                         <td>
