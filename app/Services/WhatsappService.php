@@ -65,8 +65,10 @@ class WhatsappService
             Log::channel('whatsapp')->error('Error en WhatsApp API:', [
                 'status' => $response->status(),
                 'body' => $response->body(),
-                'payload' => $payload
+                'payload' => $payload,
             ]);
+            // También lo mandamos al log general para verlo fácil
+            Log::error('[WSP API ERROR] Status: ' . $response->status() . ' | Body: ' . $response->body());
 
             return false;
         } catch (\Exception $e) {

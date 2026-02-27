@@ -168,6 +168,8 @@ class EntregaFestProspecto extends Component
 
     public function enviarWhatsapp(WhatsappService $whatsapp)
     {
+        \Log::info('[WSP] ===== MÉTODO INVOCADO =====');
+
         // 1. Titulares aprobados sin invitación con celular
         $prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->where('estado_backoffice', 'aprobado')
@@ -184,6 +186,9 @@ class EntregaFestProspecto extends Component
             ->whereNotNull('celular')
             ->with('prospecto')
             ->get();
+
+        \Log::info('[WSP] Prospectos encontrados: ' . $prospectos->count());
+        \Log::info('[WSP] Copropietarios encontrados: ' . $copropietarios->count());
 
         if ($prospectos->isEmpty() && $copropietarios->isEmpty()) {
             $this->dispatch('alertaLivewire', [
@@ -208,7 +213,12 @@ class EntregaFestProspecto extends Component
             $mensaje = "Hola *{$prospecto->nombres}*, ya tenemos tu evaluación lista para el evento *{$this->evento->nombre}*. Confirma tu asistencia aquí: $link";
             $celular = $formatearCelular($prospecto->celular);
 
+            \Log::info("[WSP] Enviando a: {$prospecto->nombres} | cel: {$celular}");
+
             $response = $whatsapp->sendText($celular, $mensaje);
+
+            \Log::info('[WSP] Respuesta API titular:', ['ok' => (bool) $response, 'data' => $response]);
+
             if ($response) {
                 $enviados++;
                 $cliente = Cliente::where('dni', $prospecto->dni)->first();

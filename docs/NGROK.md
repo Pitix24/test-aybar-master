@@ -72,3 +72,6 @@ C:\laragon\bin\ngrok\ngrok.exe http 8000
 C:\laragon\bin\ngrok\ngrok.exe http 8000
 
 https://darcie-semitropical-todd.ngrok-free.dev/api/whatsapp/webhook
+
+
+C:\laragon\bin\ngrok\ngrok.exe http 8000 --region=sa
