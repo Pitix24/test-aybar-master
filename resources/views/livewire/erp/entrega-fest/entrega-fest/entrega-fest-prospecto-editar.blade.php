@@ -258,18 +258,14 @@
                                 </select>
                             </div>
                             <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Generación de Contrato</label>
-                                <input type="datetime-local" wire:model="fecha_generacion_contrato">
+                                <label>Fecha de Firma</label>
+                                <input type="datetime-local" value="{{ $fecha_firma }}" disabled>
                             </div>
                         </div>
 
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Fecha de Firma</label>
-                                <input type="datetime-local" value="{{ $fecha_firma }}" disabled>
-                            </div>
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Firma de Contrato <span class="obligatorio">*</span></label>
+                                <label>Firma presencial de Contrato <span class="obligatorio">*</span></label>
                                 <select wire:model="estado_firma_contrato_firmado">
                                     <option value="pendiente">Pendiente</option>
                                     <option value="observado">Observado</option>
@@ -277,12 +273,29 @@
                                     <option value="rechazado">Rechazado</option>
                                 </select>
                             </div>
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Generación de Contrato</label>
+                                <input type="datetime-local" wire:model="fecha_generacion_contrato">
+                            </div>
                         </div>
 
                         <div class="g_tab_form_buttons centrar">
                             <button type="submit" class="g_boton guardar">
                                 <i class="fa-solid fa-save"></i> Guardar Seguimiento Legal
                             </button>
+
+                            @if($fecha_firma)
+                                <button type="button" wire:click="enviarCorreoFirmaRecordatorio"
+                                    wire:loading.attr="disabled" wire:target="enviarCorreoFirmaRecordatorio"
+                                    class="g_boton info" title="Enviar recordatorio de cita de firma al prospecto">
+                                    <span wire:loading.remove wire:target="enviarCorreoFirmaRecordatorio">
+                                        <i class="fa-solid fa-envelope-circle-check"></i> Recordatorio de Firma
+                                    </span>
+                                    <span wire:loading wire:target="enviarCorreoFirmaRecordatorio">
+                                        Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
+                                    </span>
+                                </button>
+                            @endif
                         </div>
                     </form>
                 </div>

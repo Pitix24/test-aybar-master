@@ -8,6 +8,8 @@ use App\Models\ProspectoEntregaFest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EntregaFest\FirmaConfirmacionMail;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
@@ -407,6 +409,71 @@ class EntregaFestProspectoEditar extends Component
             'fecha_firma' => $this->fecha_firma,
             'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
         ], 'PROSPECTO EDITAR - LEGAL');
+    }
+
+    // ──────────────────────────────────────────────────────────────────
+    // RECORDATORIO DE FIRMA
+    // ──────────────────────────────────────────────────────────────────
+
+    public function enviarCorreoFirmaRecordatorio()
+    {
+        // Recargar el prospecto actual desde BD con relaciones necesarias
+        $prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
+            ->find($this->prospecto->id);
+
+        // Validar condiciones
+        if ($prospecto->estado_backoffice !== 'aprobado') {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'No permitido',
+                'text' => 'El prospecto no tiene el BackOffice aprobado.',
+            ]);
+            return;
+        }
+
+        if ($prospecto->estado_contrato_preeliminar_emitido !== 'aprobado') {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'No permitido',
+                'text' => 'El contrato preliminar aún no está aprobado.',
+            ]);
+            return;
+        }
+
+        if (!$prospecto->fecha_firma) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Sin fecha de cita',
+                'text' => 'Este prospecto no tiene fecha de firma agendada. Primero debe agendar su cita.',
+            ]);
+            return;
+        }
+
+        if (!$prospecto->email) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Sin email',
+                'text' => 'Este prospecto no tiene email registrado.',
+            ]);
+            return;
+        }
+
+        try {
+            Mail::to($prospecto->email)->send(new FirmaConfirmacionMail($prospecto));
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Correo enviado!',
+                'text' => 'Se envió el recordatorio de firma a ' . $prospecto->email . '.',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('[FIRMA RECORDATORIO] Error: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error al enviar',
+                'text' => 'No se pudo enviar el correo. Revisa los logs.',
+            ]);
+        }
     }
 
     public function render()
