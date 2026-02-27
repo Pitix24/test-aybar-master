@@ -50,7 +50,7 @@ class EntregaFestAsistencia extends Component
 
         $invitado = InvitadoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->where('codigo_invitado', strtoupper(trim($this->codigo_qr)))
-            ->with('prospecto')
+            ->with(['prospecto', 'copropietario.prospecto'])
             ->first();
 
         if (!$invitado) {
@@ -99,16 +99,27 @@ class EntregaFestAsistencia extends Component
     public function render()
     {
         $items = AsistenciaEntregaFest::query()
-            ->with(['invitado.prospecto.proyecto', 'user'])
+            ->with([
+                'invitado.prospecto.proyecto',
+                'invitado.copropietario.prospecto.proyecto',
+                'user',
+            ])
             ->whereHas('invitado', function ($q) {
                 $q->where('entrega_fest_id', $this->evento->id);
             })
             ->when($this->buscar, function ($query) {
-                $query->whereHas('invitado.prospecto', function ($q) {
-                    $q->where('nombres', 'like', '%' . $this->buscar . '%')
-                        ->orWhere('dni', 'like', '%' . $this->buscar . '%');
-                })->orWhereHas('invitado', function ($q) {
-                    $q->where('codigo_invitado', 'like', '%' . $this->buscar . '%');
+                $query->whereHas('invitado', function ($q) {
+                    // Buscar en titular
+                    $q->whereHas('prospecto', function ($sub) {
+                        $sub->where('nombres', 'like', '%' . $this->buscar . '%')
+                            ->orWhere('dni', 'like', '%' . $this->buscar . '%');
+                    })
+                        // Buscar en copropietario
+                        ->orWhereHas('copropietario', function ($sub) {
+                        $sub->where('nombres', 'like', '%' . $this->buscar . '%')
+                            ->orWhere('dni', 'like', '%' . $this->buscar . '%');
+                    })
+                        ->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
                 });
             })
             ->orderBy('fecha_checkin', 'desc')

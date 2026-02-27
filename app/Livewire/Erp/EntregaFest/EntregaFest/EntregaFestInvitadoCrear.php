@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
+use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\InvitadoEntregaFest;
 use App\Models\ProspectoEntregaFest;
@@ -20,25 +21,41 @@ class EntregaFestInvitadoCrear extends Component
 {
     public EntregaFest $evento;
 
+    // 'titular' o 'copropietario'
+    public $tipo_invitado = 'titular';
+
     public $prospecto_entrega_fest_id = '';
+    public $copropietario_entrega_fest_id = '';
     public $cantidad_acompanantes_permitidos = 0;
     public $confirmado = false;
 
+    // Listas para los selects
     public $prospectos = [];
+    public $copropietarios = [];
 
     protected function rules()
     {
-        return [
-            'prospecto_entrega_fest_id' => 'required|exists:prospecto_entrega_fests,id',
+        $rules = [
+            'tipo_invitado' => 'required|in:titular,copropietario',
             'cantidad_acompanantes_permitidos' => 'required|integer|min:0',
             'confirmado' => 'boolean',
         ];
+
+        if ($this->tipo_invitado === 'titular') {
+            $rules['prospecto_entrega_fest_id'] = 'required|exists:prospecto_entrega_fests,id';
+        } else {
+            $rules['copropietario_entrega_fest_id'] = 'required|exists:copropietario_entrega_fests,id';
+        }
+
+        return $rules;
     }
 
     protected function validationAttributes()
     {
         return [
-            'prospecto_entrega_fest_id' => 'prospecto',
+            'tipo_invitado' => 'tipo de invitado',
+            'prospecto_entrega_fest_id' => 'prospecto titular',
+            'copropietario_entrega_fest_id' => 'copropietario',
             'cantidad_acompanantes_permitidos' => 'cantidad de acompañantes',
             'confirmado' => 'confirmación',
         ];
@@ -47,6 +64,14 @@ class EntregaFestInvitadoCrear extends Component
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
+
+        // Al cambiar el tipo, recargamos la lista correspondiente
+        if ($propertyName === 'tipo_invitado') {
+            $this->reset(['prospecto_entrega_fest_id', 'copropietario_entrega_fest_id']);
+            if ($this->tipo_invitado === 'copropietario') {
+                $this->loadCopropietarios();
+            }
+        }
     }
 
     public function mount($id)
@@ -57,16 +82,28 @@ class EntregaFestInvitadoCrear extends Component
 
     public function loadProspectos()
     {
-        // Solo prospectos del evento que NO sean invitados ya
+        // Prospectos titulares del evento que aún NO tienen invitación
         $this->prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->whereDoesntHave('invitado')
             ->orderBy('nombres')
             ->get();
     }
 
+    public function loadCopropietarios()
+    {
+        // Copropietarios del evento que aún NO tienen invitación
+        $this->copropietarios = CopropietarioEntregaFest::whereHas('prospecto', function ($q) {
+            $q->where('entrega_fest_id', $this->evento->id);
+        })
+            ->whereDoesntHave('invitado')
+            ->with('prospecto:id,nombres,lote,manzana')
+            ->orderBy('nombres')
+            ->get();
+    }
+
     public function store()
     {
-        $this->authorize('entrega-fest.invitados');
+        $this->authorize('invitado-entrega-fest.crear');
 
         try {
             $this->validate();
@@ -82,12 +119,17 @@ class EntregaFestInvitadoCrear extends Component
         try {
             DB::beginTransaction();
 
-            // Generar código único: INV-EVENT-ID-RAND
-            $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
+            $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT)
+                . '-' . strtoupper(bin2hex(random_bytes(3)));
 
             InvitadoEntregaFest::create([
                 'entrega_fest_id' => $this->evento->id,
-                'prospecto_entrega_fest_id' => $this->prospecto_entrega_fest_id,
+                'prospecto_entrega_fest_id' => $this->tipo_invitado === 'titular'
+                    ? $this->prospecto_entrega_fest_id
+                    : null,
+                'copropietario_entrega_fest_id' => $this->tipo_invitado === 'copropietario'
+                    ? $this->copropietario_entrega_fest_id
+                    : null,
                 'codigo_invitado' => $codigo,
                 'cantidad_acompanantes_permitidos' => $this->cantidad_acompanantes_permitidos,
                 'confirmado' => $this->confirmado,
@@ -105,7 +147,7 @@ class EntregaFestInvitadoCrear extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('entrega-fest')->error("[INVITADO CREAR] Error al generar invitación: " . $e->getMessage(), [
+            Log::channel('entrega-fest')->error('[INVITADO CREAR] Error al generar invitación: ' . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()

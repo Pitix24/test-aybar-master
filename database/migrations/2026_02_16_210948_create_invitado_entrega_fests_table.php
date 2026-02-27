@@ -14,7 +14,17 @@ return new class extends Migration {
             $table->id();
 
             $table->foreignId('entrega_fest_id')->constrained();
-            $table->foreignId('prospecto_entrega_fest_id')->unique()->constrained();
+
+            // Solo UNO de los dos tendrá valor, el otro será null
+            $table->foreignId('prospecto_entrega_fest_id')
+                ->nullable()
+                ->constrained('prospecto_entrega_fests')
+                ->nullOnDelete();
+
+            $table->foreignId('copropietario_entrega_fest_id')
+                ->nullable()
+                ->constrained('copropietario_entrega_fests')
+                ->nullOnDelete();
 
             $table->string('codigo_invitado')->unique(); // QR o código interno
 
@@ -26,7 +36,6 @@ return new class extends Migration {
             $table->text('observaciones_asistencia')->nullable();
 
             $table->timestamps();
-            $table->unique(['entrega_fest_id', 'codigo_invitado']);
         });
     }
 

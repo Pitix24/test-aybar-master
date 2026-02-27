@@ -23,27 +23,59 @@
             <h4 class="g_panel_titulo"><i class="fa-solid fa-id-card"></i> Datos de Invitación</h4>
 
             <div class="g_fila">
-                <div class="g_margin_bottom_15 g_columna_8">
-                    <label>Prospecto <span class="obligatorio">*</span></label>
-                    <select wire:model="prospecto_entrega_fest_id"
-                        class="@error('prospecto_entrega_fest_id') select-error @enderror">
-                        <option value="">Seleccione el prospecto...</option>
-                        @foreach ($prospectos as $p)
-                            <option value="{{ $p->id }}">{{ $p->nombre_completo }} ({{ $p->dni }}) -
-                                {{ $p->proyecto->nombre ?? '' }}
-                            </option>
-                        @endforeach
+                {{-- Tipo de invitado --}}
+                <div class="g_margin_bottom_15 g_columna_4">
+                    <label>Tipo de Invitado <span class="obligatorio">*</span></label>
+                    <select wire:model.live="tipo_invitado">
+                        <option value="titular">TITULAR (Prospecto)</option>
+                        <option value="copropietario">COPROPIETARIO</option>
                     </select>
-                    @error('prospecto_entrega_fest_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                    <p class="leyenda">Solo aparecen prospectos del evento que aún no tienen invitación.</p>
+                    <p class="leyenda">¿A quién se le genera esta invitación?</p>
                 </div>
 
+                {{-- Acompañantes --}}
                 <div class="g_margin_bottom_15 g_columna_4">
                     <label>Acompañantes Permitidos <span class="obligatorio">*</span></label>
                     <input type="number" wire:model="cantidad_acompanantes_permitidos">
                     @error('cantidad_acompanantes_permitidos') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
             </div>
+
+            {{-- Select dinámico según tipo --}}
+            @if ($tipo_invitado === 'titular')
+                <div class="g_margin_bottom_15">
+                    <label>Prospecto Titular <span class="obligatorio">*</span></label>
+                    <select wire:model="prospecto_entrega_fest_id"
+                        class="@error('prospecto_entrega_fest_id') select-error @enderror">
+                        <option value="">Seleccione el prospecto titular...</option>
+                        @foreach ($prospectos as $p)
+                            <option value="{{ $p->id }}">
+                                {{ $p->nombres }} ({{ $p->dni }})
+                                — Mz: {{ $p->manzana ?? '—' }} / Lt: {{ $p->lote ?? '—' }}
+                                — {{ $p->proyecto->nombre ?? '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('prospecto_entrega_fest_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                    <p class="leyenda">Solo aparecen titulares sin invitación generada.</p>
+                </div>
+            @else
+                <div class="g_margin_bottom_15">
+                    <label>Copropietario <span class="obligatorio">*</span></label>
+                    <select wire:model="copropietario_entrega_fest_id"
+                        class="@error('copropietario_entrega_fest_id') select-error @enderror">
+                        <option value="">Seleccione el copropietario...</option>
+                        @foreach ($copropietarios as $c)
+                            <option value="{{ $c->id }}">
+                                {{ $c->nombres }} ({{ $c->dni }})
+                                — Mz: {{ $c->prospecto?->manzana ?? '—' }} / Lt: {{ $c->prospecto?->lote ?? '—' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('copropietario_entrega_fest_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                    <p class="leyenda">Solo aparecen copropietarios sin invitación generada.</p>
+                </div>
+            @endif
 
             <div class="g_margin_bottom_15">
                 <label for="confirmado">¿Confirmado por el cliente?</label>

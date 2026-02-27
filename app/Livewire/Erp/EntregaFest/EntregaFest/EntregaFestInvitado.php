@@ -94,14 +94,24 @@ class EntregaFestInvitado extends Component
     public function render()
     {
         $items = InvitadoEntregaFest::query()
-            ->with(['prospecto.proyecto', 'prospecto.user'])
+            ->with([
+                'prospecto.proyecto',
+                'copropietario.prospecto.proyecto',
+            ])
             ->where('entrega_fest_id', $this->evento->id)
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
+                    // Buscar en titular
                     $q->whereHas('prospecto', function ($sub) {
                         $sub->where('nombres', 'like', '%' . $this->buscar . '%')
                             ->orWhere('dni', 'like', '%' . $this->buscar . '%');
-                    })->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
+                    })
+                        // Buscar en copropietario
+                        ->orWhereHas('copropietario', function ($sub) {
+                        $sub->where('nombres', 'like', '%' . $this->buscar . '%')
+                            ->orWhere('dni', 'like', '%' . $this->buscar . '%');
+                    })
+                        ->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
                 });
             })
             ->when($this->estado_confirmacion, fn($q) => $q->where('estado_confirmacion', $this->estado_confirmacion))

@@ -46,9 +46,20 @@ class ProspectoEntregaFest extends Model
         return $this->belongsTo(Proyecto::class);
     }
 
+    /**
+     * Copropietarios que comparten este mismo lote.
+     */
+    public function copropietarios()
+    {
+        return $this->hasMany(CopropietarioEntregaFest::class, 'prospecto_entrega_fest_id');
+    }
+
+    /**
+     * Invitado generado para el titular de este lote.
+     */
     public function invitado()
     {
-        return $this->hasOne(InvitadoEntregaFest::class);
+        return $this->hasOne(InvitadoEntregaFest::class, 'prospecto_entrega_fest_id');
     }
 
     public function user()

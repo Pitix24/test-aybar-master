@@ -114,12 +114,30 @@
                                 <tr wire:key="asistencia-{{ $a->id }}">
                                     <td class="g_negrita" style="color: var(--color-primary);">{{ $a->invitado->codigo_invitado }}</td>
                                     <td>
+                                        <div style="margin-bottom:3px;">
+                                            @if ($a->invitado->prospecto_entrega_fest_id)
+                                                <span class="g_badge success" style="font-size:0.7rem;">TITULAR</span>
+                                            @else
+                                                <span class="g_badge info" style="font-size:0.7rem;">COPROP.</span>
+                                            @endif
+                                        </div>
                                         <div class="g_negrita">{{ $a->invitado->nombre_completo ?? 'N/A' }}</div>
-                                        <div style="font-size: 0.8rem; color: #666;">DNI: {{ $a->invitado->prospecto->dni ?? 'N/A' }}</div>
+                                        <div style="font-size: 0.8rem; color: #666;">
+                                            DNI: {{ $a->invitado->prospecto?->dni
+                                                ?? $a->invitado->copropietario?->dni
+                                                ?? 'N/A' }}
+                                        </div>
                                     </td>
                                     <td>
-                                        <div style="font-size: 0.85rem;">{{ $a->invitado->prospecto->proyecto->nombre ?? 'N/A' }}</div>
-                                        <div style="font-size: 0.75rem; color: #777;">{{ $a->invitado->prospecto->lote }} {{ $a->invitado->prospecto->manzana }}</div>
+                                        <div style="font-size: 0.85rem;">
+                                            {{ $a->invitado->prospecto?->proyecto?->nombre
+                                                ?? $a->invitado->copropietario?->prospecto?->proyecto?->nombre
+                                                ?? 'N/A' }}
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: #777;">
+                                            Mz: {{ $a->invitado->manzana ?? '—' }}
+                                            / Lt: {{ $a->invitado->lote ?? '—' }}
+                                        </div>
                                     </td>
                                     <td class="g_celda_centro">
                                         <div class="g_badge light" style="font-size: 0.75rem;">{{ $a->created_at->format('d/m/Y') }}</div>

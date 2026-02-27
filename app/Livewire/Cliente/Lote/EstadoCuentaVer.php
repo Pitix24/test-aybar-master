@@ -88,7 +88,7 @@ class EstadoCuentaVer extends Component
                 $cuota['tiene_constancia_cavali'] = false;
                 if (!empty($cuota['NroCavali']) && ($cuota['SaldoPendiente'] ?? 0) == 0) {
                     try {
-                        $respuesta = $service->obtenerConstanciaCancelacion($cuota['NroCavali']);
+                        $respuesta = $service->consultar($cuota['NroCavali']);
                         if (!empty($respuesta['base64']) && ($respuesta['codigo'] ?? null) === '001') {
                             $cuota['tiene_constancia_cavali'] = true;
                         }
@@ -121,7 +121,7 @@ class EstadoCuentaVer extends Component
             }
 
             // Si por alguna razón no estaba validada (p.ej. error de red previo), lo intentamos una vez más
-            $respuesta = $service->obtenerConstanciaCancelacion($cuota['NroCavali']);
+            $respuesta = $service->consultar($cuota['NroCavali']);
 
             if (
                 empty($respuesta['base64']) ||

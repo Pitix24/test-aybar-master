@@ -839,7 +839,7 @@
                 "nombre": "Eventos",
                 "ruta": null,
                 "url": null,
-                "icono": "fa-solid fa-calendar-star",
+                "icono": "fa-solid fa-trophy",
                 "nivel": 2,
                 "permiso": "entrega-fest.navegacion",
                 "submenus": [

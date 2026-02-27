@@ -14,17 +14,27 @@ class TicketAsistenciaMail extends Mailable
     use Queueable, SerializesModels;
 
     public $invitado;
-    public $prospecto;
     public $evento;
+    // Datos resueltos desde los accessors del invitado (funciona para titular Y copropietario)
+    public $nombrePersona;
+    public $proyecto;
+    public $lote;
+    public $manzana;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct($invitado)
     {
-        $this->invitado = $invitado;
-        $this->prospecto = $invitado->prospecto;
+        $this->invitado = $invitado->loadMissing(['prospecto.proyecto', 'copropietario.prospecto.proyecto']);
         $this->evento = $invitado->entregaFest;
+
+        // Accessor nombre_completo ya maneja titular/copropietario
+        $this->nombrePersona = $invitado->nombre_completo;
+
+        // Resolver proyecto/lote/manzana sin importar el tipo
+        $this->proyecto = $invitado->prospecto?->proyecto?->nombre
+            ?? $invitado->copropietario?->prospecto?->proyecto?->nombre
+            ?? 'N/A';
+        $this->lote = $invitado->lote ?? '—';
+        $this->manzana = $invitado->manzana ?? '—';
     }
 
     /**

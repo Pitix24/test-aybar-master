@@ -3,12 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\AsistenciaEntregaFest;
-use App\Models\Cliente;
+use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\InvitadoEntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Models\Proyecto;
-use App\Models\UnidadNegocio;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -20,12 +19,15 @@ class EntregaFestSeeder extends Seeder
     public function run(): void
     {
         // Obtener o crear usuarios para auditoría
-        $admin = User::where('email', 'admin@aybar.com')->first() ?? User::factory()->create(['email' => 'admin@aybar.com', 'name' => 'Admin']);
-        $gestores = User::count() > 3 ? User::inRandomOrder()->take(3)->get() : User::factory()->count(3)->create();
+        $admin = User::where('email', 'admin@aybar.com')->first()
+            ?? User::factory()->create(['email' => 'admin@aybar.com', 'name' => 'Admin']);
+        $gestores = User::count() > 3
+            ? User::inRandomOrder()->take(3)->get()
+            : User::factory()->count(3)->create();
 
-        // Limpiar datos previos del seeder para evitar duplicados
+        // Limpiar datos previos para evitar duplicados
         EntregaFest::whereIn('codigo', ['EF-2026-001', 'EF-2026-002'])->each(function (EntregaFest $ef) {
-            $ef->forceDelete(); // Usar forceDelete si tiene SoftDeletes
+            $ef->forceDelete();
         });
 
         // 1. Crear Eventos Principales
@@ -39,7 +41,7 @@ class EntregaFestSeeder extends Seeder
                 'nombre' => 'Invierno Fest Aybar 2026',
                 'codigo' => 'EF-2026-002',
                 'descripcion' => 'Segunda edición anual de entrega de proyectos.',
-            ]
+            ],
         ];
 
         foreach ($festivales as $data) {
@@ -52,14 +54,16 @@ class EntregaFestSeeder extends Seeder
                 'activo' => true,
             ]);
 
-            // Asociar proyectos al festival (Relación Many-to-Many - Pivot)
-            $proyectos = Proyecto::count() > 5 ? Proyecto::inRandomOrder()->take(rand(1, 3))->get() : Proyecto::factory()->count(2)->create();
+            // Asociar proyectos al festival (Pivot)
+            $proyectos = Proyecto::count() > 5
+                ? Proyecto::inRandomOrder()->take(rand(1, 3))->get()
+                : Proyecto::factory()->count(2)->create();
             $evento->proyectos()->attach($proyectos->pluck('id'));
 
-            // 2. Crear Prospectos para este festival
+            // 2. Crear Prospectos (titulares de lote) para este festival
             foreach ($proyectos as $proyecto) {
                 $prospectos = ProspectoEntregaFest::factory()
-                    ->count(rand(1, 3))
+                    ->count(rand(2, 4))
                     ->create([
                         'entrega_fest_id' => $evento->id,
                         'proyecto_id' => $proyecto->id,
@@ -67,27 +71,68 @@ class EntregaFestSeeder extends Seeder
                         'gestor_backoffice_id' => $gestores->random()->id,
                     ]);
 
-                /*$prospectosAprobados = $prospectos->where('estado', 'aprobado');
+                foreach ($prospectos as $prospecto) {
 
-                foreach ($prospectosAprobados as $prospecto) {
-                    $invitado = InvitadoEntregaFest::create([
-                        'entrega_fest_id' => $evento->id,
-                        'prospecto_entrega_fest_id' => $prospecto->id,
-                        'codigo_invitado' => 'QR-' . strtoupper(bin2hex(random_bytes(4))),
-                        'cantidad_acompanantes_permitidos' => rand(1, 4),
-                        'confirmado' => $this->shouldConfirm(),
-                    ]);
+                    // 3. Crear Copropietarios (0 a 2 por lote)
+                    $cantidadCopropietarios = rand(0, 2);
+                    $copropietarios = collect();
 
-                    // 6. Simular Asistencia (si está confirmado y por azar)
-                    if ($invitado->confirmado && rand(0, 1)) {
-                        AsistenciaEntregaFest::create([
-                            'invitado_entrega_fest_id' => $invitado->id,
-                            'user_id' => $gestores->random()->id,
-                            'fecha_checkin' => now()->subHours(rand(1, 24)),
-                            'metodo' => rand(0, 1) ? 'qr' : 'manual',
-                        ]);
+                    for ($i = 0; $i < $cantidadCopropietarios; $i++) {
+                        $copropietarios->push(CopropietarioEntregaFest::create([
+                            'prospecto_entrega_fest_id' => $prospecto->id,
+                            'dni' => $this->randomDni(),
+                            'nombres' => fake()->name(),
+                            'email' => fake()->safeEmail(),
+                            'celular' => '9' . rand(10000000, 99999999),
+                        ]));
                     }
-                }*/
+
+                    // 4. Crear Invitado para el TITULAR (si está aprobado)
+                    if ($prospecto->estado === 'aprobado') {
+                        $invitadoTitular = InvitadoEntregaFest::create([
+                            'entrega_fest_id' => $evento->id,
+                            'prospecto_entrega_fest_id' => $prospecto->id,
+                            'copropietario_entrega_fest_id' => null,
+                            'codigo_invitado' => 'QR-' . strtoupper(bin2hex(random_bytes(4))),
+                            'cantidad_acompanantes_permitidos' => rand(1, 4),
+                            'confirmado' => $this->shouldConfirm(),
+                            'estado_confirmacion' => 'pendiente',
+                        ]);
+
+                        // 5. Simular Asistencia del titular
+                        if ($invitadoTitular->confirmado && rand(0, 1)) {
+                            AsistenciaEntregaFest::create([
+                                'invitado_entrega_fest_id' => $invitadoTitular->id,
+                                'user_id' => $gestores->random()->id,
+                                'fecha_checkin' => now()->subHours(rand(1, 24)),
+                                'metodo' => rand(0, 1) ? 'qr' : 'manual',
+                            ]);
+                        }
+                    }
+
+                    // 6. Crear Invitado para cada COPROPIETARIO (independientemente del titular)
+                    foreach ($copropietarios as $copropietario) {
+                        $invitadoCoprop = InvitadoEntregaFest::create([
+                            'entrega_fest_id' => $evento->id,
+                            'prospecto_entrega_fest_id' => null,
+                            'copropietario_entrega_fest_id' => $copropietario->id,
+                            'codigo_invitado' => 'QR-' . strtoupper(bin2hex(random_bytes(4))),
+                            'cantidad_acompanantes_permitidos' => rand(0, 2),
+                            'confirmado' => $this->shouldConfirm(),
+                            'estado_confirmacion' => 'pendiente',
+                        ]);
+
+                        // 7. Simular Asistencia del copropietario
+                        if ($invitadoCoprop->confirmado && rand(0, 1)) {
+                            AsistenciaEntregaFest::create([
+                                'invitado_entrega_fest_id' => $invitadoCoprop->id,
+                                'user_id' => $gestores->random()->id,
+                                'fecha_checkin' => now()->subHours(rand(1, 24)),
+                                'metodo' => rand(0, 1) ? 'qr' : 'manual',
+                            ]);
+                        }
+                    }
+                }
             }
         }
     }
@@ -95,6 +140,11 @@ class EntregaFestSeeder extends Seeder
     private function shouldConfirm(): bool
     {
         return rand(0, 10) > 3;
+    }
+
+    private function randomDni(): string
+    {
+        return (string) rand(10000000, 99999999);
     }
 
     private function randomCanal(): string

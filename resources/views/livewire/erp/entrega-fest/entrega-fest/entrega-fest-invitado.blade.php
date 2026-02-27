@@ -89,8 +89,9 @@
                 <thead>
                     <tr>
                         <th>Cód. Invitado</th>
-                        <th>Prospecto / DNI</th>
-                        <th>Proyecto</th>
+                        <th>Tipo</th>
+                        <th>Invitado / DNI</th>
+                        <th>Lote / Proyecto</th>
                         <th class="g_celda_centro">Acompañantes</th>
                         <th class="g_celda_centro">Asistencia</th>
                         <th class="g_celda_centro">Transporte</th>
@@ -100,47 +101,65 @@
 
                 <tbody>
                     @foreach ($items as $i)
-                        <tr wire:key="invitado-{{ $i->id }}">
-                            <td class="g_negrita" style="color: var(--color-primary);">{{ $i->codigo_invitado }}</td>
-                            <td>
-                                <div class="g_negrita">{{ $i->prospecto->nombres ?? 'N/A' }}</div>
-                                <div style="font-size: 0.8rem; color: #666;">DNI: {{ $i->prospecto->dni ?? 'N/A' }}</div>
-                            </td>
-                            <td>{{ $i->prospecto->proyecto->nombre ?? 'N/A' }}</td>
-                            <td class="g_celda_centro">
-                                <span class="g_badge light">{{ $i->cantidad_acompanantes_permitidos }}</span>
-                            </td>
-                            <td class="g_celda_centro">
-                                @php
-                                    $claseConf = match ($i->estado_confirmacion) {
-                                        'pendiente' => 'primary',
-                                        'confirmado' => 'success',
-                                        'no_asiste' => 'danger',
-                                        default => 'light',
-                                    };
-                                @endphp
-                                <span class="g_badge {{ $claseConf }}">{{ strtoupper($i->estado_confirmacion) }}</span>
-                            </td>
-                            <td class="g_celda_centro">
-                                @php
-                                    $transporteTexto = match ($i->transporte) {
-                                        'bus' => 'BUS',
-                                        'propio' => 'PROPIO',
-                                        'na' => 'N/A',
-                                        default => $i->transporte,
-                                    };
-                                @endphp
-                                <span class="g_badge light">{{ strtoupper($transporteTexto) }}</span>
-                            </td>
-                            <td class="g_celda_acciones g_celda_centro">
-                                @can('entrega-fest.invitados')
-                                    <a href="{{ route('erp.entrega-fest.vista.invitados.editar', [$evento->id, $i->id]) }}"
-                                        class="g_accion editar" title="Ver Detalles">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </a>
-                                @endcan
-                            </td>
-                        </tr>
+                                    <tr wire:key="invitado-{{ $i->id }}">
+                                        <td class="g_negrita" style="color: var(--color-primary);">{{ $i->codigo_invitado }}</td>
+                                        <td>
+                                            @if ($i->prospecto_entrega_fest_id)
+                                                <span class="g_badge success">TITULAR</span>
+                                            @else
+                                                <span class="g_badge info">COPROP.</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="g_negrita">{{ $i->nombre_completo }}</div>
+                                            <div style="font-size: 0.8rem; color: #666;">
+                                                DNI: {{ $i->prospecto?->dni ?? $i->copropietario?->dni ?? 'N/A' }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style="font-size: 0.85rem;">
+                                                {{ $i->prospecto?->proyecto?->nombre
+                        ?? $i->copropietario?->prospecto?->proyecto?->nombre
+                        ?? 'N/A' }}
+                                            </div>
+                                            <div style="font-size: 0.75rem; color: #777;">
+                                                Mz: {{ $i->manzana ?? '—' }} / Lt: {{ $i->lote ?? '—' }}
+                                            </div>
+                                        </td>
+                                        <td class="g_celda_centro">
+                                            <span class="g_badge light">{{ $i->cantidad_acompanantes_permitidos }}</span>
+                                        </td>
+                                        <td class="g_celda_centro">
+                                            @php
+                                                $claseConf = match ($i->estado_confirmacion) {
+                                                    'pendiente' => 'primary',
+                                                    'confirmado' => 'success',
+                                                    'no_asiste' => 'danger',
+                                                    default => 'light',
+                                                };
+                                            @endphp
+                                            <span class="g_badge {{ $claseConf }}">{{ strtoupper($i->estado_confirmacion) }}</span>
+                                        </td>
+                                        <td class="g_celda_centro">
+                                            @php
+                                                $transporteTexto = match ($i->transporte) {
+                                                    'bus' => 'BUS',
+                                                    'propio' => 'PROPIO',
+                                                    'na' => 'N/A',
+                                                    default => $i->transporte,
+                                                };
+                                            @endphp
+                                            <span class="g_badge light">{{ strtoupper($transporteTexto) }}</span>
+                                        </td>
+                                        <td class="g_celda_acciones g_celda_centro">
+                                            @can('invitado-entrega-fest.editar')
+                                                <a href="{{ route('erp.entrega-fest.vista.invitados.editar', [$evento->id, $i->id]) }}"
+                                                    class="g_accion editar" title="Ver Detalles">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+                                            @endcan
+                                        </td>
+                                    </tr>
                     @endforeach
                 </tbody>
             </table>

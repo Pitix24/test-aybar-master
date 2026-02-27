@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
+use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Models\User;
@@ -34,6 +35,21 @@ class EntregaFestProspectoEditar extends Component
     public $fecha_firma, $fecha_generacion_contrato;
 
     public $proyectos = [];
+
+    // ── Copropietarios ──────────────────────────────────────────────────
+    public $copropietarios = [];
+
+    // Modo: null = lista, 'crear' = formulario nuevo, 'editar' = editando fila
+    public $cop_modo = null;
+    public $cop_editando_id = null;
+
+    // Campos del formulario copropietario
+    public $cop_dni = '';
+    public $cop_nombres = '';
+    public $cop_email = '';
+    public $cop_celular = '';
+
+    // ────────────────────────────────────────────────────────────────────
 
     protected function rules()
     {
@@ -105,25 +121,191 @@ class EntregaFestProspectoEditar extends Component
         // BackOffice
         $this->grupo = $this->prospecto->grupo;
         $this->gestor_backoffice_id = $this->prospecto->gestor_backoffice_id;
-        $this->fecha_culminacion_eecc = $this->prospecto->fecha_culminacion_eecc ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_culminacion_eecc)) : null;
+        $this->fecha_culminacion_eecc = $this->prospecto->fecha_culminacion_eecc
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_culminacion_eecc)) : null;
         $this->link_carpeta_eecc = $this->prospecto->link_carpeta_eecc;
         $this->link_eecc_firmado = $this->prospecto->link_eecc_firmado;
         $this->validador_backoffice_id = $this->prospecto->validador_backoffice_id;
-        $this->fecha_validacion_eecc = $this->prospecto->fecha_validacion_eecc ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_eecc)) : null;
+        $this->fecha_validacion_eecc = $this->prospecto->fecha_validacion_eecc
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_eecc)) : null;
         $this->estado_backoffice = $this->prospecto->estado_backoffice;
 
         // Legal
         $this->estado_contrato_preeliminar_emitido = $this->prospecto->estado_contrato_preeliminar_emitido;
         $this->estado_firma_contrato_firmado = $this->prospecto->estado_firma_contrato_firmado;
-        $this->fecha_firma = $this->prospecto->fecha_firma ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_firma)) : null;
-        $this->fecha_generacion_contrato = $this->prospecto->fecha_generacion_contrato ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_generacion_contrato)) : null;
+        $this->fecha_firma = $this->prospecto->fecha_firma
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_firma)) : null;
+        $this->fecha_generacion_contrato = $this->prospecto->fecha_generacion_contrato
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_generacion_contrato)) : null;
 
         $this->proyectos = $this->evento->proyectos;
+
+        $this->cargarCopropietarios();
     }
+
+    // ════════════════════════════════════════════════════════════════════
+    // COPROPIETARIOS
+    // ════════════════════════════════════════════════════════════════════
+
+    public function cargarCopropietarios(): void
+    {
+        $this->copropietarios = CopropietarioEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)
+            ->orderBy('nombres')
+            ->get()
+            ->toArray();
+    }
+
+    public function abrirFormCrear(): void
+    {
+        $this->resetCopropietarioForm();
+        $this->cop_modo = 'crear';
+    }
+
+    public function cancelarCopropietario(): void
+    {
+        $this->resetCopropietarioForm();
+        $this->cop_modo = null;
+        $this->cop_editando_id = null;
+    }
+
+    private function resetCopropietarioForm(): void
+    {
+        $this->cop_dni = '';
+        $this->cop_nombres = '';
+        $this->cop_email = '';
+        $this->cop_celular = '';
+        $this->resetErrorBag(['cop_dni', 'cop_nombres', 'cop_email', 'cop_celular']);
+    }
+
+    private function reglasCoprietario(bool $esEdicion = false): array
+    {
+        $dniUnique = 'unique:copropietario_entrega_fests,dni,NULL,id,prospecto_entrega_fest_id,' . $this->prospecto->id;
+
+        if ($esEdicion && $this->cop_editando_id) {
+            $dniUnique = 'unique:copropietario_entrega_fests,dni,' . $this->cop_editando_id . ',id,prospecto_entrega_fest_id,' . $this->prospecto->id;
+        }
+
+        return [
+            'cop_dni' => ['required', 'string', 'max:15', $dniUnique],
+            'cop_nombres' => 'required|string|max:255',
+            'cop_email' => 'nullable|email|max:255',
+            'cop_celular' => 'nullable|string|max:20',
+        ];
+    }
+
+    private function atributosCopropietario(): array
+    {
+        return [
+            'cop_dni' => 'DNI del copropietario',
+            'cop_nombres' => 'nombres del copropietario',
+            'cop_email' => 'correo del copropietario',
+            'cop_celular' => 'celular del copropietario',
+        ];
+    }
+
+    public function storeCopropietario(): void
+    {
+        $this->validate($this->reglasCoprietario(), [], $this->atributosCopropietario());
+
+        try {
+            CopropietarioEntregaFest::create([
+                'prospecto_entrega_fest_id' => $this->prospecto->id,
+                'dni' => trim($this->cop_dni),
+                'nombres' => trim($this->cop_nombres),
+                'email' => trim($this->cop_email) ?: null,
+                'celular' => trim($this->cop_celular) ?: null,
+            ]);
+
+            $this->cancelarCopropietario();
+            $this->cargarCopropietarios();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Agregado!',
+                'text' => 'Copropietario registrado correctamente.',
+            ]);
+        } catch (\Exception $e) {
+            Log::channel('entrega-fest')->error('[COPROPIETARIO CREAR] ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudo guardar el copropietario.']);
+        }
+    }
+
+    public function editarCopropietario(int $id): void
+    {
+        $cop = CopropietarioEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)->findOrFail($id);
+
+        $this->cop_editando_id = $cop->id;
+        $this->cop_dni = $cop->dni;
+        $this->cop_nombres = $cop->nombres;
+        $this->cop_email = $cop->email ?? '';
+        $this->cop_celular = $cop->celular ?? '';
+        $this->cop_modo = 'editar';
+    }
+
+    public function updateCopropietario(): void
+    {
+        $this->validate($this->reglasCoprietario(true), [], $this->atributosCopropietario());
+
+        $cop = CopropietarioEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)
+            ->findOrFail($this->cop_editando_id);
+
+        try {
+            $cop->update([
+                'dni' => trim($this->cop_dni),
+                'nombres' => trim($this->cop_nombres),
+                'email' => trim($this->cop_email) ?: null,
+                'celular' => trim($this->cop_celular) ?: null,
+            ]);
+
+            $this->cancelarCopropietario();
+            $this->cargarCopropietarios();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Actualizado!',
+                'text' => 'Copropietario actualizado correctamente.',
+            ]);
+        } catch (\Exception $e) {
+            Log::channel('entrega-fest')->error('[COPROPIETARIO EDITAR] ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudo actualizar.']);
+        }
+    }
+
+    public function eliminarCopropietario(int $id): void
+    {
+        $cop = CopropietarioEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)->findOrFail($id);
+
+        // Si ya tiene invitación, no se puede eliminar
+        if ($cop->invitado) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'No permitido',
+                'text' => 'Este copropietario ya tiene una invitación generada. Elimínala primero.',
+            ]);
+            return;
+        }
+
+        try {
+            $cop->delete();
+            $this->cargarCopropietarios();
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Eliminado',
+                'text' => 'Copropietario eliminado.',
+            ]);
+        } catch (\Exception $e) {
+            Log::channel('entrega-fest')->error('[COPROPIETARIO ELIMINAR] ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudo eliminar.']);
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // PROSPECTO — helpers de actualización
+    // ════════════════════════════════════════════════════════════════════
 
     private function handleUpdate(array $data, string $logContext)
     {
-        $this->authorize('entrega-fest.prospectos');
+        $this->authorize('prospecto-entrega-fest.editar');
 
         try {
             DB::beginTransaction();
@@ -231,7 +413,7 @@ class EntregaFestProspectoEditar extends Component
     {
         $usuarios = User::orderBy('name')->get();
         return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-prospecto-editar', [
-            'usuarios' => $usuarios
+            'usuarios' => $usuarios,
         ]);
     }
 

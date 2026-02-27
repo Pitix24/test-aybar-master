@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EntregaFest\EntregaFestProspectoExport;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EntregaFest\AsistenciaLinkMail;
+use App\Mail\EntregaFest\AsistenciaLinkCopropietarioMail;
 use App\Services\WhatsappService;
 use App\Models\WhatsappContacto;
 use App\Models\WhatsappConversacion;
@@ -110,105 +111,154 @@ class EntregaFestProspecto extends Component
 
     public function enviarCorreos()
     {
+        // 1. Titulares aprobados sin invitación con email
         $prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->where('estado_backoffice', 'aprobado')
             ->whereDoesntHave('invitado')
             ->whereNotNull('email')
             ->get();
 
-        if ($prospectos->isEmpty()) {
+        // 2. Copropietarios de prospectos aprobados, sin invitación y con email
+        $copropietarios = \App\Models\CopropietarioEntregaFest::whereHas('prospecto', function ($q) {
+            $q->where('entrega_fest_id', $this->evento->id)
+                ->where('estado_backoffice', 'aprobado');
+        })
+            ->whereDoesntHave('invitado')
+            ->whereNotNull('email')
+            ->with('prospecto') // para el link de asistencia
+            ->get();
+
+        if ($prospectos->isEmpty() && $copropietarios->isEmpty()) {
             $this->dispatch('alertaLivewire', [
                 'type' => 'info',
                 'title' => 'Información',
-                'text' => 'No hay prospectos aprobados pendientes de invitación con correo registrado.'
+                'text' => 'No hay prospectos ni copropietarios aprobados pendientes de invitación con correo registrado.'
             ]);
             return;
         }
 
         $enviados = 0;
+
+        // Enviar a titulares
         foreach ($prospectos as $prospecto) {
             try {
                 Mail::to($prospecto->email)->send(new AsistenciaLinkMail($prospecto));
                 $enviados++;
             } catch (\Exception $e) {
-                \Log::error("Error enviando correo a {$prospecto->email}: " . $e->getMessage());
+                \Log::error("[ENTREGA-FEST] Error correo titular {$prospecto->email}: " . $e->getMessage());
+            }
+        }
+
+        // Enviar a copropietarios con su propio mail y su propio link
+        foreach ($copropietarios as $copropietario) {
+            try {
+                Mail::to($copropietario->email)->send(new AsistenciaLinkCopropietarioMail($copropietario));
+                $enviados++;
+            } catch (\Exception $e) {
+                \Log::error("[ENTREGA-FEST] Error correo copropietario {$copropietario->email}: " . $e->getMessage());
             }
         }
 
         $this->dispatch('alertaLivewire', [
             'type' => 'success',
             'title' => '¡Completado!',
-            'text' => "Se han enviado $enviados correos correctamente."
+            'text' => "Se enviaron $enviados correos (titulares + copropietarios)."
         ]);
     }
 
     public function enviarWhatsapp(WhatsappService $whatsapp)
     {
+        // 1. Titulares aprobados sin invitación con celular
         $prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->where('estado_backoffice', 'aprobado')
             ->whereDoesntHave('invitado')
             ->whereNotNull('celular')
             ->get();
 
-        if ($prospectos->isEmpty()) {
+        // 2. Copropietarios sin invitación con celular
+        $copropietarios = \App\Models\CopropietarioEntregaFest::whereHas('prospecto', function ($q) {
+            $q->where('entrega_fest_id', $this->evento->id)
+                ->where('estado_backoffice', 'aprobado');
+        })
+            ->whereDoesntHave('invitado')
+            ->whereNotNull('celular')
+            ->with('prospecto')
+            ->get();
+
+        if ($prospectos->isEmpty() && $copropietarios->isEmpty()) {
             $this->dispatch('alertaLivewire', [
                 'type' => 'info',
                 'title' => 'Información',
-                'text' => 'No hay prospectos aprobados pendientes de invitación con celular registrado.'
+                'text' => 'No hay prospectos ni copropietarios aprobados pendientes de invitación con celular registrado.'
             ]);
             return;
         }
 
         $enviados = 0;
+
+        // ── Helper para formatear celular peruano ─────────────────────
+        $formatearCelular = function (string $raw): string {
+            $cel = preg_replace('/\D/', '', $raw);
+            return strlen($cel) === 9 ? '51' . $cel : $cel;
+        };
+
+        // ── Enviar a TITULARES ────────────────────────────────────────
         foreach ($prospectos as $prospecto) {
             $link = route('public.entrega-fest.asistencia', [$this->evento->slug, $prospecto->id]);
             $mensaje = "Hola *{$prospecto->nombres}*, ya tenemos tu evaluación lista para el evento *{$this->evento->nombre}*. Confirma tu asistencia aquí: $link";
-
-            // Limpiar celular (solo números y código de país si falta)
-            $celular = preg_replace('/\D/', '', $prospecto->celular);
-            if (strlen($celular) === 9) {
-                $celular = '51' . $celular; // Asumimos Perú si tiene 9 dígitos
-            }
+            $celular = $formatearCelular($prospecto->celular);
 
             $response = $whatsapp->sendText($celular, $mensaje);
             if ($response) {
                 $enviados++;
-
-                // TRAZABILIDAD: Registrar en el módulo de WhatsApp
-                // 1. Buscar si el prospecto ya es cliente
                 $cliente = Cliente::where('dni', $prospecto->dni)->first();
-
-                // 2. Crear o actualizar contacto de WhatsApp
                 $contacto = WhatsappContacto::updateOrCreate(
                     ['wa_id' => $celular],
-                    [
-                        'nombre_wa' => $prospecto->nombres,
-                        'numero_celular' => $prospecto->celular,
-                        'cliente_id' => $cliente?->id
-                    ]
+                    ['nombre_wa' => $prospecto->nombres, 'numero_celular' => $prospecto->celular, 'cliente_id' => $cliente?->id]
                 );
-
-                // 3. Crear o actualizar conversación
                 $conversacion = WhatsappConversacion::firstOrCreate(
                     ['contacto_id' => $contacto->id],
-                    [
-                        'cliente_id' => $cliente?->id,
-                        'estado' => 'asignado',
-                        'departamento_destino' => 'backoffice',
-                        'agente_id' => auth()->id(),
-                    ]
+                    ['cliente_id' => $cliente?->id, 'estado' => 'asignado', 'departamento_destino' => 'backoffice', 'agente_id' => auth()->id()]
                 );
-
                 $conversacion->update(['last_message_at' => now()]);
-
-                // 4. Registrar el mensaje saliente
                 WhatsappMensaje::create([
                     'conversacion_id' => $conversacion->id,
                     'direccion' => 'saliente',
                     'tipo' => 'texto',
                     'contenido' => $mensaje,
                     'wa_message_id' => $response['messages'][0]['id'] ?? 'PROS_' . uniqid(),
-                    'estado' => 'enviado'
+                    'estado' => 'enviado',
+                ]);
+            }
+        }
+
+        // ── Enviar a COPROPIETARIOS ───────────────────────────────────
+        foreach ($copropietarios as $copropietario) {
+            // Link a SU PROPIA página de confirmación
+            $link = route('public.entrega-fest.asistencia.copropietario', [$this->evento->slug, $copropietario->id]);
+            $mensaje = "Hola *{$copropietario->nombres}*, ya tienes evaluación lista para el evento *{$this->evento->nombre}*. Confirma tu asistencia aquí: $link";
+            $celular = $formatearCelular($copropietario->celular);
+
+            $response = $whatsapp->sendText($celular, $mensaje);
+            if ($response) {
+                $enviados++;
+                $cliente = Cliente::where('dni', $copropietario->dni)->first();
+                $contacto = WhatsappContacto::updateOrCreate(
+                    ['wa_id' => $celular],
+                    ['nombre_wa' => $copropietario->nombres, 'numero_celular' => $copropietario->celular, 'cliente_id' => $cliente?->id]
+                );
+                $conversacion = WhatsappConversacion::firstOrCreate(
+                    ['contacto_id' => $contacto->id],
+                    ['cliente_id' => $cliente?->id, 'estado' => 'asignado', 'departamento_destino' => 'backoffice', 'agente_id' => auth()->id()]
+                );
+                $conversacion->update(['last_message_at' => now()]);
+                WhatsappMensaje::create([
+                    'conversacion_id' => $conversacion->id,
+                    'direccion' => 'saliente',
+                    'tipo' => 'texto',
+                    'contenido' => $mensaje,
+                    'wa_message_id' => $response['messages'][0]['id'] ?? 'COPROP_' . uniqid(),
+                    'estado' => 'enviado',
                 ]);
             }
         }
@@ -216,7 +266,7 @@ class EntregaFestProspecto extends Component
         $this->dispatch('alertaLivewire', [
             'type' => 'success',
             'title' => '¡Completado!',
-            'text' => "Se han enviado $enviados mensajes de WhatsApp correctamente."
+            'text' => "Se enviaron $enviados mensajes de WhatsApp (titulares + copropietarios)."
         ]);
     }
 

@@ -108,7 +108,7 @@
 
         <div class="content">
             <h2 style="color: #1a237e;">{{ $evento->nombre }}</h2>
-            <p>Hola <strong>{{ $prospecto->nombres }}</strong>, gracias por confirmar tu asistencia.</p>
+            <p>Hola <strong>{{ $nombrePersona }}</strong>, gracias por confirmar tu asistencia.</p>
 
             <div class="ticket-box">
                 <p style="margin-top:0; font-weight:bold; color:#666;">PRESENTA ESTE CÓDIGO AL INGRESAR</p>
@@ -136,7 +136,11 @@
                 </div>
                 <div class="detail-row">
                     <span class="label">Ubicación:</span>
-                    <span class="value">{{ $prospecto->proyecto->nombre ?? 'N/A' }}</span>
+                    <span class="value">{{ $proyecto }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Lote / Manzana:</span>
+                    <span class="value">{{ $lote }} / {{ $manzana }}</span>
                 </div>
             </div>
 

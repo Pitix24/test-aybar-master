@@ -3,6 +3,7 @@
 use App\Http\Controllers\CavaliController;
 use App\Http\Controllers\SlinController;
 use App\Livewire\Public\EntregaFest\AsistenciaPublica;
+use App\Livewire\Public\EntregaFest\AsistenciaPublicaCopropietario;
 use App\Livewire\Web\Sesion\ClienteRegistrarLivewire;
 use App\Http\Controllers\Web\VerificationController;
 use App\Http\Controllers\Web\ConsultaCodigoClienteController;
@@ -26,6 +27,10 @@ Route::get('/cavali/constancia/ver/{numeroLetra}', [CavaliController::class, 've
 Route::get('/cavali/constancia/validar/{numeroLetra}', [CavaliController::class, 'validarLetra'])->name('cavali.constancia.validar');
 Route::post('/consulta-codigo-cliente', [ConsultaCodigoClienteController::class, 'consultarClienteDbApi'])->name('consulta-codigo-cliente');
 
-// Entrega Fest - Asistencia Pública
+// Entrega Fest - Asistencia Pública (Titular)
 Route::get('/evento/{slug}/{id}', AsistenciaPublica::class)
     ->name('public.entrega-fest.asistencia');
+
+// Entrega Fest - Asistencia Pública (Copropietario)
+Route::get('/evento/{slug}/copropietario/{copropietarioId}', AsistenciaPublicaCopropietario::class)
+    ->name('public.entrega-fest.asistencia.copropietario');
