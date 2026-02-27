@@ -16,6 +16,7 @@ use App\Exports\EntregaFest\EntregaFestProspectoExport;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EntregaFest\AsistenciaLinkMail;
 use App\Mail\EntregaFest\AsistenciaLinkCopropietarioMail;
+use App\Mail\EntregaFest\FirmaLinkMail;
 use App\Services\WhatsappService;
 use App\Models\WhatsappContacto;
 use App\Models\WhatsappConversacion;
@@ -277,6 +278,106 @@ class EntregaFestProspecto extends Component
             'type' => 'success',
             'title' => '¡Completado!',
             'text' => "Se enviaron $enviados mensajes de WhatsApp (titulares + copropietarios)."
+        ]);
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // FIRMA DE CONTRATO — Enviar link de agendamiento
+    // ────────────────────────────────────────────────────────────────────
+
+    public function enviarCorreoFirma()
+    {
+        $prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->where('estado_backoffice', 'aprobado')
+            ->where('estado_contrato_preeliminar_emitido', 'aprobado')
+            ->whereNull('fecha_firma')
+            ->whereNotNull('email')
+            ->with(['entregaFest', 'proyecto'])
+            ->get();
+
+        if ($prospectos->isEmpty()) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Información',
+                'text' => 'No hay prospectos con contrato aprobado pendientes de agendar cita (o sin email).',
+            ]);
+            return;
+        }
+
+        $enviados = 0;
+        foreach ($prospectos as $prospecto) {
+            try {
+                Mail::to($prospecto->email)->send(new FirmaLinkMail($prospecto));
+                $enviados++;
+            } catch (\Exception $e) {
+                \Log::error('[FIRMA CORREO] Error a ' . $prospecto->email . ': ' . $e->getMessage());
+            }
+        }
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡Completado!',
+            'text' => "Se enviaron $enviados correos de agendamiento de firma.",
+        ]);
+    }
+
+    public function enviarWhatsappFirma(WhatsappService $whatsapp)
+    {
+        $prospectos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->where('estado_backoffice', 'aprobado')
+            ->where('estado_contrato_preeliminar_emitido', 'aprobado')
+            ->whereNull('fecha_firma')
+            ->whereNotNull('celular')
+            ->get();
+
+        if ($prospectos->isEmpty()) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Información',
+                'text' => 'No hay prospectos con contrato aprobado pendientes de agendar cita (o sin celular).',
+            ]);
+            return;
+        }
+
+        $formatearCelular = function (string $raw): string {
+            $cel = preg_replace('/\D/', '', $raw);
+            return strlen($cel) === 9 ? '51' . $cel : $cel;
+        };
+
+        $enviados = 0;
+        foreach ($prospectos as $prospecto) {
+            $link = route('public.entrega-fest.firma', [$this->evento->slug, $prospecto->id]);
+            $mensaje = "Hola *{$prospecto->nombres}*, tu contrato preliminar para el evento *{$this->evento->nombre}* está aprobado 🎉. Agenda aquí tu cita de firma: $link";
+            $celular = $formatearCelular($prospecto->celular);
+
+            $response = $whatsapp->sendText($celular, $mensaje);
+            if ($response) {
+                $enviados++;
+                $cliente = Cliente::where('dni', $prospecto->dni)->first();
+                $contacto = WhatsappContacto::updateOrCreate(
+                    ['wa_id' => $celular],
+                    ['nombre_wa' => $prospecto->nombres, 'numero_celular' => $prospecto->celular, 'cliente_id' => $cliente?->id]
+                );
+                $conversacion = WhatsappConversacion::firstOrCreate(
+                    ['contacto_id' => $contacto->id],
+                    ['cliente_id' => $cliente?->id, 'estado' => 'asignado', 'departamento_destino' => 'backoffice', 'agente_id' => auth()->id()]
+                );
+                $conversacion->update(['last_message_at' => now()]);
+                WhatsappMensaje::create([
+                    'conversacion_id' => $conversacion->id,
+                    'direccion' => 'saliente',
+                    'tipo' => 'texto',
+                    'contenido' => $mensaje,
+                    'wa_message_id' => $response['messages'][0]['id'] ?? 'FIRMA_' . uniqid(),
+                    'estado' => 'enviado',
+                ]);
+            }
+        }
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡Completado!',
+            'text' => "Se enviaron $enviados WhatsApp de agendamiento de firma.",
         ]);
     }
 

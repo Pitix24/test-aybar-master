@@ -32,6 +32,18 @@
                         class="fa-solid fa-spinner fa-spin"></i></span>
             </button>
 
+            <button wire:click="enviarCorreoFirma" class="g_boton dark" wire:loading.attr="disabled"
+                wire:target="enviarCorreoFirma" title="Enviar link de agendamiento de firma (contrato aprobado)">
+                <span wire:loading.remove wire:target="enviarCorreoFirma">Correo Firma <i class="fa-solid fa-file-signature"></i></span>
+                <span wire:loading wire:target="enviarCorreoFirma">Enviando... <i class="fa-solid fa-spinner fa-spin"></i></span>
+            </button>
+
+            <button wire:click="enviarWhatsappFirma" class="g_boton success" wire:loading.attr="disabled"
+                wire:target="enviarWhatsappFirma" title="Enviar WhatsApp de agendamiento de firma (contrato aprobado)">
+                <span wire:loading.remove wire:target="enviarWhatsappFirma">WSP Firma <i class="fa-brands fa-whatsapp"></i></span>
+                <span wire:loading wire:target="enviarWhatsappFirma">Enviando... <i class="fa-solid fa-spinner fa-spin"></i></span>
+            </button>
+
             <a href="{{ route('erp.entrega-fest.vista.prospectos.crear', $evento->id) }}" class="g_boton primary">
                 Añadir Prospecto <i class="fa-solid fa-user-plus"></i>
             </a>
@@ -69,7 +81,7 @@
 
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Firma Contrato</label>
-                    <select wire:model.live="estado_firma_contrato_firmado">
+                    <select wire:model.live="estado_contrato_preeliminar_emitido">
                         <option value="">Todos</option>
                         <option value="pendiente">PENDIENTE</option>
                         <option value="observado">OBSERVADO</option>
@@ -129,7 +141,8 @@
                         <th>Lote/Mz</th>
                         <th class="g_celda_centro">BackOffice</th>
                         <th class="g_celda_centro">Estado Contrato Preliminar</th>
-                        <th class="g_celda_centro">Fecha Firma</th>
+                        <th class="g_celda_centro">Fecha para Firmar</th>
+                        <th class="g_celda_centro">Fecha Firmado</th>
                         <th class="g_celda_centro">Invitado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
@@ -163,7 +176,7 @@
                             </td>
                             <td class="g_celda_centro">
                                 @php
-                                    $claseEstado = match ($p->estado_firma_contrato_firmado) {
+                                    $claseEstado = match ($p->estado_contrato_preeliminar_emitido) {
                                         'pendiente' => 'primary',
                                         'observado' => 'warning',
                                         'aprobado' => 'success',
@@ -171,9 +184,10 @@
                                         default => 'light',
                                     };
                                 @endphp
-                                <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado_firma_contrato_firmado) }}</span>
+                                <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado_contrato_preeliminar_emitido) }}</span>
                             </td>
                             <td>{{ $p->fecha_firma ? date('d/m/Y', strtotime($p->fecha_firma)) : 'N/A' }}</td>
+                            <td>{{ $p->fecha_generacion_contrato ? date('d/m/Y', strtotime($p->fecha_generacion_contrato)) : 'N/A' }}</td>
                             <td class="g_celda_centro">
                                 @if ($p->invitado)
                                     <span class="g_badge success" title="{{ $p->invitado->estado_confirmacion }}">SÍ</span>

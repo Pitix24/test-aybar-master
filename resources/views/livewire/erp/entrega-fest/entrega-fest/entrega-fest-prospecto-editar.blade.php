@@ -253,7 +253,7 @@
                                 <select wire:model="estado_contrato_preeliminar_emitido">
                                     <option value="pendiente">Pendiente</option>
                                     <option value="observado">Observado</option>
-                                    <option value="aprobado">Generado / Emitido</option>
+                                    <option value="aprobado">Aprobado</option>
                                     <option value="rechazado">Rechazado</option>
                                 </select>
                             </div>
@@ -265,6 +265,10 @@
 
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Fecha de Firma</label>
+                                <input type="datetime-local" value="{{ $fecha_firma }}" disabled>
+                            </div>
+                            <div class="g_margin_bottom_10 g_columna_6">
                                 <label>Firma de Contrato <span class="obligatorio">*</span></label>
                                 <select wire:model="estado_firma_contrato_firmado">
                                     <option value="pendiente">Pendiente</option>
@@ -272,10 +276,6 @@
                                     <option value="aprobado">Firmado Correctamente</option>
                                     <option value="rechazado">Rechazado</option>
                                 </select>
-                            </div>
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Fecha de Firma</label>
-                                <input type="datetime-local" wire:model="fecha_firma">
                             </div>
                         </div>
 
@@ -380,7 +380,8 @@
                                                     <input type="text" wire:model.blur="cop_dni" style="min-width:90px;"
                                                         class="@error('cop_dni') input-error @enderror" placeholder="DNI">
                                                     @error('cop_dni') <p class="mensaje_error" style="font-size:0.7rem;">
-                                                    {{ $message }}</p> @enderror
+                                                        {{ $message }}
+                                                    </p> @enderror
                                                 </div>
                                             </td>
                                             <td style="padding:6px 8px;">
@@ -389,7 +390,8 @@
                                                         class="@error('cop_nombres') input-error @enderror"
                                                         placeholder="Nombres">
                                                     @error('cop_nombres') <p class="mensaje_error" style="font-size:0.7rem;">
-                                                    {{ $message }}</p> @enderror
+                                                        {{ $message }}
+                                                    </p> @enderror
                                                 </div>
                                             </td>
                                             <td style="padding:6px 8px;">
@@ -398,7 +400,8 @@
                                                         class="@error('cop_email') input-error @enderror"
                                                         placeholder="correo@ejemplo.com">
                                                     @error('cop_email') <p class="mensaje_error" style="font-size:0.7rem;">
-                                                    {{ $message }}</p> @enderror
+                                                        {{ $message }}
+                                                    </p> @enderror
                                                 </div>
                                             </td>
                                             <td style="padding:6px 8px;">
@@ -407,7 +410,8 @@
                                                         class="@error('cop_celular') input-error @enderror"
                                                         placeholder="987654321">
                                                     @error('cop_celular') <p class="mensaje_error" style="font-size:0.7rem;">
-                                                    {{ $message }}</p> @enderror
+                                                        {{ $message }}
+                                                    </p> @enderror
                                                 </div>
                                             </td>
                                             <td></td>

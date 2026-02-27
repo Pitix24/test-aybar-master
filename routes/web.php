@@ -4,6 +4,7 @@ use App\Http\Controllers\CavaliController;
 use App\Http\Controllers\SlinController;
 use App\Livewire\Public\EntregaFest\AsistenciaPublica;
 use App\Livewire\Public\EntregaFest\AsistenciaPublicaCopropietario;
+use App\Livewire\Public\EntregaFest\FirmaPublica;
 use App\Livewire\Web\Sesion\ClienteRegistrarLivewire;
 use App\Http\Controllers\Web\VerificationController;
 use App\Http\Controllers\Web\ConsultaCodigoClienteController;
@@ -34,3 +35,7 @@ Route::get('/evento/{slug}/{id}', AsistenciaPublica::class)
 // Entrega Fest - Asistencia Pública (Copropietario)
 Route::get('/evento/{slug}/copropietario/{copropietarioId}', AsistenciaPublicaCopropietario::class)
     ->name('public.entrega-fest.asistencia.copropietario');
+
+// Entrega Fest - Agendamiento Firma de Contrato (solo Titular)
+Route::get('/evento/{slug}/firma/{id}', FirmaPublica::class)
+    ->name('public.entrega-fest.firma');
