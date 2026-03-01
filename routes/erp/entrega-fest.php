@@ -1,12 +1,15 @@
 <?php
 
-use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestAsistencia;
 use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestCrear;
 use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestLista;
 use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestEditar;
+use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestPanel;
 use App\Livewire\Erp\EntregaFest\EntregaFest\EntregaFestVer;
+use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestAsistencia;
+use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestInvitado;
 use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestInvitadoCrear;
 use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestInvitadoEditar;
+use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestProspecto;
 use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestProspectoCrear;
 use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestProspectoEditar;
 use App\Livewire\Erp\EntregaFest\Staff\StaffDashboard;
@@ -30,20 +33,21 @@ Route::prefix('entrega-fest')->group(function () {
 
         // Sub-módulo: Administración y Gestión
         Route::group(['as' => 'entrega-fest.vista.'], function () {
+            Route::get('/panel', EntregaFestPanel::class)->name('panel');
             Route::get('/ver', EntregaFestVer::class)->name('ver');
             Route::get('/editar', EntregaFestEditar::class)->name('editar');
             Route::get('/asistencia', EntregaFestAsistencia::class)->name('asistencia');
 
             // Prospectos
             Route::prefix('prospectos')->name('prospectos')->group(function () {
-                Route::get('/', EntregaFestProspectoCrear::class)->name('');
+                Route::get('/', EntregaFestProspecto::class)->name('');
                 Route::get('/crear', EntregaFestProspectoCrear::class)->name('.crear');
                 Route::get('/editar/{prospectoId}', EntregaFestProspectoEditar::class)->name('.editar');
             });
 
             // Invitados
             Route::prefix('invitados')->name('invitados')->group(function () {
-                Route::get('/', EntregaFestInvitadoCrear::class)->name('');
+                Route::get('/', EntregaFestInvitado::class)->name('');
                 Route::get('/crear', EntregaFestInvitadoCrear::class)->name('.crear');
                 Route::get('/editar/{invitadoId}', EntregaFestInvitadoEditar::class)->name('.editar');
             });

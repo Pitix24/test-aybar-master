@@ -1,107 +1,111 @@
-<div class="p-6">
-    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800 tracking-tight">
-                {{ $evento->nombre }}
+<div class="g_gap_pagina">
+
+    {{-- CABECERA --}}
+    <div class="g_panel cabecera_titulo_pagina">
+        <h2>
+            <span>{{ $evento->codigo }}</span>
+            Centro de Control Staff
+        </h2>
+        <div class="cabecera_titulo_botones">
+            <a href="{{ route('erp.entrega-fest.vista.ver', $evento->id) }}" class="g_boton light">
+                <i class="fa-solid fa-arrow-left"></i> Volver al Evento
+            </a>
+        </div>
+    </div>
+
+    {{-- HERO --}}
+    <div class="g_dashboard_hero">
+        <div class="g_dashboard_hero_decor_1"></div>
+        <div class="g_dashboard_hero_decor_2"></div>
+        <div class="g_dashboard_hero_content">
+            <h1 class="g_dashboard_hero_title">
+                <i class="fa-solid fa-shield-halved"></i>
+                Operaciones: <span>{{ $evento->nombre }}</span>
             </h1>
-            <p class="text-gray-500 font-medium">Panel de Operaciones en Campo</p>
-        </div>
-        <div class="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
-            <span class="relative flex h-3 w-3">
-                <span
-                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-            </span>
-            <span class="text-blue-700 font-semibold text-sm">Evento Activo</span>
+            <p class="g_dashboard_hero_text">
+                Panel operativo del staff. Gestiona el itinerario, las tareas, los proveedores y las incidencias en
+                tiempo real.
+            </p>
         </div>
     </div>
 
-    <!-- Grid de Navegación Operativa -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {{-- CONTADORES --}}
+    <div class="g_panel_dashboard_grid">
+        <div class="g_panel g_panel_dashboard" style="border-left-color: var(--color-vivo);">
+            <div class="g_panel_dashboard_valor">
+                <h2>Bloques Itinerario</h2>
+                <p class="g_negrita">{{ $evento->itinerario_bloques_count }}</p>
+            </div>
+            <i class="fa-solid fa-clock" style="color: var(--color-vivo);"></i>
+        </div>
+        <div class="g_panel g_panel_dashboard" style="border-left-color: var(--color-danger);">
+            <div class="g_panel_dashboard_valor">
+                <h2>Incidencias Abiertas</h2>
+                <p class="g_negrita">{{ $evento->incidencias_count }}</p>
+            </div>
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--color-danger);"></i>
+        </div>
+        <div class="g_panel g_panel_dashboard" style="border-left-color: var(--color-success);">
+            <div class="g_panel_dashboard_valor">
+                <h2>Proveedores</h2>
+                <p class="g_negrita">{{ $evento->proveedores_count }}</p>
+            </div>
+            <i class="fa-solid fa-truck" style="color: var(--color-success);"></i>
+        </div>
+    </div>
 
-        <!-- Itinerario -->
-        <a href="{{ route('erp.entrega-fest.staff.itinerario', $evento->id) }}"
-            class="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 right-0 p-3 bg-orange-50 text-orange-500 rounded-bl-2xl">
-                <i class="fas fa-clock text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Itinerario</h3>
-            <p class="text-gray-500 text-sm mb-4">Run of Show, tiempos y cronograma en vivo.</p>
-            <div class="flex items-center justify-between mt-auto">
-                <span class="text-orange-600 font-bold text-lg">{{ $evento->itinerario_bloques_count }} Bloques</span>
-                <i class="fas fa-arrow-right text-gray-300 group-hover:text-orange-500 transition-colors"></i>
-            </div>
+    {{-- ACCESOS DIRECTOS --}}
+    <div class="g_panel_dashboard_grid">
+
+        <a href="{{ route('erp.entrega-fest.staff.itinerario', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left: 4px solid var(--color-info);">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-clock" style="color:var(--color-info);"></i> Itinerario
+            </h4>
+            <p class="g_panel_parrafo">Run of Show, tiempos y cronograma en vivo del evento.</p>
+            <span class="g_badge info">Abrir <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
-        <!-- MOP -->
-        <a href="{{ route('erp.entrega-fest.staff.mop', $evento->id) }}"
-            class="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 right-0 p-3 bg-purple-50 text-purple-500 rounded-bl-2xl">
-                <i class="fas fa-tasks text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Manual OP</h3>
-            <p class="text-gray-500 text-sm mb-4">Mis tareas asignadas y protocolos por rol.</p>
-            <div class="flex items-center justify-between mt-auto">
-                <span class="text-purple-600 font-bold text-lg">Operativo</span>
-                <i class="fas fa-arrow-right text-gray-300 group-hover:text-purple-500 transition-colors"></i>
-            </div>
+        <a href="{{ route('erp.entrega-fest.staff.mop', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left: 4px solid var(--color-vivo);">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-list-check" style="color:var(--color-vivo);"></i> Manual de
+                OP</h4>
+            <p class="g_panel_parrafo">Mis tareas asignadas por fase y responsabilidad.</p>
+            <span class="g_badge primary">Abrir <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
-        <!-- Incidencias -->
-        <a href="{{ route('erp.entrega-fest.staff.incidencias', $evento->id) }}"
-            class="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 right-0 p-3 bg-red-50 text-red-500 rounded-bl-2xl">
-                <i class="fas fa-exclamation-triangle text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Incidencias</h3>
-            <p class="text-gray-500 text-sm mb-4">Reportar problemas, emergencias o fallas.</p>
-            <div class="flex items-center justify-between mt-auto">
-                <span class="text-red-600 font-bold text-lg">{{ $evento->incidencias_count }} Reportes</span>
-                <i class="fas fa-arrow-right text-gray-300 group-hover:text-red-500 transition-colors"></i>
-            </div>
+        <a href="{{ route('erp.entrega-fest.staff.incidencias', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left: 4px solid var(--color-danger);">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-triangle-exclamation"
+                    style="color:var(--color-danger);"></i> Incidencias</h4>
+            <p class="g_panel_parrafo">Reportar problemas, emergencias o fallas del evento.</p>
+            <span class="g_badge danger">Abrir <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
-        <!-- Proveedores -->
-        <a href="{{ route('erp.entrega-fest.staff.proveedores', $evento->id) }}"
-            class="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 right-0 p-3 bg-emerald-50 text-emerald-500 rounded-bl-2xl">
-                <i class="fas fa-truck-loading text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Proveedores</h3>
-            <p class="text-gray-500 text-sm mb-4">Logística de entrada, montaje y servicios.</p>
-            <div class="flex items-center justify-between mt-auto">
-                <span class="text-emerald-600 font-bold text-lg">{{ $evento->proveedores_count }} Externos</span>
-                <i class="fas fa-arrow-right text-gray-300 group-hover:text-emerald-500 transition-colors"></i>
-            </div>
+        <a href="{{ route('erp.entrega-fest.staff.proveedores', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left: 4px solid var(--color-success);">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-truck-loading" style="color:var(--color-success);"></i>
+                Proveedores</h4>
+            <p class="g_panel_parrafo">Logística de entrada, montaje y horarios de servicios.</p>
+            <span class="g_badge success">Abrir <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
-        <!-- Asistencia Fast -->
-        <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}"
-            class="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 right-0 p-3 bg-indigo-50 text-indigo-500 rounded-bl-2xl">
-                <i class="fas fa-qrcode text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Asistencia</h3>
-            <p class="text-gray-500 text-sm mb-4">Acceso rápido a escaneo de invitados.</p>
-            <div class="flex items-center justify-between mt-auto">
-                <span class="text-indigo-600 font-bold text-lg">CHECK-IN</span>
-                <i class="fas fa-arrow-right text-gray-300 group-hover:text-indigo-500 transition-colors"></i>
-            </div>
+        <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left: 4px solid var(--color-warning);">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-qrcode" style="color:var(--color-warning);"></i> Asistencia
+            </h4>
+            <p class="g_panel_parrafo">Acceso rápido a escaneo y check-in de invitados.</p>
+            <span class="g_badge warning">Abrir <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
-        <!-- Recursos -->
-        <a href="{{ route('erp.entrega-fest.staff.recursos', $evento->id) }}"
-            class="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300">
-            <div class="absolute top-0 right-0 p-3 bg-amber-50 text-amber-500 rounded-bl-2xl">
-                <i class="fas fa-file-alt text-xl"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Recursos</h3>
-            <p class="text-gray-500 text-sm mb-4">Planos, protocolos y planes de contingencia.</p>
-            <div class="flex items-center justify-between mt-auto">
-                <span class="text-amber-600 font-bold text-lg">Visualizar</span>
-                <i class="fas fa-arrow-right text-gray-300 group-hover:text-amber-500 transition-colors"></i>
-            </div>
+        <a href="{{ route('erp.entrega-fest.staff.recursos', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left: 4px solid var(--color-secundario);">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-file-lines" style="color:var(--color-secundario);"></i>
+                Recursos</h4>
+            <p class="g_panel_parrafo">Planos, protocolos y planes de contingencia del evento.</p>
+            <span class="g_badge" style="background:var(--color-secundario); color:var(--color-primario);">Abrir <i
+                    class="fa-solid fa-arrow-right"></i></span>
         </a>
 
     </div>
+
 </div>
