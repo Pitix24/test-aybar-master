@@ -339,6 +339,17 @@ class RolesYPermisosSeeder extends Seeder
                 'asistencia-entrega-fest.eliminar',
                 'asistencia-entrega-fest.exportar-filtro',
                 'asistencia-entrega-fest.exportar-todo',
+                'entrega-fest.itinerario.ver',
+                'entrega-fest.itinerario.ejecutar',
+                'entrega-fest.itinerario.admin',
+                'entrega-fest.mop.ver',
+                'entrega-fest.mop.admin',
+                'entrega-fest.proveedores.ver',
+                'entrega-fest.proveedores.admin',
+                'entrega-fest.incidencias.reportar',
+                'entrega-fest.incidencias.gestionar',
+                'entrega-fest.recursos.ver',
+                'entrega-fest.recursos.admin',
             ],
             'Módulo WhatsApp CRM' => [
                 'whatsapp.ver',
@@ -391,6 +402,9 @@ class RolesYPermisosSeeder extends Seeder
             'asesor-letras' => 'Asesor Letras',
             'supervisor-marketing' => 'Supervisor Marketing',
             'asesor-marketing' => 'Asesor Marketing',
+            'staff-operativo' => 'Staff Operativo',
+            'staff-lectura' => 'Staff de Lectura',
+            'proveedor-externo' => 'Proveedor Externo',
         ];
 
         foreach ($roles as $rolName => $descripcion) {
@@ -462,6 +476,39 @@ class RolesYPermisosSeeder extends Seeder
             'tutorial.ver',
         ]);
         $this->command->info("✓ Asesor Marketing: 4 permisos");
+
+        // Staff Operativo
+        $staff_operativo = Role::findByName('staff-operativo');
+        $staff_operativo->syncPermissions([
+            'modulo-entrega-fest.ver',
+            'entrega-fest.navegacion',
+            'entrega-fest.lista',
+            'entrega-fest.ver',
+            'asistencia-entrega-fest.lista',
+            'asistencia-entrega-fest.ver',
+            'asistencia-entrega-fest.crear',
+            'entrega-fest.itinerario.ver',
+            'entrega-fest.itinerario.ejecutar',
+            'entrega-fest.mop.ver',
+            'entrega-fest.proveedores.ver',
+            'entrega-fest.incidencias.reportar',
+            'entrega-fest.incidencias.gestionar',
+            'entrega-fest.recursos.ver',
+        ]);
+        $this->command->info("✓ Staff Operativo: Configurado");
+
+        // Staff Lectura
+        $staff_lectura = Role::findByName('staff-lectura');
+        $staff_lectura->syncPermissions([
+            'modulo-entrega-fest.ver',
+            'entrega-fest.navegacion',
+            'entrega-fest.lista',
+            'entrega-fest.ver',
+            'entrega-fest.itinerario.ver',
+            'entrega-fest.proveedores.ver',
+            'entrega-fest.recursos.ver',
+        ]);
+        $this->command->info("✓ Staff Lectura: Configurado");
 
         $this->command->newLine();
         $this->command->info("========================================");

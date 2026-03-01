@@ -19,6 +19,7 @@
         "openai-php/client": "^0.18.0",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
+        "spatie/laravel-medialibrary": "^11.21",
         "spatie/laravel-permission": "^6.24"
     },
     "require-dev": {

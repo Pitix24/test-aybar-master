@@ -51,4 +51,41 @@ class EntregaFest extends Model
     {
         return $this->hasMany(InvitadoEntregaFest::class);
     }
+
+    // --- Módulo Staff ---
+
+    public function itinerarioBloques()
+    {
+        return $this->hasMany(EntregaFestItinerarioBloque::class, 'entrega_fest_id')->orderBy('orden');
+    }
+
+    public function mopTareas()
+    {
+        return $this->hasMany(EntregaFestMopTarea::class, 'entrega_fest_id');
+    }
+
+    public function proveedores()
+    {
+        return $this->hasMany(EntregaFestProveedor::class, 'entrega_fest_id');
+    }
+
+    public function incidencias()
+    {
+        return $this->hasMany(EntregaFestIncidencia::class, 'entrega_fest_id');
+    }
+
+    public function recursos()
+    {
+        return $this->hasMany(EntregaFestRecurso::class, 'entrega_fest_id');
+    }
+
+    public function protocolos()
+    {
+        return $this->hasMany(EntregaFestProtocolo::class, 'entrega_fest_id')->orderBy('orden');
+    }
+
+    public function contingencias()
+    {
+        return $this->hasMany(EntregaFestContingencia::class, 'entrega_fest_id')->orderBy('orden');
+    }
 }

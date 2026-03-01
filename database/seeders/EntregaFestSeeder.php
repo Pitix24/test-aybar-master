@@ -134,6 +134,67 @@ class EntregaFestSeeder extends Seeder
                     }
                 }
             }
+
+            // 8. --- SEMILLA PARA MÓDULO STAFF ---
+
+            // A. Itinerario (Run of Show)
+            $bloques = [
+                ['08:00', '09:00', 'Apertura de Puertas', 'Zona A', 'Seguridad'],
+                ['09:00', '10:30', 'Bienvenida de Propietarios', 'Zona B', 'Protocolo'],
+                ['10:30', '13:00', 'Entrega de Lotes y Firma', 'Carpas de Atención', 'Operaciones'],
+                ['13:00', '14:30', 'Almuerzo de Confraternidad', 'Zona Comedor', 'Catering'],
+                ['14:30', '17:00', 'Show en Vivo y Sorteos', 'Escenario Principal', 'Marketing'],
+            ];
+
+            foreach ($bloques as $idx => $b) {
+                $bloque = $evento->itinerarioBloques()->create([
+                    'hora_inicio' => $b[0],
+                    'hora_fin' => $b[1],
+                    'titulo' => $b[2],
+                    'ubicacion' => $b[3],
+                    'responsable_rol' => $b[4],
+                    'estado' => $idx === 0 ? 'COMPLETADO' : ($idx === 1 ? 'EN_CURSO' : 'PENDIENTE'),
+                    'orden' => $idx
+                ]);
+
+                // Checklist para el bloque
+                $bloque->checklists()->create(['tarea' => 'Verificar audio']);
+                $bloque->checklists()->create(['tarea' => 'Limpieza de zona']);
+            }
+
+            // B. Proveedores
+            $proveedores = [
+                ['Catering Gourmet', 'Alimentación'],
+                ['Sonidos Impacto', 'Equipos de Sonido'],
+                ['Seguridad Total', 'Seguridad'],
+            ];
+
+            foreach ($proveedores as $p) {
+                $prov = $evento->proveedores()->create([
+                    'nombre_comercial' => $p[0],
+                    'servicio_tipo' => $p[1],
+                    'estado' => 'EN_SITIO',
+                    'h_llegada' => '07:00'
+                ]);
+
+                $prov->requerimientos()->create(['requerimiento' => 'Toma de corriente']);
+                $prov->requerimientos()->create(['requerimiento' => 'Mesa de apoyo']);
+            }
+
+            // C. Incidencias
+            $evento->incidencias()->create([
+                'tipo' => 'Logística',
+                'prioridad' => 'Media',
+                'descripcion' => 'Falta una silla en la carpa 3',
+                'ubicacion' => 'Zona ATC',
+                'informante_user_id' => $gestores->random()->id,
+                'estado' => 'Abierta'
+            ]);
+
+            // D. Recursos y Soporte
+            $evento->recursos()->create(['nombre_publico' => 'Plano del Local', 'tipo_recurso' => 'MAPA']);
+            $evento->protocolos()->create(['titulo' => 'Palabras de Bienvenida', 'contenido' => 'Buenas tardes a todos...']);
+            $evento->contingencias()->create(['escenario' => 'Lluvia intensa', 'accion' => 'Mover a todos al salón bajo techo']);
         }
     }
 

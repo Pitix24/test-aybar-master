@@ -312,20 +312,20 @@ class SlinController extends Controller
     public function postGuardarEvidencia(Request $request)
     {
         $request->validate([
-            'lote'          => 'required|string',
-            'cliente'       => 'required|string',
-            'contrato'      => 'nullable|string',
-            'idcobranzas'   => 'required|string',
-            'base64Image'   => 'required|string',
-            'nrooperacion'   => 'required|string',
-            'fechaoperacion'   => 'required|string',
-            'mtooperacion'   => 'required|string',
+            'lote' => 'required|string',
+            'cliente' => 'required|string',
+            'contrato' => 'nullable|string',
+            'idcobranzas' => 'required|string',
+            'base64Image' => 'required|string',
+            'nrooperacion' => 'required|string',
+            'fechaoperacion' => 'required|string',
+            'mtooperacion' => 'required|string',
         ]);
 
         $payload = [
-            'lote'        => $request->lote,
-            'cliente'     => $request->cliente,
-            'contrato'    => $request->contrato ?? '',
+            'lote' => $request->lote,
+            'cliente' => $request->cliente,
+            'contrato' => $request->contrato ?? '',
             'idcobranzas' => $request->idcobranzas,
             'base64Image' => $request->base64Image,
             'nrooperacion' => $request->nrooperacion,
@@ -341,7 +341,7 @@ class SlinController extends Controller
 
         if ($response->failed()) {
             return response()->json([
-                'error'  => true,
+                'error' => true,
                 'status' => $response->status(),
                 'detail' => $response->body(),
             ], 502);
@@ -349,7 +349,7 @@ class SlinController extends Controller
 
         return response()->json([
             'error' => false,
-            'data'  => $response->json(),
+            'data' => $response->json(),
         ]);
     }
 
@@ -358,7 +358,7 @@ class SlinController extends Controller
         //$dni = "20508775742";//desmaterializada
         //$dni = "47693208";//desmaterializada
         //$dni = "72397392"; //desmaterializada
-        $dni = "71598773"; //desmaterializada
+        $dni = "70442100"; //desmaterializada
 
         $response = Http::get("{$this->remoteBase}/cliente/{$dni}");
 
@@ -378,8 +378,8 @@ class SlinController extends Controller
         ];*/
 
         $params = [
-            "id_cliente" => "C19480",
-            "id_empresa" => "018",
+            "id_cliente" => "C06071",
+            "id_empresa" => "014",
         ];
 
         $response = Http::get("{$this->remoteBase}/lotes", $params);
