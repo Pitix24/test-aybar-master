@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\EntregaFest;
+namespace App\Livewire\Erp\EntregaFest\Invitado;
 
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
@@ -141,7 +141,7 @@ class EntregaFestProspectoCrear extends Component
 
     public function render()
     {
-        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-prospecto-crear');
+        return view('livewire.erp.entrega-fest.invitado.entrega-fest-prospecto-crear');
     }
 
     public function placeholder()

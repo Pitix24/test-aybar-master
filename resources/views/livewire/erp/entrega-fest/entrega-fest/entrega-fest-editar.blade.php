@@ -16,8 +16,9 @@
             <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_boton cancelar">
                 Invitados <i class="fa-solid fa-users"></i></a>
 
-            <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_boton info">
-                Asistencia <i class="fa-solid fa-user-check"></i></a>
+            <a href="{{ route('erp.entrega-fest.staff.dashboard', $evento->id) }}" class="g_boton dark">
+                Panel Staff <i class="fa-solid fa-shield-halved"></i>
+            </a>
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar

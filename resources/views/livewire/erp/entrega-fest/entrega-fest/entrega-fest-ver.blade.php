@@ -14,12 +14,13 @@
                 </a>
             @endcan
 
-             <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton success">
+            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton success">
                 Prospectos <i class="fa-solid fa-users-viewfinder"></i>
             </a>
 
-            <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_boton cancelar">
-                Invitados <i class="fa-solid fa-users"></i></a>
+            <a href="{{ route('erp.entrega-fest.staff.dashboard', $evento->id) }}" class="g_boton dark">
+                Panel Staff <i class="fa-solid fa-shield-halved"></i>
+            </a>
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar

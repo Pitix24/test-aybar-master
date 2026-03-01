@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\EntregaFest;
+namespace App\Livewire\Erp\EntregaFest\Invitado;
 
 use App\Models\EntregaFest;
 use App\Models\InvitadoEntregaFest;
@@ -207,7 +207,7 @@ class EntregaFestInvitado extends Component
             ->orderBy('id', 'desc')
             ->paginate($this->perPage);
 
-        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-invitado', [
+        return view('livewire.erp.entrega-fest.invitado.entrega-fest-invitado', [
             'items' => $items
         ]);
     }
