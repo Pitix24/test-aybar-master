@@ -15,6 +15,14 @@ use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestProspectoEditar;
 use App\Livewire\Erp\EntregaFest\Staff\StaffDashboard;
 use App\Livewire\Erp\EntregaFest\Staff\StaffIncidencias;
 use App\Livewire\Erp\EntregaFest\Staff\StaffItinerario;
+use App\Livewire\Erp\EntregaFest\Staff\StaffItinerarioCrear;
+use App\Livewire\Erp\EntregaFest\Staff\StaffItinerarioEditar;
+use App\Livewire\Erp\EntregaFest\Mop\MopPlantillaCrear;
+use App\Livewire\Erp\EntregaFest\Mop\MopPlantillaEditar;
+use App\Livewire\Erp\EntregaFest\Mop\MopPlantillaLista;
+use App\Livewire\Erp\EntregaFest\Mop\MopTareaCrear;
+use App\Livewire\Erp\EntregaFest\Mop\MopTareaEditar;
+use App\Livewire\Erp\EntregaFest\Mop\MopTareaLista;
 use App\Livewire\Erp\EntregaFest\Staff\StaffMop;
 use App\Livewire\Erp\EntregaFest\Staff\StaffProveedores;
 use App\Livewire\Erp\EntregaFest\Staff\StaffRecursos;
@@ -26,6 +34,13 @@ Route::prefix('entrega-fest')->group(function () {
     Route::group(['as' => 'entrega-fest.vista.'], function () {
         Route::get('/', EntregaFestLista::class)->name('todo');
         Route::get('/crear', EntregaFestCrear::class)->name('crear');
+    });
+
+    // MOP: Plantillas globales (sin evento específico)
+    Route::prefix('mop/plantillas')->name('entrega-fest.mop.plantillas')->group(function () {
+        Route::get('/', MopPlantillaLista::class)->name('');
+        Route::get('/crear', MopPlantillaCrear::class)->name('.crear');
+        Route::get('/editar/{id}', MopPlantillaEditar::class)->name('.editar');
     });
 
     // 2. Rutas Contextuales (Dependientes de un EntregaFest específico)
@@ -56,11 +71,25 @@ Route::prefix('entrega-fest')->group(function () {
         // Sub-módulo: Operaciones Staff (Campo)
         Route::group(['prefix' => 'staff', 'as' => 'entrega-fest.staff.'], function () {
             Route::get('/', StaffDashboard::class)->name('dashboard');
-            Route::get('/itinerario', StaffItinerario::class)->name('itinerario');
+
+            // Itinerario (con CRUD)
+            Route::prefix('itinerario')->name('itinerario')->group(function () {
+                Route::get('/', StaffItinerario::class)->name('');
+                Route::get('/crear', StaffItinerarioCrear::class)->name('.crear');
+                Route::get('/editar/{bloqueId}', StaffItinerarioEditar::class)->name('.editar');
+            });
+
             Route::get('/mop', StaffMop::class)->name('mop');
             Route::get('/proveedores', StaffProveedores::class)->name('proveedores');
             Route::get('/incidencias', StaffIncidencias::class)->name('incidencias');
             Route::get('/recursos', StaffRecursos::class)->name('recursos');
+        });
+
+        // MOP: Tareas por evento (administración coordinador)
+        Route::prefix('mop/tareas')->name('entrega-fest.mop.tareas')->group(function () {
+            Route::get('/', MopTareaLista::class)->name('');
+            Route::get('/crear', MopTareaCrear::class)->name('.crear');
+            Route::get('/editar/{tareaId}', MopTareaEditar::class)->name('.editar');
         });
     });
 });
