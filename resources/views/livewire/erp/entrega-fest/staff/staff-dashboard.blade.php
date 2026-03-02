@@ -38,7 +38,7 @@
     <div class="g_panel_dashboard_grid">
 
         {{-- Itinerario --}}
-        <a href="{{ route('erp.entrega-fest.vista.itinerario', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.vista.staff.itinerario', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_vivo">
             <div class="g_panel_navegacion_header">
                 <div>
@@ -65,7 +65,7 @@
         </a>
 
         {{-- Manual de OP --}}
-        <a href="{{ route('erp.entrega-fest.vista.mop', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.vista.staff.mop', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_info">
             <div class="g_panel_navegacion_header">
                 <div>
@@ -92,7 +92,7 @@
         </a>
 
         {{-- Incidencias --}}
-        <a href="{{ route('erp.entrega-fest.vista.incidencias', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.vista.staff.incidencias', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_danger">
             <div class="g_panel_navegacion_header">
                 <div>
@@ -123,7 +123,7 @@
         </a>
 
         {{-- Proveedores --}}
-        <a href="{{ route('erp.entrega-fest.vista.proveedores', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.vista.staff.proveedores', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_success">
             <div class="g_panel_navegacion_header">
                 <div>
@@ -177,7 +177,7 @@
         </a>
 
         {{-- Recursos --}}
-        <a href="{{ route('erp.entrega-fest.vista.recursos', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.vista.staff.recursos', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_primary">
             <div class="g_panel_navegacion_header">
                 <div>

@@ -1,9 +1,12 @@
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
-        <h2><span>{{ $evento->nombre }}</span> Asignar Tarea MOP</h2>
+        <h2>
+            Asignar Tarea MOP
+            <span>{{ $evento->nombre }}</span>
+        </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.mop.tareas', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Volver
+            <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas', $evento->id) }}" class="g_boton light">
+                <i class="fa-solid fa-arrow-left"></i> Volver a Lista
             </a>
         </div>
     </div>
@@ -37,12 +40,15 @@
                 {{-- Importar desde plantilla --}}
                 @if($plantillas->count())
                     <div class="g_resaltado_caja info" style="margin-bottom:4px;">
-                        <span class="g_resaltado_caja_titulo"><i class="fa-solid fa-wand-magic-sparkles"></i> Importar desde plantilla (opcional)</span>
+                        <span class="g_resaltado_caja_titulo"><i class="fa-solid fa-wand-magic-sparkles"></i> Importar desde
+                            plantilla (opcional)</span>
                         <div style="display:flex; gap:8px; margin-top:8px;">
                             <select wire:model="plantilla_id" style="flex:1;">
                                 <option value="">Seleccione una plantilla...</option>
                                 @foreach($plantillas as $pl)
-                                    <option value="{{ $pl->id }}">[{{ $pl->fase }}] {{ $pl->rol_nombre }} — {{ Str::limit($pl->instruccion, 50) }}</option>
+                                    <option value="{{ $pl->id }}">[{{ $pl->fase }}] {{ $pl->rol_nombre }} —
+                                        {{ Str::limit($pl->instruccion, 50) }}
+                                    </option>
                                 @endforeach
                             </select>
                             <button type="button" wire:click="importarPlantilla" class="g_boton info">
@@ -53,23 +59,29 @@
                 @endif
 
                 <div class="g_margin_bottom_10">
-                    <label>Titulo de la Tarea <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                    <input type="text" wire:model="titulo" class="@error('titulo') input-error @enderror" placeholder="Ej: Verificar sonido del escenario principal">
+                    <label>Titulo de la Tarea <span class="obligatorio"><i
+                                class="fa-solid fa-asterisk"></i></span></label>
+                    <input type="text" wire:model="titulo" class="@error('titulo') input-error @enderror"
+                        placeholder="Ej: Verificar sonido del escenario principal">
                     @error('titulo') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="g_margin_bottom_10">
-                    <label>Instruccion detallada <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                    <textarea wire:model="instruccion" rows="4" class="@error('instruccion') input-error @enderror" placeholder="Que debe hacer exactamente el responsable..."></textarea>
+                    <label>Instruccion detallada <span class="obligatorio"><i
+                                class="fa-solid fa-asterisk"></i></span></label>
+                    <textarea wire:model="instruccion" rows="4" class="@error('instruccion') input-error @enderror"
+                        placeholder="Que debe hacer exactamente el responsable..."></textarea>
                     @error('instruccion') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="formulario_botones">
                     <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="store"><i class="fa-solid fa-save"></i> Guardar</span>
-                        <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i> Guardando...</span>
+                        <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i>
+                            Guardando...</span>
                     </button>
-                    <a href="{{ route('erp.entrega-fest.mop.tareas', $evento->id) }}" class="g_boton cancelar"><i class="fa-solid fa-times"></i> Cancelar</a>
+                    <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas', $evento->id) }}"
+                        class="g_boton cancelar"><i class="fa-solid fa-times"></i> Cancelar</a>
                 </div>
             </form>
         </div>

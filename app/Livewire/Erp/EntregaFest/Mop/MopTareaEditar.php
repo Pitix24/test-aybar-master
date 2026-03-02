@@ -126,7 +126,7 @@ class MopTareaEditar extends Component
                 'text' => "La tarea '$titulo' fue eliminada."
             ]);
 
-            return redirect()->route('erp.entrega-fest.mop.tareas', $this->evento->id);
+            return redirect()->route('entrega-fest.vista.staff.mop.tareas', $this->evento->id);
 
         } catch (\Exception $e) {
             DB::rollBack();

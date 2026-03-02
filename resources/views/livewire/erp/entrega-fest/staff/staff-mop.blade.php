@@ -3,12 +3,24 @@
     {{-- CABECERA --}}
     <div class="g_panel cabecera_titulo_pagina">
         <h2>
-            <span>{{ $evento->nombre }}</span>
             Mi Manual de Operaciones
+            <span>{{ $evento->nombre }}</span>
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Panel Staff
+            @can('entrega-fest.mop')
+                <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas', $evento->id) }}" class="g_boton info">
+                    Gestionar MOP <i class="fa-solid fa-list-check"></i>
+                </a>
+                <a href="{{ route('erp.entrega-fest.vista.staff.mop.plantillas') }}" class="g_boton light">
+                    Plantillas <i class="fa-solid fa-paste"></i>
+                </a>
+                <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas.crear', $evento->id) }}" class="g_boton guardar">
+                    <i class="fa-solid fa-plus"></i> Crear Tarea
+                </a>
+            @endcan
+
+            <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton dark">
+                <i class="fa-solid fa-arrow-left"></i> Volver al Panel
             </a>
         </div>
     </div>

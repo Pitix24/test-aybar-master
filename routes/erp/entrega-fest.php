@@ -54,7 +54,17 @@ Route::group(['middleware' => []], function () {
                 Route::get('/itinerario/{id}/crear', StaffItinerarioCrear::class)->name('staff.itinerario.crear');
                 Route::get('/itinerario/{id}/editar/{bloqueId}', StaffItinerarioEditar::class)->name('staff.itinerario.editar');
 
+                // MOP (Manual de Operaciones)
                 Route::get('/mop/{id}', StaffMop::class)->name('staff.mop');
+                Route::get('/mop/{id}/tareas', MopTareaLista::class)->name('staff.mop.tareas');
+                Route::get('/mop/{id}/tareas/crear', MopTareaCrear::class)->name('staff.mop.tareas.crear');
+                Route::get('/mop/{id}/tareas/{tareaId}/editar', MopTareaEditar::class)->name('staff.mop.tareas.editar');
+
+                // Plantillas MOP (Globales)
+                Route::get('/staff-mop-plantillas', MopPlantillaLista::class)->name('staff.mop.plantillas');
+                Route::get('/staff-mop-plantillas/crear', MopPlantillaCrear::class)->name('staff.mop.plantillas.crear');
+                Route::get('/staff-mop-plantillas/{id}/editar', MopPlantillaEditar::class)->name('staff.mop.plantillas.editar');
+
                 Route::get('/proveedores/{id}', StaffProveedores::class)->name('staff.proveedores');
                 Route::get('/incidencias/{id}', StaffIncidencias::class)->name('staff.incidencias');
                 Route::get('/recursos/{id}', StaffRecursos::class)->name('staff.recursos');

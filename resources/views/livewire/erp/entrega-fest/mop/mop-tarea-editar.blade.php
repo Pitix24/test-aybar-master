@@ -1,14 +1,17 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading wire:target="update" message="Actualizando..." />
     <div class="g_panel cabecera_titulo_pagina">
-        <h2><span>{{ $evento->nombre }}</span> Editar Tarea MOP</h2>
+        <h2>
+            Editar Tarea MOP
+            <span>{{ $evento->nombre }}</span>
+        </h2>
         <div class="cabecera_titulo_botones">
             <button type="button" class="g_boton danger"
                 onclick="Livewire.dispatch('alertaConfirmar', { event: 'eliminarTareaOn', titulo: 'Eliminar Tarea', texto: 'Esta accion no se puede deshacer.' })">
-                <i class="fa-solid fa-trash"></i> Eliminar
+                Eliminar <i class="fa-solid fa-trash"></i>
             </button>
-            <a href="{{ route('erp.entrega-fest.mop.tareas', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Volver
+            <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas', $evento->id) }}" class="g_boton light">
+                <i class="fa-solid fa-arrow-left"></i> Volver a Lista
             </a>
         </div>
     </div>
@@ -47,7 +50,8 @@
 
                 <div class="g_margin_bottom_10">
                     <label>Instruccion <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                    <textarea wire:model="instruccion" rows="4" class="@error('instruccion') input-error @enderror"></textarea>
+                    <textarea wire:model="instruccion" rows="4"
+                        class="@error('instruccion') input-error @enderror"></textarea>
                     @error('instruccion') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
@@ -64,10 +68,13 @@
 
                 <div class="formulario_botones">
                     <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="update"><i class="fa-solid fa-save"></i> Actualizar</span>
-                        <span wire:loading wire:target="update"><i class="fa-solid fa-spinner fa-spin"></i> Guardando...</span>
+                        <span wire:loading.remove wire:target="update"><i class="fa-solid fa-save"></i>
+                            Actualizar</span>
+                        <span wire:loading wire:target="update"><i class="fa-solid fa-spinner fa-spin"></i>
+                            Guardando...</span>
                     </button>
-                    <a href="{{ route('erp.entrega-fest.mop.tareas', $evento->id) }}" class="g_boton cancelar"><i class="fa-solid fa-times"></i> Cancelar</a>
+                    <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas', $evento->id) }}"
+                        class="g_boton cancelar"><i class="fa-solid fa-times"></i> Cancelar</a>
                 </div>
             </form>
         </div>
@@ -82,7 +89,9 @@
                 @if($tarea->completado_at)
                     <div style="margin-top:12px; border-top:1px solid var(--borde-card-color, #e5e7eb); padding-top:12px;">
                         <p class="g_inferior g_mayuscula" style="margin:0 0 4px 0; font-size:10px;">Completada el</p>
-                        <p class="g_inferior" style="margin:0;">{{ \Carbon\Carbon::parse($tarea->completado_at)->format('d/m/Y H:i') }}</p>
+                        <p class="g_inferior" style="margin:0;">
+                            {{ \Carbon\Carbon::parse($tarea->completado_at)->format('d/m/Y H:i') }}
+                        </p>
                     </div>
                 @endif
                 <div style="margin-top:12px; border-top:1px solid var(--borde-card-color, #e5e7eb); padding-top:12px;">

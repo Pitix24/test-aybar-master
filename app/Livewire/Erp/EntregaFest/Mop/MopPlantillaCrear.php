@@ -75,7 +75,7 @@ class MopPlantillaCrear extends Component
                 'text' => 'Plantilla MOP creada correctamente.'
             ]);
 
-            return redirect()->route('erp.entrega-fest.mop.plantillas');
+            return redirect()->route('erp.entrega-fest.vista.staff.mop.plantillas');
 
         } catch (\Exception $e) {
             DB::rollBack();

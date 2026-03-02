@@ -7,7 +7,7 @@
             Itinerario en Vivo
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.itinerario.crear', $evento->id) }}" class="g_boton guardar">
+            <a href="{{ route('erp.entrega-fest.vista.staff.itinerario.crear', $evento->id) }}" class="g_boton guardar">
                 <i class="fa-solid fa-plus"></i> Nuevo Bloque
             </a>
             <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton light">
@@ -41,7 +41,7 @@
                 {{-- ACCIONES --}}
                 <div class="cabecera_titulo_botones">
                     {{-- Botón Editar --}}
-                    <a href="{{ route('erp.entrega-fest.vista.itinerario.editar', [$evento->id, $bloque->id]) }}"
+                    <a href="{{ route('erp.entrega-fest.vista.staff.itinerario.editar', [$evento->id, $bloque->id]) }}"
                         class="g_accion editar" title="Editar bloque">
                         <i class="fa-solid fa-pencil"></i>
                     </a>
