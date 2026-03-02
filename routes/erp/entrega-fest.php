@@ -25,6 +25,8 @@ use App\Livewire\Erp\EntregaFest\Mop\MopTareaEditar;
 use App\Livewire\Erp\EntregaFest\Mop\MopTareaLista;
 use App\Livewire\Erp\EntregaFest\Staff\StaffMop;
 use App\Livewire\Erp\EntregaFest\Staff\StaffProveedores;
+use App\Livewire\Erp\EntregaFest\Staff\StaffProveedoresCrear;
+use App\Livewire\Erp\EntregaFest\Staff\StaffProveedoresEditar;
 use App\Livewire\Erp\EntregaFest\Staff\StaffRecursos;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +68,9 @@ Route::group(['middleware' => []], function () {
                 Route::get('/staff-mop-plantillas/{id}/editar', MopPlantillaEditar::class)->name('staff.mop.plantillas.editar');
 
                 Route::get('/proveedores/{id}', StaffProveedores::class)->name('staff.proveedores');
+                Route::get('/proveedores/{id}/crear', StaffProveedoresCrear::class)->name('staff.proveedores.crear');
+                Route::get('/proveedores/{id}/editar/{proveedorId}', StaffProveedoresEditar::class)->name('staff.proveedores.editar');
+
                 Route::get('/incidencias/{id}', StaffIncidencias::class)->name('staff.incidencias');
                 Route::get('/recursos/{id}', StaffRecursos::class)->name('staff.recursos');
             });

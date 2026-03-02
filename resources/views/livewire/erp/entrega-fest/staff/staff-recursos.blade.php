@@ -3,15 +3,87 @@
     {{-- CABECERA --}}
     <div class="g_panel cabecera_titulo_pagina">
         <h2>
-            <span>{{ $evento->nombre }}</span>
             Recursos y Apoyo
+            <span>{{ $evento->nombre }}</span>
         </h2>
         <div class="cabecera_titulo_botones">
+            @can('entrega-fest.staff')
+                <button wire:click="$toggle('mostrarFormulario')" class="g_boton {{ $mostrarFormulario ? 'cancelar' : 'guardar' }}">
+                    <i class="fa-solid {{ $mostrarFormulario ? 'fa-times' : 'fa-plus' }}"></i>
+                    {{ $mostrarFormulario ? 'Cancelar' : ($tab === 'MAPAS' ? 'Cargar Recurso' : ($tab === 'PROTOCOLOS' ? 'Nuevo Protocolo' : 'Nueva Contingencia')) }}
+                </button>
+            @endcan
             <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Panel Staff
             </a>
         </div>
     </div>
+
+    {{-- FORMULARIOS DINÁMICOS --}}
+    @if($mostrarFormulario)
+        <div class="g_panel">
+            <h4 class="g_panel_titulo">
+                <i class="fa-solid {{ $tab === 'MAPAS' ? 'fa-file-arrow-up' : ($tab === 'PROTOCOLOS' ? 'fa-feather' : 'fa-shield-virus') }}"></i>
+                Añadir {{ $tab === 'MAPAS' ? 'Recurso' : ($tab === 'PROTOCOLOS' ? 'Protocolo' : 'Contingencia') }}
+            </h4>
+
+            @if($tab === 'MAPAS')
+                <form wire:submit.prevent="agregarRecurso" class="formulario g_gap_pagina">
+                    <div class="g_fila">
+                        <div class="g_columna_6">
+                            <label>Nombre del Documento / Mapa</label>
+                            <input type="text" wire:model="nombre_publico" placeholder="Ej: Plano de Aforos">
+                        </div>
+                        <div class="g_columna_6">
+                            <label>Tipo</label>
+                            <select wire:model="tipo_recurso">
+                                <option value="MAPA">Mapa / Plano</option>
+                                <option value="MANUAL">Manual / Guía</option>
+                                <option value="FOTO">Fotografía / Referencia</option>
+                                <option value="OTRO">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label>Archivo (PDF o Imagen)</label>
+                        <input type="file" wire:model="archivo">
+                        <div wire:loading wire:target="archivo" class="g_inferior">Subiendo archivo...</div>
+                    </div>
+                    <div class="formulario_botones">
+                        <button type="submit" class="g_boton guardar">Guardar Recurso</button>
+                    </div>
+                </form>
+            @elseif($tab === 'PROTOCOLOS')
+                <form wire:submit.prevent="agregarProtocolo" class="formulario g_gap_pagina">
+                    <div>
+                        <label>Título del Protocolo / Discurso</label>
+                        <input type="text" wire:model="p_titulo" placeholder="Ej: Discurso de Bienvenida">
+                    </div>
+                    <div>
+                        <label>Contenido / Texto Completo</label>
+                        <textarea wire:model="p_contenido" rows="6" placeholder="Escriba aquí el guión o pasos a seguir..."></textarea>
+                    </div>
+                    <div class="formulario_botones">
+                        <button type="submit" class="g_boton guardar">Guardar Protocolo</button>
+                    </div>
+                </form>
+            @elseif($tab === 'CONTINGENCIAS')
+                <form wire:submit.prevent="agregarContingencia" class="formulario g_gap_pagina">
+                    <div>
+                        <label>Escenario de Riesgo</label>
+                        <input type="text" wire:model="c_escenario" placeholder="Ej: Falla de energía eléctrica">
+                    </div>
+                    <div>
+                        <label>Acción de Respuesta Inmediata</label>
+                        <textarea wire:model="c_accion" rows="4" placeholder="¿Qué debe hacer el staff exactamente?"></textarea>
+                    </div>
+                    <div class="formulario_botones">
+                        <button type="submit" class="g_boton guardar">Guardar Plan</button>
+                    </div>
+                </form>
+            @endif
+        </div>
+    @endif
 
     {{-- TABS --}}
     <div class="g_panel">
@@ -37,7 +109,13 @@
             @if($tab === 'MAPAS')
                 <div class="g_panel_dashboard_grid">
                     @forelse($evento->recursos as $recurso)
-                        <div class="g_panel" style="padding:0; overflow:hidden;">
+                        <div class="g_panel" style="padding:0; overflow:hidden; position:relative;">
+                            @can('entrega-fest.staff')
+                                <button wire:click="eliminarRecurso({{ $recurso->id }})" class="g_boton danger small" 
+                                    style="position:absolute; top:5px; right:5px; z-index:10; width:26px; height:26px; padding:0;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            @endcan
                             <div
                                 style="height:120px; background:var(--color-claro); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
                                 @if($recurso->media->count() > 0)
@@ -70,9 +148,15 @@
             @elseif($tab === 'PROTOCOLOS')
                 <div class="g_gap_pagina">
                     @forelse($evento->protocolos as $protocolo)
-                        <div class="g_panel" style="border-left:4px solid var(--color-vivo);">
+                        <div class="g_panel" style="border-left:4px solid var(--color-vivo); position:relative;">
+                            @can('entrega-fest.staff')
+                                <button wire:click="eliminarProtocolo({{ $protocolo->id }})" class="g_boton danger small" 
+                                    style="position:absolute; top:10px; right:10px; width:26px; height:26px; padding:0;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            @endcan
                             <h4 class="g_panel_titulo">{{ $protocolo->titulo }}</h4>
-                            <p style="line-height:1.7; font-style:italic; color:var(--color-light-texto); margin:0;">
+                            <p style="line-height:1.7; font-style:italic; color:var(--color-light-texto); margin:0; white-space: pre-wrap;">
                                 "{{ $protocolo->contenido }}"
                             </p>
                         </div>
@@ -86,7 +170,13 @@
             @elseif($tab === 'CONTINGENCIAS')
                 <div class="g_gap_pagina">
                     @forelse($evento->contingencias as $plan)
-                        <div class="g_panel" style="border-left:4px solid var(--color-danger);">
+                        <div class="g_panel" style="border-left:4px solid var(--color-danger); position:relative;">
+                            @can('entrega-fest.staff')
+                                <button wire:click="eliminarContingencia({{ $plan->id }})" class="g_boton danger small" 
+                                    style="position:absolute; top:10px; right:10px; width:26px; height:26px; padding:0;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            @endcan
                             <div class="g_resaltado_indicacion error" style="margin-bottom:8px;">
                                 <i class="fa-solid fa-biohazard"></i>
                                 <p class="g_negrita g_mayuscula" style="margin:0;">Escenario: {{ $plan->escenario }}</p>

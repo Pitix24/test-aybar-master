@@ -4,6 +4,7 @@ namespace App\Livewire\Erp\EntregaFest\Staff;
 
 use App\Models\EntregaFest;
 use App\Models\EntregaFestIncidencia;
+use App\Models\User;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -17,6 +18,7 @@ class StaffIncidencias extends Component
 
     public EntregaFest $evento;
     public $incidencias;
+    public $staff_users;
 
     // Formulario
     public $tipo = 'Logística';
@@ -31,6 +33,7 @@ class StaffIncidencias extends Component
     {
         $this->evento = EntregaFest::findOrFail($id);
         $this->cargarIncidencias();
+        $this->staff_users = User::all();
     }
 
     public function cargarIncidencias()
@@ -69,6 +72,24 @@ class StaffIncidencias extends Component
         $this->cargarIncidencias();
 
         $this->dispatch('notificar', ['titulo' => 'Reportada', 'mensaje' => 'La incidencia ha sido registrada.', 'tipo' => 'success']);
+    }
+
+    public function cambiarPrioridad($id, $prio)
+    {
+        EntregaFestIncidencia::where('id', $id)->update(['prioridad' => $prio]);
+        $this->cargarIncidencias();
+    }
+
+    public function cambiarEstado($id, $estado)
+    {
+        EntregaFestIncidencia::where('id', $id)->update(['estado' => $estado]);
+        $this->cargarIncidencias();
+    }
+
+    public function asignarResponsable($id, $userId)
+    {
+        EntregaFestIncidencia::where('id', $id)->update(['responsable_user_id' => $userId]);
+        $this->cargarIncidencias();
     }
 
     public function render()

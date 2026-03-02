@@ -1,0 +1,115 @@
+<div class="g_gap_pagina">
+    <div class="g_panel cabecera_titulo_pagina">
+        <h2>
+            Añadir Proveedor
+            <span>{{ $evento->nombre }}</span>
+        </h2>
+        <div class="cabecera_titulo_botones">
+            <a href="{{ route('erp.entrega-fest.vista.staff.proveedores', $evento->id) }}" class="g_boton light">
+                <i class="fa-solid fa-arrow-left"></i> Volver a Logística
+            </a>
+        </div>
+    </div>
+
+    <div class="g_fila">
+        <div class="g_columna_8">
+            <form wire:submit.prevent="store" class="formulario g_panel g_gap_pagina">
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-truck-fast"></i> Datos del Servicio</h4>
+
+                <div class="g_fila">
+                    <div class="g_columna_6 g_margin_bottom_10">
+                        <label>Nombre Comercial / Empresa <span class="obligatorio"><i
+                                    class="fa-solid fa-asterisk"></i></span></label>
+                        <input type="text" wire:model="nombre_comercial"
+                            class="@error('nombre_comercial') input-error @enderror"
+                            placeholder="Ej: Catering Delicias SAC">
+                        @error('nombre_comercial') <p class="mensaje_error">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="g_columna_6 g_margin_bottom_10">
+                        <label>Tipo de Servicio <span class="obligatorio"><i
+                                    class="fa-solid fa-asterisk"></i></span></label>
+                        <input type="text" wire:model="servicio_tipo"
+                            class="@error('servicio_tipo') input-error @enderror"
+                            placeholder="Ej: Catering, Sonido, Luces, Flores...">
+                        @error('servicio_tipo') <p class="mensaje_error">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+                <div class="g_fila">
+                    <div class="g_columna_6 g_margin_bottom_10">
+                        <label>Nombre del Contacto</label>
+                        <input type="text" wire:model="contacto_nombre" placeholder="Ej: Juan Perez">
+                    </div>
+                    <div class="g_columna_6 g_margin_bottom_10">
+                        <label>Teléfono del Contacto</label>
+                        <input type="text" wire:model="contacto_telefono" placeholder="Ej: 987654321">
+                    </div>
+                </div>
+
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-clock"></i> Horarios Operativos</h4>
+                <div class="g_fila">
+                    <div class="g_columna_3 g_margin_bottom_10">
+                        <label>Hora Llegada</label>
+                        <input type="time" wire:model="h_llegada">
+                    </div>
+                    <div class="g_columna_3 g_margin_bottom_10">
+                        <label>Hora Montaje</label>
+                        <input type="time" wire:model="h_montaje">
+                    </div>
+                    <div class="g_columna_3 g_margin_bottom_10">
+                        <label>Hora del Show</label>
+                        <input type="time" wire:model="h_show">
+                    </div>
+                    <div class="g_columna_3 g_margin_bottom_10">
+                        <label>Hora Desmontaje</label>
+                        <input type="time" wire:model="h_desmontaje">
+                    </div>
+                </div>
+
+                <div class="g_margin_bottom_10">
+                    <label>Estado Inicial</label>
+                    <select wire:model="estado">
+                        <option value="CONFIRMADO">Confirmado</option>
+                        <option value="EN_SITIO">En Sitio</option>
+                        <option value="COMPLETADO">Completado</option>
+                    </select>
+                </div>
+
+                <div class="formulario_botones">
+                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="store"><i class="fa-solid fa-save"></i> Guardar</span>
+                        <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i>
+                            Guardando...</span>
+                    </button>
+                    <a href="{{ route('erp.entrega-fest.vista.staff.proveedores', $evento->id) }}"
+                        class="g_boton cancelar"><i class="fa-solid fa-times"></i> Cancelar</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="g_columna_4">
+            <div class="g_panel">
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-list-check"></i> Requerimientos Técnicos</h4>
+                <p class="g_panel_parrafo">Añade qué necesita el proveedor (puntos de luz, agua, espacio libre, etc.)
+                </p>
+
+                <div class="g_gap_pagina" style="gap:10px;">
+                    @foreach($requerimientos as $index => $req)
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" wire:model="requerimientos.{{ $index }}" placeholder="Ej: Punto de luz 220v"
+                                style="flex:1;">
+                            <button type="button" wire:click="removerRequerimiento({{ $index }})"
+                                class="g_boton danger small" style="padding:0 10px;">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                    @endforeach
+                    <button type="button" wire:click="agregarRequerimiento" class="g_boton info g_boton_largo"
+                        style="justify-content:center;">
+                        <i class="fa-solid fa-plus"></i> Añadir Requerimiento
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

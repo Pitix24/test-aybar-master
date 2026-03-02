@@ -35,6 +35,13 @@ class StaffProveedores extends Component
         $this->dispatch('notificar', ['titulo' => 'Status', 'mensaje' => 'Proveedor actualizado.', 'tipo' => 'success']);
     }
 
+    public function toggleRequerimiento($id)
+    {
+        $req = \App\Models\EntregaFestProveedorRequerimiento::findOrFail($id);
+        $req->update(['esta_cubierto' => !$req->esta_cubierto]);
+        $this->cargarProveedores();
+    }
+
     public function render()
     {
         return view('livewire.erp.entrega-fest.staff.staff-proveedores');

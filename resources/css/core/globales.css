@@ -68,6 +68,11 @@
     max-width: 200px;
 }
 
+.g_tachado {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
 .g_contenedor_columna {
     margin-top: 70px;
     display: flex;
