@@ -26,9 +26,11 @@ class EntregaFestSeeder extends Seeder
             : User::factory()->count(3)->create();
 
         // Limpiar datos previos para evitar duplicados
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         EntregaFest::whereIn('codigo', ['EF-2026-001', 'EF-2026-002'])->each(function (EntregaFest $ef) {
             $ef->forceDelete();
         });
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // 1. Crear Eventos Principales
         $festivales = [

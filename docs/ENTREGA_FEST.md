@@ -169,3 +169,5 @@ Para optimizar el desarrollo en los 20 días propuestos, seguiremos este orden l
 - **Migraciones:** Usar prefijo `entrega_fest_` para evitar colisiones con otras tablas del ERP.
 - **Roles:** Integrar con el sistema de roles actual del ERP (Spatie) para filtrar el MOP y el Itinerario.
 - **Real-time:** Para el Dashboard, considerar un polling simple cada 30s o el uso de Livewire para actualizaciones sin recargar.
+
+php artisan db:seed --class=EntregaFestSeeder
