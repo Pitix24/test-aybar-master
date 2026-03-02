@@ -18,7 +18,7 @@
     <div class="g_fila">
         <div class="g_columna_8">
             <form wire:submit.prevent="store" class="formulario g_panel">
-                <h4 class="g_panel_titulo">Información General</h4>
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Información General</h4>
 
                 <div class="g_margin_bottom_10">
                     <label for="estado_activo">
@@ -67,7 +67,7 @@
 
                 <div class="g_fila">
                     <div class="g_margin_bottom_10 g_columna_6">
-                        <label>Fecha de Entrega <span class="obligatorio"><i
+                        <label>Fecha del evento <span class="obligatorio"><i
                                     class="fa-solid fa-asterisk"></i></span></label>
                         <input type="date" wire:model="fecha_entrega"
                             class="@error('fecha_entrega') input-error @enderror">
@@ -137,11 +137,10 @@
 
         <div class="g_columna_4 formulario">
             <div class="g_panel">
-                <h4 class="g_panel_titulo"><i class="fa-solid fa-sliders"></i> Proyectos</h4>
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-diagram-project"></i> Proyectos</h4>
 
                 <div class="g_margin_bottom_10">
-                    <label>Unidad de Negocio <span class="obligatorio"><i
-                                class="fa-solid fa-asterisk"></i></span></label>
+                    <label>Empresa <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
                     <select wire:model.live="unidad_negocio_id"
                         class="@error('unidad_negocio_id') select-error @enderror">
                         <option value="">Seleccione...</option>

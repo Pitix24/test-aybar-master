@@ -28,6 +28,28 @@ use App\Livewire\Erp\EntregaFest\Staff\StaffProveedores;
 use App\Livewire\Erp\EntregaFest\Staff\StaffRecursos;
 use Illuminate\Support\Facades\Route;
 
+Route::group(['middleware' => []], function () {
+    Route::group(['middleware' => []], function () {
+        Route::prefix('entrega-fest')
+            ->name('entrega-fest.vista.')
+            ->group(function () {
+                Route::get('/', EntregaFestLista::class)->name('todo');
+                Route::get('/crear', EntregaFestCrear::class)->name('crear');
+                Route::get('/ver/{id}', EntregaFestVer::class)->name('ver');
+                Route::get('/editar/{id}', EntregaFestEditar::class)->name('editar');
+                Route::get('/panel/{id}', EntregaFestPanel::class)->name('panel');
+
+                Route::get('/prospectos/{id}', EntregaFestProspecto::class)->name('prospectos');
+                Route::get('/invitados/{id}', EntregaFestProspecto::class)->name('invitados');
+                Route::get('/asistencia/{id}', EntregaFestProspecto::class)->name('asistencia');
+                Route::get('/staff/{id}', StaffDashboard::class)->name('dashboard');
+
+            });
+    });
+});
+
+
+/*
 Route::prefix('entrega-fest')->group(function () {
 
     // 1. Rutas Globales (Sin ID de evento específico)
@@ -92,4 +114,4 @@ Route::prefix('entrega-fest')->group(function () {
             Route::get('/editar/{tareaId}', MopTareaEditar::class)->name('.editar');
         });
     });
-});
+});*/

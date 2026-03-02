@@ -115,6 +115,11 @@
                             <td>
                                 <div class="g_negrita">{{ $e->nombre }}</div>
                                 <div>{{ Str::limit($e->descripcion, 70) }}</div>
+                                <div>
+                                    <a href="{{ route('erp.entrega-fest.vista.panel', $e->id) }}" class="g_boton info">
+                                        <i class="fa-solid fa-grip"></i> Panel de Gestión
+                                    </a>
+                                </div>
                             </td>
                             <td>
                                 <div class="g_negrita">

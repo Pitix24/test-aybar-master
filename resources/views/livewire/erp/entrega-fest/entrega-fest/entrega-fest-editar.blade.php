@@ -5,12 +5,17 @@
         <h2>Editar Entrega Fest</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton primary">
+            <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i></a>
+
+            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
                 <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
-            <a href="{{ route('erp.entrega-fest.vista.ver', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-eye"></i> Ver Detalles
-            </a>
+
+            <button type="button" class="g_boton danger" onclick="confirmarEliminarCanal()">
+                Eliminar <i class="fa-solid fa-trash-can"></i>
+            </button>
+
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
@@ -21,7 +26,7 @@
     <div class="g_fila">
         <div class="g_columna_8">
             <form wire:submit.prevent="update" class="formulario g_panel">
-                <h4 class="g_panel_titulo">Información General</h4>
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Información General</h4>
 
                 <div class="g_margin_bottom_10">
                     <label for="estado_activo">
@@ -140,7 +145,7 @@
 
         <div class="g_columna_4 formulario">
             <div class="g_panel">
-                <h4 class="g_panel_titulo"><i class="fa-solid fa-sliders"></i> Proyectos</h4>
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-diagram-project"></i> Proyectos</h4>
 
                 <div class="g_margin_bottom_10">
                     <label>Unidad de Negocio <span class="obligatorio"><i

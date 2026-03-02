@@ -40,7 +40,7 @@ class EntregaFestCrear extends Component
             'fecha_entrega' => 'required|date',
             'proyectos_agregados' => 'required|array|min:1',
             'proyectos_agregados.*.id' => 'exists:proyectos,id',
-            'gestor_id' => 'nullable|exists:users,id',
+            'gestor_id' => 'required|exists:users,id',
             'activo' => 'boolean',
         ];
     }
@@ -48,10 +48,10 @@ class EntregaFestCrear extends Component
     public function validationAttributes()
     {
         return [
-            'unidad_negocio_id' => 'Unidad de Negocio',
+            'unidad_negocio_id' => 'Empresa',
             'proyectos_agregados' => 'Proyectos del Evento',
             'gestor_id' => 'Gestor Responsable',
-            'fecha_entrega' => 'Fecha de Entrega',
+            'fecha_entrega' => 'Fecha del Evento',
             'codigo' => 'Código Único',
             'nombre' => 'Nombre del Evento'
         ];

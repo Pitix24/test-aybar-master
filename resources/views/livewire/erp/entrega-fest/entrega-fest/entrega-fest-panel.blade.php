@@ -89,7 +89,8 @@
                 <p class="g_negrita">{{ $totalIncidencias }}</p>
                 <div class="g_panel_dashboard_trend">
                     <span class="g_trend_valor {{ $totalIncidencias > 0 ? 'g_trend_down' : 'g_trend_up' }}">
-                        <i class="fa-solid {{ $totalIncidencias > 0 ? 'fa-triangle-exclamation' : 'fa-circle-check' }}"></i>
+                        <i
+                            class="fa-solid {{ $totalIncidencias > 0 ? 'fa-triangle-exclamation' : 'fa-circle-check' }}"></i>
                         {{ $totalIncidencias > 0 ? 'Requiere atención' : 'Todo bajo control' }}
                     </span>
                 </div>
@@ -103,7 +104,8 @@
     <div class="g_panel_dashboard_grid">
 
         {{-- Prospectos --}}
-        <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_panel" style="text-decoration:none; cursor:pointer; border-left:4px solid var(--color-vivo);">
+        <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left:4px solid var(--color-vivo);">
             <h4 class="g_panel_titulo">
                 <i class="fa-solid fa-users-viewfinder" style="color:var(--color-vivo);"></i> Prospectos
             </h4>
@@ -115,7 +117,8 @@
         </a>
 
         {{-- Invitados --}}
-        <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_panel" style="text-decoration:none; cursor:pointer; border-left:4px solid var(--color-info);">
+        <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left:4px solid var(--color-info);">
             <h4 class="g_panel_titulo">
                 <i class="fa-solid fa-users" style="color:var(--color-info);"></i> Invitados
             </h4>
@@ -127,7 +130,8 @@
         </a>
 
         {{-- Asistencia --}}
-        <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_panel" style="text-decoration:none; cursor:pointer; border-left:4px solid var(--color-success);">
+        <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left:4px solid var(--color-success);">
             <h4 class="g_panel_titulo">
                 <i class="fa-solid fa-qrcode" style="color:var(--color-success);"></i> Asistencia
             </h4>
@@ -139,7 +143,8 @@
         </a>
 
         {{-- Panel Staff --}}
-        <a href="{{ route('erp.entrega-fest.staff.dashboard', $evento->id) }}" class="g_panel" style="text-decoration:none; cursor:pointer; border-left:4px solid var(--color-oscuro);">
+        <a href="{{ route('erp.entrega-fest.vista.dashboard', $evento->id) }}" class="g_panel"
+            style="text-decoration:none; cursor:pointer; border-left:4px solid var(--color-oscuro);">
             <h4 class="g_panel_titulo">
                 <i class="fa-solid fa-shield-halved" style="color:var(--color-oscuro);"></i> Panel Staff
             </h4>
