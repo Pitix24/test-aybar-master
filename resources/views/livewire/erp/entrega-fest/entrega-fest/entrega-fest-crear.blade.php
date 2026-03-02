@@ -8,6 +8,7 @@
             <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
+
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>

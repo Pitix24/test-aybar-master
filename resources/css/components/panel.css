@@ -109,3 +109,70 @@
         padding: 10px;
     }
 }
+
+/* Modificadores de color para bordes (Dashboard) */
+.g_panel_border_info {
+    border-left-color: #0da8dcff !important;
+}
+
+.g_panel_border_success {
+    border-left-color: #10B981 !important;
+}
+
+.g_panel_border_active {
+    border-left-color: #3B82F6 !important;
+}
+
+.g_panel_border_danger {
+    border-left-color: #EF4444 !important;
+}
+
+.g_panel_border_primary {
+    border-left-color: #4F46E5 !important;
+}
+
+.g_panel_border_warning {
+    border-left-color: #F59E0B !important;
+}
+
+/* Paneles de Navegación (Interactivos) */
+.g_panel_navegacion {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none !important;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+
+.g_panel_navegacion:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+    background-color: #f8fafc;
+}
+
+.g_panel_navegacion_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.g_panel_navegacion_header i {
+    font-size: 1.5rem;
+    opacity: 0.9;
+}
+
+.g_panel_navegacion_cuerpo {
+    flex: 1;
+}
+
+.g_panel_navegacion_footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--color-light-border);
+}

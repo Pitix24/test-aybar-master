@@ -5,48 +5,17 @@
         <h2>Prospectos: <span>{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
+            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
-
-            <a href="{{route('erp.entrega-fest.vista.invitados', $evento->id)}}" class="g_boton primary">
-               Invitados <i class="fa-solid fa-users"></i>
-            </a>
-
-            <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_boton info">
-                Asistencia <i class="fa-solid fa-user-check"></i></a>
-
-            <button wire:click="enviarCorreos" class="g_boton dark" wire:loading.attr="disabled"
-                wire:target="enviarCorreos">
-                <span wire:loading.remove wire:target="enviarCorreos">Enviar correos <i
-                        class="fa-solid fa-envelope"></i></span>
-                <span wire:loading wire:target="enviarCorreos">Enviando... <i
-                        class="fa-solid fa-spinner fa-spin"></i></span>
-            </button>
-
-            <button wire:click="enviarWhatsapp" class="g_boton warning" wire:loading.attr="disabled"
-                wire:target="enviarWhatsapp">
-                <span wire:loading.remove wire:target="enviarWhatsapp">Enviar whatsapp <i
-                        class="fa-brands fa-whatsapp"></i></span>
-                <span wire:loading wire:target="enviarWhatsapp">Enviando... <i
-                        class="fa-solid fa-spinner fa-spin"></i></span>
-            </button>
-
-            <button wire:click="enviarCorreoFirma" class="g_boton dark" wire:loading.attr="disabled"
-                wire:target="enviarCorreoFirma" title="Enviar link de agendamiento de firma (contrato aprobado)">
-                <span wire:loading.remove wire:target="enviarCorreoFirma">Correo Firma <i class="fa-solid fa-file-signature"></i></span>
-                <span wire:loading wire:target="enviarCorreoFirma">Enviando... <i class="fa-solid fa-spinner fa-spin"></i></span>
-            </button>
-
-            <button wire:click="enviarWhatsappFirma" class="g_boton success" wire:loading.attr="disabled"
-                wire:target="enviarWhatsappFirma" title="Enviar WhatsApp de agendamiento de firma (contrato aprobado)">
-                <span wire:loading.remove wire:target="enviarWhatsappFirma">WSP Firma <i class="fa-brands fa-whatsapp"></i></span>
-                <span wire:loading wire:target="enviarWhatsappFirma">Enviando... <i class="fa-solid fa-spinner fa-spin"></i></span>
-            </button>
 
             <a href="{{ route('erp.entrega-fest.vista.prospectos.crear', $evento->id) }}" class="g_boton primary">
-                Añadir Prospecto <i class="fa-solid fa-user-plus"></i>
+                Crear <i class="fa-solid fa-square-plus"></i>
             </a>
+
+             <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
@@ -107,14 +76,24 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
+                <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                    wire:target="exportExcelFiltro">
+                    <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
+                            class="fa-regular fa-file-excel"></i></span>
+                    <span wire:loading wire:target="exportExcelFiltro">Generando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+
+                <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+
                 <button wire:click="resetFiltros" class="g_boton danger">
-                    Limpiar Filtros <i class="fa-solid fa-rotate-left"></i>
-                </button>
-                <button wire:click="exportExcelFiltro" class="g_boton success">
-                    Exportar Filtro <i class="fa-solid fa-file-excel"></i>
-                </button>
-                <button wire:click="exportExcelTodo" class="g_boton info">
-                    Exportar Todo <i class="fa-solid fa-file-excel"></i>
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
             </div>
 
@@ -186,8 +165,8 @@
                                 @endphp
                                 <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado_contrato_preeliminar_emitido) }}</span>
                             </td>
-                            <td>{{ $p->fecha_firma ? date('d/m/Y', strtotime($p->fecha_firma)) : 'N/A' }}</td>
-                            <td>{{ $p->fecha_generacion_contrato ? date('d/m/Y', strtotime($p->fecha_generacion_contrato)) : 'N/A' }}</td>
+                            <td>{{ $p->fecha_firma ? date('d/m/Y', strtotime($p->fecha_firma)) : '' }}</td>
+                            <td>{{ $p->fecha_generacion_contrato ? date('d/m/Y', strtotime($p->fecha_generacion_contrato)) : '' }}</td>
                             <td class="g_celda_centro">
                                 @if ($p->invitado)
                                     <span class="g_badge success" title="{{ $p->invitado->estado_confirmacion }}">SÍ</span>

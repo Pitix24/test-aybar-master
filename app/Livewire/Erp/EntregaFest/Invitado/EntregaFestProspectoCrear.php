@@ -36,7 +36,6 @@ class EntregaFestProspectoCrear extends Component
             'nombres' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'celular' => 'required|string|max:20',
-            'estado' => 'required|in:pendiente,observado,aprobado,rechazado',
             'observacion' => 'nullable|string',
             'lote' => 'nullable|string|max:20',
             'manzana' => 'nullable|string|max:20',
@@ -109,7 +108,6 @@ class EntregaFestProspectoCrear extends Component
                 'celular' => trim($this->celular),
                 'lote' => $this->lote,
                 'manzana' => $this->manzana,
-                'estado' => $this->estado,
                 'observacion' => $this->observacion,
             ]);
 

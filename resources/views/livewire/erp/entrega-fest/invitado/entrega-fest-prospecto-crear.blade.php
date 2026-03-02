@@ -5,15 +5,17 @@
         <h2>Añadir Prospecto: <span style="color: var(--color-primary);">{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_boton cancelar">
-                Invitados <i class="fa-solid fa-users"></i></a>
-
-            <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_boton info">
-                Asistencia <i class="fa-solid fa-user-check"></i></a>
-
-            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton dark">
-                <i class="fa-solid fa-arrow-left"></i> Cancelar y Volver
+            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i>
             </a>
+
+            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Gestión
+            </a>
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
@@ -64,12 +66,7 @@
 
                     <div class="g_margin_bottom_10 g_columna_6">
                         <label>Estado Prospecto <span class="obligatorio">*</span></label>
-                        <select wire:model="estado">
-                            <option value="pendiente">Pendiente</option>
-                            <option value="observado">Observado</option>
-                            <option value="aprobado">Aprobado</option>
-                            <option value="rechazado">Rechazado</option>
-                        </select>
+                        <input type="text" value="pendiente" readonly disabled>
                     </div>
                 </div>
 

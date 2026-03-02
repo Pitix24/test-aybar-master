@@ -126,6 +126,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
                     $item->gestor?->name ?? 'Sin asignar',
                     $item->canal?->nombre ?? 'N/A',
                     $item->created_at->format('d/m/Y H:i'),
+                    $item->updated_at->format('d/m/Y H:i'),
                 ];
             });
     }
@@ -149,6 +150,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
             'Gestor',
             'Canal',
             'Fecha Creación',
+            'Última Modificación',
         ];
     }
 }

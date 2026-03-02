@@ -39,9 +39,15 @@ Route::group(['middleware' => []], function () {
                 Route::get('/editar/{id}', EntregaFestEditar::class)->name('editar');
                 Route::get('/panel/{id}', EntregaFestPanel::class)->name('panel');
 
-                Route::get('/prospectos/{id}', EntregaFestProspecto::class)->name('prospectos');
-                Route::get('/invitados/{id}', EntregaFestProspecto::class)->name('invitados');
-                Route::get('/asistencia/{id}', EntregaFestProspecto::class)->name('asistencia');
+                Route::get('/prospecto/{id}', EntregaFestProspecto::class)->name('prospectos');
+                Route::get('/prospecto/crear/{id}', EntregaFestProspectoCrear::class)->name('prospectos.crear');
+                Route::get('/prospecto/{id}/editar/{prospectoId}', EntregaFestProspectoEditar::class)->name('prospectos.editar');
+
+                Route::get('/invitado/{id}', EntregaFestInvitado::class)->name('invitados');
+                Route::get('/invitado/crear/{id}', EntregaFestInvitadoCrear::class)->name('invitados.crear');
+                Route::get('/invitado/{id}/editar/{invitadoId}', EntregaFestInvitadoEditar::class)->name('invitados.editar');
+
+                Route::get('/asistencia/{id}', EntregaFestAsistencia::class)->name('asistencia');
                 Route::get('/staff/{id}', StaffDashboard::class)->name('dashboard');
 
             });
