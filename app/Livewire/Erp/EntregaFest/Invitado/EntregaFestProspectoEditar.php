@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EntregaFest\FirmaConfirmacionMail;
+use App\Mail\EntregaFest\FirmaLinkMail;
+use App\Mail\EntregaFest\AsistenciaLinkMail;
+use App\Mail\EntregaFest\AsistenciaLinkCopropietarioMail;
+use App\Services\WhatsappService;
+use App\Models\Cliente;
+use App\Models\WhatsappContacto;
+use App\Models\WhatsappConversacion;
+use App\Models\WhatsappMensaje;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
@@ -390,6 +398,112 @@ class EntregaFestProspectoEditar extends Component
             'fecha_validacion_eecc' => $this->fecha_validacion_eecc,
             'estado_backoffice' => $this->estado_backoffice,
         ], 'PROSPECTO EDITAR - BACKOFFICE');
+
+        // Si se acaba de aprobar, enviamos invitación
+        if ($this->estado_backoffice === 'aprobado') {
+            $this->dispararInvitaciones(app(WhatsappService::class));
+        }
+    }
+
+    private function dispararInvitaciones(WhatsappService $whatsapp)
+    {
+        $prospecto = $this->prospecto->fresh(['invitado', 'copropietarios.invitado']);
+        $enviadosEmail = 0;
+        $enviadosWsp = 0;
+
+        // 1. ENVIAR AL TITULAR (Si no tiene invitación y tiene datos)
+        if (!$prospecto->invitado) {
+            // Email
+            if ($prospecto->email) {
+                try {
+                    Mail::to($prospecto->email)->send(new AsistenciaLinkMail($prospecto));
+                    $enviadosEmail++;
+                } catch (\Exception $e) {
+                    Log::error("[ENTREGA-FEST-AUTO] Error correo titular {$prospecto->email}: " . $e->getMessage());
+                }
+            }
+
+            // WhatsApp
+            if ($prospecto->celular) {
+                $formatearCelular = function (string $raw): string {
+                    $cel = preg_replace('/\D/', '', $raw);
+                    return strlen($cel) === 9 ? '51' . $cel : $cel;
+                };
+
+                $link = route('public.entrega-fest.asistencia', [$this->evento->slug, $prospecto->id]);
+                $mensaje = "Hola *{$prospecto->nombres}*, ya tenemos tu evaluación lista para el evento *{$this->evento->nombre}*. Confirma tu asistencia aquí: $link";
+                $celular = $formatearCelular($prospecto->celular);
+
+                $response = $whatsapp->sendText($celular, $mensaje);
+                if ($response) {
+                    $enviadosWsp++;
+                    $this->registrarMensajeWsp($celular, $prospecto->nombres, $prospecto->dni, $mensaje, $response['messages'][0]['id'] ?? 'AUTO_' . uniqid());
+                }
+            }
+        }
+
+        // 2. ENVIAR A COPROPIETARIOS
+        foreach ($prospecto->copropietarios as $cop) {
+            if (!$cop->invitado) {
+                // Email
+                if ($cop->email) {
+                    try {
+                        Mail::to($cop->email)->send(new AsistenciaLinkCopropietarioMail($cop));
+                        $enviadosEmail++;
+                    } catch (\Exception $e) {
+                        Log::error("[ENTREGA-FEST-AUTO] Error correo copropietario {$cop->email}: " . $e->getMessage());
+                    }
+                }
+
+                // WhatsApp
+                if ($cop->celular) {
+                    $formatearCelular = function (string $raw): string {
+                        $cel = preg_replace('/\D/', '', $raw);
+                        return strlen($cel) === 9 ? '51' . $cel : $cel;
+                    };
+
+                    $link = route('public.entrega-fest.asistencia.copropietario', [$this->evento->slug, $cop->id]);
+                    $mensaje = "Hola *{$cop->nombres}*, ya tienes evaluación lista para el evento *{$this->evento->nombre}*. Confirma tu asistencia aquí: $link";
+                    $celular = $formatearCelular($cop->celular);
+
+                    $response = $whatsapp->sendText($celular, $mensaje);
+                    if ($response) {
+                        $enviadosWsp++;
+                        $this->registrarMensajeWsp($celular, $cop->nombres, $cop->dni, $mensaje, $response['messages'][0]['id'] ?? 'AUTO_COP_' . uniqid());
+                    }
+                }
+            }
+        }
+
+        if ($enviadosEmail > 0 || $enviadosWsp > 0) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Invitaciones Enviadas',
+                'text' => "Se enviaron $enviadosEmail correos y $enviadosWsp mensajes de WhatsApp."
+            ]);
+        }
+    }
+
+    private function registrarMensajeWsp($celular, $nombre, $dni, $mensaje, $waMessageId)
+    {
+        $cliente = Cliente::where('dni', $dni)->first();
+        $contacto = WhatsappContacto::updateOrCreate(
+            ['wa_id' => $celular],
+            ['nombre_wa' => $nombre, 'numero_celular' => $celular, 'cliente_id' => $cliente?->id]
+        );
+        $conversacion = WhatsappConversacion::firstOrCreate(
+            ['contacto_id' => $contacto->id],
+            ['cliente_id' => $cliente?->id, 'estado' => 'asignado', 'departamento_destino' => 'backoffice', 'agente_id' => auth()->id()]
+        );
+        $conversacion->update(['last_message_at' => now()]);
+        WhatsappMensaje::create([
+            'conversacion_id' => $conversacion->id,
+            'direccion' => 'saliente',
+            'tipo' => 'texto',
+            'contenido' => $mensaje,
+            'wa_message_id' => $waMessageId,
+            'estado' => 'enviado',
+        ]);
     }
 
     public function updateLegal()
@@ -409,6 +523,59 @@ class EntregaFestProspectoEditar extends Component
             'fecha_firma' => $this->fecha_firma,
             'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
         ], 'PROSPECTO EDITAR - LEGAL');
+
+        // Si se aprueba legal, disparamos agendamiento de firma
+        if ($this->estado_contrato_preeliminar_emitido === 'aprobado') {
+            $this->dispararInvitacionesFirma(app(WhatsappService::class));
+        }
+    }
+
+    private function dispararInvitacionesFirma(WhatsappService $whatsapp)
+    {
+        $prospecto = $this->prospecto->fresh();
+
+        // Según lógica de negocio: solo si no tiene fecha agendada aún
+        if ($prospecto->fecha_firma)
+            return;
+
+        $enviadoEmail = false;
+        $enviadoWsp = false;
+
+        // Email
+        if ($prospecto->email) {
+            try {
+                Mail::to($prospecto->email)->send(new FirmaLinkMail($prospecto));
+                $enviadoEmail = true;
+            } catch (\Exception $e) {
+                Log::error('[FIRMA CORREO AUTO] Error a ' . $prospecto->email . ': ' . $e->getMessage());
+            }
+        }
+
+        // WhatsApp
+        if ($prospecto->celular) {
+            $formatearCelular = function (string $raw): string {
+                $cel = preg_replace('/\D/', '', $raw);
+                return strlen($cel) === 9 ? '51' . $cel : $cel;
+            };
+
+            $link = route('public.entrega-fest.firma', [$this->evento->slug, $prospecto->id]);
+            $mensaje = "Hola *{$prospecto->nombres}*, tu contrato preliminar para el evento *{$this->evento->nombre}* está aprobado 🎉. Agenda aquí tu cita de firma: $link";
+            $celular = $formatearCelular($prospecto->celular);
+
+            $response = $whatsapp->sendText($celular, $mensaje);
+            if ($response) {
+                $enviadoWsp = true;
+                $this->registrarMensajeWsp($celular, $prospecto->nombres, $prospecto->dni, $mensaje, $response['messages'][0]['id'] ?? 'AUTO_FIRMA_' . uniqid());
+            }
+        }
+
+        if ($enviadoEmail || $enviadoWsp) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Link de Firma Enviado',
+                'text' => "Se envió el agendamiento al prospecto correctamente."
+            ]);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────

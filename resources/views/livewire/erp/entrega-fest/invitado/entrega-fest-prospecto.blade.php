@@ -118,6 +118,9 @@
                         <th>Cliente</th>
                         <th>Proyecto</th>
                         <th>Lote/Mz</th>
+                        <th class="g_celda_centro">Fecha Culminación EECC</th>
+                        <th class="g_celda_centro">Enlace Carpeta EECC</th>
+                        <th class="g_celda_centro">Enlace EECC Firmado</th>
                         <th class="g_celda_centro">BackOffice</th>
                         <th class="g_celda_centro">Estado Contrato Preliminar</th>
                         <th class="g_celda_centro">Fecha para Firmar</th>
@@ -141,6 +144,25 @@
                             </td>
                             <td>{{ $p->proyecto->nombre ?? 'N/A' }}</td>
                             <td>{{ $p->lote }}{{ $p->manzana }}</td>
+                            <td class="g_celda_centro">
+                                {{ $p->fecha_culminacion_eecc ? date('d/m/Y', strtotime($p->fecha_culminacion_eecc)) : '' }}
+                            </td>
+                            <td class="g_celda_centro">
+                                @if ($p->link_carpeta_eecc)
+                                    <a href="{{ $p->link_carpeta_eecc }}" target="_blank" class="g_accion info"
+                                        title="Abrir Carpeta EECC">
+                                        <i class="fa-solid fa-folder-open"></i>
+                                    </a>
+                                @endif
+                            </td>
+                            <td class="g_celda_centro">
+                                @if ($p->link_eecc_firmado)
+                                    <a href="{{ $p->link_eecc_firmado }}" target="_blank" class="g_accion ver"
+                                        title="Ver EECC Firmado">
+                                        <i class="fa-solid fa-file-pdf"></i>
+                                    </a>
+                                @endif
+                            </td>
                             <td class="g_celda_centro">
                                 @php
                                     $claseBO = match ($p->estado_backoffice) {
