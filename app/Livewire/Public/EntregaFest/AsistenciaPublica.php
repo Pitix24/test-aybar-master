@@ -10,6 +10,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
+use App\Mail\EntregaFest\InstruccionesEventoMail;
+use App\Services\WhatsappService;
+
 #[Layout('layouts.web.layout-web')]
 #[Title('Formulario de Asistencia - Entrega Fest')]
 class AsistenciaPublica extends Component
@@ -67,7 +70,7 @@ class AsistenciaPublica extends Component
         ];
     }
 
-    public function save()
+    public function save(WhatsappService $whatsapp)
     {
         $this->validate();
 
@@ -100,13 +103,38 @@ class AsistenciaPublica extends Component
 
             DB::commit();
 
-            // Enviar correo automático del ticket si confirma
-            if ($confirmado && $this->prospecto->email) {
-                try {
-                    \Illuminate\Support\Facades\Mail::to($this->prospecto->email)
-                        ->send(new \App\Mail\EntregaFest\TicketAsistenciaMail($invitado));
-                } catch (\Exception $e) {
-                    Log::error("[ASISTENCIA PUBLICA] Error enviando ticket: " . $e->getMessage());
+            // Enviar notificaciones si confirma
+            if ($confirmado) {
+                // 1. Ticket por correo
+                if ($this->prospecto->email) {
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($this->prospecto->email)
+                            ->send(new \App\Mail\EntregaFest\TicketAsistenciaMail($invitado));
+                    } catch (\Exception $e) {
+                        Log::error("[ASISTENCIA PUBLICA] Error enviando ticket: " . $e->getMessage());
+                    }
+
+                    // 2. Instrucciones por correo
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($this->prospecto->email)
+                            ->send(new InstruccionesEventoMail($invitado));
+                    } catch (\Exception $e) {
+                        Log::error("[ASISTENCIA PUBLICA] Error enviando instrucciones mail: " . $e->getMessage());
+                    }
+                }
+
+                // 3. WhatsApp con instrucciones e imagen
+                if ($this->prospecto->celular) {
+                    try {
+                        $celRaw = preg_replace('/\D/', '', $this->prospecto->celular);
+                        $celular = strlen($celRaw) === 9 ? '51' . $celRaw : $celRaw;
+                        $imagenUrl = 'https://plataforma-digital.aybarcorp.com/assets/imagen/construccion-aybar-corp.jpg';
+                        $caption = "Hola *{$invitado->nombre_completo}*, aquí te compartimos las instrucciones para el evento *{$this->evento->nombre}*. ¡Te esperamos!";
+
+                        $whatsapp->sendImage($celular, $imagenUrl, $caption);
+                    } catch (\Exception $e) {
+                        Log::error("[ASISTENCIA PUBLICA] Error enviando instrucciones WhatsApp: " . $e->getMessage());
+                    }
                 }
             }
 

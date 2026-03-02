@@ -7,10 +7,10 @@
             Itinerario en Vivo
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.staff.itinerario.crear', $evento->id) }}" class="g_boton guardar">
+            <a href="{{ route('erp.entrega-fest.vista.itinerario.crear', $evento->id) }}" class="g_boton guardar">
                 <i class="fa-solid fa-plus"></i> Nuevo Bloque
             </a>
-            <a href="{{ route('erp.entrega-fest.staff.dashboard', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Panel Staff
             </a>
         </div>
@@ -18,7 +18,8 @@
 
     {{-- BLOQUES DE ITINERARIO --}}
     @forelse($evento->itinerarioBloques as $bloque)
-        <div class="g_panel" style="border-left: 4px solid {{ $bloque->estado === 'COMPLETADO' ? 'var(--color-success)' : ($bloque->estado === 'EN_CURSO' ? 'var(--color-warning)' : 'var(--borde-card-color, #e5e7eb)') }};">
+        <div class="g_panel"
+            style="border-left: 4px solid {{ $bloque->estado === 'COMPLETADO' ? 'var(--color-success)' : ($bloque->estado === 'EN_CURSO' ? 'var(--color-warning)' : 'var(--borde-card-color, #e5e7eb)') }};">
 
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
 
@@ -40,7 +41,8 @@
                 {{-- ACCIONES --}}
                 <div class="cabecera_titulo_botones">
                     {{-- Botón Editar --}}
-                    <a href="{{ route('erp.entrega-fest.staff.itinerario.editar', [$evento->id, $bloque->id]) }}" class="g_accion editar" title="Editar bloque">
+                    <a href="{{ route('erp.entrega-fest.vista.itinerario.editar', [$evento->id, $bloque->id]) }}"
+                        class="g_accion editar" title="Editar bloque">
                         <i class="fa-solid fa-pencil"></i>
                     </a>
 
@@ -72,7 +74,8 @@
                                 <button wire:click="toggleChecklist({{ $item->id }})"
                                     class="g_boton {{ $item->esta_listo ? 'success' : 'light' }}"
                                     style="width:28px; height:28px; padding:0; min-width:28px; border-radius:50%;">
-                                    <i class="fa-solid {{ $item->esta_listo ? 'fa-check' : 'fa-circle' }}" style="font-size:11px;"></i>
+                                    <i class="fa-solid {{ $item->esta_listo ? 'fa-check' : 'fa-circle' }}"
+                                        style="font-size:11px;"></i>
                                 </button>
                                 <span style="{{ $item->esta_listo ? 'text-decoration:line-through; opacity:0.5;' : '' }}">
                                     {{ $item->tarea }}

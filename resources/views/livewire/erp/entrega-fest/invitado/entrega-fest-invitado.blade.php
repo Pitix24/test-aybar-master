@@ -5,44 +5,17 @@
         <h2>Invitados: <span style="color: var(--color-primary);">{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
+            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
 
-            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton success">
-                Prospectos <i class="fa-solid fa-users-viewfinder"></i>
+            <a href="{{ route('erp.entrega-fest.vista.invitados.crear', $evento->id) }}" class="g_boton primary">
+                Crear <i class="fa-solid fa-square-plus"></i>
             </a>
 
-            <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}" class="g_boton info">
-                Asistencia <i class="fa-solid fa-user-check"></i></a>
-
-            @can('entrega-fest.invitados')
-                <button wire:click="enviarCorreoInstrucciones" wire:loading.attr="disabled"
-                    wire:target="enviarCorreoInstrucciones" class="g_boton dark"
-                    title="Enviar correo con instrucciones del evento a todos los invitados">
-                    <span wire:loading.remove wire:target="enviarCorreoInstrucciones">
-                        Instrucciones Correo <i class="fa-solid fa-envelope-open-text"></i>
-                    </span>
-                    <span wire:loading wire:target="enviarCorreoInstrucciones">
-                        Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
-                    </span>
-                </button>
-
-                <button wire:click="enviarWhatsappInstrucciones" wire:loading.attr="disabled"
-                    wire:target="enviarWhatsappInstrucciones" class="g_boton warning"
-                    title="Enviar imagen de instrucciones por WhatsApp a todos los invitados">
-                    <span wire:loading.remove wire:target="enviarWhatsappInstrucciones">
-                        Instrucciones WSP <i class="fa-brands fa-whatsapp"></i>
-                    </span>
-                    <span wire:loading wire:target="enviarWhatsappInstrucciones">
-                        Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
-                    </span>
-                </button>
-
-                <a href="{{ route('erp.entrega-fest.vista.invitados.crear', $evento->id) }}" class="g_boton primary">
-                    Generar Invitado <i class="fa-solid fa-id-card"></i>
-                </a>
-            @endcan
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
@@ -80,18 +53,25 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="resetFiltros" class="g_boton danger" title="Limpiar Filtros">
-                    <i class="fa-solid fa-rotate-left"></i>
+                <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                    wire:target="exportExcelFiltro">
+                    <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
+                            class="fa-regular fa-file-excel"></i></span>
+                    <span wire:loading wire:target="exportExcelFiltro">Generando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
                 </button>
 
-                @can('entrega-fest.invitados')
-                    <button wire:click="exportExcelFiltro" class="g_boton success" title="Exportar Vista Actual">
-                        Excel <i class="fa-solid fa-file-excel"></i>
-                    </button>
-                    <button wire:click="exportExcelTodo" class="g_boton dark" title="Exportar Todo el Evento">
-                        Todo <i class="fa-solid fa-download"></i>
-                    </button>
-                @endcan
+                <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                    wire:target="exportExcelTodo">
+                    <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                            class="fa-solid fa-file-export"></i></span>
+                    <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
+                </button>
+
+                <button wire:click="resetFiltros" class="g_boton danger">
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
+                </button>
             </div>
 
             <div class="g_tabla_cabecera_filtro formulario">

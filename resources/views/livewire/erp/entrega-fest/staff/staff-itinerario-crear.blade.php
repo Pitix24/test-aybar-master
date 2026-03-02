@@ -6,7 +6,7 @@
             Nuevo Bloque de Itinerario
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.staff.itinerario', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.vista.itinerario', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Volver
             </a>
         </div>
@@ -18,14 +18,17 @@
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-clock"></i> Datos del Bloque</h4>
 
                 <div class="g_margin_bottom_10">
-                    <label>Titulo del Bloque <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                    <input type="text" wire:model="titulo" class="@error('titulo') input-error @enderror" placeholder="Ej: Bienvenida y registro de invitados">
+                    <label>Titulo del Bloque <span class="obligatorio"><i
+                                class="fa-solid fa-asterisk"></i></span></label>
+                    <input type="text" wire:model="titulo" class="@error('titulo') input-error @enderror"
+                        placeholder="Ej: Bienvenida y registro de invitados">
                     @error('titulo') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="g_fila">
                     <div class="g_columna_6 g_margin_bottom_10">
-                        <label>Hora de Inicio <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
+                        <label>Hora de Inicio <span class="obligatorio"><i
+                                    class="fa-solid fa-asterisk"></i></span></label>
                         <input type="time" wire:model="hora_inicio" class="@error('hora_inicio') input-error @enderror">
                         @error('hora_inicio') <p class="mensaje_error">{{ $message }}</p> @enderror
                     </div>
@@ -48,7 +51,8 @@
 
                 <div class="g_margin_bottom_10">
                     <label>Descripcion del Bloque</label>
-                    <textarea wire:model="descripcion" rows="3" placeholder="Actividades o notas del bloque..."></textarea>
+                    <textarea wire:model="descripcion" rows="3"
+                        placeholder="Actividades o notas del bloque..."></textarea>
                 </div>
 
                 <div class="g_margin_bottom_10">
@@ -59,10 +63,12 @@
 
                 <div class="formulario_botones">
                     <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="store"><i class="fa-solid fa-save"></i> Guardar Bloque</span>
-                        <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i> Guardando...</span>
+                        <span wire:loading.remove wire:target="store"><i class="fa-solid fa-save"></i> Guardar
+                            Bloque</span>
+                        <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i>
+                            Guardando...</span>
                     </button>
-                    <a href="{{ route('erp.entrega-fest.staff.itinerario', $evento->id) }}" class="g_boton cancelar">
+                    <a href="{{ route('erp.entrega-fest.vista.itinerario', $evento->id) }}" class="g_boton cancelar">
                         <i class="fa-solid fa-times"></i> Cancelar
                     </a>
                 </div>

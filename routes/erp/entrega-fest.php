@@ -40,16 +40,24 @@ Route::group(['middleware' => []], function () {
                 Route::get('/panel/{id}', EntregaFestPanel::class)->name('panel');
 
                 Route::get('/prospecto/{id}', EntregaFestProspecto::class)->name('prospectos');
-                Route::get('/prospecto/crear/{id}', EntregaFestProspectoCrear::class)->name('prospectos.crear');
+                Route::get('/prospecto/{id}/crear', EntregaFestProspectoCrear::class)->name('prospectos.crear');
                 Route::get('/prospecto/{id}/editar/{prospectoId}', EntregaFestProspectoEditar::class)->name('prospectos.editar');
 
                 Route::get('/invitado/{id}', EntregaFestInvitado::class)->name('invitados');
-                Route::get('/invitado/crear/{id}', EntregaFestInvitadoCrear::class)->name('invitados.crear');
+                Route::get('/invitado/{id}/crear', EntregaFestInvitadoCrear::class)->name('invitados.crear');
                 Route::get('/invitado/{id}/editar/{invitadoId}', EntregaFestInvitadoEditar::class)->name('invitados.editar');
 
                 Route::get('/asistencia/{id}', EntregaFestAsistencia::class)->name('asistencia');
-                Route::get('/staff/{id}', StaffDashboard::class)->name('dashboard');
+                Route::get('/staff/{id}', StaffDashboard::class)->name('staff.dashboard');
 
+                Route::get('/itinerario/{id}', StaffItinerario::class)->name('staff.itinerario');
+                Route::get('/itinerario/{id}/crear', StaffItinerarioCrear::class)->name('staff.itinerario.crear');
+                Route::get('/itinerario/{id}/editar/{bloqueId}', StaffItinerarioEditar::class)->name('staff.itinerario.editar');
+
+                Route::get('/mop/{id}', StaffMop::class)->name('staff.mop');
+                Route::get('/proveedores/{id}', StaffProveedores::class)->name('staff.proveedores');
+                Route::get('/incidencias/{id}', StaffIncidencias::class)->name('staff.incidencias');
+                Route::get('/recursos/{id}', StaffRecursos::class)->name('staff.recursos');
             });
     });
 });

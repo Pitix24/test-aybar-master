@@ -10,6 +10,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
+use App\Mail\EntregaFest\InstruccionesEventoMail;
+use App\Services\WhatsappService;
+
 #[Layout('layouts.web.layout-web')]
 #[Title('Formulario de Asistencia - Entrega Fest')]
 class AsistenciaPublicaCopropietario extends Component
@@ -66,7 +69,7 @@ class AsistenciaPublicaCopropietario extends Component
         ];
     }
 
-    public function save()
+    public function save(WhatsappService $whatsapp)
     {
         $this->validate();
 
@@ -99,13 +102,38 @@ class AsistenciaPublicaCopropietario extends Component
 
             DB::commit();
 
-            // Enviar ticket por correo si asiste y tiene email
-            if ($confirmado && $this->copropietario->email) {
-                try {
-                    \Illuminate\Support\Facades\Mail::to($this->copropietario->email)
-                        ->send(new \App\Mail\EntregaFest\TicketAsistenciaMail($invitado));
-                } catch (\Exception $e) {
-                    Log::error('[ASIST. COPROP.] Error enviando ticket: ' . $e->getMessage());
+            // Enviar notificaciones si confirma
+            if ($confirmado) {
+                // 1. Ticket por correo
+                if ($this->copropietario->email) {
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($this->copropietario->email)
+                            ->send(new \App\Mail\EntregaFest\TicketAsistenciaMail($invitado));
+                    } catch (\Exception $e) {
+                        Log::error('[ASIST. COPROP.] Error enviando ticket: ' . $e->getMessage());
+                    }
+
+                    // 2. Instrucciones por correo
+                    try {
+                        \Illuminate\Support\Facades\Mail::to($this->copropietario->email)
+                            ->send(new InstruccionesEventoMail($invitado));
+                    } catch (\Exception $e) {
+                        Log::error('[ASIST. COPROP.] Error enviando instrucciones mail: ' . $e->getMessage());
+                    }
+                }
+
+                // 3. WhatsApp con instrucciones e imagen
+                if ($this->copropietario->celular) {
+                    try {
+                        $celRaw = preg_replace('/\D/', '', $this->copropietario->celular);
+                        $celular = strlen($celRaw) === 9 ? '51' . $celRaw : $celRaw;
+                        $imagenUrl = 'https://plataforma-digital.aybarcorp.com/assets/imagen/construccion-aybar-corp.jpg';
+                        $caption = "Hola *{$invitado->nombre_completo}*, aquí te compartimos las instrucciones para el evento *{$this->evento->nombre}*. ¡Te esperamos!";
+
+                        $whatsapp->sendImage($celular, $imagenUrl, $caption);
+                    } catch (\Exception $e) {
+                        Log::error('[ASIST. COPROP.] Error enviando instrucciones WhatsApp: ' . $e->getMessage());
+                    }
                 }
             }
 

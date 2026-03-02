@@ -121,7 +121,7 @@
             </div>
         </a>
 
-        <a href="{{ route('erp.entrega-fest.vista.dashboard', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_primary">
             <div class="g_panel_navegacion_header">
                 <div>

@@ -12,7 +12,7 @@
                 <i class="fa-solid {{ $mostrarFormulario ? 'fa-times' : 'fa-plus' }}"></i>
                 {{ $mostrarFormulario ? 'Cancelar' : 'Reportar Incidencia' }}
             </button>
-            <a href="{{ route('erp.entrega-fest.staff.dashboard', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Panel Staff
             </a>
         </div>

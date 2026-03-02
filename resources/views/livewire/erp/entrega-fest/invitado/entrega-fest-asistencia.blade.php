@@ -5,16 +5,13 @@
         <h2>Asistencia: <span style="color: var(--color-primary);">{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton success">
-                Prospectos <i class="fa-solid fa-users-viewfinder"></i>
+           <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
 
-            <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_boton cancelar">
-                Invitados <i class="fa-solid fa-users"></i></a>
-
-            <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton dark">
-                <i class="fa-solid fa-list"></i> Lista de Eventos
-            </a>
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
