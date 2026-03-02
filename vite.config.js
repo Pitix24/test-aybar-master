@@ -14,6 +14,7 @@ export default defineConfig({
                 "resources/js/web/web.js",
                 "resources/css/cliente/cliente.css",
                 "resources/js/cliente/cliente.js",
+                "resources/css/erp/entregafest/invitacion.css",
             ],
             refresh: true,
         }),

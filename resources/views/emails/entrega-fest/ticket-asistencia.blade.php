@@ -3,155 +3,134 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Tu Pase de Entrada</title>
+    <title>Tu Pase de Entrada - {{ $evento->nombre }}</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f9;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            background-color: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .header {
-            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
-            padding: 30px;
-            text-align: center;
-            color: #ffffff;
-        }
-
-        .content {
-            padding: 30px;
-            text-align: center;
-        }
-
-        .ticket-box {
-            background-color: #fafffb;
-            border: 2px dashed #1a237e;
-            border-radius: 16px;
-            padding: 25px;
-            margin: 20px 0;
-        }
-
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto;
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .code-text {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1a237e;
-            letter-spacing: 4px;
-            margin-top: 15px;
-        }
-
-        .details {
-            margin: 25px 0;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-            text-align: left;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .label {
-            color: #888;
-            font-size: 14px;
-        }
-
-        .value {
-            color: #333;
-            font-weight: 600;
-        }
-
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .important {
-            color: #d32f2f;
-            font-weight: bold;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="header">
-            <h1 style="margin:0;">¡Confirmado!</h1>
-            <p style="margin:10px 0 0;">Aquí tienes tu pase para el evento</p>
-        </div>
+<body style="margin:0; padding:0; font-family: 'Outfit', Helvetica, Arial, sans-serif; background-color: #f8f9fa;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0"
+        style="background-color: #f8f9fa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                    style="max-width: 600px; background-color: #ffffff; border-radius: 40px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <!-- HEADER GRADIENTE -->
+                    <tr>
+                        <td align="center"
+                            style="background: linear-gradient(135deg, #f8cc00 0%, #ff7e33 100%); padding: 50px 30px 40px;">
+                            <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png"
+                                alt="Entrega Fest"
+                                style="width: 260px; max-width: 90%; height: auto; display: block; margin-bottom: 20px;">
+                            <h1
+                                style="margin: 0; font-size: 22px; color: #004d55; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
+                                Tu Pase de Entrada 🎫
+                            </h1>
+                        </td>
+                    </tr>
 
-        <div class="content">
-            <h2 style="color: #1a237e;">{{ $evento->nombre }}</h2>
-            <p>Hola <strong>{{ $nombrePersona }}</strong>, gracias por confirmar tu asistencia.</p>
+                    <!-- CUERPO -->
+                    <tr>
+                        <td style="padding: 40px; text-align: center;">
+                            <h2 style="margin: 0 0 10px 0; color: #333333; font-size: 24px; font-weight: 700;">
+                                ¡Hola, {{ $nombrePersona }}!
+                            </h2>
+                            <p style="margin: 0 0 30px 0; color: #555555; font-size: 16px; line-height: 1.6;">
+                                Tu asistencia al evento <strong>{{ $evento->nombre }}</strong> ha sido confirmada. Aquí
+                                tienes tu pase oficial de ingreso:
+                            </p>
 
-            <div class="ticket-box">
-                <p style="margin-top:0; font-weight:bold; color:#666;">PRESENTA ESTE CÓDIGO AL INGRESAR</p>
-                <div class="qr-code">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ $invitado->codigo_invitado }}"
-                        alt="QR Access" style="width:200px; height:200px;">
-                </div>
-                <div class="code-text">{{ $invitado->codigo_invitado }}</div>
-            </div>
+                            <!-- TICKET BOX -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                style="background-color: #ffffff; border: 2px dashed #004d55; border-radius: 25px; margin-bottom: 35px; padding: 30px;">
+                                <tr>
+                                    <td align="center">
+                                        <p
+                                            style="margin: 0 0 20px 0; font-size: 11px; text-transform: uppercase; font-weight: 700; color: #004d55; letter-spacing: 1px;">
+                                            Presenta este código al ingresar</p>
 
-            <div class="details">
-                <div class="detail-row">
-                    <span class="label">Fecha del Evento:</span>
-                    <span class="value">{{ date('d/m/Y', strtotime($evento->fecha_entrega)) }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Acompañantes:</span>
-                    <span class="value">{{ $invitado->cantidad_acompanantes_permitidos }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Transporte:</span>
-                    <span class="value">
-                        {{ $invitado->transporte === 'bus' ? 'Bus Aybar' : 'Propio' }}
-                    </span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Ubicación:</span>
-                    <span class="value">{{ $proyecto }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Lote / Manzana:</span>
-                    <span class="value">{{ $lote }} / {{ $manzana }}</span>
-                </div>
-            </div>
+                                        <div
+                                            style="background: #ffffff; padding: 15px; border-radius: 20px; display: inline-block; border: 1px solid #eeeeee; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ $invitado->codigo_invitado }}"
+                                                alt="QR Access" style="width: 200px; height: 200px; display: block;">
+                                        </div>
 
-            <p class="important">No olvides llevar tu DNI y presentar este código al ingresar.</p>
-        </div>
+                                        <p
+                                            style="margin: 20px 0 0 0; font-size: 26px; font-weight: 800; color: #004d55; letter-spacing: 5px;">
+                                            {{ $invitado->codigo_invitado }}</p>
+                                    </td>
+                                </tr>
+                            </table>
 
-        <div class="footer">
-            &copy; {{ date('Y') }} Aybar Corp. Todos los derechos reservados.<br>
-            Este es un correo automático, por favor no lo respondas.
-        </div>
-    </div>
+                            <!-- DETALLES -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                style="background-color: #f8f9fa; border-radius: 20px; margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding: 20px 25px;">
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="padding-bottom: 15px; border-bottom: 1px solid #eeeeee;">
+                                                    <span
+                                                        style="font-size: 12px; color: #888888; text-transform: uppercase;">Proyecto</span>
+                                                    <span
+                                                        style="float: right; font-weight: 700; color: #333333;">{{ $proyecto }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee;">
+                                                    <span
+                                                        style="font-size: 12px; color: #888888; text-transform: uppercase;">Lote
+                                                        / Manzana</span>
+                                                    <span
+                                                        style="float: right; font-weight: 700; color: #333333;">{{ $lote }}
+                                                        / {{ $manzana }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee;">
+                                                    <span
+                                                        style="font-size: 12px; color: #888888; text-transform: uppercase;">Acompañantes</span>
+                                                    <span
+                                                        style="float: right; font-weight: 700; color: #333333;">{{ $invitado->cantidad_acompanantes_permitidos }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-top: 15px;">
+                                                    <span
+                                                        style="font-size: 12px; color: #888888; text-transform: uppercase;">Transporte</span>
+                                                    <span
+                                                        style="float: right; font-weight: 700; color: #333333;">{{ $invitado->transporte === 'bus' ? 'Bus Aybar' : 'Propio' }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p
+                                style="margin: 0; color: #d32f2f; font-size: 14px; font-weight: 700; background: #fff1f2; padding: 12px; border-radius: 10px; display: inline-block;">
+                                ⚠️ No olvides llevar tu DNI físico el día del evento.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td align="center"
+                            style="background-color: #f1f3f5; padding: 30px; border-top: 1px solid #eeeeee;">
+                            <img src="https://aybarcorp.com/public/assets/entregafest/logo-aybar-corp-fondo-blanco.png"
+                                alt="Aybar Corp"
+                                style="width: 100px; margin-bottom: 10px; filter: grayscale(1); opacity: 0.5;">
+                            <p style="margin: 0; color: #aaaaaa; font-size: 12px;">
+                                &copy; {{ date('Y') }} Aybar Corp. Todos los derechos reservados.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 
 </html>

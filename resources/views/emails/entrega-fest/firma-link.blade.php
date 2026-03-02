@@ -4,63 +4,112 @@
 <head>
     <meta charset="UTF-8">
     <title>Agenda tu Cita de Firma - {{ $evento->nombre }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
+    </style>
 </head>
 
-<body style="margin:0; padding:25px; font-family: Arial, sans-serif; background-color: #f4f7f9;">
-    <div
-        style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:16px; padding:40px; color:#333333; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-        <div style="text-align:center; margin-bottom: 30px;">
-            <img src="https://aybarcorp.com/public/logo-aybar-corp-verde.png" alt="Aybar Corp" style="width:180px;">
-        </div>
+<body style="margin:0; padding:0; font-family: 'Outfit', Helvetica, Arial, sans-serif; background-color: #f8f9fa;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0"
+        style="background-color: #f8f9fa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                    style="max-width: 600px; background-color: #ffffff; border-radius: 40px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <!-- CABECERA CON LOGOS -->
+                    <tr>
+                        <td align="center" style="padding: 40px 30px 20px;">
+                            <img src="https://aybarcorp.com/public/assets/entregafest/logo-aybar-corp-fondo-blanco.png"
+                                alt="Aybar Corp" style="width: 120px; margin-bottom: 25px; opacity: 0.8;">
+                            <br>
+                            <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png"
+                                alt="Entrega Fest" style="width: 280px; filter: invert(1) brightness(0.2);">
+                        </td>
+                    </tr>
 
-        <h2 style="color:#1a237e; margin-top:0; text-align: center; font-size: 24px;">
-            ¡Hola, {{ $prospecto->nombres }}!
-        </h2>
+                    <!-- CUERPO -->
+                    <tr>
+                        <td style="padding: 0 50px 40px; text-align: center;">
+                            <h2 style="margin: 0 0 10px 0; color: #004d55; font-size: 28px; font-weight: 700;">
+                                ¡Hola, {{ $prospecto->nombres }}!
+                            </h2>
+                            <p style="margin: 0 0 30px 0; color: #555555; font-size: 18px; font-weight: 600;">
+                                Tu contrato definitivo ya está listo ✅
+                            </p>
 
-        <p style="font-size:16px; line-height:1.6; text-align: center; color: #555;">
-            Tu contrato preliminar para el evento <br>
-            <strong style="color: #1a237e; font-size: 18px;">{{ $evento->nombre }}</strong><br>
-            ya está listo y aprobado. ✅
-        </p>
+                            <!-- TARJETA DE INFO DARK -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                                style="background-color: #004d55; border-radius: 25px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,77,85,0.2);">
+                                <tr>
+                                    <td style="padding: 30px; text-align: left;">
+                                        <h3
+                                            style="margin: 0 0 15px 0; color: #ffffff; font-size: 18px; font-weight: 700;">
+                                            Datos de tu terreno:</h3>
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td width="35%" style="padding-bottom: 10px;">
+                                                    <span
+                                                        style="font-size: 13px; color: rgba(255,255,255,0.7); text-transform: uppercase;">Proyecto:</span>
+                                                </td>
+                                                <td style="padding-bottom: 10px;">
+                                                    <span
+                                                        style="font-size: 15px; color: #ffffff; font-weight: 700;">{{ $prospecto->proyecto?->nombre ?? 'N/A' }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <span
+                                                        style="font-size: 13px; color: rgba(255,255,255,0.7); text-transform: uppercase;">Terreno
+                                                        / Mz:</span>
+                                                </td>
+                                                <td>
+                                                    <span
+                                                        style="font-size: 15px; color: #ffffff; font-weight: 700;">{{ $prospecto->lote }}
+                                                        {{ $prospecto->manzana }}</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
 
-        <div style="background: #e8eaf6; padding: 20px; border-radius: 12px; margin: 25px 0;">
-            <p style="margin: 0 0 10px 0; font-size: 15px;"><strong>Datos de tu lote:</strong></p>
-            <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
-                <tr>
-                    <td style="padding: 5px 0; color: #666;">Proyecto:</td>
-                    <td style="padding: 5px 0; font-weight: bold;">{{ $prospecto->proyecto?->nombre ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 5px 0; color: #666;">Lote / MZ:</td>
-                    <td style="padding: 5px 0; font-weight: bold;">{{ $prospecto->lote }} {{ $prospecto->manzana }}</td>
-                </tr>
-            </table>
-        </div>
+                            <p style="margin: 0 0 30px 0; color: #444444; font-size: 16px; line-height: 1.6;">
+                                Por favor, selecciona la fecha y hora de tu preferencia para la firma de tu contrato.
+                            </p>
 
-        <p style="font-size:16px; line-height:1.6; text-align: center;">
-            Por favor, selecciona la <strong>fecha y hora</strong> que prefieres para la <strong>firma de tu
-                contrato</strong>:
-        </p>
+                            <!-- BOTÓN AMBAR -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{{ $link }}" target="_blank"
+                                            style="background: linear-gradient(135deg, #f8cc00 0%, #ff7e33 100%); color: #ffffff !important; padding: 20px 45px; text-decoration: none; border-radius: 25px; font-size: 20px; font-weight: 700; display: inline-block; box-shadow: 0 8px 15px rgba(255,126,51,0.3);">
+                                            📅 Agendar mi Cita
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
 
-        <div style="text-align:center; margin:35px 0;">
-            <a href="{{ $link }}" target="_blank"
-                style="background-color:#1a237e; color:#ffffff !important; padding:16px 32px; text-decoration:none; border-radius:10px; font-size:16px; font-weight:bold; display: inline-block; box-shadow: 0 4px 6px rgba(26,35,126,0.2);">
-                📅 Agendar mi Cita de Firma
-            </a>
-        </div>
+                            <p style="margin: 40px 0 0 0; color: #999999; font-size: 13px; line-height: 1.5;">
+                                Si el botón no funciona, puedes copiar y pegar este enlace en tu navegador:<br>
+                                <a href="{{ $link }}" style="color: #004d55; word-break: break-all;">{{ $link }}</a>
+                            </p>
+                        </td>
+                    </tr>
 
-        <p style="font-size:14px; color:#666; text-align: center; line-height: 1.5;">
-            Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
-            <a href="{{ $link }}" style="color: #1a237e; word-break: break-all;">{{ $link }}</a>
-        </p>
-
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-
-        <p style="font-size:14px; color:#888; margin-bottom:0; text-align: center;">
-            Saludos cordiales,<br>
-            <strong>Equipo Aybar Corp</strong>
-        </p>
-    </div>
+                    <!-- FOOTER -->
+                    <tr>
+                        <td align="center"
+                            style="padding: 30px; border-top: 1px solid #eeeeee; background-color: #fcfcfc;">
+                            <p style="margin: 0; color: #888888; font-size: 13px;">
+                                Saludos cordiales,<br>
+                                <strong style="color: #666666;">Equipo Aybar Corp</strong>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 
 </html>
