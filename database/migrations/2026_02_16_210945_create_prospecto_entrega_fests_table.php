@@ -25,15 +25,6 @@ return new class extends Migration {
             $table->string('lote')->nullable();
             $table->string('manzana')->nullable();
 
-            $table->enum('estado', [
-                'pendiente',
-                'observado',
-                'aprobado',
-                'rechazado'
-            ])->default('pendiente');
-
-            $table->text('observacion')->nullable();
-
             // BackOffice
             $table->enum('grupo', [
                 'A',

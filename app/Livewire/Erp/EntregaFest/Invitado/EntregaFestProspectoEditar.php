@@ -33,7 +33,7 @@ class EntregaFestProspectoEditar extends Component
     public ProspectoEntregaFest $prospecto;
 
     // Campos del prospecto
-    public $proyecto_id = '', $dni = '', $nombres = '', $email = '', $celular = '', $estado = '', $observacion = '';
+    public $proyecto_id = '', $dni = '', $nombres = '', $email = '', $celular = '';
     public $lote = '', $manzana = '';
 
     // BackOffice
@@ -69,8 +69,6 @@ class EntregaFestProspectoEditar extends Component
             'nombres' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'celular' => 'required|string|max:20',
-            'estado' => 'required|in:pendiente,observado,aprobado,rechazado',
-            'observacion' => 'nullable|string',
             'lote' => 'nullable|string|max:20',
             'manzana' => 'nullable|string|max:20',
 
@@ -100,7 +98,6 @@ class EntregaFestProspectoEditar extends Component
             'nombres' => 'nombres completos',
             'email' => 'correo electrónico',
             'celular' => 'número de celular',
-            'estado' => 'estado del prospecto',
             'grupo' => 'grupo backoffice',
             'estado_backoffice' => 'estado backoffice',
             'estado_contrato_preeliminar_emitido' => 'estado contrato preliminar',
@@ -123,8 +120,7 @@ class EntregaFestProspectoEditar extends Component
         $this->nombres = $this->prospecto->nombres;
         $this->email = $this->prospecto->email;
         $this->celular = $this->prospecto->celular;
-        $this->estado = $this->prospecto->estado;
-        $this->observacion = $this->prospecto->observacion;
+
         $this->lote = $this->prospecto->lote;
         $this->manzana = $this->prospecto->manzana;
 
@@ -352,8 +348,6 @@ class EntregaFestProspectoEditar extends Component
             'nombres' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'celular' => 'required|string|max:20',
-            'estado' => 'required|in:pendiente,observado,aprobado,rechazado',
-            'observacion' => 'nullable|string',
             'lote' => 'nullable|string|max:20',
             'manzana' => 'nullable|string|max:20',
         ];
@@ -366,8 +360,6 @@ class EntregaFestProspectoEditar extends Component
             'nombres' => trim($this->nombres),
             'email' => trim($this->email),
             'celular' => trim($this->celular),
-            'estado' => $this->estado,
-            'observacion' => $this->observacion,
             'lote' => $this->lote,
             'manzana' => $this->manzana,
         ], 'PROSPECTO EDITAR - BASICO');

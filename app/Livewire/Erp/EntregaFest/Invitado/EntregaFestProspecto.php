@@ -28,8 +28,7 @@ class EntregaFestProspecto extends Component
     #[Url(keep: true)]
     public $proyecto_id = '';
 
-    #[Url(keep: true)]
-    public $estado = '';
+
 
     #[Url(keep: true)]
     public $estado_firma_contrato_firmado = '';
@@ -51,14 +50,14 @@ class EntregaFestProspecto extends Component
 
     public function updated($property)
     {
-        if (in_array($property, ['buscar', 'proyecto_id', 'estado', 'estado_firma_contrato_firmado', 'grupo', 'perPage'])) {
+        if (in_array($property, ['buscar', 'proyecto_id', 'estado_firma_contrato_firmado', 'grupo', 'perPage'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'proyecto_id', 'estado', 'estado_firma_contrato_firmado', 'grupo']);
+        $this->reset(['buscar', 'proyecto_id', 'estado_firma_contrato_firmado', 'grupo']);
         $this->resetPage();
     }
 
@@ -71,7 +70,6 @@ class EntregaFestProspecto extends Component
                 $this->evento->id,
                 $this->buscar,
                 $this->proyecto_id,
-                $this->estado,
                 $this->estado_firma_contrato_firmado,
                 $this->grupo,
                 false,
@@ -89,7 +87,6 @@ class EntregaFestProspecto extends Component
         return Excel::download(
             new EntregaFestProspectoExport(
                 $this->evento->id,
-                '',
                 '',
                 '',
                 '',
@@ -114,7 +111,7 @@ class EntregaFestProspecto extends Component
                 });
             })
             ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
-            ->when($this->estado, fn($q) => $q->where('estado', $this->estado))
+
             ->when($this->estado_firma_contrato_firmado, fn($q) => $q->where('estado_firma_contrato_firmado', $this->estado_firma_contrato_firmado))
             ->when($this->grupo, fn($q) => $q->where('grupo', $this->grupo))
             ->orderBy('id', 'desc')
