@@ -19,6 +19,7 @@ class UnidadNegocio extends Model
         'razon_social',
         'ruc',
         'slin_id',
+        'direccion',
         'cavali_girador_tipo_documento',
         'cavali_girador_documento',
         'cavali_girador_nombre',
