@@ -1,7 +1,7 @@
 <div class="g_gap_pagina">
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Detalles Entrega Fest</h2>
+        <h2>Ver Entrega Fest</h2>
 
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
@@ -24,7 +24,7 @@
     <div class="g_fila">
         <div class="g_columna_8">
             <div class="formulario g_panel">
-                <h4 class="g_panel_titulo">Información General</h4>
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Información General</h4>
 
                 <div class="g_margin_bottom_10">
                     <label>Estado</label>

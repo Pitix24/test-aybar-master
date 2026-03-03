@@ -22,9 +22,8 @@ class EntregaFestProspectoCrear extends Component
     public EntregaFest $evento;
 
     // Campos del prospecto (Simplificado para registro inicial)
-    public $proyecto_id = '', $dni = '', $nombres = '', $email = '', $celular = '', $observacion = '';
+    public $proyecto_id = '', $dni = '', $nombres = '', $email = '', $celular = '';
     public $lote = '', $manzana = '';
-    public $estado = 'pendiente';
 
     public $proyectos = [];
 
@@ -36,7 +35,6 @@ class EntregaFestProspectoCrear extends Component
             'nombres' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'celular' => 'required|string|max:20',
-            'observacion' => 'nullable|string',
             'lote' => 'nullable|string|max:20',
             'manzana' => 'nullable|string|max:20',
         ];
@@ -50,7 +48,6 @@ class EntregaFestProspectoCrear extends Component
             'nombres' => 'nombres completos',
             'email' => 'correo electrónico',
             'celular' => 'número de celular',
-            'estado' => 'estado del prospecto',
         ];
     }
 
@@ -108,7 +105,6 @@ class EntregaFestProspectoCrear extends Component
                 'celular' => trim($this->celular),
                 'lote' => $this->lote,
                 'manzana' => $this->manzana,
-                'observacion' => $this->observacion,
             ]);
 
             DB::commit();

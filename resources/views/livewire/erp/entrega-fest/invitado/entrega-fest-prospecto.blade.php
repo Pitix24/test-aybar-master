@@ -23,7 +23,7 @@
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Buscar (Nombres, Celular, Email)</label>
+                    <label>Buscar (Nombres, Celular o Email)</label>
                     <input type="text" wire:model.live.debounce.400ms="buscar">
                 </div>
 
@@ -197,12 +197,10 @@
                                 @endif
                             </td>
                             <td class="g_celda_acciones g_celda_centro">
-                                @can('entrega-fest.prospectos')
-                                    <a href="{{ route('erp.entrega-fest.vista.prospectos.editar', [$evento->id, $p->id]) }}"
-                                        class="g_accion editar" title="Editar / Evaluar">
-                                        <i class="fa-solid fa-pencil"></i>
-                                    </a>
-                                @endcan
+                                <a href="{{ route('erp.entrega-fest.vista.prospectos.editar', [$evento->id, $p->id]) }}"
+                                    class="g_accion editar" title="Editar / Evaluar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
                             </td>
                         </tr>
                     @endforeach
