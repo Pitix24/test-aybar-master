@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\WhatsappConversacion;
 use App\Models\WhatsappMensaje;
 use App\Models\Cliente;
+use App\Jobs\ProcessIncomingWhatsapp;
 
 class WhatsappController extends Controller
 {
@@ -36,155 +37,55 @@ class WhatsappController extends Controller
      */
     public function handleWebhook(Request $request)
     {
+        // 1️⃣ Validación de firma X-Hub-Signature-256
+        if (!$this->validateSignature($request)) {
+            Log::channel('whatsapp')->warning('Firma de webhook inválida.');
+            return response('Invalid signature', 403);
+        }
+
         $payload = $request->all();
 
-        // Log RAW para ver exactamente qué manda Meta sin normalizaciones
-        Log::channel('whatsapp')->info('--- WEBHOOK ENTRANTE ---');
+        // Log RAW para ver exactamente qué manda Meta
+        Log::channel('whatsapp')->info('--- WEBHOOK ENTRANTE (Encolado) ---');
         Log::channel('whatsapp')->debug('Payload:', $payload);
 
-        if (isset($payload['entry'][0]['changes'][0]['value'])) {
-            $value = $payload['entry'][0]['changes'][0]['value'];
-
-            // 1. Manejar Mensajes Entrantes
-            if (isset($value['messages'][0])) {
-                Log::channel('whatsapp')->info('Mensaje detectado.');
-                $this->processIncomingMessage($value['messages'][0], $payload);
-            }
-
-            // 2. Manejar Estados (Enviado, Entregado, Leído)
-            if (isset($value['statuses'][0])) {
-                Log::channel('whatsapp')->info('Estado detectado.');
-                $this->updateMessageStatus($value['statuses'][0]);
-            }
-        }
-
-        return response('OK', 200);
-    }
-
-    private function processIncomingMessage($message, $payload)
-    {
+        // 2️⃣ Uso de Jobs (colas) para procesamiento asíncrono
         try {
-            $from = $message['from'];
-            $waId = $message['id'];
-            $type = $message['type'];
-            $body = '';
-
-            // Extraer nombre de perfil de forma segura
-            $profileName = $payload['entry'][0]['changes'][0]['value']['contacts'][0]['profile']['name'] ?? 'Usuario WhatsApp';
-
-            $rawType = $message['type'];
-            $body = '';
-
-            // Mapeo de tipos para la BD
-            $typeMapping = [
-                'text' => 'texto',
-                'image' => 'imagen',
-                'document' => 'documento',
-                'audio' => 'audio',
-                'template' => 'plantilla',
-                'reaction' => 'reaccion'
-            ];
-            $type = $typeMapping[$rawType] ?? 'texto';
-
-            if ($rawType === 'text') {
-                $body = $message['text']['body'];
-            } elseif ($rawType === 'image') {
-                $body = $message['image']['id'];
-            }
-
-            Log::channel('whatsapp')->info("Procesando mensaje de $from: $body");
-
-            // 1. Buscar o crear el CONTACTO
-            $contacto = \App\Models\WhatsappContacto::where('wa_id', $from)->first();
-
-            if (!$contacto) {
-                // Limpiar el número para la búsqueda (quitar +)
-                $cleanFrom = str_replace('+', '', $from);
-                $cliente = \App\Models\Cliente::where('telefono_principal', 'LIKE', "%$cleanFrom%")->first();
-
-                $contacto = \App\Models\WhatsappContacto::create([
-                    'wa_id' => $from,
-                    'nombre_wa' => $profileName,
-                    'numero_celular' => $from,
-                    'cliente_id' => $cliente ? $cliente->id : null
-                ]);
-                Log::channel('whatsapp')->info("Nuevo contacto creado: ID {$contacto->id}");
-            }
-
-            // 2. Buscar conversación activa
-            $conversacion = WhatsappConversacion::where('contacto_id', $contacto->id)
-                ->where('estado', '!=', 'cerrado')
-                ->latest()
-                ->first();
-
-            if (!$conversacion) {
-                $conversacion = WhatsappConversacion::create([
-                    'contacto_id' => $contacto->id,
-                    'cliente_id' => $contacto->cliente_id,
-                    'estado' => 'nuevo',
-                    'last_message_at' => now()
-                ]);
-                Log::channel('whatsapp')->info("Nueva conversación creada: ID {$conversacion->id}");
-            }
-
-            // Actualizar metadata de conversación
-            if ($conversacion->estado !== 'asignado') {
-                $conversacion->increment('mensajes_sin_leer');
-            }
-            $conversacion->update(['last_message_at' => now()]);
-
-            // 3. Guardar el mensaje
-            WhatsappMensaje::create([
-                'conversacion_id' => $conversacion->id,
-                'direccion' => 'entrante',
-                'tipo' => $type,
-                'contenido' => $body,
-                'wa_message_id' => $waId,
-                'estado' => 'leido'
-            ]);
-
-            Log::channel('whatsapp')->info("Mensaje guardado en BD.");
-
-            // 4. Lógica de Bienvenida
-            if ($conversacion->wasRecentlyCreated && $conversacion->estado === 'nuevo') {
-                $service = new \App\Services\WhatsappService();
-                $displayName = $contacto->cliente ? $contacto->cliente->nombre : $contacto->nombre_wa;
-
-                $menuText = "¡Hola " . $displayName . "! Bienvenido a Aybar Corp. 🌿\n\nPor favor, elige una opción:\n1. Consultas Generales (ATC)\n2. Pagos y Evidencias\n3. Firmas y Letras";
-                $service->sendText($from, $menuText);
-
-                $conversacion->update(['estado' => 'en_menu']);
-            }
-
+            ProcessIncomingWhatsapp::dispatch($payload);
+            return response('OK', 200);
         } catch (\Exception $e) {
-            Log::channel('whatsapp')->error("Error procesando mensaje: " . $e->getMessage());
+            Log::channel('whatsapp')->error("Error al despachar job: " . $e->getMessage());
+            return response('Error', 500);
         }
     }
 
-    private function updateMessageStatus($status)
+    /**
+     * Valida la firma enviada por Meta en el header X-Hub-Signature-256
+     */
+    private function validateSignature(Request $request)
     {
-        try {
-            $waId = $status['id'];
-            $metaStatus = $status['status']; // sent, delivered, read, failed
+        $signature = $request->header('X-Hub-Signature-256');
 
-            // Mapeo hacia nuestros términos en español (ENUM de la BD)
-            $mapping = [
-                'sent' => 'enviado',
-                'delivered' => 'entregado',
-                'read' => 'leido',
-                'failed' => 'fallido'
-            ];
-
-            $nuevoEstado = $mapping[$metaStatus] ?? 'enviado';
-
-            $mensaje = WhatsappMensaje::where('wa_message_id', $waId)->first();
-
-            if ($mensaje) {
-                $mensaje->update(['estado' => $nuevoEstado]);
-                Log::channel('whatsapp')->info("Mensaje $waId actualizado a $nuevoEstado");
-            }
-        } catch (\Exception $e) {
-            Log::channel('whatsapp')->error("Error actualizando estado: " . $e->getMessage());
+        if (!$signature) {
+            return false;
         }
+
+        // El header viene en formato sha256={hash}
+        $parts = explode('=', $signature);
+        if (count($parts) !== 2) {
+            return false;
+        }
+
+        $receivedHash = $parts[1];
+        $appSecret = config('services.whatsapp.app_secret');
+
+        if (!$appSecret) {
+            Log::channel('whatsapp')->error('WHATSAPP_APP_SECRET no está configurado.');
+            return false;
+        }
+
+        $expectedHash = hash_hmac('sha256', $request->getContent(), $appSecret);
+
+        return hash_equals($expectedHash, $receivedHash);
     }
 }

@@ -62,6 +62,7 @@ return [
         'phone_id' => env('WHATSAPP_PHONE_ID'),
         'business_id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID'),
         'verify_token' => env('WHATSAPP_VERIFY_TOKEN', 'aybar_crm_secret_token'),
+        'app_secret' => env('WHATSAPP_APP_SECRET'),
     ],
 
 ];
