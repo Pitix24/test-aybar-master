@@ -111,7 +111,7 @@
                                     @foreach ($proyectos_agregados as $p)
                                         <tr wire:key="p-agregado-{{ $p['id'] }}">
                                             <td class="g_negrita">{{ $p['unidad_negocio_nombre'] }}</td>
-                                            <td>{{ $p['nombre'] }}</td>
+                                            <td>ID: {{ $p['id'] }} - {{ $p['nombre'] }} </td>
                                             <td class="g_celda_acciones g_celda_centro">
                                                 <button type="button" wire:click="quitarProyecto({{ $p['id'] }})"
                                                     class="g_boton danger" title="Quitar">
@@ -184,6 +184,43 @@
                     </button>
                 </div>
             </div>
+
+            @if ($evento->prospectos()->doesntExist())
+                <div class="g_panel g_margin_top_20">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-file-excel"></i> Importar
+                            Prospectos</h4>
+                        <button wire:click="descargarPlantilla" class="g_boton info small" title="Descargar formato Excel">
+                            <i class="fa-solid fa-download"></i> Plantilla
+                        </button>
+                    </div>
+                    <p class="leyenda" style="margin-bottom: 15px;">Arrastra o selecciona el archivo Excel con el formato de
+                        titulares y copropietarios.</p>
+
+                    <div class="g_margin_bottom_10">
+                        <input type="file" wire:model="archivo_excel" id="archivo_excel"
+                            class="@error('archivo_excel') input-error @enderror">
+                        @error('archivo_excel') <p class="mensaje_error">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="formulario_botones">
+                        <button wire:click="importarProspectos" class="g_boton dark" wire:loading.attr="disabled"
+                            wire:target="archivo_excel, importarProspectos">
+                            <span wire:loading.remove wire:target="importarProspectos">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
+                            </span>
+                            <span wire:loading wire:target="importarProspectos">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Importando...
+                            </span>
+                        </button>
+                    </div>
+
+                    <div wire:loading wire:target="archivo_excel" class="g_margin_top_10">
+                        <p style="font-size: 0.8em; color: var(--color-primary);"><i
+                                class="fa-solid fa-spinner fa-spin"></i> Cargando archivo...</p>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>

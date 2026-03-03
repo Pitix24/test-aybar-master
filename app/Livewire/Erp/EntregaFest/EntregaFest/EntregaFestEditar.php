@@ -13,13 +13,22 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use App\Models\ProspectoEntregaFest;
+use App\Models\CopropietarioEntregaFest;
+use App\Imports\ProspectoEntregaFestImport;
+use App\Exports\ProspectoPlantillaExport;
+use Livewire\WithFileUploads;
+use Maatwebsite\Excel\Facades\Excel;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Editar Entrega Fest')]
 class EntregaFestEditar extends Component
 {
+    use WithFileUploads;
+
     public EntregaFest $evento;
+    public $archivo_excel;
 
     // Campos del formulario
     public $nombre, $descripcion, $codigo, $fecha_entrega;
@@ -67,7 +76,7 @@ class EntregaFestEditar extends Component
         $this->nombre = $this->evento->nombre;
         $this->descripcion = $this->evento->descripcion;
         $this->codigo = $this->evento->codigo;
-        $this->fecha_entrega = $this->evento->fecha_entrega->format('Y-m-d');
+        $this->fecha_entrega = $this->evento->fecha_entrega ? \Carbon\Carbon::parse($this->evento->fecha_entrega)->format('Y-m-d') : null;
         $this->gestor_id = $this->evento->gestor_id;
         $this->activo = $this->evento->activo;
 
@@ -199,6 +208,54 @@ class EntregaFestEditar extends Component
                 'text' => 'No se pudo actualizar el evento: ' . $e->getMessage()
             ]);
         }
+    }
+
+    public function importarProspectos()
+    {
+        $this->authorize('entrega-fest.editar');
+
+        $this->validate([
+            'archivo_excel' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        try {
+            $proyectosValidos = collect($this->proyectos_agregados)->pluck('id')->toArray();
+            Log::info('--- DEBUG_IMPORT: Proyectos Válidos ---', ['ids' => $proyectosValidos, 'evento' => $this->evento->id]);
+            $import = new ProspectoEntregaFestImport($this->evento->id, $proyectosValidos);
+
+            Excel::import($import, $this->archivo_excel->getRealPath());
+
+            $mensaje = "Se importaron {$import->importados} prospectos correctamente.";
+            if (count($import->errores) > 0) {
+                $mensaje .= " Hubo algunos problemas:\n" . implode("\n", array_slice($import->errores, 0, 5));
+            }
+
+            $this->dispatch('alertaLivewire', [
+                'type' => count($import->errores) > 0 ? 'warning' : 'success',
+                'title' => 'Importación Finalizada',
+                'text' => $mensaje
+            ]);
+
+            $this->reset('archivo_excel');
+
+        } catch (\Exception $e) {
+            Log::channel('entrega-fest')->error('[IMPORT] Error: ' . $e->getMessage(), [
+                'evento' => $this->evento->id,
+                'user' => auth()->id(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error de Importación',
+                'text' => 'Ocurrió un error al procesar el archivo: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function descargarPlantilla()
+    {
+        return Excel::download(new ProspectoPlantillaExport, 'plantilla_prospectos.xlsx');
     }
 
     public function placeholder()
