@@ -35,7 +35,7 @@ class FirmaPublica extends Component
         }
 
         // Solo prospectos con contrato preliminar aprobado
-        if ($this->prospecto->estado_contrato_preeliminar_emitido !== 'aprobado') {
+        if ($this->prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
             abort(403, 'Tu contrato aún no ha sido aprobado.');
         }
 

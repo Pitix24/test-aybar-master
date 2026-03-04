@@ -44,7 +44,7 @@
                 <i class="fa-solid fa-save"></i> Confirmar
             </button>
 
-            @if($fecha_firma)
+            @if($fecha_firma && $estado_firma_contrato_firmado === 'PENDIENTE')
                 <button type="button" wire:click="enviarRecordatorioFirma" wire:loading.attr="disabled"
                     wire:target="enviarRecordatorioFirma" class="g_boton info"
                     title="Enviar recordatorio de cita de firma al prospecto">
