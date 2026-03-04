@@ -25,8 +25,8 @@ Route::middleware('api')->group(function () {
         return response()->json(['message' => 'API funcionando correctamente']);
     });
 
-    Route::get('/test-slin/cliente', [SlinController::class, 'probarCliente']);
-    Route::get('/test-slin/lotes', [SlinController::class, 'probarLotes']);
+    Route::get('/test-slin/cliente/{dni}', [SlinController::class, 'probarCliente']);
+    Route::get('/test-slin/lotes/{id_cliente}/{id_empresa}', [SlinController::class, 'probarLotes']);
     Route::get('/test-slin/cuotas', [SlinController::class, 'probarCuotas']);
     Route::get('/test-slin/estado-cuenta', [SlinController::class, 'probarEstadoCuenta']);
     Route::get('/test-slin/cuota-estado-cuenta', [SlinController::class, 'probarCuotaEstadoCuenta']);

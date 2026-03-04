@@ -353,20 +353,22 @@ class SlinController extends Controller
         ]);
     }
 
-    public function probarCliente()
+    public function probarCliente(string $dni)
     {
+        //http://127.0.0.1:8000/api/test-slin/cliente/45390385
+
         //$dni = "20508775742";//desmaterializada
         //$dni = "47693208";//desmaterializada
         //$dni = "72397392"; //desmaterializada
-        $dni = "70442100"; //desmaterializada
-
         $response = Http::get("{$this->remoteBase}/cliente/{$dni}");
 
         return $response->json();
     }
 
-    public function probarLotes()
+    public function probarLotes(string $id_cliente, string $id_empresa)
     {
+        //http://127.0.0.1:8000/api/test-slin/lotes/C06071/014
+
         /*$params = [
             "id_cliente" => "C14022",
             "id_empresa" => "014",
@@ -376,10 +378,9 @@ class SlinController extends Controller
             "id_cliente" => "C19471",
             "id_empresa" => "014",
         ];*/
-
         $params = [
-            "id_cliente" => "C06071",
-            "id_empresa" => "014",
+            "id_cliente" => $id_cliente,
+            "id_empresa" => $id_empresa,
         ];
 
         $response = Http::get("{$this->remoteBase}/lotes", $params);
