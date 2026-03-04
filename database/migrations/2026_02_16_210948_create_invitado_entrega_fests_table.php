@@ -31,8 +31,8 @@ return new class extends Migration {
             $table->integer('cantidad_acompanantes_permitidos')->default(0);
 
             $table->boolean('confirmado')->default(false);
-            $table->enum('estado_confirmacion', ['pendiente', 'confirmado', 'no_asiste'])->default('pendiente');
-            $table->enum('transporte', ['bus', 'propio', 'na'])->default('na');
+            $table->enum('estado_confirmacion', ['PENDIENTE', 'CONFIRMADO', 'NO_ASISTE'])->default('PENDIENTE');
+            $table->enum('transporte', ['BUS', 'PROPIO'])->default('PROPIO');
             $table->text('observaciones_asistencia')->nullable();
 
             $table->timestamps();

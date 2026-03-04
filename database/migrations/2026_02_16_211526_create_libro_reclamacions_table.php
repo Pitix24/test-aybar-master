@@ -24,14 +24,14 @@ return new class extends Migration {
             $table->string('domicilio');
             $table->string('telefono')->nullable();
             $table->string('email')->nullable();
-            $table->enum('tipo_documento', ['dni', 'ruc', 'ce'])->default('dni');
+            $table->enum('tipo_documento', ['DNI', 'RUC', 'CE'])->default('DNI');
             $table->string('numero_documento');
 
-            $table->enum('tipo_bien_contratado', ['producto', 'servicio'])->default('producto');
+            $table->enum('tipo_bien_contratado', ['PRODUCTO', 'SERVICIO'])->default('PRODUCTO');
             $table->decimal('monto_reclamado', 10, 2)->nullable();
             $table->text('descripcion')->nullable();
 
-            $table->enum('tipo_pedido', ['reclamo', 'queja'])->default('reclamo');
+            $table->enum('tipo_pedido', ['RECLAMO', 'QUEJA'])->default('RECLAMO');
             $table->text('detalle')->nullable();
             $table->text('pedido')->nullable();
             $table->boolean('conformidad')->default(false);
@@ -45,7 +45,7 @@ return new class extends Migration {
             $table->string('archivo_4')->nullable();
 
             $table->boolean('leido')->default(false);
-            $table->enum('estado', ['nuevo', 'revision', 'resuelto', 'cerrado'])->default('nuevo');
+            $table->enum('estado', ['NUEVO', 'REVISION', 'RESUELTO', 'CERRADO'])->default('NUEVO');
 
             $table->timestamps();
             $table->softDeletes();

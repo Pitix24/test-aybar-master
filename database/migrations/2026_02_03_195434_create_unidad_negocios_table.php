@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('razon_social')->unique()->nullable();
             $table->string('ruc')->unique()->nullable();
             $table->string('slin_id')->unique()->nullable();
-            $table->text('direccion')->nullable();
+            $table->string('direccion')->nullable();
 
             //REPRESENTANTE LEGAL DEL GIRADOR
             $table->string('cavali_girador_tipo_documento')->nullable();

@@ -39,26 +39,25 @@ return new class extends Migration {
             $table->foreignId('validador_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //validador backoffice
             $table->dateTime('fecha_validacion_eecc')->nullable(); //fecha validación estado de cuenta
             $table->enum('estado_backoffice', [
-                'pendiente',
-                'observado',
-                'aprobado',
-                'rechazado'
-            ])->default('pendiente');
+                'PENDIENTE',
+                'BANCARIZAR',
+                'PENALIDAD',
+                'OBSERVADO',
+                'CONFORME'
+            ])->default('PENDIENTE');
 
             // Legal
             $table->enum('estado_contrato_preeliminar_emitido', [
-                'pendiente',
-                'observado',
-                'aprobado',
-                'rechazado'
-            ])->default('pendiente');
+                'PENDIENTE',
+                'GENERADO',
+                'OBSERVADO',
+                'CONFORME'
+            ])->default('PENDIENTE');
 
             $table->enum('estado_firma_contrato_firmado', [
-                'pendiente',
-                'observado',
-                'aprobado',
-                'rechazado'
-            ])->default('pendiente');
+                'PENDIENTE',
+                'FIRMADO'
+            ])->default('PENDIENTE');
             $table->dateTime('fecha_firma')->nullable(); //fecha firma contrato
             $table->dateTime('fecha_generacion_contrato')->nullable(); //fecha generacion contrato
 
