@@ -1,188 +1,1292 @@
 /* =========================================================================
-   COMPONENT: WHATSAPP CHAT
+   MÓDULO WHATSAPP CRM
+   Migrado desde Angular frontend-whatsapp-master
+   Incluye: layout, sidebars, modales, emoticones, herramientas multimedia
    ========================================================================= */
 
-.g_whatsapp_container {
+/* ── VARIABLES ─────────────────────────────────────────────────────────── */
+:root {
+    --wsp-verde: #00a884;
+    --wsp-verde-oscuro: #008069;
+    --wsp-verde-hover: #008f6f;
+    --wsp-verde-burbuja: #d9fdd3;
+    --wsp-fondo-panel: #f0f2f5;
+    --wsp-fondo-blanco: #ffffff;
+    --wsp-fondo-cuerpo: #efeae2;
+    --wsp-borde: #e9edef;
+    --wsp-borde-fuerte: #d1d7db;
+    --wsp-texto-ppal: #111b21;
+    --wsp-texto-sec: #667781;
+    --wsp-icon-ppal: #54656f;
+    --wsp-icon-sec: #8696a0;
+    --wsp-sombra: 0 2px 5px 0 rgba(11, 20, 26, .26), 0 2px 10px 0 rgba(11, 20, 26, .16);
+    --wsp-sombra-burbuja: 0 1px 0.5px rgba(11, 20, 26, .13);
+    --wsp-scroll-thumb: #C8CBCD;
+    --wsp-alto-cabecera: 60px;
+    --wsp-alto-footer: 62px;
+    --wsp-ancho-sidebar: 320px;
+
+    /* Herramientas colores */
+    --wsp-tool-blue: #007bfc;
+    --wsp-tool-pink: #ff2e74;
+    --wsp-tool-cyan: #009de2;
+    --wsp-tool-purple: #7f66ff;
+    --wsp-tool-amber: #ffbc38;
+    --wsp-tool-teal: #02a698;
+    --wsp-tool-dark: #3a5564;
+    --wsp-tool-green: #008069;
+}
+
+/* ── SCROLLBAR ──────────────────────────────────────────────────────────── */
+.wsp_scroll::-webkit-scrollbar {
+    width: 6px;
+    background: transparent;
+}
+
+.wsp_scroll::-webkit-scrollbar-thumb {
+    background: var(--wsp-scroll-thumb);
+    border-radius: 3px;
+}
+
+/* =========================================================================
+   LAYOUT PRINCIPAL
+   ========================================================================= */
+.wsp_layout {
+    display: flex;
     height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', 'Poppins', sans-serif;
+    position: relative;
+}
+
+/* =========================================================================
+   PANEL IZQUIERDO (30%)
+   ========================================================================= */
+.wsp_panel_izq {
+    width: 30%;
+    min-width: 280px;
+    max-width: 420px;
     display: flex;
     flex-direction: column;
-    background-color: #f0f2f5;
-    overflow: hidden;
+    height: 100%;
+    border-right: 1px solid var(--wsp-borde-fuerte);
+    background: var(--wsp-fondo-blanco);
+    position: relative;
+    transition: width 0.25s ease;
+    flex-shrink: 0;
 }
 
-/* CABECERA */
-.g_whatsapp_header {
-    padding: 10px 20px;
-    background: var(--color-blanco);
-    border-bottom: 1px solid var(--color-gris);
+/* Cabecera Izquierda */
+.wsp_cabecera_izq {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    min-height: 60px;
-}
-
-.g_whatsapp_header_info {
-    display: flex;
     align-items: center;
-    gap: 15px;
+    padding: 10px 16px;
+    background: var(--wsp-fondo-panel);
+    height: var(--wsp-alto-cabecera);
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--wsp-borde);
 }
 
-.g_whatsapp_avatar {
+.wsp_avatar_propio {
     width: 40px;
     height: 40px;
-    background: #00a884;
     border-radius: 50%;
+    background: var(--wsp-verde);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-weight: bold;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.wsp_cabecera_acciones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wsp_icon_btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--wsp-icon-ppal);
+    font-size: 18px;
+    transition: background 0.15s;
+    position: relative;
+}
+
+.wsp_icon_btn:hover {
+    background: rgba(84, 101, 111, .1);
+}
+
+.wsp_icon_btn.activo {
+    color: var(--wsp-verde);
+}
+
+/* Buscador */
+.wsp_buscar_box {
+    padding: 8px 12px;
+    background: var(--wsp-fondo-blanco);
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--wsp-borde);
+}
+
+.wsp_buscar_input_wrap {
+    display: flex;
+    align-items: center;
+    background: var(--wsp-fondo-panel);
+    border-radius: 8px;
+    padding: 7px 10px;
+    gap: 8px;
+}
+
+.wsp_buscar_input_wrap i {
+    color: var(--wsp-icon-sec);
+    font-size: 14px;
+}
+
+.wsp_buscar_input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: var(--wsp-texto-ppal);
+    font-family: inherit;
+}
+
+.wsp_buscar_input::placeholder {
+    color: var(--wsp-icon-sec);
+}
+
+/* Filtros chips */
+.wsp_filtros_rapidos {
+    display: flex;
+    gap: 6px;
+    padding: 6px 12px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--wsp-borde);
+}
+
+.wsp_filtros_rapidos::-webkit-scrollbar {
+    display: none;
+}
+
+.wsp_filtro_chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    border: 1px solid var(--wsp-borde-fuerte);
+    background: var(--wsp-fondo-blanco);
+    color: var(--wsp-texto-sec);
+    transition: all 0.15s;
+}
+
+.wsp_filtro_chip:hover,
+.wsp_filtro_chip.activo {
+    background: var(--wsp-verde);
+    color: white;
+    border-color: var(--wsp-verde);
+}
+
+/* Lista de chats */
+.wsp_lista_chats {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.wsp_chat_item {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 72px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--wsp-borde);
+    transition: background 0.15s;
+    position: relative;
+}
+
+.wsp_chat_item:hover {
+    background: var(--wsp-fondo-panel);
+}
+
+.wsp_chat_item.activo {
+    background: #f0f2f5;
+}
+
+.wsp_chat_avatar {
+    width: 49px;
+    height: 49px;
+    border-radius: 50%;
+    background: #dfe5e7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.wsp_chat_info {
+    flex: 1;
+    margin-left: 12px;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.wsp_chat_row1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3px;
+}
+
+.wsp_chat_nombre {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--wsp-texto-ppal);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wsp_chat_hora {
+    font-size: 12px;
+    color: var(--wsp-texto-sec);
+    flex-shrink: 0;
+    margin-left: 6px;
+}
+
+.wsp_chat_hora.no_leido {
+    color: var(--wsp-verde);
+}
+
+.wsp_chat_row2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wsp_chat_preview {
+    font-size: 13px;
+    color: var(--wsp-texto-sec);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.wsp_badge_no_leido {
+    background: var(--wsp-verde);
+    color: white;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 0 4px;
+    margin-left: 4px;
     flex-shrink: 0;
 }
 
-.g_whatsapp_header_text h4 {
-    margin: 0;
-    font-size: 1rem;
-    color: var(--color-texto-primario);
+.wsp_chat_vacio {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--wsp-texto-sec);
+    font-size: 14px;
 }
 
-.g_whatsapp_header_text span {
-    font-size: 0.8rem;
-    color: #666;
-}
-
-/* CUERPO DEL CHAT */
-.g_whatsapp_body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
+/* =========================================================================
+   SIDEBAR IZQUIERDO (sobre el panel izquierdo, ocupa todo su ancho)
+   ========================================================================= */
+.wsp_sidebar_izq {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    background: var(--wsp-fondo-blanco);
     display: flex;
     flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
+    overflow: hidden;
+}
+
+.wsp_sidebar_izq.visible {
+    transform: translateX(0);
+}
+
+.wsp_sidebar_cabecera_verde {
+    height: var(--wsp-alto-cabecera);
+    background: var(--wsp-verde-oscuro);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.wsp_sidebar_cabecera_verde span {
+    font-size: 18px;
+    color: white;
+    font-weight: 400;
+}
+
+.wsp_sidebar_cabecera_gris {
+    height: var(--wsp-alto-cabecera);
+    background: var(--wsp-fondo-panel);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--wsp-borde);
+}
+
+.wsp_sidebar_cabecera_gris span {
+    font-size: 15px;
+    color: var(--wsp-texto-ppal);
+    font-weight: 500;
+}
+
+.wsp_sidebar_icon_back {
+    color: var(--wsp-icon-ppal);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.wsp_sidebar_icon_back_blanco {
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.wsp_sidebar_cuerpo {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ─ Filtro Sidebar ─────────────────────────────────────────── */
+.wsp_filtro_body {
+    padding: 0 16px;
+}
+
+.wsp_filtro_seccion {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--wsp-borde);
+}
+
+.wsp_filtro_seccion h5 {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--wsp-texto-ppal);
+    margin-bottom: 12px;
+}
+
+.wsp_filtro_options {
+    display: flex;
+    flex-wrap: wrap;
     gap: 12px;
+}
+
+.wsp_filtro_options label {
+    font-size: 14px;
+    color: #3b4a54;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.wsp_filtro_options label input[type=radio],
+.wsp_filtro_options label input[type=checkbox] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--wsp-verde);
+}
+
+.wsp_filtro_options input[type=date] {
+    padding: 6px 8px;
+    border: 1px solid var(--wsp-borde-fuerte);
+    border-radius: 6px;
+    font-size: 13px;
+    color: #3b4a54;
+    outline: none;
+}
+
+.wsp_filtro_botones {
+    padding: 16px 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.wsp_btn_outline {
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--wsp-verde-oscuro);
+    border: 1px solid var(--wsp-borde-fuerte);
+    background: transparent;
+    transition: background 0.15s;
+}
+
+.wsp_btn_outline:hover {
+    background: var(--wsp-fondo-panel);
+}
+
+.wsp_btn_primary {
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    background: var(--wsp-verde-oscuro);
+    color: white;
+    border: none;
+    transition: background 0.15s;
+}
+
+.wsp_btn_primary:hover {
+    background: var(--wsp-verde);
+}
+
+/* ─ Perfil Sidebar ─────────────────────────────────────────── */
+.wsp_perfil_info {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+}
+
+.wsp_perfil_avatar_grande {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--wsp-verde);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.wsp_perfil_nombre {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--wsp-texto-ppal);
+}
+
+.wsp_perfil_sub {
+    font-size: 13px;
+    color: var(--wsp-texto-sec);
+}
+
+/* =========================================================================
+   PANEL DERECHO (flex:1)
+   ========================================================================= */
+.wsp_panel_der {
+    flex: 1;
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Área principal de la conversación */
+.wsp_conv_area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: var(--wsp-fondo-cuerpo);
+    min-width: 0;
+}
+
+/* Cabecera Derecha */
+.wsp_cabecera_der {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    height: var(--wsp-alto-cabecera);
+    background: var(--wsp-fondo-panel);
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--wsp-borde);
+}
+
+.wsp_cabecera_der_info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.wsp_cabecera_der_texto h4 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--wsp-texto-ppal);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.wsp_cabecera_der_texto span {
+    font-size: 12px;
+    color: var(--wsp-texto-sec);
+}
+
+/* Badge departamento */
+.wsp_dept_badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    background: rgba(0, 168, 132, .12);
+    color: var(--wsp-verde);
+    border: 1px solid rgba(0, 168, 132, .25);
+}
+
+/* Pantalla de Bienvenida */
+.wsp_bienvenida {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    gap: 16px;
+    background: var(--wsp-fondo-cuerpo);
+}
+
+.wsp_bienvenida_icon {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(0, 168, 132, .08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    margin-bottom: 10px;
+}
+
+.wsp_bienvenida h2 {
+    font-size: 1.8rem;
+    color: #41525d;
+    font-weight: 300;
+    margin: 0;
+}
+
+.wsp_bienvenida p {
+    font-size: 14px;
+    color: var(--wsp-texto-sec);
+    max-width: 360px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.wsp_bienvenida hr {
+    width: 60px;
+    border: none;
+    border-top: 1px solid var(--wsp-borde-fuerte);
+}
+
+.wsp_bienvenida small {
+    font-size: 12px;
+    color: var(--wsp-texto-sec);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Cuerpo Mensajes */
+.wsp_cuerpo_mensajes {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 50px;
+    display: flex;
+    flex-direction: column;
     background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
     background-repeat: repeat;
-    background-attachment: fixed;
+    background-attachment: local;
 }
 
-.g_whatsapp_message_wrapper {
+@media (max-width: 900px) {
+    .wsp_cuerpo_mensajes {
+        padding: 15px 20px;
+    }
+}
+
+/* Fecha separadora */
+.wsp_fecha_separador {
+    width: fit-content;
+    margin: 10px auto;
+    background: rgba(255, 255, 255, .9);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--wsp-texto-sec);
+    box-shadow: var(--wsp-sombra-burbuja);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Burbujas */
+.wsp_mensaje_wrapper {
     display: flex;
     width: 100%;
+    margin: 2px 0;
 }
 
-.g_whatsapp_message_wrapper.sent {
+.wsp_mensaje_wrapper.saliente {
     justify-content: flex-end;
 }
 
-.g_whatsapp_message_wrapper.received {
+.wsp_mensaje_wrapper.entrante {
     justify-content: flex-start;
 }
 
-.g_whatsapp_bubble {
-    max-width: 65%;
-    padding: 8px 12px;
-    position: relative;
-    font-size: 0.95rem;
-    box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
-    line-height: 1.4;
+.wsp_mensaje_wrapper.saliente+.wsp_mensaje_wrapper.saliente {
+    margin-top: 2px;
 }
 
-.g_whatsapp_bubble.sent {
-    background: #d9fdd3;
+.wsp_mensaje_wrapper.entrante+.wsp_mensaje_wrapper.saliente,
+.wsp_mensaje_wrapper.saliente+.wsp_mensaje_wrapper.entrante {
+    margin-top: 8px;
+}
+
+.wsp_burbuja {
+    max-width: 65%;
+    padding: 6px 10px 8px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+    box-shadow: var(--wsp-sombra-burbuja);
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.wsp_burbuja::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.wsp_mensaje_wrapper.saliente .wsp_burbuja {
+    background: var(--wsp-verde-burbuja);
     border-radius: 8px 0 8px 8px;
 }
 
-.g_whatsapp_bubble.received {
-    background: var(--color-blanco);
+.wsp_mensaje_wrapper.saliente .wsp_burbuja::before {
+    right: -12px;
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+    background: var(--wsp-verde-burbuja);
+}
+
+.wsp_mensaje_wrapper.entrante .wsp_burbuja {
+    background: var(--wsp-fondo-blanco);
     border-radius: 0 8px 8px 8px;
 }
 
-.g_whatsapp_message_content {
-    color: #111b21;
-    word-break: break-word;
+.wsp_mensaje_wrapper.entrante .wsp_burbuja::before {
+    left: -12px;
+    clip-path: polygon(100% 0, 0 0, 100% 100%);
+    background: var(--wsp-fondo-blanco);
 }
 
-.g_whatsapp_message_content img {
+.wsp_mensaje_wrapper.saliente+.wsp_mensaje_wrapper.saliente .wsp_burbuja::before,
+.wsp_mensaje_wrapper.entrante+.wsp_mensaje_wrapper.entrante .wsp_burbuja::before {
+    display: none;
+}
+
+/* Multimedia */
+.wsp_media_img {
     max-width: 100%;
+    max-height: 280px;
     border-radius: 6px;
     display: block;
-    margin-bottom: 5px;
+    cursor: pointer;
+    object-fit: cover;
+    margin-bottom: 4px;
 }
 
-.g_whatsapp_message_meta {
+.wsp_media_vid {
+    max-width: 100%;
+    max-height: 230px;
+    border-radius: 6px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.wsp_media_audio {
+    width: 220px;
+    height: 36px;
+    margin-bottom: 4px;
+}
+
+.wsp_doc_link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(0, 0, 0, .05);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--wsp-texto-ppal);
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+/* Meta mensaje */
+.wsp_mensaje_meta {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 4px;
+    gap: 3px;
     margin-top: 4px;
-    font-size: 0.7rem;
-    color: #667781;
+    font-size: 11px;
+    color: var(--wsp-texto-sec);
+    line-height: 1;
 }
 
-.g_whatsapp_status.leido {
+.wsp_tick {
+    font-size: 12px;
+    color: var(--wsp-icon-sec);
+}
+
+.wsp_tick.leido {
     color: #53bdeb;
 }
 
-/* FOOTER / INPUT */
-.g_whatsapp_footer {
-    padding: 10px 15px;
-    background: #f0f2f5;
-    border-top: 1px solid var(--color-gris);
-}
-
-.g_whatsapp_input_form {
+/* =========================================================================
+   SIDEBAR DERECHO (se abre junto a la conversación)
+   ========================================================================= */
+.wsp_sidebar_der {
+    width: 0;
+    overflow: hidden;
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    height: 100%;
+    background: var(--wsp-fondo-blanco);
+    border-left: 1px solid var(--wsp-borde);
+    transition: width 0.28s cubic-bezier(.4, 0, .2, 1);
+    flex-shrink: 0;
+}
+
+.wsp_sidebar_der.visible {
+    width: var(--wsp-ancho-sidebar);
+}
+
+/* Cabecera sidebar derecho */
+.wsp_sidebar_der_cab {
+    height: var(--wsp-alto-cabecera);
+    background: var(--wsp-fondo-panel);
+    display: flex;
     align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--wsp-borde);
 }
 
-.g_whatsapp_input {
+.wsp_sidebar_der_cab span {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--wsp-texto-ppal);
+}
+
+.wsp_sidebar_der_cuerpo {
     flex: 1;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 8px;
-    outline: none;
-    font-size: 1rem;
-    background: var(--color-blanco);
+    overflow-y: auto;
 }
 
-.g_whatsapp_send_btn {
-    background: #00a884;
-    border: none;
+/* ─ Sidebar Plantillas ─────────────────────────────────────────── */
+.wsp_plantilla_item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--wsp-borde);
+    transition: background 0.15s;
+}
+
+.wsp_plantilla_item:hover {
+    background: var(--wsp-fondo-panel);
+}
+
+.wsp_plantilla_badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--wsp-fondo-panel);
+    color: var(--wsp-texto-ppal);
+    margin-bottom: 4px;
+}
+
+.wsp_plantilla_texto {
+    font-size: 13px;
+    color: var(--wsp-texto-sec);
+    margin: 4px 0;
+    line-height: 1.4;
+}
+
+.wsp_plantilla_btn {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    background: var(--wsp-verde-oscuro);
     color: white;
-    width: 45px;
-    height: 45px;
+    border: none;
+    transition: background 0.15s;
+}
+
+.wsp_plantilla_btn:hover {
+    background: var(--wsp-verde);
+}
+
+/* ─ Sidebar Buscar en chat ─────────────────────────────────────── */
+.wsp_buscar_chat_input {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--wsp-borde);
+}
+
+.wsp_buscar_chat_input input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--wsp-borde-fuerte);
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    font-family: inherit;
+}
+
+/* ─ Sidebar Info Contacto ──────────────────────────────────────── */
+.wsp_info_section {
+    padding: 16px;
+    border-bottom: 1px solid var(--wsp-borde);
+}
+
+.wsp_info_section h5 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wsp-verde);
+    margin-bottom: 8px;
+}
+
+.wsp_info_row {
+    font-size: 14px;
+    color: var(--wsp-texto-ppal);
+    margin-bottom: 4px;
+}
+
+.wsp_info_row span {
+    color: var(--wsp-texto-sec);
+    font-size: 12px;
+    display: block;
+}
+
+/* =========================================================================
+   FOOTER / INPUT
+   ========================================================================= */
+.wsp_footer {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--wsp-fondo-panel);
+    min-height: var(--wsp-alto-footer);
+    flex-shrink: 0;
+    position: relative;
+    border-top: 1px solid var(--wsp-borde);
+}
+
+.wsp_footer_icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--wsp-icon-ppal);
+    font-size: 22px;
+    cursor: pointer;
     border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.wsp_footer_icon:hover {
+    background: rgba(84, 101, 111, .1);
+}
+
+.wsp_mensaje_input {
+    flex: 1;
+    background: var(--wsp-fondo-blanco);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    color: var(--wsp-texto-ppal);
+    outline: none;
+    font-family: inherit;
+    resize: none;
+    min-height: 42px;
+    max-height: 180px;
+    line-height: 1.47;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.wsp_mensaje_input::placeholder {
+    color: var(--wsp-icon-sec);
+}
+
+.wsp_send_btn {
+    width: 42px;
+    height: 42px;
+    background: var(--wsp-verde);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.1s;
 }
 
-.g_whatsapp_send_btn:hover {
-    background: #008f6f;
+.wsp_send_btn:hover {
+    background: var(--wsp-verde-hover);
 }
 
-.g_whatsapp_empty {
-    flex: 1;
+.wsp_send_btn:active {
+    transform: scale(0.93);
+}
+
+/* =========================================================================
+   EMOTICONES
+   ========================================================================= */
+.wsp_emoticones_panel {
+    position: fixed;
+    bottom: 70px;
+    left: calc(30% + 8px);
+    width: 330px;
+    background: var(--wsp-fondo-panel);
+    border-radius: 8px;
+    box-shadow: var(--wsp-sombra);
+    z-index: 9500;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+}
+
+.wsp_emoticones_tabs {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 44px;
+    border-bottom: 1px solid var(--wsp-borde);
+    padding: 0 10px;
+}
+
+.wsp_emoticones_tabs span {
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.wsp_emoticones_tabs span:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.wsp_emoticones_buscar {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--wsp-borde);
+}
+
+.wsp_emoticones_buscar input {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--wsp-borde-fuerte);
+    font-size: 13px;
+    outline: none;
+    background: white;
+    font-family: inherit;
+}
+
+.wsp_emoticones_grid {
+    height: 260px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+.wsp_emoticones_grid span {
+    font-size: 24px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    color: #667781;
+    border-radius: 4px;
+    transition: background 0.1s;
+}
+
+.wsp_emoticones_grid span:hover {
+    background: rgba(0, 0, 0, .06);
+}
+
+/* =========================================================================
+   HERRAMIENTAS (adjuntar)
+   ========================================================================= */
+.wsp_herramientas_panel {
+    position: fixed;
+    bottom: 70px;
+    left: calc(30% + 56px);
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    z-index: 9500;
+}
+
+.wsp_herramienta_btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: var(--wsp-sombra);
+    transition: transform 0.15s;
+}
+
+.wsp_herramienta_btn:hover {
+    transform: scale(1.12);
+}
+
+.wsp_tool_tooltip {
+    position: relative;
+}
+
+.wsp_tool_tooltip::before {
+    content: attr(data-tip);
+    position: absolute;
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    background: rgba(0, 0, 0, .7);
+    color: white;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.wsp_tool_tooltip:hover::before {
+    opacity: 1;
+}
+
+/* =========================================================================
+   MODAL VISUALIZADOR MULTIMEDIA
+   ========================================================================= */
+.wsp_modal_multimedia {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(11, 20, 26, .97);
+    display: flex;
+    flex-direction: column;
+}
+
+.wsp_modal_multimedia_cab {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 20px;
+}
+
+.wsp_modal_multimedia_cab button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    opacity: .8;
+}
+
+.wsp_modal_multimedia_cab button:hover {
+    opacity: 1;
+}
+
+.wsp_modal_multimedia_cuerpo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.wsp_modal_multimedia_cuerpo img,
+.wsp_modal_multimedia_cuerpo video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+    display: block;
+}
+
+/* =========================================================================
+   MODAL PAUSAR CHAT
+   ========================================================================= */
+.wsp_modal_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: rgba(255, 255, 255, .7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wsp_modal_card {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    width: 480px;
+    max-width: 95vw;
+    box-shadow: 0 4px 24px rgba(11, 20, 26, .22);
+}
+
+.wsp_modal_card h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--wsp-texto-ppal);
+    margin: 0 0 16px;
+}
+
+.wsp_modal_radio_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.wsp_modal_radio_list label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #3b4a54;
+    cursor: pointer;
+}
+
+.wsp_modal_radio_list input[type=radio] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--wsp-verde);
+    cursor: pointer;
+}
+
+.wsp_modal_actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* =========================================================================
+   INDICADOR CHAT PAUSADO (banner en cabecera)
+   ========================================================================= */
+.wsp_pausa_banner {
+    background: #fff3cd;
+    color: #856404;
+    font-size: 12px;
     text-align: center;
-    padding: 40px;
+    padding: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
-.g_whatsapp_empty img {
-    width: 120px;
-    opacity: 0.2;
-    margin-bottom: 25px;
-}
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+@media (max-width: 768px) {
+    .wsp_panel_izq {
+        width: 100%;
+        max-width: 100%;
+    }
 
-.g_whatsapp_empty h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #41525d;
+    .wsp_panel_der {
+        display: none;
+    }
+
+    .wsp_panel_der.mobile-visible {
+        display: flex;
+    }
+
+    .wsp_sidebar_der {
+        width: 100% !important;
+    }
 }
