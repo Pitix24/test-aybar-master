@@ -89,8 +89,8 @@ class EntregaFestSeeder extends Seeder
                         ]));
                     }
 
-                    // 4. Crear Invitado para el TITULAR (si está aprobado)
-                    if ($prospecto->estado === 'aprobado') {
+                    // 4. Crear Invitado para el TITULAR
+                    if (rand(0, 1)) {
                         $invitadoTitular = InvitadoEntregaFest::create([
                             'entrega_fest_id' => $evento->id,
                             'prospecto_entrega_fest_id' => $prospecto->id,
@@ -186,11 +186,11 @@ class EntregaFestSeeder extends Seeder
             // C. Incidencias
             $evento->incidencias()->create([
                 'tipo' => 'Logística',
-                'prioridad' => 'Media',
+                'prioridad' => 'MEDIA',
                 'descripcion' => 'Falta una silla en la carpa 3',
                 'ubicacion' => 'Zona ATC',
                 'informante_user_id' => $gestores->random()->id,
-                'estado' => 'Abierta'
+                'estado' => 'ABIERTO'
             ]);
 
             // D. Recursos y Soporte

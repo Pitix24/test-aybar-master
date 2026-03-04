@@ -10,6 +10,61 @@ class ProspectoEntregaFest extends Model
     /** @use HasFactory<\Database\Factories\ProspectoEntregaFestFactory> */
     use HasFactory;
 
+    // ---------------------------------------------------------------
+    // ENUMS: Grupo
+    // ---------------------------------------------------------------
+    const GRUPOS = ['A', 'B', 'C', 'D'];
+
+    // ---------------------------------------------------------------
+    // ENUMS: Estado BackOffice
+    // ---------------------------------------------------------------
+    const ESTADO_BACKOFFICE = [
+        'PENDIENTE' => ['label' => 'Pendiente', 'color' => '#6B7280'],
+        'BANCARIZAR' => ['label' => 'Bancarizar', 'color' => '#3B82F6'],
+        'PENALIDAD' => ['label' => 'Penalidad', 'color' => '#EF4444'],
+        'OBSERVADO' => ['label' => 'Observado', 'color' => '#F59E0B'],
+        'CONFORME' => ['label' => 'Conforme', 'color' => '#10B981'],
+    ];
+
+    // ---------------------------------------------------------------
+    // ENUMS: Estado Contrato Preliminar
+    // ---------------------------------------------------------------
+    const ESTADO_CONTRATO_PRELIMINAR = [
+        'PENDIENTE' => ['label' => 'Pendiente', 'color' => '#6B7280'],
+        'GENERADO' => ['label' => 'Generado', 'color' => '#3B82F6'],
+        'OBSERVADO' => ['label' => 'Observado', 'color' => '#F59E0B'],
+        'CONFORME' => ['label' => 'Conforme', 'color' => '#10B981'],
+    ];
+
+    // ---------------------------------------------------------------
+    // ENUMS: Estado Firma Contrato
+    // ---------------------------------------------------------------
+    const ESTADO_FIRMA = [
+        'PENDIENTE' => ['label' => 'Pendiente', 'color' => '#6B7280'],
+        'FIRMADO' => ['label' => 'Firmado', 'color' => '#10B981'],
+    ];
+
+    // ---------------------------------------------------------------
+    // Helpers: badge color
+    // ---------------------------------------------------------------
+    public function badgeBackoffice(): string
+    {
+        return self::ESTADO_BACKOFFICE[$this->estado_backoffice]['color'] ?? '#000000';
+    }
+
+    public function badgeContratoPreeliminar(): string
+    {
+        return self::ESTADO_CONTRATO_PRELIMINAR[$this->estado_contrato_preeliminar_emitido]['color'] ?? '#000000';
+    }
+
+    public function badgeFirma(): string
+    {
+        return self::ESTADO_FIRMA[$this->estado_firma_contrato_firmado]['color'] ?? '#000000';
+    }
+
+    // ---------------------------------------------------------------
+    // Fillable
+    // ---------------------------------------------------------------
     protected $fillable = [
         'entrega_fest_id',
         'proyecto_id',
@@ -20,8 +75,6 @@ class ProspectoEntregaFest extends Model
         'celular',
         'lote',
         'manzana',
-        'estado',
-        'observacion',
         'grupo',
         'gestor_backoffice_id',
         'fecha_culminacion_eecc',
@@ -36,6 +89,9 @@ class ProspectoEntregaFest extends Model
         'fecha_generacion_contrato',
     ];
 
+    // ---------------------------------------------------------------
+    // Relaciones
+    // ---------------------------------------------------------------
     public function entregaFest()
     {
         return $this->belongsTo(EntregaFest::class);
@@ -46,17 +102,11 @@ class ProspectoEntregaFest extends Model
         return $this->belongsTo(Proyecto::class);
     }
 
-    /**
-     * Copropietarios que comparten este mismo lote.
-     */
     public function copropietarios()
     {
         return $this->hasMany(CopropietarioEntregaFest::class, 'prospecto_entrega_fest_id');
     }
 
-    /**
-     * Invitado generado para el titular de este lote.
-     */
     public function invitado()
     {
         return $this->hasOne(InvitadoEntregaFest::class, 'prospecto_entrega_fest_id');
@@ -67,8 +117,22 @@ class ProspectoEntregaFest extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getNombreCompletoAttribute()
+    public function gestor()
+    {
+        return $this->belongsTo(User::class, 'gestor_backoffice_id');
+    }
+
+    public function validador()
+    {
+        return $this->belongsTo(User::class, 'validador_backoffice_id');
+    }
+
+    // ---------------------------------------------------------------
+    // Accessors
+    // ---------------------------------------------------------------
+    public function getNombreCompletoAttribute(): string
     {
         return $this->nombres;
     }
 }
+

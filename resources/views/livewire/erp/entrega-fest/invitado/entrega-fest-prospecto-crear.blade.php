@@ -44,16 +44,10 @@
                 </div>
 
                 <div class="g_fila">
-                    <div class="g_margin_bottom_10 g_columna_6">
+                    <div class="g_margin_bottom_10 g_columna_12">
                         <label>Nombres Completos <span class="obligatorio">*</span></label>
                         <input type="text" wire:model="nombres" class="@error('nombres') input-error @enderror">
                         @error('nombres') <p class="mensaje_error">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div class="g_margin_bottom_10 g_columna_6">
-                        <label>Correo Electrónico <span class="obligatorio">*</span></label>
-                        <input type="email" wire:model="email" class="@error('email') input-error @enderror">
-                        @error('email') <p class="mensaje_error">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
@@ -65,8 +59,9 @@
                     </div>
 
                     <div class="g_margin_bottom_10 g_columna_6">
-                        <label>Estado Prospecto <span class="obligatorio">*</span></label>
-                        <input type="text" value="pendiente" readonly disabled>
+                        <label>Correo Electrónico <span class="obligatorio">*</span></label>
+                        <input type="email" wire:model="email" class="@error('email') input-error @enderror">
+                        @error('email') <p class="mensaje_error">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
@@ -82,12 +77,6 @@
                     </div>
                 </div>
 
-                <div class="g_fila">
-                    <div class="g_margin_bottom_10 g_columna_12">
-                        <label>Observaciones</label>
-                        <textarea wire:model="observacion" rows="5"></textarea>
-                    </div>
-                </div>
 
                 <div class="formulario_botones">
                     <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">

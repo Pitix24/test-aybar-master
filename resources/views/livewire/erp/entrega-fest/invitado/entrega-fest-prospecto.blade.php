@@ -13,7 +13,7 @@
                 Crear <i class="fa-solid fa-square-plus"></i>
             </a>
 
-             <button type="button" class="g_boton dark" onclick="history.back()">
+            <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
         </div>
@@ -38,24 +38,22 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Estado Prospecto</label>
-                    <select wire:model.live="estado">
+                    <label>Estado BackOffice</label>
+                    <select wire:model.live="estado_backoffice">
                         <option value="">Todos</option>
-                        <option value="pendiente">PENDIENTE</option>
-                        <option value="observado">OBSERVADO</option>
-                        <option value="aprobado">APROBADO</option>
-                        <option value="rechazado">RECHAZADO</option>
+                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE as $valor => $info)
+                            <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Firma Contrato</label>
+                    <label>Contrato Preliminar</label>
                     <select wire:model.live="estado_contrato_preeliminar_emitido">
                         <option value="">Todos</option>
-                        <option value="pendiente">PENDIENTE</option>
-                        <option value="observado">OBSERVADO</option>
-                        <option value="aprobado">APROBADO</option>
-                        <option value="rechazado">RECHAZADO</option>
+                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_CONTRATO_PRELIMINAR as $valor => $info)
+                            <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -85,11 +83,11 @@
                 </button>
 
                 <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
-                        wire:target="exportExcelTodo">
-                        <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
-                                class="fa-solid fa-file-export"></i></span>
-                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
-                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    wire:target="exportExcelTodo">
+                    <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                            class="fa-solid fa-file-export"></i></span>
+                    <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                            class="fa-solid fa-spinner fa-spin"></i></span>
                 </button>
 
                 <button wire:click="resetFiltros" class="g_boton danger">
@@ -164,31 +162,18 @@
                                 @endif
                             </td>
                             <td class="g_celda_centro">
-                                @php
-                                    $claseBO = match ($p->estado_backoffice) {
-                                        'pendiente' => 'primary',
-                                        'observado' => 'warning',
-                                        'aprobado' => 'success',
-                                        'rechazado' => 'danger',
-                                        default => 'light',
-                                    };
-                                @endphp
-                                <span class="g_badge {{ $claseBO }}">{{ strtoupper($p->estado_backoffice) }}</span>
+                                <span class="g_badge g_badge_soft" style="color: {{ $p->badgeBackoffice() }}">
+                                    {{ \App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE[$p->estado_backoffice]['label'] ?? $p->estado_backoffice }}
+                                </span>
                             </td>
                             <td class="g_celda_centro">
-                                @php
-                                    $claseEstado = match ($p->estado_contrato_preeliminar_emitido) {
-                                        'pendiente' => 'primary',
-                                        'observado' => 'warning',
-                                        'aprobado' => 'success',
-                                        'rechazado' => 'danger',
-                                        default => 'light',
-                                    };
-                                @endphp
-                                <span class="g_badge {{ $claseEstado }}">{{ strtoupper($p->estado_contrato_preeliminar_emitido) }}</span>
+                                <span class="g_badge g_badge_soft" style="color: {{ $p->badgeContratoPreeliminar() }}">
+                                    {{ \App\Models\ProspectoEntregaFest::ESTADO_CONTRATO_PRELIMINAR[$p->estado_contrato_preeliminar_emitido]['label'] ?? $p->estado_contrato_preeliminar_emitido }}
+                                </span>
                             </td>
                             <td>{{ $p->fecha_firma ? date('d/m/Y', strtotime($p->fecha_firma)) : '' }}</td>
-                            <td>{{ $p->fecha_generacion_contrato ? date('d/m/Y', strtotime($p->fecha_generacion_contrato)) : '' }}</td>
+                            <td>{{ $p->fecha_generacion_contrato ? date('d/m/Y', strtotime($p->fecha_generacion_contrato)) : '' }}
+                            </td>
                             <td class="g_celda_centro">
                                 @if ($p->invitado)
                                     <span class="g_badge success" title="{{ $p->invitado->estado_confirmacion }}">SÍ</span>

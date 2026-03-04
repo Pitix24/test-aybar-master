@@ -18,8 +18,6 @@ class ProspectoEntregaFestFactory extends Factory
      */
     public function definition(): array
     {
-        $estado = $this->faker->randomElement(['pendiente', 'observado', 'aprobado', 'rechazado']);
-
         return [
             'entrega_fest_id' => EntregaFest::exists() ? EntregaFest::inRandomOrder()->first()->id : EntregaFest::factory(),
             'proyecto_id' => \App\Models\Proyecto::exists() ? \App\Models\Proyecto::inRandomOrder()->first()->id : \App\Models\Proyecto::factory(),
@@ -30,8 +28,6 @@ class ProspectoEntregaFestFactory extends Factory
             'celular' => $this->faker->numerify('9########'),
             'lote' => $this->faker->optional()->numerify('Lote ##'),
             'manzana' => $this->faker->optional()->randomElement(['A', 'B', 'C', 'D', 'E', 'F']),
-            'estado' => $estado,
-            'observacion' => $this->faker->optional(0.3)->sentence(),
 
             // BackOffice
             'grupo' => $this->faker->randomElement(['A', 'B', 'C', 'D']),
@@ -41,11 +37,11 @@ class ProspectoEntregaFestFactory extends Factory
             'link_eecc_firmado' => $this->faker->optional()->url(),
             'validador_backoffice_id' => User::exists() ? User::inRandomOrder()->first()->id : null,
             'fecha_validacion_eecc' => $this->faker->optional(0.5)->dateTimeBetween('-1 month', 'now'),
-            'estado_backoffice' => $estado === 'aprobado' ? 'aprobado' : $this->faker->randomElement(['pendiente', 'observado', 'rechazado']),
+            'estado_backoffice' => $this->faker->randomElement(['PENDIENTE', 'BANCARIZAR', 'PENALIDAD', 'OBSERVADO', 'CONFORME']),
 
             // Legal
-            'estado_contrato_preeliminar_emitido' => $this->faker->randomElement(['pendiente', 'observado', 'aprobado', 'rechazado']),
-            'estado_firma_contrato_firmado' => $this->faker->randomElement(['pendiente', 'observado', 'aprobado', 'rechazado']),
+            'estado_contrato_preeliminar_emitido' => $this->faker->randomElement(['PENDIENTE', 'GENERADO', 'OBSERVADO', 'CONFORME']),
+            'estado_firma_contrato_firmado' => $this->faker->randomElement(['PENDIENTE', 'FIRMADO']),
             'fecha_firma' => $this->faker->optional()->dateTimeBetween('-1 month', 'now'),
             'fecha_generacion_contrato' => $this->faker->optional()->dateTimeBetween('-1 month', 'now'),
         ];

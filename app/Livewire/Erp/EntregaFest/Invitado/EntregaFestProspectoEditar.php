@@ -375,7 +375,7 @@ class EntregaFestProspectoEditar extends Component
             'link_eecc_firmado' => 'nullable|string|max:255',
             'validador_backoffice_id' => 'nullable|exists:users,id',
             'fecha_validacion_eecc' => 'nullable|date',
-            'estado_backoffice' => 'required|in:pendiente,observado,aprobado,rechazado',
+            'estado_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
         ];
 
         $this->validate($rules);
@@ -391,8 +391,8 @@ class EntregaFestProspectoEditar extends Component
             'estado_backoffice' => $this->estado_backoffice,
         ], 'PROSPECTO EDITAR - BACKOFFICE');
 
-        // Si se acaba de aprobar, enviamos invitación
-        if ($this->estado_backoffice === 'aprobado') {
+        // Si se acaba de aprobar (CONFORME), enviamos invitación
+        if ($this->estado_backoffice === 'CONFORME') {
             $this->dispararInvitaciones(app(WhatsappService::class));
         }
     }
@@ -501,8 +501,8 @@ class EntregaFestProspectoEditar extends Component
     public function updateLegal()
     {
         $rules = [
-            'estado_contrato_preeliminar_emitido' => 'required|in:pendiente,observado,aprobado,rechazado',
-            'estado_firma_contrato_firmado' => 'required|in:pendiente,observado,aprobado,rechazado',
+            'estado_contrato_preeliminar_emitido' => 'required|in:PENDIENTE,GENERADO,OBSERVADO,CONFORME',
+            'estado_firma_contrato_firmado' => 'required|in:PENDIENTE,FIRMADO',
             'fecha_firma' => 'nullable|date',
             'fecha_generacion_contrato' => 'nullable|date',
         ];
@@ -516,8 +516,8 @@ class EntregaFestProspectoEditar extends Component
             'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
         ], 'PROSPECTO EDITAR - LEGAL');
 
-        // Si se aprueba legal, disparamos agendamiento de firma
-        if ($this->estado_contrato_preeliminar_emitido === 'aprobado') {
+        // Si se aprueba legal (CONFORME), disparamos agendamiento de firma
+        if ($this->estado_contrato_preeliminar_emitido === 'CONFORME') {
             $this->dispararInvitacionesFirma(app(WhatsappService::class));
         }
     }
@@ -581,20 +581,20 @@ class EntregaFestProspectoEditar extends Component
             ->find($this->prospecto->id);
 
         // Validar condiciones
-        if ($prospecto->estado_backoffice !== 'aprobado') {
+        if ($prospecto->estado_backoffice !== 'CONFORME') {
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => 'No permitido',
-                'text' => 'El prospecto no tiene el BackOffice aprobado.',
+                'text' => 'El prospecto no tiene el BackOffice en estado Conforme.',
             ]);
             return;
         }
 
-        if ($prospecto->estado_contrato_preeliminar_emitido !== 'aprobado') {
+        if ($prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => 'No permitido',
-                'text' => 'El contrato preliminar aún no está aprobado.',
+                'text' => 'El contrato preliminar aún no está Conforme.',
             ]);
             return;
         }

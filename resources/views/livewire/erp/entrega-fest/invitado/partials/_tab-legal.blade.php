@@ -4,10 +4,9 @@
         <div class="g_margin_bottom_10 g_columna_6">
             <label>Contrato Preliminar <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
             <select wire:model="estado_contrato_preeliminar_emitido">
-                <option value="pendiente">Pendiente</option>
-                <option value="observado">Observado</option>
-                <option value="aprobado">Aprobado</option>
-                <option value="rechazado">Rechazado</option>
+                @foreach (\App\Models\ProspectoEntregaFest::ESTADO_CONTRATO_PRELIMINAR as $valor => $info)
+                    <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                @endforeach
             </select>
         </div>
         <div class="g_margin_bottom_10 g_columna_6">
@@ -21,10 +20,9 @@
             <label>Firma presencial de Contrato <span class="obligatorio"><i
                         class="fa-solid fa-asterisk"></i></span></label>
             <select wire:model="estado_firma_contrato_firmado">
-                <option value="pendiente">Pendiente</option>
-                <option value="observado">Observado</option>
-                <option value="aprobado">Firmado Correctamente</option>
-                <option value="rechazado">Rechazado</option>
+                @foreach (\App\Models\ProspectoEntregaFest::ESTADO_FIRMA as $valor => $info)
+                    <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                @endforeach
             </select>
         </div>
         <div class="g_margin_bottom_10 g_columna_6">

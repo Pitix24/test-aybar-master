@@ -28,10 +28,24 @@
         <div class="g_margin_bottom_10 g_columna_6">
             <label>Enlace Carpeta EECC</label>
             <input type="text" wire:model="link_carpeta_eecc">
+            <p class="leyenda">
+                @if ($link_carpeta_eecc)
+                    <a href="{{ $link_carpeta_eecc }}" target="_blank" rel="noopener noreferrer">Abrir carpeta EECC</a>
+                @else
+                    <span>Sin enlace registrado</span>
+                @endif
+            </p>
         </div>
         <div class="g_margin_bottom_10 g_columna_6">
             <label>Enlace EECC Firmado</label>
             <input type="text" wire:model="link_eecc_firmado">
+            <p class="leyenda">
+                @if ($link_eecc_firmado)
+                    <a href="{{ $link_eecc_firmado }}" target="_blank" rel="noopener noreferrer">Abrir EECC firmado</a>
+                @else
+                    <span>Sin enlace registrado</span>
+                @endif
+            </p>
         </div>
     </div>
 
@@ -39,10 +53,9 @@
         <div class="g_margin_bottom_10 g_columna_4">
             <label>Estado Administrativo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
             <select wire:model="estado_backoffice">
-                <option value="pendiente">Pendiente</option>
-                <option value="observado">Observado</option>
-                <option value="aprobado">Aprobado</option>
-                <option value="rechazado">Rechazado</option>
+                @foreach (\App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE as $valor => $info)
+                    <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                @endforeach
             </select>
         </div>
         <div class="g_margin_bottom_10 g_columna_4">
