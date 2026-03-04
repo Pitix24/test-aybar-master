@@ -447,6 +447,14 @@ class SlinController extends Controller
             'servicio' => '02', //default, solo para cuotas
         ];*/
 
+        /*$params = [
+            'empresa' => '014',
+            'lote' => '02503-Ñ3-0005', //proyecto/etapa-manza-lote
+            'cliente' => 'C01480',
+            'contrato' => '', //opcional//si es null, porque fue migrado
+            'servicio' => '02', //default, solo para cuotas
+        ];*/
+
         $params = [
             'empresa' => '018',
             'lote' => '00101-J-0002', //proyecto/etapa-manza-lote

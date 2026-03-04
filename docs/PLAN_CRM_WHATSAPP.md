@@ -232,3 +232,14 @@ Aquí está lo más importante para tu tranquilidad: Meta no te bloquea si usas 
 Límites Graduales: Empiezas pudiendo enviar a 1,000 personas al día. Si no tienes reportes de spam, Meta te sube a 10,000 y luego a 100,000 automáticamente.
 Plantillas Pre-aprobadas: Al usar plantillas que Meta ya revisó, el riesgo de bloqueo es casi cero.
 Gestión de Bajas: El plan incluye un botón de "No deseo recibir más mensajes", así el cliente no tiene que reportarte como spam para dejar de recibir publicidad.
+
+Marketing
+US$0.077 + IGV
+
+Utilidad
+US$0.001 + IGV
+
+SMS (SPAN)
+
+Template: Marketing o Utilidad(Mensaje a una respuesta del cliente )
+
