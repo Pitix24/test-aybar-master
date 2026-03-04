@@ -79,8 +79,10 @@ class EntregaFestProspectoEditar extends Component
             'fecha_validacion_eecc' => 'nullable|date',
             'estado_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
 
-            // Legal
+            // Legal — Asesor
             'estado_contrato_preeliminar_emitido' => 'required|in:PENDIENTE,GENERADO,OBSERVADO,CONFORME',
+
+            // Legal — Supervisor
             'estado_firma_contrato_firmado' => 'required|in:PENDIENTE,FIRMADO',
             'fecha_firma' => 'nullable|date',
             'fecha_generacion_contrato' => 'nullable|date',
@@ -385,16 +387,21 @@ class EntregaFestProspectoEditar extends Component
 
     public function updateBackofficeSupervisor()
     {
+        // Auto-asignar si están vacíos al momento de validar
+        $this->validador_backoffice_id = auth()->id();
+
+        $this->fecha_validacion_eecc = now()->format('Y-m-d\TH:i');
+
         $rules = [
-            'validador_backoffice_id' => 'nullable|exists:users,id',
-            'fecha_validacion_eecc' => 'nullable|date',
+            'validador_backoffice_id' => 'required|exists:users,id',
+            'fecha_validacion_eecc' => 'required|date',
             'estado_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
         ];
 
         $this->validate($rules);
 
         $this->handleUpdate([
-            'validador_backoffice_id' => $this->validador_backoffice_id ?: null,
+            'validador_backoffice_id' => $this->validador_backoffice_id,
             'fecha_validacion_eecc' => $this->fecha_validacion_eecc,
             'estado_backoffice' => $this->estado_backoffice,
         ], 'PROSPECTO EDITAR - BACKOFFICE');
@@ -409,24 +416,33 @@ class EntregaFestProspectoEditar extends Component
     {
         $rules = [
             'estado_contrato_preeliminar_emitido' => 'required|in:PENDIENTE,GENERADO,OBSERVADO,CONFORME',
-            'estado_firma_contrato_firmado' => 'required|in:PENDIENTE,FIRMADO',
-            'fecha_firma' => 'nullable|date',
-            'fecha_generacion_contrato' => 'nullable|date',
         ];
 
         $this->validate($rules);
 
         $this->handleUpdate([
             'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
-            'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
-            'fecha_firma' => $this->fecha_firma,
-            'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
         ], 'PROSPECTO EDITAR - LEGAL');
 
         // Si se aprueba legal (CONFORME), disparamos el evento de firma
         if ($this->estado_contrato_preeliminar_emitido === 'CONFORME') {
             ProspectoLegalConforme::dispatch($this->prospecto);
         }
+    }
+
+    public function updateLegalSupervisor()
+    {
+        $rules = [
+            'estado_firma_contrato_firmado' => 'required|in:PENDIENTE,FIRMADO',
+            'fecha_generacion_contrato' => 'nullable|date',
+        ];
+
+        $this->validate($rules);
+
+        $this->handleUpdate([
+            'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
+            'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
+        ], 'PROSPECTO EDITAR - LEGAL SUPERVISOR');
     }
 
     // ──────────────────────────────────────────────────────────────────
@@ -496,7 +512,7 @@ class EntregaFestProspectoEditar extends Component
 
     public function render()
     {
-        $usuarios = User::orderBy('name')->get();
+        $usuarios = User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
         return view('livewire.erp.entrega-fest.invitado.entrega-fest-prospecto-editar', [
             'usuarios' => $usuarios,
         ]);

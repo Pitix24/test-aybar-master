@@ -111,7 +111,7 @@ class EntregaFestLista extends Component
                     $q->where('proyectos.id', $this->proyecto_id);
                 });
             })
-            ->orderBy('fecha_entrega', 'desc')
+            ->latest()
             ->paginate($this->perPage);
 
         return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-lista', [

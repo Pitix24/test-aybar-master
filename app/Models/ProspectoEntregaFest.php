@@ -128,11 +128,45 @@ class ProspectoEntregaFest extends Model
     }
 
     // ---------------------------------------------------------------
-    // Accessors
+    // Accessors & Mutators (Normalización de estados)
     // ---------------------------------------------------------------
+
     public function getNombreCompletoAttribute(): string
     {
         return $this->nombres;
+    }
+
+    /**
+     * El código usa MAYÚSCULAS, la BD usa minúsculas.
+     */
+    protected function setEstadoBackofficeAttribute($value)
+    {
+        $this->attributes['estado_backoffice'] = strtolower($value);
+    }
+
+    protected function getEstadoBackofficeAttribute($value)
+    {
+        return strtoupper($value);
+    }
+
+    protected function setEstadoContratoPreeliminarEmitidoAttribute($value)
+    {
+        $this->attributes['estado_contrato_preeliminar_emitido'] = strtolower($value);
+    }
+
+    protected function getEstadoContratoPreeliminarEmitidoAttribute($value)
+    {
+        return strtoupper($value);
+    }
+
+    protected function setEstadoFirmaContratoFirmadoAttribute($value)
+    {
+        $this->attributes['estado_firma_contrato_firmado'] = strtolower($value);
+    }
+
+    protected function getEstadoFirmaContratoFirmadoAttribute($value)
+    {
+        return strtoupper($value);
     }
 }
 

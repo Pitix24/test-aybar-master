@@ -29,24 +29,24 @@
             <div class="g_margin_bottom_10 g_columna_6">
                 <label>Enlace Carpeta EECC</label>
                 <input type="text" wire:model="link_carpeta_eecc">
-                <p class="leyenda">
-                    @if ($link_carpeta_eecc)
-                        <a href="{{ $link_carpeta_eecc }}" target="_blank" rel="noopener noreferrer">Abrir carpeta EECC</a>
-                    @else
-                        <span>Sin enlace registrado</span>
-                    @endif
-                </p>
+                @if ($link_carpeta_eecc)
+                    <a href="{{ $link_carpeta_eecc }}" target="_blank" rel="noopener noreferrer" class="g_boton info">
+                        <i class="fa-solid fa-folder-open"></i> Abrir carpeta EECC
+                    </a>
+                @else
+                    <span class="g_badge light">Sin enlace registrado</span>
+                @endif
             </div>
             <div class="g_margin_bottom_10 g_columna_6">
                 <label>Enlace EECC Firmado</label>
                 <input type="text" wire:model="link_eecc_firmado">
-                <p class="leyenda">
-                    @if ($link_eecc_firmado)
-                        <a href="{{ $link_eecc_firmado }}" target="_blank" rel="noopener noreferrer">Abrir EECC firmado</a>
-                    @else
-                        <span>Sin enlace registrado</span>
-                    @endif
-                </p>
+                @if ($link_eecc_firmado)
+                    <a href="{{ $link_eecc_firmado }}" target="_blank" rel="noopener noreferrer" class="g_boton info">
+                        <i class="fa-solid fa-file-pdf"></i> Abrir EECC firmado
+                    </a>
+                @else
+                    <span class="g_badge light">Sin enlace registrado</span>
+                @endif
             </div>
         </div>
 
@@ -70,16 +70,16 @@
             </div>
             <div class="g_margin_bottom_10 g_columna_4">
                 <label>Validador</label>
-                <select wire:model="validador_backoffice_id">
-                    <option value="">Sin asignar</option>
-                    @foreach ($usuarios as $u)
-                        <option value="{{ $u->id }}">{{ $u->name }}</option>
-                    @endforeach
-                </select>
+                <input type="text" value="{{ $prospecto->validador?->name ?? auth()->user()->name }}" disabled readonly>
             </div>
             <div class="g_margin_bottom_10 g_columna_4">
                 <label>Fecha Validación</label>
-                <input type="datetime-local" wire:model="fecha_validacion_eecc">
+                <input type="datetime-local" wire:model="fecha_validacion_eecc" disabled readonly>
+                @if (!$fecha_validacion_eecc)
+                    <p class="leyenda" style="margin-top: 5px;">
+                        <i class="fa-solid fa-clock"></i> Se usará la fecha/hora actual al validar.
+                    </p>
+                @endif
             </div>
         </div>
 
