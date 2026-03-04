@@ -79,7 +79,7 @@ class AsistenciaPublica extends Component
             DB::beginTransaction();
 
             $confirmado = ($this->asistira === 'si');
-            $estado_confirmacion = $confirmado ? 'confirmado' : 'no_asiste';
+            $estado_confirmacion = $confirmado ? InvitadoEntregaFest::ESTADO_CONFIRMADO : InvitadoEntregaFest::ESTADO_NO_ASISTE;
 
             // Generar código único solo si asiste
             $codigo = null;
@@ -94,7 +94,7 @@ class AsistenciaPublica extends Component
                 'cantidad_acompanantes_permitidos' => $confirmado ? $this->cantidad_acompanantes : 0,
                 'confirmado' => $confirmado,
                 'estado_confirmacion' => $estado_confirmacion,
-                'transporte' => $confirmado ? $this->transporte : 'na',
+                'transporte' => $confirmado ? ($this->transporte === 'bus' ? InvitadoEntregaFest::TRANSPORTE_BUS : InvitadoEntregaFest::TRANSPORTE_PROPIO) : InvitadoEntregaFest::TRANSPORTE_PROPIO,
                 'observaciones_asistencia' => $this->observaciones,
             ]);
 

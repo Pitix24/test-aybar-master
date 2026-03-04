@@ -5,12 +5,11 @@ namespace App\Listeners;
 use App\Events\EntregaFestFirmaRecordatorio;
 use App\Mail\EntregaFest\FirmaConfirmacionMail;
 use App\Services\WhatsappService;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
-class EnviarRecordatorioFirma implements ShouldQueue
+class EnviarRecordatorioFirma
 {
     public function __construct(private WhatsappService $whatsapp)
     {

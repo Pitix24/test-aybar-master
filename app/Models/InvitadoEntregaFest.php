@@ -10,6 +10,15 @@ class InvitadoEntregaFest extends Model
     /** @use HasFactory<\Database\Factories\InvitadoEntregaFestFactory> */
     use HasFactory;
 
+    // Estados de confirmación
+    const ESTADO_PENDIENTE = 'PENDIENTE';
+    const ESTADO_CONFIRMADO = 'CONFIRMADO';
+    const ESTADO_NO_ASISTE = 'NO_ASISTE';
+
+    // Tipos de transporte
+    const TRANSPORTE_BUS = 'BUS';
+    const TRANSPORTE_PROPIO = 'PROPIO';
+
     protected $fillable = [
         'entrega_fest_id',
         'prospecto_entrega_fest_id',

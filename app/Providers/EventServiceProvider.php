@@ -39,6 +39,14 @@ class EventServiceProvider extends ServiceProvider
         ProspectoLegalConforme::class => [
             EnviarLinkFirma::class,
         ],
+
+        \App\Events\EntregaFestAsistenciaConfirmada::class => [
+            \App\Listeners\EnviarNotificacionesAsistenciaConfirmada::class,
+        ],
+
+        \App\Events\EntregaFestFirmaRecordatorio::class => [
+            \App\Listeners\EnviarRecordatorioFirma::class,
+        ],
     ];
 
     public function boot(): void
