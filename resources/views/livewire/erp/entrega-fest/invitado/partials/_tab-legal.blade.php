@@ -45,13 +45,13 @@
             </button>
 
             @if($fecha_firma)
-                <button type="button" wire:click="enviarCorreoFirmaRecordatorio" wire:loading.attr="disabled"
-                    wire:target="enviarCorreoFirmaRecordatorio" class="g_boton info"
+                <button type="button" wire:click="enviarRecordatorioFirma" wire:loading.attr="disabled"
+                    wire:target="enviarRecordatorioFirma" class="g_boton info"
                     title="Enviar recordatorio de cita de firma al prospecto">
-                    <span wire:loading.remove wire:target="enviarCorreoFirmaRecordatorio">
+                    <span wire:loading.remove wire:target="enviarRecordatorioFirma">
                         <i class="fa-solid fa-envelope-circle-check"></i> Recordatorio de Firma
                     </span>
-                    <span wire:loading wire:target="enviarCorreoFirmaRecordatorio">
+                    <span wire:loading wire:target="enviarRecordatorioFirma">
                         Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
                     </span>
                 </button>

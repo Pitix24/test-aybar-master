@@ -10,7 +10,7 @@
                 <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
                     class="ef_logo_main">
                 <p class="ef_header_text">Formulario de Confirmación de Asistencia</p>
-                <div class="ef_badge_type" style="background: #003035;">Copropietario del lote</div>
+                <div class="ef_badge_type">Copropietario del lote</div>
             </div>
 
             <div class="ef_body">
@@ -60,12 +60,10 @@
                     @if ($asistira === 'si')
                         <div class="ef_form_grid">
                             <div class="ef_input_group">
-                                <label>Nº de acompañantes (máx. 3)</label>
+                                <label>Nº de acompañantes (máx. 1)</label>
                                 <select wire:model="cantidad_acompanantes" class="ef_input">
                                     <option value="0">Sin acompañantes</option>
                                     <option value="1">1 acompañante</option>
-                                    <option value="2">2 acompañantes</option>
-                                    <option value="3">3 acompañantes</option>
                                 </select>
                             </div>
 
@@ -101,7 +99,6 @@
 
             <div class="ef_body">
                 <div class="ef_success_body">
-                    <div class="ef_badge_type" style="background: #15803d; margin-bottom: 20px;">Copropietario</div>
                     <h2 class="ef_success_title">¡Hola, {{ $copropietario->nombres }}!</h2>
                     <p class="ef_success_text">
                         Tu asistencia al evento <strong>{{ $evento->nombre }}</strong> ha sido confirmada. Aquí tienes tu

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Events\ProspectoBackofficeConforme;
 use App\Events\ProspectoLegalConforme;
+use App\Events\EntregaFestFirmaRecordatorio;
 use App\Mail\EntregaFest\FirmaConfirmacionMail;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
@@ -449,7 +450,7 @@ class EntregaFestProspectoEditar extends Component
     // RECORDATORIO DE FIRMA
     // ──────────────────────────────────────────────────────────────────
 
-    public function enviarCorreoFirmaRecordatorio()
+    public function enviarRecordatorioFirma()
     {
         // Recargar el prospecto actual desde BD con relaciones necesarias
         $prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
@@ -483,31 +484,14 @@ class EntregaFestProspectoEditar extends Component
             return;
         }
 
-        if (!$prospecto->email) {
-            $this->dispatch('alertaLivewire', [
-                'type' => 'warning',
-                'title' => 'Sin email',
-                'text' => 'Este prospecto no tiene email registrado.',
-            ]);
-            return;
-        }
+        // Despachar evento para notificaciones (Email/WhatsApp)
+        EntregaFestFirmaRecordatorio::dispatch($prospecto);
 
-        try {
-            Mail::to($prospecto->email)->send(new FirmaConfirmacionMail($prospecto));
-
-            $this->dispatch('alertaLivewire', [
-                'type' => 'success',
-                'title' => '¡Correo enviado!',
-                'text' => 'Se envió el recordatorio de firma a ' . $prospecto->email . '.',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('[FIRMA RECORDATORIO] Error: ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', [
-                'type' => 'error',
-                'title' => 'Error al enviar',
-                'text' => 'No se pudo enviar el correo. Revisa los logs.',
-            ]);
-        }
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡Recordatorio en cola!',
+            'text' => 'Se está enviando el recordatorio por Correo y WhatsApp.',
+        ]);
     }
 
     public function render()

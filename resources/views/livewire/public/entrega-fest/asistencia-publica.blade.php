@@ -57,12 +57,10 @@
                     @if ($asistira === 'si')
                         <div class="ef_form_grid">
                             <div class="ef_input_group">
-                                <label>Nº de acompañantes (máx. 3)</label>
+                                <label>Nº de acompañantes (máx. 1)</label>
                                 <select wire:model="cantidad_acompanantes" class="ef_input">
                                     <option value="0">Sin acompañantes</option>
                                     <option value="1">1 acompañante</option>
-                                    <option value="2">2 acompañantes</option>
-                                    <option value="3">3 acompañantes</option>
                                 </select>
                             </div>
 
@@ -90,7 +88,8 @@
             </div>
         @else
             <div class="ef_header">
-                <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest" class="ef_logo_main">
+                <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
+                    class="ef_logo_main">
                 <p class="ef_header_text">Tu pase de entrada 🎫</p>
             </div>
 
@@ -98,13 +97,14 @@
                 <div class="ef_success_body">
                     <h2 class="ef_success_title">¡Hola, {{ $prospecto->nombres }}!</h2>
                     <p class="ef_success_text">
-                        Tu asistencia al evento <strong>{{ $evento->nombre }}</strong> ha sido confirmada. Aquí tienes tu pase oficial de ingreso:
+                        Tu asistencia al evento <strong>{{ $evento->nombre }}</strong> ha sido confirmada. Aquí tienes tu
+                        pase oficial de ingreso:
                     </p>
 
                     @if($asistira === 'si' && $codigo_invitado)
                         <div class="ef_ticket_dashed">
                             <span class="ef_ticket_label">Presenta este código al ingresar</span>
-                            
+
                             <div class="ef_qr_box">
                                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ $codigo_invitado }}"
                                     alt="QR Asistencia" style="width: 200px; height: 200px; display: block;">
@@ -132,7 +132,8 @@
                             </div>
                         </div>
 
-                        <div style="margin-top: 25px; padding: 15px; background: #fff1f2; border-radius: 12px; font-size: 0.85rem; color: #d32f2f; line-height: 1.5; text-align: center; font-weight: 700;">
+                        <div
+                            style="margin-top: 25px; padding: 15px; background: #fff1f2; border-radius: 12px; font-size: 0.85rem; color: #d32f2f; line-height: 1.5; text-align: center; font-weight: 700;">
                             <i class="fa-solid fa-camera"></i> Toma una captura de pantalla y llévalo el día del evento.
                         </div>
                     @else

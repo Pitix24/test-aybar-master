@@ -10,8 +10,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-use App\Mail\EntregaFest\InstruccionesEventoMail;
-use App\Services\WhatsappService;
 
 #[Layout('layouts.web.layout-web')]
 #[Title('Formulario de Asistencia - Entrega Fest')]
@@ -47,7 +45,7 @@ class AsistenciaPublicaCopropietario extends Component
         }
 
         // El prospecto titular debe estar aprobado en backoffice
-        if ($this->copropietario->prospecto->estado_backoffice !== 'aprobado') {
+        if ($this->copropietario->prospecto->estado_backoffice !== 'CONFORME') {
             abort(403, 'Tu evaluación aún no ha sido aprobada.');
         }
 
@@ -63,13 +61,13 @@ class AsistenciaPublicaCopropietario extends Component
     {
         return [
             'asistira' => 'required|in:si,no',
-            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:3',
+            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:1',
             'transporte' => 'required_if:asistira,si|in:bus,propio',
             'observaciones' => 'nullable|string|max:500',
         ];
     }
 
-    public function save(WhatsappService $whatsapp)
+    public function save()
     {
         $this->validate();
 
@@ -102,40 +100,8 @@ class AsistenciaPublicaCopropietario extends Component
 
             DB::commit();
 
-            // Enviar notificaciones si confirma
-            if ($confirmado) {
-                // 1. Ticket por correo
-                if ($this->copropietario->email) {
-                    try {
-                        \Illuminate\Support\Facades\Mail::to($this->copropietario->email)
-                            ->send(new \App\Mail\EntregaFest\TicketAsistenciaMail($invitado));
-                    } catch (\Exception $e) {
-                        Log::error('[ASIST. COPROP.] Error enviando ticket: ' . $e->getMessage());
-                    }
-
-                    // 2. Instrucciones por correo
-                    try {
-                        \Illuminate\Support\Facades\Mail::to($this->copropietario->email)
-                            ->send(new InstruccionesEventoMail($invitado));
-                    } catch (\Exception $e) {
-                        Log::error('[ASIST. COPROP.] Error enviando instrucciones mail: ' . $e->getMessage());
-                    }
-                }
-
-                // 3. WhatsApp con instrucciones e imagen
-                if ($this->copropietario->celular) {
-                    try {
-                        $celRaw = preg_replace('/\D/', '', $this->copropietario->celular);
-                        $celular = strlen($celRaw) === 9 ? '51' . $celRaw : $celRaw;
-                        $imagenUrl = 'https://plataforma-digital.aybarcorp.com/assets/imagen/construccion-aybar-corp.jpg';
-                        $caption = "Hola *{$invitado->nombre_completo}*, aquí te compartimos las instrucciones para el evento *{$this->evento->nombre}*. ¡Te esperamos!";
-
-                        $whatsapp->sendImage($celular, $imagenUrl, $caption);
-                    } catch (\Exception $e) {
-                        Log::error('[ASIST. COPROP.] Error enviando instrucciones WhatsApp: ' . $e->getMessage());
-                    }
-                }
-            }
+            // Despachar evento para notificaciones (Email/WhatsApp)
+            \App\Events\EntregaFestAsistenciaConfirmada::dispatch($invitado);
 
             $this->enviado = true;
             $this->codigo_invitado = $confirmado ? $codigo : null;
