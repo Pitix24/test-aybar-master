@@ -195,11 +195,31 @@ class SolicitudEvidenciaPagoEditar extends Component
             $response = Http::acceptJson()
                 ->contentType('application/json')
                 ->timeout(30)
-                ->post(config('services.slin.url') ?? 'https://aybarcorp.com/api/slin/guardar-evidencia', $params);
+                ->post(
+                    'https://aybarcorp.com/api/slin/guardar-evidencia',
+                    $params
+                );
 
             $body = $response->json();
 
-            if ($response->failed() || (isset($body['data']['success']) && $body['data']['success'] === false)) {
+            if ($response->failed()) {
+                logger()->error('Error SLIN HTTP', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+
+                DB::rollBack();
+
+                $this->dispatch('alertaLivewire', [
+                    'type' => 'error',
+                    'title' => 'Error',
+                    'text' => 'Error de comunicación con SLIN',
+                ]);
+
+                return;
+            }
+
+            if (isset($body['data']['success']) && $body['data']['success'] === false) {
                 $mensaje = $body['data']['message'] ?? 'Error de comunicación con el servicio SLIN.';
 
                 $estadoRechazadoId = EstadoSolicitudEvidenciaPago::id(EstadoSolicitudEvidenciaPago::RECHAZADO);

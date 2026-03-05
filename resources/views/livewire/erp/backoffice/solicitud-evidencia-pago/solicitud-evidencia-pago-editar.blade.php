@@ -239,7 +239,7 @@
                         <tbody>
                             <tr class="g_fila_seleccionada">
                                 <td class="g_negrita g_resaltar">ERP</td>
-                                <td>{{ $solicitud->fecha_operacion ?? '—' }}</td>
+                                <td>{{ $solicitud->fecha_operacion ? \Carbon\Carbon::createFromFormat('d/m/Y', $solicitud->fecha_operacion)->format('Y-m-d') : '—' }}</td>
                                 <td class="g_negrita">{{ $solicitud->slin_numero_operacion ?? '—' }}</td>
                                 <td class="g_negrita">
                                     S/ {{ number_format($solicitud->monto_operacion ?? 0, 2) }}

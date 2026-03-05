@@ -503,7 +503,7 @@ class SlinController extends Controller
     }
 
     public function probarEvidencia()
-    {
+    {//La fecha de envío se establece en formato mes/día/año
         $params = [
             'empresa' => '018',
             'lote' => '02003-N3-0006',

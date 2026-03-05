@@ -28,7 +28,6 @@ class EvidenciaPago extends Model
 
     protected $casts = [
         'monto' => 'decimal:2',
-        'fecha' => 'date',
     ];
 
     public function solicitud()
