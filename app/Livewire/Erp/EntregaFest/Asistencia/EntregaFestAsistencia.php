@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\Invitado;
+namespace App\Livewire\Erp\EntregaFest\Asistencia;
 
 use App\Models\AsistenciaEntregaFest;
 use App\Models\EntregaFest;
@@ -125,7 +125,7 @@ class EntregaFestAsistencia extends Component
             ->orderBy('fecha_checkin', 'desc')
             ->paginate($this->perPage);
 
-        return view('livewire.erp.entrega-fest.invitado.entrega-fest-asistencia', [
+        return view('livewire.erp.entrega-fest.asistencia.entrega-fest-asistencia', [
             'items' => $items
         ]);
     }

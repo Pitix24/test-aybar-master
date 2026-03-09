@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\Staff;
+namespace App\Livewire\Erp\EntregaFest\Proveedor;
 
 use App\Models\EntregaFest;
 use App\Models\EntregaFestProveedor;
@@ -123,6 +123,6 @@ class StaffProveedoresCrear extends Component
 
     public function render()
     {
-        return view('livewire.erp.entrega-fest.staff.staff-proveedores-crear');
+        return view('livewire.erp.entrega-fest.proveedor.staff-proveedores-crear');
     }
 }

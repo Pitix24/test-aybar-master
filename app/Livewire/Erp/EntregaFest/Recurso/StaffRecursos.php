@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\Staff;
+namespace App\Livewire\Erp\EntregaFest\Recurso;
 
 use App\Models\EntregaFest;
 use Livewire\Attributes\Layout;
@@ -113,6 +113,6 @@ class StaffRecursos extends Component
 
     public function render()
     {
-        return view('livewire.erp.entrega-fest.staff.staff-recursos');
+        return view('livewire.erp.entrega-fest.recurso.staff-recursos');
     }
 }

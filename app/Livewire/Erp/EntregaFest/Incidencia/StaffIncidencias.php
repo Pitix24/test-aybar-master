@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\Staff;
+namespace App\Livewire\Erp\EntregaFest\Incidencia;
 
 use App\Models\EntregaFest;
 use App\Models\EntregaFestIncidencia;
@@ -94,6 +94,6 @@ class StaffIncidencias extends Component
 
     public function render()
     {
-        return view('livewire.erp.entrega-fest.staff.staff-incidencias');
+        return view('livewire.erp.entrega-fest.incidencia.staff-incidencias');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\Staff;
+namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
 use App\Models\EntregaFest;
 use Livewire\Attributes\Layout;
@@ -21,6 +21,6 @@ class StaffDashboard extends Component
 
     public function render()
     {
-        return view('livewire.erp.entrega-fest.staff.staff-dashboard');
+        return view('livewire.erp.entrega-fest.entrega-fest.staff-dashboard');
     }
 }

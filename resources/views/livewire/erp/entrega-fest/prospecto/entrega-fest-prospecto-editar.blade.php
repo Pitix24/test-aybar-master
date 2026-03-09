@@ -103,19 +103,19 @@
                 </div>
 
                 <div x-show="activeTab === 'prospecto'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.invitado.partials._tab-datos-basicos')
+                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-datos-basicos')
                 </div>
 
                 <div x-show="activeTab === 'backoffice'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.invitado.partials._tab-backoffice')
+                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-backoffice')
                 </div>
 
                 <div x-show="activeTab === 'legal'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.invitado.partials._tab-legal')
+                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-legal')
                 </div>
 
                 <div x-show="activeTab === 'copropietarios'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.invitado.partials._tab-copropietarios')
+                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-copropietarios')
                 </div>
 
             </div>

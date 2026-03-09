@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\Staff;
+namespace App\Livewire\Erp\EntregaFest\Mop;
 
 use App\Models\EntregaFest;
 use App\Models\EntregaFestMopTarea;
@@ -41,7 +41,7 @@ class StaffMop extends Component
             ->where('fase', $this->fase)
             ->get();
 
-        return view('livewire.erp.entrega-fest.staff.staff-mop', [
+        return view('livewire.erp.entrega-fest.mop.staff-mop', [
             'tareas' => $tareas
         ]);
     }

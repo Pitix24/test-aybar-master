@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\Invitado;
+namespace App\Livewire\Erp\EntregaFest\Prospecto;
 
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
@@ -497,7 +497,7 @@ class EntregaFestProspectoEditar extends Component
     public function render()
     {
         $usuarios = User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
-        return view('livewire.erp.entrega-fest.invitado.entrega-fest-prospecto-editar', [
+        return view('livewire.erp.entrega-fest.prospecto.entrega-fest-prospecto-editar', [
             'usuarios' => $usuarios,
         ]);
     }

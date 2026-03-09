@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\EntregaFest\Staff;
+namespace App\Livewire\Erp\EntregaFest\Itinerario;
 
 use App\Models\EntregaFest;
 use App\Models\EntregaFestItinerarioBloque;
@@ -112,7 +112,7 @@ class StaffItinerarioCrear extends Component
 
     public function render()
     {
-        return view('livewire.erp.entrega-fest.staff.staff-itinerario-crear');
+        return view('livewire.erp.entrega-fest.itinerario.staff-itinerario-crear');
     }
 
     public function placeholder()
