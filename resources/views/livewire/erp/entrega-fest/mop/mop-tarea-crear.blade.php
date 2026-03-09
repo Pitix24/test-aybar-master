@@ -4,10 +4,19 @@
             Asignar Tarea MOP
             <span>{{ $evento->nombre }}</span>
         </h2>
+
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.mop.todo', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Volver a Lista
+            <a href="{{ route('erp.entrega-fest.mop.tareas', $evento->id) }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i>
             </a>
+
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Staff
+            </a>
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 

@@ -5,13 +5,10 @@
             Plantillas Globales MOP
             <span>Biblioteca de Tareas</span>
         </h2>
+
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.mop-plantilla.crear') }}" class="g_boton guardar">
-                Nueva Plantilla <i class="fa-solid fa-plus"></i>
-            </a>
-            <button type="button" class="g_boton dark" onclick="history.back()">
-                <i class="fa-solid fa-arrow-left"></i> Regresar
-            </button>
+            <a href="{{ route('erp.entrega-fest.mop-plantilla.crear') }}" class="g_boton primary">
+                Crear <i class="fa-solid fa-square-plus"></i></a>
         </div>
     </div>
 

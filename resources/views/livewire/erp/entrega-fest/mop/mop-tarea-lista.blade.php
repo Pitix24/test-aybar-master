@@ -5,12 +5,21 @@
             <span>{{ $evento->nombre }}</span>
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.mop.tareas.crear', $evento->id) }}" class="g_boton guardar">
-                Asignar Tarea <i class="fa-solid fa-plus"></i>
+            <a href="{{ route('erp.entrega-fest.mop.todo', $evento->id) }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i>
             </a>
-            <a href="{{ route('erp.entrega-fest.mop.todo', $evento->id) }}" class="g_boton dark">
-                <i class="fa-solid fa-arrow-left"></i> Mi Manual
+
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Staff
             </a>
+
+            <a href="{{ route('erp.entrega-fest.mop.tareas.crear', $evento->id) }}" class="g_boton primary">
+                Crear Tarea <i class="fa-solid fa-square-plus"></i>
+            </a>
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
