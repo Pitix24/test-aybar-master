@@ -65,7 +65,7 @@
                             <td>{{ Str::limit($p->instruccion, 80) }}</td>
                             <td class="g_celda_centro">{{ $p->prioridad }}</td>
                             <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.entrega-fest.vista.staff.mop.plantillas.editar', $p->id) }}"
+                                <a href="{{ route('erp.entrega-fest.mop-plantilla.editar', $p->id) }}"
                                     class="g_accion editar" title="Editar">
                                     <i class="fa-solid fa-pencil"></i>
                                 </a>

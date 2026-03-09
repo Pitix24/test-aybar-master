@@ -366,6 +366,9 @@ class RolesYPermisosSeeder extends Seeder
                 'mop.editar-tarea',
                 'mop.eliminar-tarea',
                 'mop.marcar-tarea',
+                'mop.tareas',
+                'mop.tareas.crear',
+                'mop.tareas.editar',
                 /* MOP PLANTILLA */
                 'mop-plantilla.navegacion',
                 'mop-plantilla.lista',
@@ -385,9 +388,9 @@ class RolesYPermisosSeeder extends Seeder
                 'proveedor.exportar-filtro',
                 'proveedor.exportar-todo',
                 'proveedor.crear-requerimiento',
-                'proveedos.editar-requerimiento',
-                'proveedos.eliminar-requerimiento',
-                'proveedos.marcar-requerimiento',
+                'proveedor.editar-requerimiento',
+                'proveedor.eliminar-requerimiento',
+                'proveedor.marcar-requerimiento',
                 /* INCIDENCIAS */
                 'incidencia.navegacion',
                 'incidencia.lista',
@@ -467,9 +470,18 @@ class RolesYPermisosSeeder extends Seeder
             'asesor-letras' => 'Asesor Letras',
             'supervisor-marketing' => 'Supervisor Marketing',
             'asesor-marketing' => 'Asesor Marketing',
-            'staff-operativo' => 'Staff Operativo',
-            'staff-lectura' => 'Staff de Lectura',
-            'proveedor-externo' => 'Proveedor Externo',
+            'supervisor-entrega-fest' => 'Staff Operativo',
+            'asesor-entrega-fest' => 'Staff de Lectura',
+            'supervisor-legal' => 'Supervisor Legal',
+            'asesor-legal' => 'Asesor Legal',
+            'staff-asistencia' => 'Proveedor Externo',
+            'staff-itinerario' => 'Proveedor Externo',
+            'staff-mop' => 'Proveedor Externo',
+            'staff-proveedores' => 'Proveedor Externo',
+            'staff-incidencias' => 'Proveedor Externo',
+            'staff-recursos' => 'Proveedor Externo',
+            'staff-protocolo' => 'Proveedor Externo',
+            'staff-contingencia' => 'Proveedor Externo',
         ];
 
         foreach ($roles as $rolName => $descripcion) {
@@ -542,38 +554,106 @@ class RolesYPermisosSeeder extends Seeder
         ]);
         $this->command->info("✓ Asesor Marketing: 4 permisos");
 
-        // Staff Operativo
-        $staff_operativo = Role::findByName('staff-operativo');
-        $staff_operativo->syncPermissions([
-            'modulo-entrega-fest.ver',
-            'entrega-fest.navegacion',
-            'entrega-fest.lista',
-            'entrega-fest.ver',
-            'asistencia-entrega-fest.lista',
-            'asistencia-entrega-fest.ver',
-            'asistencia-entrega-fest.crear',
-            'entrega-fest.itinerario.ver',
-            'entrega-fest.itinerario.ejecutar',
-            'entrega-fest.mop.ver',
-            'entrega-fest.proveedores.ver',
-            'entrega-fest.incidencias.reportar',
-            'entrega-fest.incidencias.gestionar',
-            'entrega-fest.recursos.ver',
+        // Backoffice
+        $supervisor_backoffice = Role::findByName('supervisor-backoffice');
+        $permisosBackoffice = Permission::where('module', 'Módulo Backoffice')->get();
+        $supervisor_backoffice->syncPermissions($permisosBackoffice);
+        // Agregar permisos de prospecto según entrega-fest.php
+        $supervisor_backoffice->givePermissionTo(Permission::where('name', 'like', 'prospecto.%')->get());
+        $this->command->info("✓ Supervisor Backoffice: Configurado");
+
+        $asesor_backoffice = Role::findByName('asesor-backoffice');
+        $asesor_backoffice->syncPermissions([
+            'solicitud-evidencia-pago.ver',
+            'solicitud-evidencia-pago.editar',
+            'solicitud-evidencia-pago.validar',
+            'modulo-backoffice.ver',
         ]);
+        // Agregar permisos de prospecto según entrega-fest.php
+        $asesor_backoffice->givePermissionTo(Permission::where('name', 'like', 'prospecto.%')->get());
+        $this->command->info("✓ Asesor Backoffice: Configurado");
+
+        // Legal
+        $supervisor_legal = Role::findByName('supervisor-legal');
+        $supervisor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
+        $this->command->info("✓ Supervisor Legal: Configurado");
+
+        $asesor_legal = Role::findByName('asesor-legal');
+        $asesor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
+        $this->command->info("✓ Asesor Legal: Configurado");
+
+        // Staff Operativo (supervisor-entrega-fest)
+        $staff_operativo = Role::findByName('supervisor-entrega-fest');
+        $staff_operativo->syncPermissions(Permission::where('module', 'Módulo Entrega Fest')->get());
         $this->command->info("✓ Staff Operativo: Configurado");
 
-        // Staff Lectura
-        $staff_lectura = Role::findByName('staff-lectura');
+        // Staff Lectura (asesor-entrega-fest)
+        $staff_lectura = Role::findByName('asesor-entrega-fest');
         $staff_lectura->syncPermissions([
             'modulo-entrega-fest.ver',
             'entrega-fest.navegacion',
             'entrega-fest.lista',
             'entrega-fest.ver',
-            'entrega-fest.itinerario.ver',
-            'entrega-fest.proveedores.ver',
-            'entrega-fest.recursos.ver',
+            'prospecto.navegacion',
+            'prospecto.lista',
+            'prospecto.ver',
+            'invitado.navegacion',
+            'invitado.lista',
+            'invitado.ver',
+            'asistencia.navegacion',
+            'asistencia.lista',
+            'asistencia.ver',
+            'itinerario.navegacion',
+            'itinerario.lista',
+            'itinerario.ver',
+            'mop.navegacion',
+            'mop.lista',
+            'mop.ver',
+            'proveedor.navegacion',
+            'proveedor.lista',
+            'proveedor.ver',
+            'incidencia.navegacion',
+            'incidencia.lista',
+            'incidencia.ver',
+            'recurso.navegacion',
+            'recurso.lista',
+            'recurso.ver',
         ]);
         $this->command->info("✓ Staff Lectura: Configurado");
+
+        // Roles de Proveedores Externos
+        $role_asistencia = Role::findByName('staff-asistencia');
+        $role_asistencia->syncPermissions(Permission::where('name', 'like', 'asistencia.%')->get());
+        $role_asistencia->givePermissionTo('modulo-entrega-fest.ver');
+
+        $role_itinerario = Role::findByName('staff-itinerario');
+        $role_itinerario->syncPermissions(Permission::where('name', 'like', 'itinerario.%')->get());
+        $role_itinerario->givePermissionTo('modulo-entrega-fest.ver');
+
+        $role_mop = Role::findByName('staff-mop');
+        $role_mop->syncPermissions(Permission::where('name', 'like', 'mop.%')->get());
+        $role_mop->givePermissionTo(Permission::where('name', 'like', 'mop-plantilla.%')->get());
+        $role_mop->givePermissionTo('modulo-entrega-fest.ver');
+
+        $role_proveedores = Role::findByName('staff-proveedores');
+        $role_proveedores->syncPermissions(Permission::where('name', 'like', 'proveedor.%')->get());
+        $role_proveedores->givePermissionTo('modulo-entrega-fest.ver');
+
+        $role_incidencias = Role::findByName('staff-incidencias');
+        $role_incidencias->syncPermissions(Permission::where('name', 'like', 'incidencia.%')->get());
+        $role_incidencias->givePermissionTo('modulo-entrega-fest.ver');
+
+        $role_recursos = Role::findByName('staff-recursos');
+        $role_recursos->syncPermissions(Permission::where('name', 'like', 'recurso.%')->get());
+        $role_recursos->givePermissionTo('modulo-entrega-fest.ver');
+
+        $role_protocolo = Role::findByName('staff-protocolo');
+        $role_protocolo->syncPermissions(Permission::where('name', 'like', 'protocolo.%')->get());
+        $role_protocolo->givePermissionTo('modulo-entrega-fest.ver');
+
+        $role_contingencia = Role::findByName('staff-contingencia');
+        $role_contingencia->syncPermissions(Permission::where('name', 'like', 'contingencia.%')->get());
+        $role_contingencia->givePermissionTo('modulo-entrega-fest.ver');
 
         $this->command->newLine();
         $this->command->info("========================================");

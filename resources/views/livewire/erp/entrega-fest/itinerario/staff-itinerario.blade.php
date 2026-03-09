@@ -41,7 +41,7 @@
                 {{-- ACCIONES --}}
                 <div class="cabecera_titulo_botones">
                     {{-- Botón Editar --}}
-                    <a href="{{ route('erp.entrega-fest.vista.staff.itinerario.editar', [$evento->id, $bloque->id]) }}"
+                    <a href="{{ route('erp.entrega-fest.itinerario.editar', [$evento->id, $bloque->id]) }}"
                         class="g_accion editar" title="Editar bloque">
                         <i class="fa-solid fa-pencil"></i>
                     </a>

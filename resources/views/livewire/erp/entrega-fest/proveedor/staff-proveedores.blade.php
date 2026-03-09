@@ -31,7 +31,7 @@
                         <div style="display:flex; align-items:center; gap:8px;">
                             <h4 class="g_panel_titulo" style="margin:4px 0 0 0;">{{ $prov->nombre_comercial }}</h4>
                             @can('entrega-fest.staff')
-                                <a href="{{ route('erp.entrega-fest.vista.staff.proveedores.editar', [$evento->id, $prov->id]) }}"
+                                <a href="{{ route('erp.entrega-fest.proveedor.editar', [$evento->id, $prov->id]) }}"
                                     class="g_accion editar" title="Editar Proveedor"
                                     style="display:inline-flex; width:26px; height:26px; font-size:10px;">
                                     <i class="fa-solid fa-pencil"></i>

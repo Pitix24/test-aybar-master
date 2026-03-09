@@ -90,7 +90,7 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
                 Route::get('/{id}', StaffMop::class)->middleware('permission:mop.lista')->name('todo');
                 Route::get('/tareas/{id}', MopTareaLista::class)->middleware('permission:mop.tareas')->name('tareas');
                 Route::get('/tareas/crear/{id}', MopTareaCrear::class)->middleware('permission:mop.tareas.crear')->name('tareas.crear');
-                Route::get('/tareas/{tareaId}/editar/{id}', MopTareaEditar::class)->middleware('permission:mop.tareas.editar')->name('tareas.editar');
+                Route::get('/tareas/{id}/editar/{tareaId}', MopTareaEditar::class)->middleware('permission:mop.tareas.editar')->name('tareas.editar');
             });
     });
 

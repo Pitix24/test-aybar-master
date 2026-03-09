@@ -73,7 +73,7 @@
                                 @endif
                             </td>
                             <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas.editar', [$evento->id, $t->id]) }}"
+                                <a href="{{ route('erp.entrega-fest.mop.tareas.editar', [$evento->id, $t->id]) }}"
                                     class="g_accion editar" title="Editar">
                                     <i class="fa-solid fa-pencil"></i>
                                 </a>

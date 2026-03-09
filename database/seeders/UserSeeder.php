@@ -60,6 +60,40 @@ class UserSeeder extends Seeder
         $this->createRelatedData($asesor_atc);
         $this->command->info('✓ Asesor ATC creado: asesor@aybar.com');
 
+        // New Entrega Fest Roles
+        $entregaFestRoles = [
+            'supervisor-entrega-fest' => 'Staff Operativo',
+            'asesor-entrega-fest' => 'Staff de Lectura',
+            'supervisor-legal' => 'Supervisor Legal',
+            'asesor-legal' => 'Asesor Legal',
+            'staff-asistencia' => 'Proveedor Externo Asistencia',
+            'staff-itinerario' => 'Proveedor Externo Itinerario',
+            'staff-mop' => 'Proveedor Externo MOP',
+            'staff-proveedores' => 'Proveedor Externo Proveedores',
+            'staff-incidencias' => 'Proveedor Externo Incidencias',
+            'staff-recursos' => 'Proveedor Externo Recursos',
+            'staff-protocolo' => 'Proveedor Externo Protocolo',
+            'staff-contingencia' => 'Proveedor Externo Contingencia',
+        ];
+
+        $this->command->newLine();
+        $this->command->info('Creando usuarios de Entrega Fest...');
+
+        foreach ($entregaFestRoles as $role => $description) {
+            for ($i = 1; $i <= 2; $i++) {
+                $email = str_replace('-', '_', $role) . "_{$i}@aybar.com";
+                $user = User::factory()->create([
+                    'name' => "{$description} {$i}",
+                    'email' => $email,
+                    'rol' => 'admin',
+                    'activo' => true,
+                ]);
+                $user->assignRole($role);
+                $this->createRelatedData($user);
+                $this->command->info("✓ Usuario {$role} {$i} creado: {$email}");
+            }
+        }
+
         $this->command->newLine();
         $this->command->info('Creando clientes específicos...');
 
