@@ -30,117 +30,256 @@ use App\Livewire\Erp\EntregaFest\Staff\StaffProveedoresEditar;
 use App\Livewire\Erp\EntregaFest\Staff\StaffRecursos;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => []], function () {
-    Route::group(['middleware' => []], function () {
+Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function () {
+
+    Route::group(['middleware' => ['permission:entrega-fest.navegacion']], function () {
         Route::prefix('entrega-fest')
             ->name('entrega-fest.vista.')
             ->group(function () {
-                Route::get('/', EntregaFestLista::class)->name('todo');
-                Route::get('/crear', EntregaFestCrear::class)->name('crear');
-                Route::get('/ver/{id}', EntregaFestVer::class)->name('ver');
-                Route::get('/editar/{id}', EntregaFestEditar::class)->name('editar');
-                Route::get('/panel/{id}', EntregaFestPanel::class)->name('panel');
+                Route::get('/', EntregaFestLista::class)->middleware('permission:entrega-fest.lista')->name('todo');
+                Route::get('/crear', EntregaFestCrear::class)->middleware('permission:entrega-fest.crear')->name('crear');
+                Route::get('/ver/{id}', EntregaFestVer::class)->middleware('permission:entrega-fest.ver')->name('ver');
+                Route::get('/editar/{id}', EntregaFestEditar::class)->middleware('permission:entrega-fest.editar')->name('editar');
+                Route::get('/panel/{id}', EntregaFestPanel::class)->middleware('permission:entrega-fest.ver-panel')->name('panel');
+                Route::get('/staff/{id}', StaffDashboard::class)->middleware('permission:entrega-fest.ver-staff')->name('staff');
+            });
+    });
 
-                Route::get('/prospecto/{id}', EntregaFestProspecto::class)->name('prospectos');
-                Route::get('/prospecto/{id}/crear', EntregaFestProspectoCrear::class)->name('prospectos.crear');
-                Route::get('/prospecto/{id}/editar/{prospectoId}', EntregaFestProspectoEditar::class)->name('prospectos.editar');
+    Route::group(['middleware' => ['permission:prospecto.navegacion']], function () {
+        Route::prefix('entrega-fest/prospecto')
+            ->name('entrega-fest.prospecto.')
+            ->group(function () {
+                Route::get('/{id}', EntregaFestProspecto::class)->middleware('permission:prospecto.lista')->name('todo');
+                Route::get('/crear/{id}', EntregaFestProspectoCrear::class)->middleware('permission:prospecto.crear')->name('crear');
+                Route::get('/editar/{id}/{prospectoId}', EntregaFestProspectoEditar::class)->middleware('permission:prospecto.editar')->name('editar');
+            });
+    });
 
-                Route::get('/invitado/{id}', EntregaFestInvitado::class)->name('invitados');
-                Route::get('/invitado/{id}/crear', EntregaFestInvitadoCrear::class)->name('invitados.crear');
-                Route::get('/invitado/{id}/editar/{invitadoId}', EntregaFestInvitadoEditar::class)->name('invitados.editar');
+    Route::group(['middleware' => ['permission:invitado.navegacion']], function () {
+        Route::prefix('entrega-fest/invitado')
+            ->name('entrega-fest.invitado.')
+            ->group(function () {
+                Route::get('/{id}', EntregaFestInvitado::class)->middleware('permission:invitado.lista')->name('todo');
+                Route::get('/crear/{id}', EntregaFestInvitadoCrear::class)->middleware('permission:invitado.crear')->name('crear');
+                Route::get('/editar/{id}/{invitadoId}', EntregaFestInvitadoEditar::class)->middleware('permission:invitado.editar')->name('editar');
+            });
+    });
 
-                Route::get('/asistencia/{id}', EntregaFestAsistencia::class)->name('asistencia');
-                Route::get('/staff/{id}', StaffDashboard::class)->name('staff.dashboard');
+    Route::group(['middleware' => ['permission:asistencia.navegacion']], function () {
+        Route::prefix('entrega-fest/asistencia')
+            ->name('entrega-fest.asistencia.')
+            ->group(function () {
+                Route::get('/{id}', EntregaFestAsistencia::class)->middleware('permission:asistencia.lista')->name('todo');
+            });
+    });
 
-                Route::get('/itinerario/{id}', StaffItinerario::class)->name('staff.itinerario');
-                Route::get('/itinerario/{id}/crear', StaffItinerarioCrear::class)->name('staff.itinerario.crear');
-                Route::get('/itinerario/{id}/editar/{bloqueId}', StaffItinerarioEditar::class)->name('staff.itinerario.editar');
+    Route::group(['middleware' => ['permission:itinerario.navegacion']], function () {
+        Route::prefix('entrega-fest/itinerario')
+            ->name('entrega-fest.itinerario.')
+            ->group(function () {
+                Route::get('/{id}', StaffItinerario::class)->middleware('permission:itinerario.lista')->name('todo');
+                Route::get('/crear/{id}', StaffItinerarioCrear::class)->middleware('permission:itinerario.crear')->name('crear');
+                Route::get('/editar/{id}/{bloqueId}', StaffItinerarioEditar::class)->middleware('permission:itinerario.editar')->name('editar');
+            });
+    });
 
-                // MOP (Manual de Operaciones)
-                Route::get('/mop/{id}', StaffMop::class)->name('staff.mop');
-                Route::get('/mop/{id}/tareas', MopTareaLista::class)->name('staff.mop.tareas');
-                Route::get('/mop/{id}/tareas/crear', MopTareaCrear::class)->name('staff.mop.tareas.crear');
-                Route::get('/mop/{id}/tareas/{tareaId}/editar', MopTareaEditar::class)->name('staff.mop.tareas.editar');
+    Route::group(['middleware' => ['permission:mop.navegacion']], function () {
+        Route::prefix('entrega-fest/mop')
+            ->name('entrega-fest.mop.')
+            ->group(function () {
+                Route::get('/{id}', StaffMop::class)->middleware('permission:mop.lista')->name('todo');
+                Route::get('/tareas/{id}', MopTareaLista::class)->middleware('permission:mop.tareas')->name('tareas');
+                Route::get('/tareas/crear/{id}', MopTareaCrear::class)->middleware('permission:mop.tareas.crear')->name('tareas.crear');
+                Route::get('/tareas/{tareaId}/editar/{id}', MopTareaEditar::class)->middleware('permission:mop.tareas.editar')->name('tareas.editar');
+            });
+    });
 
-                // Plantillas MOP (Globales)
-                Route::get('/staff-mop-plantillas', MopPlantillaLista::class)->name('staff.mop.plantillas');
-                Route::get('/staff-mop-plantillas/crear', MopPlantillaCrear::class)->name('staff.mop.plantillas.crear');
-                Route::get('/staff-mop-plantillas/{id}/editar', MopPlantillaEditar::class)->name('staff.mop.plantillas.editar');
+    Route::group(['middleware' => ['permission:mop-plantilla.navegacion']], function () {
+        Route::prefix('entrega-fest/mop-plantilla')
+            ->name('entrega-fest.mop-plantilla.')
+            ->group(function () {
+                Route::get('/', MopPlantillaLista::class)->middleware('permission:mop-plantilla.lista')->name('todo');
+                Route::get('/crear', MopPlantillaCrear::class)->middleware('permission:mop-plantilla.crear')->name('crear');
+                Route::get('/editar/{id}', MopPlantillaEditar::class)->middleware('permission:mop-plantilla.editar')->name('editar');
+            });
+    });
 
-                Route::get('/proveedores/{id}', StaffProveedores::class)->name('staff.proveedores');
-                Route::get('/proveedores/{id}/crear', StaffProveedoresCrear::class)->name('staff.proveedores.crear');
-                Route::get('/proveedores/{id}/editar/{proveedorId}', StaffProveedoresEditar::class)->name('staff.proveedores.editar');
+    Route::group(['middleware' => ['permission:proveedor.navegacion']], function () {
+        Route::prefix('entrega-fest/proveedor')
+            ->name('entrega-fest.proveedor.')
+            ->group(function () {
+                Route::get('/{id}', StaffProveedores::class)->middleware('permission:proveedor.lista')->name('todo');
+                Route::get('/crear/{id}', StaffProveedoresCrear::class)->middleware('permission:proveedor.crear')->name('crear');
+                Route::get('/editar/{id}/{proveedorId}', StaffProveedoresEditar::class)->middleware('permission:proveedor.editar')->name('editar');
+            });
+    });
 
-                Route::get('/incidencias/{id}', StaffIncidencias::class)->name('staff.incidencias');
-                Route::get('/recursos/{id}', StaffRecursos::class)->name('staff.recursos');
+    Route::group(['middleware' => ['permission:incidencia.navegacion']], function () {
+        Route::prefix('entrega-fest/incidencia')
+            ->name('entrega-fest.incidencia.')
+            ->group(function () {
+                Route::get('/{id}', StaffIncidencias::class)->middleware('permission:incidencia.lista')->name('todo');
+            });
+    });
+
+    Route::group(['middleware' => ['permission:recurso.navegacion']], function () {
+        Route::prefix('entrega-fest/recurso')
+            ->name('entrega-fest.recurso.')
+            ->group(function () {
+                Route::get('/{id}', StaffRecursos::class)->middleware('permission:recurso.lista')->name('todo');
             });
     });
 });
 
 
 /*
-Route::prefix('entrega-fest')->group(function () {
+--------------------------------------------------------------------------
+ROLES ENTREGA FEST
+--------------------------------------------------------------------------
+supervisor-entrega-fest
+staff-asistencia
+staff-itinerario
+staff-mop
+staff-proveedores
+staff-incidencias
+staff-recursos
+staff-protocolo
+staff-contingencia
 
-    // 1. Rutas Globales (Sin ID de evento específico)
-    Route::group(['as' => 'entrega-fest.vista.'], function () {
-        Route::get('/', EntregaFestLista::class)->name('todo');
-        Route::get('/crear', EntregaFestCrear::class)->name('crear');
-    });
+--------------------------------------------------------------------------
+PERMISOS ENTREGA FEST
+--------------------------------------------------------------------------
+Convención: recurso.accion
+MODULO
+1. modulo-entrega-fest.ver
 
-    // MOP: Plantillas globales (sin evento específico)
-    Route::prefix('mop/plantillas')->name('entrega-fest.mop.plantillas')->group(function () {
-        Route::get('/', MopPlantillaLista::class)->name('');
-        Route::get('/crear', MopPlantillaCrear::class)->name('.crear');
-        Route::get('/editar/{id}', MopPlantillaEditar::class)->name('.editar');
-    });
+ENTREGA FEST
+1. entrega-fest.navegacion
+2. entrega-fest.lista
+3. entrega-fest.ver
+4. entrega-fest.crear
+5. entrega-fest.editar
+6. entrega-fest.eliminar
+7. entrega-fest.exportar-filtro
+8. entrega-fest.exportar-todo
+9. entrega-fest.ver-panel
+10. entrega-fest.ver-staff
 
-    // 2. Rutas Contextuales (Dependientes de un EntregaFest específico)
-    Route::prefix('{id}')->group(function () {
+PROSPECTO
+1. prospecto.navegacion
+2. prospecto.lista
+3. prospecto.ver
+4. prospecto.crear
+5. prospecto.editar
+6. prospecto.eliminar
+7. prospecto.exportar-filtro
+8. prospecto.exportar-todo
 
-        // Sub-módulo: Administración y Gestión
-        Route::group(['as' => 'entrega-fest.vista.'], function () {
-            Route::get('/panel', EntregaFestPanel::class)->name('panel');
-            Route::get('/ver', EntregaFestVer::class)->name('ver');
-            Route::get('/editar', EntregaFestEditar::class)->name('editar');
-            Route::get('/asistencia', EntregaFestAsistencia::class)->name('asistencia');
+INVITADO
+1. invitado.navegacion
+2. invitado.lista
+3. invitado.ver
+4. invitado.exportar-filtro
+5. invitado.exportar-todo
 
-            // Prospectos
-            Route::prefix('prospectos')->name('prospectos')->group(function () {
-                Route::get('/', EntregaFestProspecto::class)->name('');
-                Route::get('/crear', EntregaFestProspectoCrear::class)->name('.crear');
-                Route::get('/editar/{prospectoId}', EntregaFestProspectoEditar::class)->name('.editar');
-            });
+ASISTENCIA
+1. asistencia.navegacion
+2. asistencia.lista
+3. asistencia.ver
+4. asistencia.marcar
+5. asistencia.exportar-filtro
+6. asistencia.exportar-todo
 
-            // Invitados
-            Route::prefix('invitados')->name('invitados')->group(function () {
-                Route::get('/', EntregaFestInvitado::class)->name('');
-                Route::get('/crear', EntregaFestInvitadoCrear::class)->name('.crear');
-                Route::get('/editar/{invitadoId}', EntregaFestInvitadoEditar::class)->name('.editar');
-            });
-        });
+ITINERARIO
+1. itinerario.navegacion
+2. itinerario.lista
+3. itinerario.ver
+4. itinerario.crear
+5. itinerario.editar
+6. itinerario.eliminar
+7. itinerario.exportar-filtro
+8. itinerario.exportar-todo
+9. itinerario.crear-tarea
+10. itinerario.editar-tarea
+11. itinerario.eliminar-tarea
+12. itinerario.marcar-tarea
 
-        // Sub-módulo: Operaciones Staff (Campo)
-        Route::group(['prefix' => 'staff', 'as' => 'entrega-fest.staff.'], function () {
-            Route::get('/', StaffDashboard::class)->name('dashboard');
+MOP
+1. mop.navegacion
+2. mop.lista
+3. mop.ver
+4. mop.crear
+5. mop.editar
+6. mop.eliminar
+7. mop.exportar-filtro
+8. mop.exportar-todo
+9. mop.crear-tarea
+10. mop.editar-tarea
+11. mop.eliminar-tarea
+12. mop.marcar-tarea
 
-            // Itinerario (con CRUD)
-            Route::prefix('itinerario')->name('itinerario')->group(function () {
-                Route::get('/', StaffItinerario::class)->name('');
-                Route::get('/crear', StaffItinerarioCrear::class)->name('.crear');
-                Route::get('/editar/{bloqueId}', StaffItinerarioEditar::class)->name('.editar');
-            });
+MOP PLANTILLA
+1. mop-plantilla.navegacion
+2. mop-plantilla.lista
+3. mop-plantilla.ver
+4. mop-plantilla.crear
+5. mop-plantilla.editar
+6. mop-plantilla.eliminar
+7. mop-plantilla.exportar-filtro
+8. mop-plantilla.exportar-todo
 
-            Route::get('/mop', StaffMop::class)->name('mop');
-            Route::get('/proveedores', StaffProveedores::class)->name('proveedores');
-            Route::get('/incidencias', StaffIncidencias::class)->name('incidencias');
-            Route::get('/recursos', StaffRecursos::class)->name('recursos');
-        });
+PROVEEDORES
+1. proveedor.navegacion
+2. proveedor.lista
+3. proveedor.ver
+4. proveedor.crear
+5. proveedor.editar
+6. proveedor.eliminar
+7. proveedor.exportar-filtro
+8. proveedor.exportar-todo
+9. proveedor.crear-requerimiento
+10. proveedos.editar-requerimiento
+11. proveedos.eliminar-requerimiento
+12. proveedos.marcar-requerimiento
 
-        // MOP: Tareas por evento (administración coordinador)
-        Route::prefix('mop/tareas')->name('entrega-fest.mop.tareas')->group(function () {
-            Route::get('/', MopTareaLista::class)->name('');
-            Route::get('/crear', MopTareaCrear::class)->name('.crear');
-            Route::get('/editar/{tareaId}', MopTareaEditar::class)->name('.editar');
-        });
-    });
-});*/
+INCIDENCIAS
+1. incidencia.navegacion
+2. incidencia.lista
+3. incidencia.ver
+4. incidencia.crear
+5. incidencia.editar
+6. incidencia.eliminar
+7. incidencia.exportar-filtro
+8. incidencia.exportar-todo
+
+RECURSOS
+1. recurso.navegacion
+2. recurso.lista
+3. recurso.ver
+4. recurso.crear
+5. recurso.editar
+6. recurso.eliminar
+7. recurso.exportar-filtro
+8. recurso.exportar-todo
+
+CONTINGENCIA
+1. contingencia.navegacion
+2. contingencia.lista
+3. contingencia.ver
+4. contingencia.crear
+5. contingencia.editar
+6. contingencia.eliminar
+7. contingencia.exportar-filtro
+8. contingencia.exportar-todo
+
+PROTOCOLO
+1. protocolo.navegacion
+2. protocolo.lista
+3. protocolo.ver
+4. protocolo.crear
+5. protocolo.editar
+6. protocolo.eliminar
+7. protocolo.exportar-filtro
+8. protocolo.exportar-todo
+
+*/

@@ -27,7 +27,7 @@ class EntregaFestSeeder extends Seeder
 
         // Limpiar datos previos para evitar duplicados
         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        EntregaFest::whereIn('codigo', ['EF-2026-001', 'EF-2026-002'])->each(function (EntregaFest $ef) {
+        EntregaFest::whereIn('codigo', ['EF-2026-001', 'EF-2026-002', 'EF-2026-003', 'EF-2026-004', 'EF-2026-005'])->each(function (EntregaFest $ef) {
             $ef->forceDelete();
         });
         \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
@@ -43,6 +43,21 @@ class EntregaFestSeeder extends Seeder
                 'nombre' => 'Invierno Fest Aybar 2026',
                 'codigo' => 'EF-2026-002',
                 'descripcion' => 'Segunda edición anual de entrega de proyectos.',
+            ],
+            [
+                'nombre' => 'Primavera Fest Aybar 2026',
+                'codigo' => 'EF-2026-003',
+                'descripcion' => 'Evento de primavera para nuevos propietarios.',
+            ],
+            [
+                'nombre' => 'Otoño Fest Aybar 2026',
+                'codigo' => 'EF-2026-004',
+                'descripcion' => 'Cierre de temporada de entregas.',
+            ],
+            [
+                'nombre' => 'Special Edition Fest 2026',
+                'codigo' => 'EF-2026-005',
+                'descripcion' => 'Evento exclusivo para proyectos premium.',
             ],
         ];
 
@@ -65,7 +80,7 @@ class EntregaFestSeeder extends Seeder
             // 2. Crear Prospectos (titulares de lote) para este festival
             foreach ($proyectos as $proyecto) {
                 $prospectos = ProspectoEntregaFest::factory()
-                    ->count(rand(2, 4))
+                    ->count(rand(5, 10))
                     ->create([
                         'entrega_fest_id' => $evento->id,
                         'proyecto_id' => $proyecto->id,
