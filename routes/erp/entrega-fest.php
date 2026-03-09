@@ -137,6 +137,7 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
 ROLES ENTREGA FEST
 --------------------------------------------------------------------------
 supervisor-entrega-fest
+asesor-entrega-fest
 staff-asistencia
 staff-itinerario
 staff-mop
@@ -151,9 +152,11 @@ PERMISOS ENTREGA FEST
 --------------------------------------------------------------------------
 Convención: recurso.accion
 MODULO
+ROLES: supervisor-entrega-fest, asesor-entrega-fest
 1. modulo-entrega-fest.ver
 
 ENTREGA FEST
+ROLES: supervisor-entrega-fest, asesor-entrega-fest
 1. entrega-fest.navegacion
 2. entrega-fest.lista
 3. entrega-fest.ver
@@ -166,6 +169,7 @@ ENTREGA FEST
 10. entrega-fest.ver-staff
 
 PROSPECTO
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, supervisor-backoffice, asesor-backoffice, supervisor-legal, asesor-legal
 1. prospecto.navegacion
 2. prospecto.lista
 3. prospecto.ver
@@ -176,6 +180,7 @@ PROSPECTO
 8. prospecto.exportar-todo
 
 INVITADO
+ROLES: supervisor-entrega-fest, asesor-entrega-fest
 1. invitado.navegacion
 2. invitado.lista
 3. invitado.ver
@@ -183,6 +188,7 @@ INVITADO
 5. invitado.exportar-todo
 
 ASISTENCIA
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-asistencia
 1. asistencia.navegacion
 2. asistencia.lista
 3. asistencia.ver
@@ -191,6 +197,7 @@ ASISTENCIA
 6. asistencia.exportar-todo
 
 ITINERARIO
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-itinerario
 1. itinerario.navegacion
 2. itinerario.lista
 3. itinerario.ver
@@ -205,6 +212,7 @@ ITINERARIO
 12. itinerario.marcar-tarea
 
 MOP
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-mop
 1. mop.navegacion
 2. mop.lista
 3. mop.ver
@@ -219,6 +227,7 @@ MOP
 12. mop.marcar-tarea
 
 MOP PLANTILLA
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-mop
 1. mop-plantilla.navegacion
 2. mop-plantilla.lista
 3. mop-plantilla.ver
@@ -229,6 +238,7 @@ MOP PLANTILLA
 8. mop-plantilla.exportar-todo
 
 PROVEEDORES
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-proveedores
 1. proveedor.navegacion
 2. proveedor.lista
 3. proveedor.ver
@@ -243,6 +253,7 @@ PROVEEDORES
 12. proveedos.marcar-requerimiento
 
 INCIDENCIAS
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-incidencias
 1. incidencia.navegacion
 2. incidencia.lista
 3. incidencia.ver
@@ -253,6 +264,7 @@ INCIDENCIAS
 8. incidencia.exportar-todo
 
 RECURSOS
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-recursos
 1. recurso.navegacion
 2. recurso.lista
 3. recurso.ver
@@ -263,6 +275,7 @@ RECURSOS
 8. recurso.exportar-todo
 
 CONTINGENCIA
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-contingencia
 1. contingencia.navegacion
 2. contingencia.lista
 3. contingencia.ver
@@ -273,6 +286,7 @@ CONTINGENCIA
 8. contingencia.exportar-todo
 
 PROTOCOLO
+ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-protocolo
 1. protocolo.navegacion
 2. protocolo.lista
 3. protocolo.ver
