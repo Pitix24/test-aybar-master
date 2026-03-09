@@ -9,7 +9,7 @@
                 <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
 
-            <a href="{{ route('erp.entrega-fest.vista.prospectos.crear', $evento->id) }}" class="g_boton primary">
+            <a href="{{ route('erp.entrega-fest.prospecto.crear', $evento->id) }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i>
             </a>
 
@@ -182,7 +182,7 @@
                                 @endif
                             </td>
                             <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.entrega-fest.vista.prospectos.editar', [$evento->id, $p->id]) }}"
+                                <a href="{{ route('erp.entrega-fest.prospecto.editar', [$evento->id, $p->id]) }}"
                                     class="g_accion editar" title="Editar / Evaluar">
                                     <i class="fa-solid fa-pencil"></i>
                                 </a>

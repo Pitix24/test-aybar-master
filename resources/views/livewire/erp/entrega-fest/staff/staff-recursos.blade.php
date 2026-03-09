@@ -8,12 +8,13 @@
         </h2>
         <div class="cabecera_titulo_botones">
             @can('entrega-fest.staff')
-                <button wire:click="$toggle('mostrarFormulario')" class="g_boton {{ $mostrarFormulario ? 'cancelar' : 'guardar' }}">
+                <button wire:click="$toggle('mostrarFormulario')"
+                    class="g_boton {{ $mostrarFormulario ? 'cancelar' : 'guardar' }}">
                     <i class="fa-solid {{ $mostrarFormulario ? 'fa-times' : 'fa-plus' }}"></i>
                     {{ $mostrarFormulario ? 'Cancelar' : ($tab === 'MAPAS' ? 'Cargar Recurso' : ($tab === 'PROTOCOLOS' ? 'Nuevo Protocolo' : 'Nueva Contingencia')) }}
                 </button>
             @endcan
-            <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Panel Staff
             </a>
         </div>
@@ -23,7 +24,8 @@
     @if($mostrarFormulario)
         <div class="g_panel">
             <h4 class="g_panel_titulo">
-                <i class="fa-solid {{ $tab === 'MAPAS' ? 'fa-file-arrow-up' : ($tab === 'PROTOCOLOS' ? 'fa-feather' : 'fa-shield-virus') }}"></i>
+                <i
+                    class="fa-solid {{ $tab === 'MAPAS' ? 'fa-file-arrow-up' : ($tab === 'PROTOCOLOS' ? 'fa-feather' : 'fa-shield-virus') }}"></i>
                 Añadir {{ $tab === 'MAPAS' ? 'Recurso' : ($tab === 'PROTOCOLOS' ? 'Protocolo' : 'Contingencia') }}
             </h4>
 
@@ -61,7 +63,8 @@
                     </div>
                     <div>
                         <label>Contenido / Texto Completo</label>
-                        <textarea wire:model="p_contenido" rows="6" placeholder="Escriba aquí el guión o pasos a seguir..."></textarea>
+                        <textarea wire:model="p_contenido" rows="6"
+                            placeholder="Escriba aquí el guión o pasos a seguir..."></textarea>
                     </div>
                     <div class="formulario_botones">
                         <button type="submit" class="g_boton guardar">Guardar Protocolo</button>
@@ -111,7 +114,7 @@
                     @forelse($evento->recursos as $recurso)
                         <div class="g_panel" style="padding:0; overflow:hidden; position:relative;">
                             @can('entrega-fest.staff')
-                                <button wire:click="eliminarRecurso({{ $recurso->id }})" class="g_boton danger small" 
+                                <button wire:click="eliminarRecurso({{ $recurso->id }})" class="g_boton danger small"
                                     style="position:absolute; top:5px; right:5px; z-index:10; width:26px; height:26px; padding:0;">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
@@ -128,7 +131,8 @@
                             </div>
                             <div style="padding:12px;">
                                 <p class="g_inferior g_mayuscula" style="margin:0 0 4px 0; font-size:10px;">
-                                    {{ $recurso->tipo_recurso }}</p>
+                                    {{ $recurso->tipo_recurso }}
+                                </p>
                                 <p class="g_negrita" style="margin:0 0 10px 0;">{{ $recurso->nombre_publico }}</p>
                                 @if($recurso->media->count() > 0)
                                     <a href="{{ $recurso->getFirstMediaUrl() }}" target="_blank" class="g_boton primary"
@@ -150,13 +154,14 @@
                     @forelse($evento->protocolos as $protocolo)
                         <div class="g_panel" style="border-left:4px solid var(--color-vivo); position:relative;">
                             @can('entrega-fest.staff')
-                                <button wire:click="eliminarProtocolo({{ $protocolo->id }})" class="g_boton danger small" 
+                                <button wire:click="eliminarProtocolo({{ $protocolo->id }})" class="g_boton danger small"
                                     style="position:absolute; top:10px; right:10px; width:26px; height:26px; padding:0;">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             @endcan
                             <h4 class="g_panel_titulo">{{ $protocolo->titulo }}</h4>
-                            <p style="line-height:1.7; font-style:italic; color:var(--color-light-texto); margin:0; white-space: pre-wrap;">
+                            <p
+                                style="line-height:1.7; font-style:italic; color:var(--color-light-texto); margin:0; white-space: pre-wrap;">
                                 "{{ $protocolo->contenido }}"
                             </p>
                         </div>
@@ -172,7 +177,7 @@
                     @forelse($evento->contingencias as $plan)
                         <div class="g_panel" style="border-left:4px solid var(--color-danger); position:relative;">
                             @can('entrega-fest.staff')
-                                <button wire:click="eliminarContingencia({{ $plan->id }})" class="g_boton danger small" 
+                                <button wire:click="eliminarContingencia({{ $plan->id }})" class="g_boton danger small"
                                     style="position:absolute; top:10px; right:10px; width:26px; height:26px; padding:0;">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>

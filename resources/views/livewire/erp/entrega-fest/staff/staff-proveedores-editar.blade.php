@@ -10,7 +10,7 @@
                 onclick="Livewire.dispatch('alertaConfirmar', { event: 'eliminarProveedorOn', titulo: 'Eliminar Proveedor', texto: 'Esta accion no se puede deshacer.' })">
                 Eliminar <i class="fa-solid fa-trash"></i>
             </button>
-            <a href="{{ route('erp.entrega-fest.vista.staff.proveedores', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.proveedor.todo', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Volver a Logística
             </a>
         </div>
@@ -85,8 +85,8 @@
                         <span wire:loading wire:target="update"><i class="fa-solid fa-spinner fa-spin"></i>
                             Guardando...</span>
                     </button>
-                    <a href="{{ route('erp.entrega-fest.vista.staff.proveedores', $evento->id) }}"
-                        class="g_boton cancelar"><i class="fa-solid fa-times"></i> Cancelar</a>
+                    <a href="{{ route('erp.entrega-fest.proveedor.todo', $evento->id) }}" class="g_boton cancelar"><i
+                            class="fa-solid fa-times"></i> Cancelar</a>
                 </div>
             </form>
         </div>

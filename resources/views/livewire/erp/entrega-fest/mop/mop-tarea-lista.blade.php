@@ -5,10 +5,10 @@
             <span>{{ $evento->nombre }}</span>
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas.crear', $evento->id) }}" class="g_boton guardar">
+            <a href="{{ route('erp.entrega-fest.mop.tareas.crear', $evento->id) }}" class="g_boton guardar">
                 Asignar Tarea <i class="fa-solid fa-plus"></i>
             </a>
-            <a href="{{ route('erp.entrega-fest.vista.staff.mop', $evento->id) }}" class="g_boton dark">
+            <a href="{{ route('erp.entrega-fest.mop.todo', $evento->id) }}" class="g_boton dark">
                 <i class="fa-solid fa-arrow-left"></i> Mi Manual
             </a>
         </div>
@@ -17,10 +17,6 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas.crear', $evento->id) }}"
-                    class="g_boton guardar">
-                    Asignar Tarea <i class="fa-solid fa-plus"></i>
-                </a>
                 <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>

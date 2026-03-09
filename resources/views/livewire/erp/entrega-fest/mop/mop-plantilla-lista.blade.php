@@ -6,7 +6,7 @@
             <span>Biblioteca de Tareas</span>
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.staff.mop.plantillas.crear') }}" class="g_boton guardar">
+            <a href="{{ route('erp.entrega-fest.mop-plantilla.crear') }}" class="g_boton guardar">
                 Nueva Plantilla <i class="fa-solid fa-plus"></i>
             </a>
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -19,9 +19,6 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <a href="{{ route('erp.entrega-fest.vista.staff.mop.plantillas.crear') }}" class="g_boton guardar">
-                    Nueva Plantilla <i class="fa-solid fa-plus"></i>
-                </a>
                 <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>

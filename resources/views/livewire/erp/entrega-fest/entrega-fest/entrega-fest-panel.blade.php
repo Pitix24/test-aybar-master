@@ -45,7 +45,7 @@
     </div>
 
     <div class="g_panel_dashboard_grid">
-        <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.prospecto.todo', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_info">
             <div class="g_panel_navegacion_header">
                 <div>
@@ -70,7 +70,7 @@
             </div>
         </a>
 
-        <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.invitado.todo', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_success">
             <div class="g_panel_navegacion_header">
                 <div>
@@ -96,7 +96,7 @@
             </div>
         </a>
 
-        <a href="{{ route('erp.entrega-fest.vista.asistencia', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.asistencia.todo', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_active">
             <div class="g_panel_navegacion_header">
                 <div>
@@ -121,7 +121,7 @@
             </div>
         </a>
 
-        <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}"
+        <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}"
             class="g_panel g_panel_navegacion g_panel_border_primary">
             <div class="g_panel_navegacion_header">
                 <div>

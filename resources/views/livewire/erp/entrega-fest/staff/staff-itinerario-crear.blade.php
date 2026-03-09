@@ -6,7 +6,7 @@
             Nuevo Bloque de Itinerario
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.staff.itinerario', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Volver
             </a>
         </div>
@@ -68,8 +68,7 @@
                         <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i>
                             Guardando...</span>
                     </button>
-                    <a href="{{ route('erp.entrega-fest.vista.staff.itinerario', $evento->id) }}"
-                        class="g_boton cancelar">
+                    <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton cancelar">
                         <i class="fa-solid fa-times"></i> Cancelar
                     </a>
                 </div>

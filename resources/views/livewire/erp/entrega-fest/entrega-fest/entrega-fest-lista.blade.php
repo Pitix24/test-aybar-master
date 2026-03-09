@@ -120,8 +120,7 @@
                                         <i class="fa-solid fa-grip"></i> Panel de Gestión
                                     </a>
 
-                                    <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $e->id) }}"
-                                        class="g_boton danger">
+                                    <a href="{{ route('erp.entrega-fest.vista.staff', $e->id) }}" class="g_boton danger">
                                         <i class="fa-solid fa-shield-halved"></i> Panel de Staff
                                     </a>
                                 </div>

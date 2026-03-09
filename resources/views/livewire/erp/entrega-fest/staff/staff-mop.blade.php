@@ -8,18 +8,18 @@
         </h2>
         <div class="cabecera_titulo_botones">
             @can('entrega-fest.mop')
-                <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas', $evento->id) }}" class="g_boton info">
+                <a href="{{ route('erp.entrega-fest.mop.tareas', $evento->id) }}" class="g_boton info">
                     Gestionar MOP <i class="fa-solid fa-list-check"></i>
                 </a>
-                <a href="{{ route('erp.entrega-fest.vista.staff.mop.plantillas') }}" class="g_boton light">
+                <a href="{{ route('erp.entrega-fest.mop-plantilla.todo') }}" class="g_boton light">
                     Plantillas <i class="fa-solid fa-paste"></i>
                 </a>
-                <a href="{{ route('erp.entrega-fest.vista.staff.mop.tareas.crear', $evento->id) }}" class="g_boton guardar">
+                <a href="{{ route('erp.entrega-fest.mop.tareas.crear', $evento->id) }}" class="g_boton guardar">
                     <i class="fa-solid fa-plus"></i> Crear Tarea
                 </a>
             @endcan
 
-            <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton dark">
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton dark">
                 <i class="fa-solid fa-arrow-left"></i> Volver al Panel
             </a>
         </div>

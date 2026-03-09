@@ -12,7 +12,7 @@
                 <i class="fa-solid {{ $mostrarFormulario ? 'fa-times' : 'fa-plus' }}"></i>
                 {{ $mostrarFormulario ? 'Cancelar' : 'Reportar Incidencia' }}
             </button>
-            <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Panel Staff
             </a>
         </div>
@@ -142,7 +142,8 @@
                                 <option value="">Sin asignar</option>
                                 @foreach($staff_users as $u)
                                     <option value="{{ $u->id }}" {{ $inc->responsable_user_id == $u->id ? 'selected' : '' }}>
-                                        {{ $u->name }}</option>
+                                        {{ $u->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         @else

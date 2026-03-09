@@ -5,7 +5,7 @@
         <h2>Añadir Prospecto: <span style="color: var(--color-primary);">{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.prospectos', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.prospecto.todo', $evento->id) }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 

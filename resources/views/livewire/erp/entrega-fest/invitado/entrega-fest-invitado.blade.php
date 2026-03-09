@@ -9,7 +9,7 @@
                 <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
 
-            <a href="{{ route('erp.entrega-fest.vista.invitados.crear', $evento->id) }}" class="g_boton primary">
+            <a href="{{ route('erp.entrega-fest.invitado.todo', $evento->id) }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i>
             </a>
 
@@ -161,7 +161,7 @@
                                         </td>
                                         <td class="g_celda_acciones g_celda_centro">
                                             @can('invitado-entrega-fest.editar')
-                                                <a href="{{ route('erp.entrega-fest.vista.invitados.editar', [$evento->id, $i->id]) }}"
+                                                <a href="{{ route('erp.entrega-fest.invitado.editar', [$evento->id, $i->id]) }}"
                                                     class="g_accion editar" title="Ver Detalles">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </a>

@@ -8,12 +8,11 @@
         </h2>
         <div class="cabecera_titulo_botones">
             @can('entrega-fest.staff')
-                <a href="{{ route('erp.entrega-fest.vista.staff.proveedores.crear', $evento->id) }}"
-                    class="g_boton guardar">
+                <a href="{{ route('erp.entrega-fest.proveedor.crear', $evento->id) }}" class="g_boton guardar">
                     Añadir Proveedor <i class="fa-solid fa-plus"></i>
                 </a>
             @endcan
-            <a href="{{ route('erp.entrega-fest.vista.staff.dashboard', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Panel Staff
             </a>
         </div>
@@ -33,7 +32,8 @@
                             <h4 class="g_panel_titulo" style="margin:4px 0 0 0;">{{ $prov->nombre_comercial }}</h4>
                             @can('entrega-fest.staff')
                                 <a href="{{ route('erp.entrega-fest.vista.staff.proveedores.editar', [$evento->id, $prov->id]) }}"
-                                    class="g_accion editar" title="Editar Proveedor" style="display:inline-flex; width:26px; height:26px; font-size:10px;">
+                                    class="g_accion editar" title="Editar Proveedor"
+                                    style="display:inline-flex; width:26px; height:26px; font-size:10px;">
                                     <i class="fa-solid fa-pencil"></i>
                                 </a>
                             @endcan
@@ -77,12 +77,13 @@
                         <p class="g_inferior g_mayuscula" style="margin:0 0 6px 0; font-size:10px;">Requerimientos Técnicos</p>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
                             @foreach($prov->requerimientos as $req)
-                                <div wire:click="toggleRequerimiento({{ $req->id }})" 
-                                     style="display:flex; align-items:center; gap:8px; cursor:pointer;"
-                                     title="Clic para cambiar estado">
+                                <div wire:click="toggleRequerimiento({{ $req->id }})"
+                                    style="display:flex; align-items:center; gap:8px; cursor:pointer;"
+                                    title="Clic para cambiar estado">
                                     <i class="fa-solid {{ $req->esta_cubierto ? 'fa-circle-check' : 'fa-circle' }}"
                                         style="color: {{ $req->esta_cubierto ? 'var(--color-success)' : 'var(--color-claro-texto)' }}; font-size:13px;"></i>
-                                    <span class="g_inferior {{ $req->esta_cubierto ? 'g_tachado' : '' }}" style="margin:0;">{{ $req->requerimiento }}</span>
+                                    <span class="g_inferior {{ $req->esta_cubierto ? 'g_tachado' : '' }}"
+                                        style="margin:0;">{{ $req->requerimiento }}</span>
                                 </div>
                             @endforeach
                         </div>

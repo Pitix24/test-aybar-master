@@ -5,7 +5,7 @@
         <h2>Detalles de Invitación</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.invitados', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.invitado.todo', $evento->id) }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 

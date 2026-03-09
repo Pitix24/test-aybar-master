@@ -12,7 +12,7 @@
                 onclick="Livewire.dispatch('alertaConfirmar', { event: 'eliminarBloqueOn', titulo: 'Eliminar Bloque', texto: 'Esta accion no se puede deshacer.' })">
                 <i class="fa-solid fa-trash"></i> Eliminar
             </button>
-            <a href="{{ route('erp.entrega-fest.vista.staff.itinerario', $evento->id) }}" class="g_boton light">
+            <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton light">
                 <i class="fa-solid fa-arrow-left"></i> Volver
             </a>
         </div>
@@ -84,8 +84,7 @@
                         <span wire:loading wire:target="update"><i class="fa-solid fa-spinner fa-spin"></i>
                             Guardando...</span>
                     </button>
-                    <a href="{{ route('erp.entrega-fest.vista.staff.itinerario', $evento->id) }}"
-                        class="g_boton cancelar">
+                    <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton cancelar">
                         <i class="fa-solid fa-times"></i> Cancelar
                     </a>
                 </div>
