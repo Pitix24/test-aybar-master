@@ -259,6 +259,41 @@
                     </div>
                 </div>
             @endif
+
+            <div class="g_panel g_margin_top_20">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-tasks"></i> Tareas MOP</h4>
+                    <button wire:click="descargarPlantillaMopTareas" class="g_boton info small"
+                        title="Descargar formato Excel">
+                        <i class="fa-solid fa-download"></i> Plantilla
+                    </button>
+                </div>
+                <p class="leyenda" style="margin-bottom: 15px;">Asigna tareas operativas específicas a miembros del
+                    staff para este evento.</p>
+
+                <div class="g_margin_bottom_10">
+                    <input type="file" wire:model="archivo_mop_tareas" id="archivo_mop_tareas"
+                        class="@error('archivo_mop_tareas') input-error @enderror">
+                    @error('archivo_mop_tareas') <p class="mensaje_error">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="formulario_botones">
+                    <button wire:click="importarMopTareas" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="archivo_mop_tareas, importarMopTareas">
+                        <span wire:loading.remove wire:target="importarMopTareas">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
+                        </span>
+                        <span wire:loading wire:target="importarMopTareas">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Importando...
+                        </span>
+                    </button>
+                </div>
+
+                <div wire:loading wire:target="archivo_mop_tareas" class="g_margin_top_10">
+                    <p style="font-size: 0.8em; color: var(--color-primary);"><i
+                            class="fa-solid fa-spinner fa-spin"></i> Cargando archivo...</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

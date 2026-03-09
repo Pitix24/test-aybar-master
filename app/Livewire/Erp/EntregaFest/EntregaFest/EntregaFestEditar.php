@@ -21,6 +21,8 @@ use App\Imports\ProspectoEntregaFestImport;
 use App\Exports\ProspectoPlantillaExport;
 use App\Imports\ItinerarioImport;
 use App\Exports\ItinerarioPlantillaExport;
+use App\Imports\MopTareaImport;
+use App\Exports\MopTareaPlantillaExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -32,6 +34,7 @@ class EntregaFestEditar extends Component
     public EntregaFest $evento;
     public $archivo_excel;
     public $archivo_itinerario;
+    public $archivo_mop_tareas;
 
     // Campos del formulario
     public $nombre, $descripcion, $codigo, $fecha_entrega;
@@ -294,6 +297,43 @@ class EntregaFestEditar extends Component
                 'type' => 'error',
                 'title' => 'Error',
                 'text' => 'Error al importar itinerario: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function descargarPlantillaMopTareas()
+    {
+        return Excel::download(new MopTareaPlantillaExport, 'plantilla_mop_tareas_evento.xlsx');
+    }
+
+    public function importarMopTareas()
+    {
+        $this->authorize('entrega-fest.editar');
+
+        $this->validate([
+            'archivo_mop_tareas' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        try {
+            $import = new MopTareaImport($this->evento->id);
+            Excel::import($import, $this->archivo_mop_tareas->getRealPath());
+
+            $mensaje = "Se importaron {$import->importados} tareas MOP personalizadas.";
+
+            $this->dispatch('alertaLivewire', [
+                'type' => count($import->errores) > 0 ? 'warning' : 'success',
+                'title' => 'Tareas MOP Importadas',
+                'text' => $mensaje . (count($import->errores) > 0 ? " Hubo errores en algunas filas." : "")
+            ]);
+
+            $this->reset('archivo_mop_tareas');
+
+        } catch (\Exception $e) {
+            Log::error('[MOP-TAREAS-IMPORT] Error: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'Error al importar tareas MOP: ' . $e->getMessage()
             ]);
         }
     }

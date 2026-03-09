@@ -9,11 +9,18 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\MopPlantillaTemplateExport;
+use App\Imports\MopPlantillaImport;
 
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Crear Plantilla MOP')]
 class MopPlantillaCrear extends Component
 {
+    use WithFileUploads;
+
+    public $archivo_excel;
     public $rol_nombre = '';
     public $fase = 'ANTES';
     public $instruccion = '';
@@ -85,6 +92,43 @@ class MopPlantillaCrear extends Component
                 'type' => 'error',
                 'title' => 'Error',
                 'text' => 'No se pudo crear la plantilla.'
+            ]);
+        }
+    }
+
+    public function descargarPlantilla()
+    {
+        return Excel::download(new MopPlantillaTemplateExport, 'plantilla_mop_global.xlsx');
+    }
+
+    public function importarExcel()
+    {
+        $this->validate([
+            'archivo_excel' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        try {
+            $import = new MopPlantillaImport();
+            Excel::import($import, $this->archivo_excel->getRealPath());
+
+            $this->dispatch('alertaLivewire', [
+                'type' => count($import->errores) > 0 ? 'warning' : 'success',
+                'title' => 'Importación Finalizada',
+                'text' => "Se importaron {$import->importados} plantillas correctamente."
+            ]);
+
+            $this->reset('archivo_excel');
+
+            if (count($import->errores) === 0) {
+                return redirect()->route('erp.entrega-fest.mop-plantilla.todo');
+            }
+
+        } catch (\Exception $e) {
+            Log::error('[MOP IMPORT] ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'Error al procesar el archivo: ' . $e->getMessage()
             ]);
         }
     }
