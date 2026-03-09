@@ -13,12 +13,14 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ProspectoEntregaFest;
 use App\Models\CopropietarioEntregaFest;
 use App\Imports\ProspectoEntregaFestImport;
 use App\Exports\ProspectoPlantillaExport;
-use Livewire\WithFileUploads;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ItinerarioImport;
+use App\Exports\ItinerarioPlantillaExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -29,6 +31,7 @@ class EntregaFestEditar extends Component
 
     public EntregaFest $evento;
     public $archivo_excel;
+    public $archivo_itinerario;
 
     // Campos del formulario
     public $nombre, $descripcion, $codigo, $fecha_entrega;
@@ -256,6 +259,43 @@ class EntregaFestEditar extends Component
     public function descargarPlantilla()
     {
         return Excel::download(new ProspectoPlantillaExport, 'plantilla_prospectos.xlsx');
+    }
+
+    public function descargarPlantillaItinerario()
+    {
+        return Excel::download(new ItinerarioPlantillaExport, 'plantilla_itinerario.xlsx');
+    }
+
+    public function importarItinerario()
+    {
+        $this->authorize('entrega-fest.editar');
+
+        $this->validate([
+            'archivo_itinerario' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        try {
+            $import = new ItinerarioImport($this->evento->id);
+            Excel::import($import, $this->archivo_itinerario->getRealPath());
+
+            $mensaje = "Se importaron {$import->importados} bloques de itinerario.";
+
+            $this->dispatch('alertaLivewire', [
+                'type' => count($import->errores) > 0 ? 'warning' : 'success',
+                'title' => 'Itinerario Importado',
+                'text' => $mensaje . (count($import->errores) > 0 ? " Hubo errores en algunas filas." : "")
+            ]);
+
+            $this->reset('archivo_itinerario');
+
+        } catch (\Exception $e) {
+            Log::error('[ITINERARIO-IMPORT] Error: ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'Error al importar itinerario: ' . $e->getMessage()
+            ]);
+        }
     }
 
     public function placeholder()

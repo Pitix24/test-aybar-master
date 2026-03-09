@@ -6,6 +6,8 @@ use App\Models\AsistenciaEntregaFest;
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\InvitadoEntregaFest;
+use App\Models\EntregaFestMopPlantilla;
+use App\Models\EntregaFestMopTarea;
 use App\Models\ProspectoEntregaFest;
 use App\Models\Proyecto;
 use App\Models\User;
@@ -212,6 +214,49 @@ class EntregaFestSeeder extends Seeder
             $evento->recursos()->create(['nombre_publico' => 'Plano del Local', 'tipo_recurso' => 'MAPA']);
             $evento->protocolos()->create(['titulo' => 'Palabras de Bienvenida', 'contenido' => 'Buenas tardes a todos...']);
             $evento->contingencias()->create(['escenario' => 'Lluvia intensa', 'accion' => 'Mover a todos al salón bajo techo']);
+
+            // E. MOP (Manual of Operations) - Tareas por Evento
+            $staffRoles = [
+                'supervisor-entrega-fest' => 'Staff Operativo',
+                'asesor-entrega-fest' => 'Staff de Lectura',
+                'staff-asistencia' => 'Proveedor Externo Asistencia',
+                'staff-itinerario' => 'Proveedor Externo Itinerario',
+                'staff-mop' => 'Proveedor Externo MOP',
+                'staff-proveedores' => 'Proveedor Externo Proveedores',
+            ];
+
+            foreach ($staffRoles as $roleName => $desc) {
+                // Buscar un usuario con este rol
+                $staffUser = User::role($roleName)->first();
+
+                if ($staffUser) {
+                    $fases = ['ANTES', 'DURANTE', 'CIERRE'];
+                    foreach ($fases as $fase) {
+                        EntregaFestMopTarea::create([
+                            'user_id' => $staffUser->id,
+                            'entrega_fest_id' => $evento->id,
+                            'titulo' => "MOP: {$desc} - Fase {$fase}",
+                            'fase' => $fase,
+                            'instruccion' => "Seguir los protocolos establecidos para la fase de {$fase} en el evento {$evento->nombre}.",
+                            'esta_completado' => rand(0, 5) > 4, // Algunos completados por azar
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // 9. --- PLANTILLAS GLOBALES MOP ---
+        $this->command->info('Creando plantillas globales de MOP...');
+        $plantillasMop = [
+            ['rol_nombre' => 'Staff Operativo', 'fase' => 'ANTES', 'instruccion' => 'Verificar señalización de emergencia en todas las zonas.', 'prioridad' => 1],
+            ['rol_nombre' => 'Staff Operativo', 'fase' => 'DURANTE', 'instruccion' => 'Supervisar flujo de personas en ingresos.', 'prioridad' => 1],
+            ['rol_nombre' => 'Staff de Lectura', 'fase' => 'DURANTE', 'instruccion' => 'Validar QRs de invitados con la aplicación móvil.', 'prioridad' => 2],
+            ['rol_nombre' => 'Proveedor Externo MOP', 'fase' => 'CIERRE', 'instruccion' => 'Recojo de materiales y limpieza final.', 'prioridad' => 3],
+            ['rol_nombre' => 'Proveedor Externo Seguridad', 'fase' => 'DURANTE', 'instruccion' => 'Rondas perimetrales cada 30 minutos.', 'prioridad' => 1],
+        ];
+
+        foreach ($plantillasMop as $pm) {
+            EntregaFestMopPlantilla::create($pm);
         }
     }
 

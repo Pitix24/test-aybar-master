@@ -221,6 +221,44 @@
                     </div>
                 </div>
             @endif
+
+            @if ($evento->itinerarioBloques()->doesntExist())
+                <div class="g_panel g_margin_top_20">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-clock"></i> Importar
+                            Itinerario</h4>
+                        <button wire:click="descargarPlantillaItinerario" class="g_boton info small"
+                            title="Descargar formato Excel">
+                            <i class="fa-solid fa-download"></i> Plantilla
+                        </button>
+                    </div>
+                    <p class="leyenda" style="margin-bottom: 15px;">Carga el cronograma de actividades desde un archivo
+                        Excel para este evento.</p>
+
+                    <div class="g_margin_bottom_10">
+                        <input type="file" wire:model="archivo_itinerario" id="archivo_itinerario"
+                            class="@error('archivo_itinerario') input-error @enderror">
+                        @error('archivo_itinerario') <p class="mensaje_error">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="formulario_botones">
+                        <button wire:click="importarItinerario" class="g_boton dark" wire:loading.attr="disabled"
+                            wire:target="archivo_itinerario, importarItinerario">
+                            <span wire:loading.remove wire:target="importarItinerario">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
+                            </span>
+                            <span wire:loading wire:target="importarItinerario">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Importando...
+                            </span>
+                        </button>
+                    </div>
+
+                    <div wire:loading wire:target="archivo_itinerario" class="g_margin_top_10">
+                        <p style="font-size: 0.8em; color: var(--color-primary);"><i
+                                class="fa-solid fa-spinner fa-spin"></i> Cargando archivo...</p>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
