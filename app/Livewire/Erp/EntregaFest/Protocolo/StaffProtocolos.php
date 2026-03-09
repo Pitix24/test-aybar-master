@@ -14,42 +14,36 @@ class StaffProtocolos extends Component
 {
     public EntregaFest $evento;
 
-    // Para crear Protocolos
-    public $p_titulo = '';
-    public $p_contenido = '';
-
-    public $mostrarFormulario = false;
+    protected $listeners = ['eliminarProtocoloOn' => 'eliminarProtocolo'];
 
     public function mount($id)
     {
         $this->evento = EntregaFest::with(['protocolos'])->findOrFail($id);
     }
 
-    public function agregarProtocolo()
-    {
-        $this->authorize('entrega-fest.staff');
-
-        $this->validate([
-            'p_titulo' => 'required',
-            'p_contenido' => 'required',
-        ]);
-
-        EntregaFestProtocolo::create([
-            'entrega_fest_id' => $this->evento->id,
-            'titulo' => $this->p_titulo,
-            'contenido' => $this->p_contenido,
-        ]);
-
-        $this->reset(['p_titulo', 'p_contenido', 'mostrarFormulario']);
-        $this->evento->load(['protocolos']);
-        $this->dispatch('notificar', ['titulo' => 'Añadido', 'mensaje' => 'Protocolo guardado.', 'tipo' => 'success']);
-    }
-
     public function eliminarProtocolo($id)
     {
         $this->authorize('entrega-fest.staff');
-        EntregaFestProtocolo::findOrFail($id)->delete();
-        $this->evento->load(['protocolos']);
+        $protocolo = EntregaFestProtocolo::where('entrega_fest_id', $this->evento->id)->findOrFail($id);
+
+        try {
+            $protocolo->delete();
+            $this->evento->load(['protocolos']);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => 'Protocolo eliminado correctamente.'
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('[STAFF PROTOCOLO ELIMINAR] ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el protocolo.'
+            ]);
+        }
     }
 
     public function render()

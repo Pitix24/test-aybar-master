@@ -7,100 +7,64 @@
             <span>{{ $evento->nombre }}</span>
         </h2>
         <div class="cabecera_titulo_botones">
-            <button wire:click="$toggle('mostrarFormulario')"
-                class="g_boton {{ $mostrarFormulario ? 'cancelar' : 'danger' }}">
-                <i class="fa-solid {{ $mostrarFormulario ? 'fa-times' : 'fa-plus' }}"></i>
-                {{ $mostrarFormulario ? 'Cancelar' : 'Reportar Incidencia' }}
-            </button>
-            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Panel Staff
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Staff
             </a>
+
+            @can('entrega-fest.staff')
+                <a href="{{ route('erp.entrega-fest.incidencia.crear', $evento->id) }}" class="g_boton primary">
+                    Crear <i class="fa-solid fa-square-plus"></i>
+                </a>
+            @endcan
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
-
-    {{-- FORMULARIO DE REPORTE --}}
-    @if($mostrarFormulario)
-        <div class="g_panel g_gap_pagina">
-            <h4 class="g_panel_titulo"><i class="fa-solid fa-triangle-exclamation"></i> Nueva Incidencia</h4>
-
-            <form wire:submit.prevent="reportar" class="formulario g_gap_pagina">
-                <div class="g_fila">
-                    <div class="g_columna_6 g_margin_bottom_10">
-                        <label>Tipo de Problema</label>
-                        <select wire:model="tipo">
-                            <option>Logística</option>
-                            <option>Seguridad</option>
-                            <option>Técnico</option>
-                            <option>Salud</option>
-                            <option>Otro</option>
-                        </select>
-                    </div>
-                    <div class="g_columna_6 g_margin_bottom_10">
-                        <label>Prioridad</label>
-                        <select wire:model="prioridad">
-                            <option>Baja</option>
-                            <option>Media</option>
-                            <option>Alta</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="g_margin_bottom_10">
-                    <label>Descripción de los hechos <span class="obligatorio"><i
-                                class="fa-solid fa-asterisk"></i></span></label>
-                    <textarea wire:model="descripcion" rows="3" placeholder="¿Qué pasó? Sea específico..."></textarea>
-                    @error('descripcion') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="g_fila">
-                    <div class="g_columna_6 g_margin_bottom_10">
-                        <label>Ubicación exacta</label>
-                        <input type="text" wire:model="ubicacion" placeholder="Ej: Puerta 2, Detrás del escenario">
-                    </div>
-                    <div class="g_columna_6 g_margin_bottom_10">
-                        <label>Evidencia fotográfica</label>
-                        <input type="file" wire:model="fotos" multiple>
-                        @error('fotos.*') <p class="mensaje_error">{{ $message }}</p> @enderror
-                    </div>
-                </div>
-
-                <div class="formulario_botones">
-                    <button type="submit" class="g_boton danger" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="reportar"><i class="fa-solid fa-paper-plane"></i> Enviar
-                            Reporte</span>
-                        <span wire:loading wire:target="reportar"><i class="fa-solid fa-spinner fa-spin"></i>
-                            Enviando...</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    @endif
 
     {{-- LISTA DE INCIDENCIAS --}}
     <div class="g_panel_dashboard_grid">
         @forelse($incidencias as $inc)
             <div class="g_panel"
-                style="border-left: 4px solid {{ $inc->prioridad === 'Alta' ? 'var(--color-danger)' : ($inc->prioridad === 'Media' ? 'var(--color-warning)' : 'var(--color-info)') }};">
+                style="border-left: 4px solid {{ $inc->prioridad === 'ALTA' ? 'var(--color-danger)' : ($inc->prioridad === 'MEDIA' ? 'var(--color-warning)' : 'var(--color-info)') }}; position: relative;">
+
+                {{-- Acciones (Solo Staff/Admin) --}}
+                @can('entrega-fest.staff')
+                    <div style="position: absolute; top: 10px; right: 10px; display:flex; gap:5px;">
+                        <a href="{{ route('erp.entrega-fest.incidencia.editar', [$evento->id, $inc->id]) }}"
+                            class="g_boton primary small"
+                            style="width:26px; height:26px; padding:0; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-pencil" style="font-size:10px;"></i>
+                        </a>
+                        <button type="button"
+                            onclick="Livewire.dispatch('alertaConfirmar', { event: 'eliminarIncidenciaOn', titulo: '¿Eliminar Incidencia?', texto: 'Esta acción no se puede deshacer.', id: {{ $inc->id }} })"
+                            class="g_boton danger small"
+                            style="width:26px; height:26px; padding:0; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-trash" style="font-size:10px;"></i>
+                        </button>
+                    </div>
+                @endcan
 
                 <div
-                    style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                    style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px; padding-right: 60px;">
                     <div style="display:flex; gap:6px; flex-wrap:wrap;">
                         <span class="g_badge light g_mayuscula" style="font-size:11px;">{{ $inc->tipo }}</span>
 
                         {{-- Cambio de Prioridad (Solo Staff/Admin) --}}
                         @can('entrega-fest.staff')
                             <select wire:change="cambiarPrioridad({{ $inc->id }}, $event.target.value)"
-                                class="g_badge {{ $inc->prioridad === 'Alta' ? 'danger' : ($inc->prioridad === 'Media' ? 'warning' : 'info') }}"
+                                class="g_badge {{ $inc->prioridad === 'ALTA' ? 'danger' : ($inc->prioridad === 'MEDIA' ? 'warning' : 'info') }}"
                                 style="border:none; cursor:pointer; font-size:11px;">
-                                <option value="Baja" {{ $inc->prioridad === 'Baja' ? 'selected' : '' }}>Prioridad Baja</option>
-                                <option value="Media" {{ $inc->prioridad === 'Media' ? 'selected' : '' }}>Prioridad Media</option>
-                                <option value="Alta" {{ $inc->prioridad === 'Alta' ? 'selected' : '' }}>Prioridad Alta</option>
+                                <option value="BAJA" {{ $inc->prioridad === 'BAJA' ? 'selected' : '' }}>BAJA</option>
+                                <option value="MEDIA" {{ $inc->prioridad === 'MEDIA' ? 'selected' : '' }}>MEDIA</option>
+                                <option value="ALTA" {{ $inc->prioridad === 'ALTA' ? 'selected' : '' }}>ALTA</option>
                             </select>
                         @else
                             <span
-                                class="g_badge {{ $inc->prioridad === 'Alta' ? 'danger' : ($inc->prioridad === 'Media' ? 'warning' : 'info') }}"
+                                class="g_badge {{ $inc->prioridad === 'ALTA' ? 'danger' : ($inc->prioridad === 'MEDIA' ? 'warning' : 'info') }}"
                                 style="font-size:11px;">
-                                Prioridad {{ $inc->prioridad }}
+                                {{ $inc->prioridad }}
                             </span>
                         @endcan
                     </div>
@@ -109,9 +73,9 @@
                     @can('entrega-fest.staff')
                         <select wire:change="cambiarEstado({{ $inc->id }}, $event.target.value)" class="g_badge light"
                             style="border:none; cursor:pointer; font-size:11px;">
-                            <option value="Abierta" {{ $inc->estado === 'Abierta' ? 'selected' : '' }}>Abierta</option>
-                            <option value="En Proceso" {{ $inc->estado === 'En Proceso' ? 'selected' : '' }}>En Proceso</option>
-                            <option value="Resuelta" {{ $inc->estado === 'Resuelta' ? 'selected' : '' }}>Resuelta</option>
+                            <option value="ABIERTO" {{ $inc->estado === 'ABIERTO' ? 'selected' : '' }}>ABIERTO</option>
+                            <option value="PROCESO" {{ $inc->estado === 'PROCESO' ? 'selected' : '' }}>PROCESO</option>
+                            <option value="RESUELTO" {{ $inc->estado === 'RESUELTO' ? 'selected' : '' }}>RESUELTO</option>
                         </select>
                     @else
                         <span class="g_badge light g_mayuscula" style="font-size:11px;">{{ $inc->estado }}</span>
@@ -136,7 +100,7 @@
 
                     <div class="g_columna_6">
                         @can('entrega-fest.staff')
-                            <label class="g_inferior" style="display:block; margin-bottom:2px;">Asignar Responsable:</label>
+                            <label class="g_inferior" style="display:block; margin-bottom:2px;">Responsable:</label>
                             <select wire:change="asignarResponsable({{ $inc->id }}, $event.target.value)" class="g_input"
                                 style="font-size:11px; padding:4px 8px;">
                                 <option value="">Sin asignar</option>

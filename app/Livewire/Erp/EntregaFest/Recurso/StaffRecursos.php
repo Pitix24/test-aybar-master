@@ -11,52 +11,38 @@ use Livewire\Component;
 #[Title('Recursos y Manuales - Entrega Fest')]
 class StaffRecursos extends Component
 {
-    use \Livewire\WithFileUploads;
-
     public EntregaFest $evento;
 
-    // Para crear Recursos
-    public $nombre_publico = '';
-    public $tipo_recurso = 'MAPA';
-    public $archivo;
-
-    public $mostrarFormulario = false;
+    protected $listeners = ['eliminarRecursoOn' => 'eliminarRecurso'];
 
     public function mount($id)
     {
         $this->evento = EntregaFest::with(['recursos'])->findOrFail($id);
     }
 
-    public function agregarRecurso()
-    {
-        $this->authorize('entrega-fest.staff');
-
-        $this->validate([
-            'nombre_publico' => 'required',
-            'tipo_recurso' => 'required',
-            'archivo' => 'required|file|max:10240', // 10MB
-        ]);
-
-        $recurso = \App\Models\EntregaFestRecurso::create([
-            'entrega_fest_id' => $this->evento->id,
-            'nombre_publico' => $this->nombre_publico,
-            'tipo_recurso' => $this->tipo_recurso,
-        ]);
-
-        $recurso->addMedia($this->archivo->getRealPath())
-            ->usingFileName($this->archivo->getClientOriginalName())
-            ->toMediaCollection();
-
-        $this->reset(['nombre_publico', 'tipo_recurso', 'archivo', 'mostrarFormulario']);
-        $this->evento->load(['recursos']);
-        $this->dispatch('notificar', ['titulo' => 'Añadido', 'mensaje' => 'Recurso guardado.', 'tipo' => 'success']);
-    }
-
     public function eliminarRecurso($id)
     {
         $this->authorize('entrega-fest.staff');
-        \App\Models\EntregaFestRecurso::findOrFail($id)->delete();
-        $this->evento->load(['recursos']);
+        $recurso = \App\Models\EntregaFestRecurso::where('entrega_fest_id', $this->evento->id)->findOrFail($id);
+
+        try {
+            $recurso->delete();
+            $this->evento->load(['recursos']);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => 'Recurso eliminado correctamente.'
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('[STAFF RECURSO ELIMINAR] ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el recurso.'
+            ]);
+        }
     }
 
     public function render()

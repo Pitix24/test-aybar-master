@@ -14,8 +14,14 @@ use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspecto;
 use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspectoCrear;
 use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspectoEditar;
 use App\Livewire\Erp\EntregaFest\Incidencia\StaffIncidencias;
+use App\Livewire\Erp\EntregaFest\Incidencia\StaffIncidenciasCrear;
+use App\Livewire\Erp\EntregaFest\Incidencia\StaffIncidenciasEditar;
 use App\Livewire\Erp\EntregaFest\Contingencia\StaffContingencias;
+use App\Livewire\Erp\EntregaFest\Contingencia\StaffContingenciasCrear;
+use App\Livewire\Erp\EntregaFest\Contingencia\StaffContingenciasEditar;
 use App\Livewire\Erp\EntregaFest\Protocolo\StaffProtocolos;
+use App\Livewire\Erp\EntregaFest\Protocolo\StaffProtocolosCrear;
+use App\Livewire\Erp\EntregaFest\Protocolo\StaffProtocolosEditar;
 use App\Livewire\Erp\EntregaFest\Itinerario\StaffItinerario;
 use App\Livewire\Erp\EntregaFest\Itinerario\StaffItinerarioCrear;
 use App\Livewire\Erp\EntregaFest\Itinerario\StaffItinerarioEditar;
@@ -30,6 +36,8 @@ use App\Livewire\Erp\EntregaFest\Proveedor\StaffProveedores;
 use App\Livewire\Erp\EntregaFest\Proveedor\StaffProveedoresCrear;
 use App\Livewire\Erp\EntregaFest\Proveedor\StaffProveedoresEditar;
 use App\Livewire\Erp\EntregaFest\Recurso\StaffRecursos;
+use App\Livewire\Erp\EntregaFest\Recurso\StaffRecursosCrear;
+use App\Livewire\Erp\EntregaFest\Recurso\StaffRecursosEditar;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function () {
@@ -121,6 +129,8 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
             ->name('entrega-fest.incidencia.')
             ->group(function () {
                 Route::get('/{id}', StaffIncidencias::class)->middleware('permission:incidencia.lista')->name('todo');
+                Route::get('/crear/{id}', StaffIncidenciasCrear::class)->middleware('permission:incidencia.crear')->name('crear');
+                Route::get('/editar/{id}/{incidenciasId}', StaffIncidenciasEditar::class)->middleware('permission:incidencia.editar')->name('editar');
             });
     });
 
@@ -129,6 +139,8 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
             ->name('entrega-fest.protocolo.')
             ->group(function () {
                 Route::get('/{id}', StaffProtocolos::class)->middleware('permission:protocolo.lista')->name('todo');
+                Route::get('/crear/{id}', StaffProtocolosCrear::class)->middleware('permission:protocolo.crear')->name('crear');
+                Route::get('/editar/{id}/{protocoloId}', StaffProtocolosEditar::class)->middleware('permission:protocolo.editar')->name('editar');
             });
     });
 
@@ -137,6 +149,8 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
             ->name('entrega-fest.contingencia.')
             ->group(function () {
                 Route::get('/{id}', StaffContingencias::class)->middleware('permission:contingencia.lista')->name('todo');
+                Route::get('/crear/{id}', StaffContingenciasCrear::class)->middleware('permission:contingencia.crear')->name('crear');
+                Route::get('/editar/{id}/{contingenciaId}', StaffContingenciasEditar::class)->middleware('permission:contingencia.editar')->name('editar');
             });
     });
 
@@ -145,6 +159,8 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
             ->name('entrega-fest.recurso.')
             ->group(function () {
                 Route::get('/{id}', StaffRecursos::class)->middleware('permission:recurso.lista')->name('todo');
+                Route::get('/crear/{id}', StaffRecursosCrear::class)->middleware('permission:recurso.crear')->name('crear');
+                Route::get('/editar/{id}/{recursoId}', StaffRecursosEditar::class)->middleware('permission:recurso.editar')->name('editar');
             });
     });
 });

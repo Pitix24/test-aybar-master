@@ -7,71 +7,50 @@
             <span>{{ $evento->nombre }}</span>
         </h2>
         <div class="cabecera_titulo_botones">
-            @can('entrega-fest.staff')
-                <button wire:click="$toggle('mostrarFormulario')"
-                    class="g_boton {{ $mostrarFormulario ? 'cancelar' : 'guardar' }}">
-                    <i class="fa-solid {{ $mostrarFormulario ? 'fa-times' : 'fa-plus' }}"></i>
-                    {{ $mostrarFormulario ? 'Cancelar' : 'Cargar Recurso' }}
-                </button>
-            @endcan
-            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Panel Staff
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Staff
             </a>
+
+            @can('entrega-fest.staff')
+                <a href="{{ route('erp.entrega-fest.recurso.crear', $evento->id) }}" class="g_boton primary">
+                    Crear <i class="fa-solid fa-square-plus"></i>
+                </a>
+            @endcan
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
-    {{-- FORMULARIOS --}}
-    @if($mostrarFormulario)
-        <div class="g_panel">
-            <h4 class="g_panel_titulo">
-                <i class="fa-solid fa-file-arrow-up"></i>
-                Añadir Recurso
-            </h4>
-
-            <form wire:submit.prevent="agregarRecurso" class="formulario g_gap_pagina">
-                <div class="g_fila">
-                    <div class="g_columna_6">
-                        <label>Nombre del Documento / Mapa</label>
-                        <input type="text" wire:model="nombre_publico" placeholder="Ej: Plano de Aforos">
-                    </div>
-                    <div class="g_columna_6">
-                        <label>Tipo</label>
-                        <select wire:model="tipo_recurso">
-                            <option value="MAPA">Mapa / Plano</option>
-                            <option value="MANUAL">Manual / Guía</option>
-                            <option value="FOTO">Fotografía / Referencia</option>
-                            <option value="OTRO">Otro</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label>Archivo (PDF o Imagen)</label>
-                    <input type="file" wire:model="archivo">
-                    <div wire:loading wire:target="archivo" class="g_inferior">Subiendo archivo...</div>
-                </div>
-                <div class="formulario_botones">
-                    <button type="submit" class="g_boton guardar">Guardar Recurso</button>
-                </div>
-            </form>
-        </div>
-    @endif
-
     <div class="g_panel">
         <h4 class="g_panel_titulo"><i class="fa-solid fa-file-lines"></i> Galería de Documentos</h4>
-        
+
         <div class="g_panel_dashboard_grid" style="margin-top:15px;">
             @forelse($evento->recursos as $recurso)
                 <div class="g_panel" style="padding:0; overflow:hidden; position:relative;">
+
+                    {{-- Acciones (Solo Staff/Admin) --}}
                     @can('entrega-fest.staff')
-                        <button wire:click="eliminarRecurso({{ $recurso->id }})" class="g_boton danger small"
-                            style="position:absolute; top:5px; right:5px; z-index:10; width:26px; height:26px; padding:0;">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                        <div style="position: absolute; top: 5px; right: 5px; display:flex; gap:5px; z-index:10;">
+                            <a href="{{ route('erp.entrega-fest.recurso.editar', [$evento->id, $recurso->id]) }}"
+                                class="g_boton primary small"
+                                style="width:26px; height:26px; padding:0; display:flex; align-items:center; justify-content:center;">
+                                <i class="fa-solid fa-pencil" style="font-size:10px;"></i>
+                            </a>
+                            <button type="button"
+                                onclick="Livewire.dispatch('alertaConfirmar', { event: 'eliminarRecursoOn', titulo: '¿Eliminar Recurso?', texto: 'Esta acción no se puede deshacer.', id: {{ $recurso->id }} })"
+                                class="g_boton danger small"
+                                style="width:26px; height:26px; padding:0; display:flex; align-items:center; justify-content:center;">
+                                <i class="fa-solid fa-trash" style="font-size:10px;"></i>
+                            </button>
+                        </div>
                     @endcan
+
                     <div
                         style="height:120px; background:var(--color-claro); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
                         @if($recurso->media->count() > 0)
-                            <img src="{{ $recurso->getFirstMediaUrl() }}"
+                            <img src="{{ $recurso->getFirstMediaUrl('recursos') ?: $recurso->getFirstMediaUrl() }}"
                                 style="width:100%; height:100%; object-fit:cover;">
                         @else
                             <i class="fa-solid fa-file-pdf"
@@ -84,8 +63,8 @@
                         </p>
                         <p class="g_negrita" style="margin:0 0 10px 0;">{{ $recurso->nombre_publico }}</p>
                         @if($recurso->media->count() > 0)
-                            <a href="{{ $recurso->getFirstMediaUrl() }}" target="_blank" class="g_boton primary"
-                                style="width:100%; justify-content:center;">
+                            <a href="{{ $recurso->getFirstMediaUrl('recursos') ?: $recurso->getFirstMediaUrl() }}"
+                                target="_blank" class="g_boton primary" style="width:100%; justify-content:center;">
                                 <i class="fa-solid fa-eye"></i> Ver Documento
                             </a>
                         @endif

@@ -14,42 +14,36 @@ class StaffContingencias extends Component
 {
     public EntregaFest $evento;
 
-    // Para crear Contingencias
-    public $c_escenario = '';
-    public $c_accion = '';
-
-    public $mostrarFormulario = false;
+    protected $listeners = ['eliminarContingenciaOn' => 'eliminarContingencia'];
 
     public function mount($id)
     {
         $this->evento = EntregaFest::with(['contingencias'])->findOrFail($id);
     }
 
-    public function agregarContingencia()
-    {
-        $this->authorize('entrega-fest.staff');
-
-        $this->validate([
-            'c_escenario' => 'required',
-            'c_accion' => 'required',
-        ]);
-
-        EntregaFestContingencia::create([
-            'entrega_fest_id' => $this->evento->id,
-            'escenario' => $this->c_escenario,
-            'accion' => $this->c_accion,
-        ]);
-
-        $this->reset(['c_escenario', 'c_accion', 'mostrarFormulario']);
-        $this->evento->load(['contingencias']);
-        $this->dispatch('notificar', ['titulo' => 'Añadido', 'mensaje' => 'Plan de contingencia guardado.', 'tipo' => 'success']);
-    }
-
     public function eliminarContingencia($id)
     {
         $this->authorize('entrega-fest.staff');
-        EntregaFestContingencia::findOrFail($id)->delete();
-        $this->evento->load(['contingencias']);
+        $contingencia = EntregaFestContingencia::where('entrega_fest_id', $this->evento->id)->findOrFail($id);
+
+        try {
+            $contingencia->delete();
+            $this->evento->load(['contingencias']);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => 'Contingencia eliminada correctamente.'
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('[STAFF CONTINGENCIA ELIMINAR] ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar la contingencia.'
+            ]);
+        }
     }
 
     public function render()

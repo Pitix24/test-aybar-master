@@ -7,9 +7,10 @@
             <span>{{ $evento->codigo }}</span>
         </h2>
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
+
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>

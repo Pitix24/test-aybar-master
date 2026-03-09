@@ -9,25 +9,18 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Reporte de Incidencias - Entrega Fest')]
 class StaffIncidencias extends Component
 {
-    use WithFileUploads;
-
     public EntregaFest $evento;
     public $incidencias;
     public $staff_users;
 
-    // Formulario
-    public $tipo = 'Logística';
-    public $prioridad = 'Media';
-    public $descripcion = '';
-    public $ubicacion = '';
-    public $fotos = [];
-
-    public $mostrarFormulario = false;
+    protected $listeners = ['eliminarIncidenciaOn' => 'eliminarIncidencia'];
 
     public function mount($id)
     {
@@ -44,52 +37,55 @@ class StaffIncidencias extends Component
             ->get();
     }
 
-    public function reportar()
-    {
-        $this->validate([
-            'tipo' => 'required',
-            'prioridad' => 'required',
-            'descripcion' => 'required|min:5',
-            'ubicacion' => 'nullable',
-            'fotos.*' => 'image|max:5120', // 5MB max
-        ]);
-
-        $incidencia = EntregaFestIncidencia::create([
-            'entrega_fest_id' => $this->evento->id,
-            'tipo' => $this->tipo,
-            'prioridad' => $this->prioridad,
-            'descripcion' => $this->descripcion,
-            'ubicacion' => $this->ubicacion,
-            'informante_user_id' => auth()->id(),
-            'estado' => 'Abierta',
-        ]);
-
-        foreach ($this->fotos as $foto) {
-            $incidencia->addMedia($foto->getRealPath())->toMediaCollection('evidencias');
-        }
-
-        $this->reset(['tipo', 'prioridad', 'descripcion', 'ubicacion', 'fotos', 'mostrarFormulario']);
-        $this->cargarIncidencias();
-
-        $this->dispatch('notificar', ['titulo' => 'Reportada', 'mensaje' => 'La incidencia ha sido registrada.', 'tipo' => 'success']);
-    }
-
     public function cambiarPrioridad($id, $prio)
     {
+        $this->authorize('entrega-fest.staff');
         EntregaFestIncidencia::where('id', $id)->update(['prioridad' => $prio]);
         $this->cargarIncidencias();
     }
 
     public function cambiarEstado($id, $estado)
     {
+        $this->authorize('entrega-fest.staff');
         EntregaFestIncidencia::where('id', $id)->update(['estado' => $estado]);
         $this->cargarIncidencias();
     }
 
     public function asignarResponsable($id, $userId)
     {
+        $this->authorize('entrega-fest.staff');
         EntregaFestIncidencia::where('id', $id)->update(['responsable_user_id' => $userId]);
         $this->cargarIncidencias();
+    }
+
+    public function eliminarIncidencia($id)
+    {
+        $this->authorize('entrega-fest.staff');
+        $incidencia = EntregaFestIncidencia::where('entrega_fest_id', $this->evento->id)->findOrFail($id);
+
+        try {
+            DB::beginTransaction();
+            $incidencia->clearMediaCollection('evidencias');
+            $incidencia->delete();
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminada!',
+                'text' => 'La incidencia ha sido eliminada correctamente.'
+            ]);
+
+            $this->cargarIncidencias();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('[STAFF INCIDENCIA ELIMINAR] ' . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar la incidencia.'
+            ]);
+        }
     }
 
     public function render()
