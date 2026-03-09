@@ -6,15 +6,19 @@
             Logística de Proveedores
             <span>{{ $evento->nombre }}</span>
         </h2>
+
         <div class="cabecera_titulo_botones">
-            @can('entrega-fest.staff')
-                <a href="{{ route('erp.entrega-fest.proveedor.crear', $evento->id) }}" class="g_boton guardar">
-                    Añadir Proveedor <i class="fa-solid fa-plus"></i>
-                </a>
-            @endcan
-            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Panel Staff
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Staff
             </a>
+
+            <a href="{{ route('erp.entrega-fest.proveedor.crear', $evento->id) }}" class="g_boton primary">
+                Crear <i class="fa-solid fa-square-plus"></i>
+            </a>
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 

@@ -4,10 +4,19 @@
             Añadir Proveedor
             <span>{{ $evento->nombre }}</span>
         </h2>
+
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.entrega-fest.proveedor.todo', $evento->id) }}" class="g_boton light">
-                <i class="fa-solid fa-arrow-left"></i> Volver a Logística
+                Lista <i class="fa-solid fa-list"></i>
             </a>
+
+            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Staff
+            </a>
+
+            <button type="button" class="g_boton dark" onclick="history.back()">
+                <i class="fa-solid fa-arrow-left"></i> Regresar
+            </button>
         </div>
     </div>
 
