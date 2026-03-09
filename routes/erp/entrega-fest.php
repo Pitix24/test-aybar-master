@@ -14,6 +14,8 @@ use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspecto;
 use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspectoCrear;
 use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspectoEditar;
 use App\Livewire\Erp\EntregaFest\Incidencia\StaffIncidencias;
+use App\Livewire\Erp\EntregaFest\Contingencia\StaffContingencias;
+use App\Livewire\Erp\EntregaFest\Protocolo\StaffProtocolos;
 use App\Livewire\Erp\EntregaFest\Itinerario\StaffItinerario;
 use App\Livewire\Erp\EntregaFest\Itinerario\StaffItinerarioCrear;
 use App\Livewire\Erp\EntregaFest\Itinerario\StaffItinerarioEditar;
@@ -119,6 +121,22 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
             ->name('entrega-fest.incidencia.')
             ->group(function () {
                 Route::get('/{id}', StaffIncidencias::class)->middleware('permission:incidencia.lista')->name('todo');
+            });
+    });
+
+    Route::group(['middleware' => ['permission:protocolo.navegacion']], function () {
+        Route::prefix('entrega-fest/protocolo')
+            ->name('entrega-fest.protocolo.')
+            ->group(function () {
+                Route::get('/{id}', StaffProtocolos::class)->middleware('permission:protocolo.lista')->name('todo');
+            });
+    });
+
+    Route::group(['middleware' => ['permission:contingencia.navegacion']], function () {
+        Route::prefix('entrega-fest/contingencia')
+            ->name('entrega-fest.contingencia.')
+            ->group(function () {
+                Route::get('/{id}', StaffContingencias::class)->middleware('permission:contingencia.lista')->name('todo');
             });
     });
 

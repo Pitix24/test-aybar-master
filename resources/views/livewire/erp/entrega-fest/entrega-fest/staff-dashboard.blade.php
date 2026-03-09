@@ -182,30 +182,82 @@
             <div class="g_panel_navegacion_header">
                 <div>
                     <h4 class="g_panel_titulo">Recursos</h4>
-                    <p class="g_panel_parrafo">Planos y Protocolos</p>
+                    <p class="g_panel_parrafo">Planos y Manuales</p>
                 </div>
-                <i class="fa-solid fa-file-shield"
-                    style="opacity:0.5; font-size:2rem; color:var(--color-primario);"></i>
+                <i class="fa-solid fa-map" style="opacity:0.5; font-size:2rem; color:var(--color-primario);"></i>
             </div>
             <div class="g_panel_navegacion_cuerpo">
                 <div style="display:flex; align-items:baseline; gap:10px;">
                     <span class="g_negrita" style="font-size:2.5rem; line-height:1;"><i
                             class="fa-solid fa-folder-open"></i></span>
-                    <span class="g_badge light">Documentación</span>
+                    <span class="g_badge light">Logística</span>
                 </div>
                 <div class="g_panel_dashboard_trend" style="margin-top:15px;">
                     <span class="g_trend_valor">
-                        <i class="fa-solid fa-book-medical"></i> Contingencias y Seguridad
+                        <i class="fa-solid fa-file-pdf"></i> Documentación de apoyo
                     </span>
                 </div>
             </div>
             <div class="g_panel_navegacion_footer">
-                <span class="g_badge dark">Abrir Biblioteca <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="g_badge dark">Ver Mapas <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+        </a>
+
+        {{-- Protocolos --}}
+        <a href="{{ route('erp.entrega-fest.protocolo.todo', $evento->id) }}"
+            class="g_panel g_panel_navegacion g_panel_border_vivo">
+            <div class="g_panel_navegacion_header">
+                <div>
+                    <h4 class="g_panel_titulo">Protocolos</h4>
+                    <p class="g_panel_parrafo">Guiones y Discursos</p>
+                </div>
+                <i class="fa-solid fa-scroll" style="opacity:0.5; font-size:2rem; color:var(--color-vivo);"></i>
+            </div>
+            <div class="g_panel_navegacion_cuerpo">
+                <div style="display:flex; align-items:baseline; gap:10px;">
+                    <span class="g_negrita" style="font-size:2.5rem; line-height:1;"><i
+                            class="fa-solid fa-feather"></i></span>
+                    <span class="g_badge secondary">Protocolo</span>
+                </div>
+                <div class="g_panel_dashboard_trend" style="margin-top:15px;">
+                    <span class="g_trend_valor">
+                        <i class="fa-solid fa-microphone"></i> Material para locución
+                    </span>
+                </div>
+            </div>
+            <div class="g_panel_navegacion_footer">
+                <span class="g_badge primary">Ver Discursos <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+        </a>
+
+        {{-- Contingencia --}}
+        <a href="{{ route('erp.entrega-fest.contingencia.todo', $evento->id) }}"
+            class="g_panel g_panel_navegacion g_panel_border_danger">
+            <div class="g_panel_navegacion_header">
+                <div>
+                    <h4 class="g_panel_titulo">Contingencia</h4>
+                    <p class="g_panel_parrafo">Seguridad y Riesgos</p>
+                </div>
+                <i class="fa-solid fa-shield-halved"
+                    style="opacity:0.5; font-size:2rem; color:var(--color-danger);"></i>
+            </div>
+            <div class="g_panel_navegacion_cuerpo">
+                <div style="display:flex; align-items:baseline; gap:10px;">
+                    <span class="g_negrita" style="font-size:2.5rem; line-height:1;"><i
+                            class="fa-solid fa-biohazard"></i></span>
+                    <span class="g_badge danger">Crítico</span>
+                </div>
+                <div class="g_panel_dashboard_trend" style="margin-top:15px;">
+                    <span class="g_trend_valor g_trend_down">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Planes de respuesta
+                    </span>
+                </div>
+            </div>
+            <div class="g_panel_navegacion_footer">
+                <span class="g_badge danger">Ver Planes <i class="fa-solid fa-arrow-right"></i></span>
             </div>
         </a>
 
     </div>
-
-</div>
 
 </div>
