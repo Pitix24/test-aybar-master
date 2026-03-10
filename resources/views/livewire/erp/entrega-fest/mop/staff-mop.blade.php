@@ -1,6 +1,4 @@
 <div class="g_gap_pagina">
-
-    {{-- CABECERA --}}
     <div class="g_panel cabecera_titulo_pagina">
         <h2>
             Mi Manual de Operaciones
@@ -34,7 +32,6 @@
         </div>
     </div>
 
-    {{-- TABS DE FASE --}}
     <div class="g_panel">
         <div class="g_tab_navegacion">
             <div class="g_tab_botones">
@@ -87,11 +84,9 @@
         </div>
     </div>
 
-    {{-- INFO BOX --}}
     <div class="g_resaltado_caja info">
         <span class="g_resaltado_caja_titulo"><i class="fa-solid fa-circle-info"></i> ¿Cómo funciona?</span>
         Este manual contiene tus responsabilidades específicas. Márcalas conforme las cumplas — los coordinadores verán
         tu progreso en tiempo real.
     </div>
-
 </div>

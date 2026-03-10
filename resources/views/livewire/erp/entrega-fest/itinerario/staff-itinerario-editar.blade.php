@@ -1,7 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading wire:target="update" message="Actualizando..." />
 
-    {{-- CABECERA --}}
     <div class="g_panel cabecera_titulo_pagina">
         <h2>
             <span>{{ $evento->nombre }}</span>
@@ -9,18 +8,24 @@
         </h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('itinerario.lista')
+                <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
+            @endcan
 
-            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
-                <i class="fa-solid fa-grip"></i> Panel de Staff
-            </a>
+            @can('entrega-fest.ver-staff')
+                <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
+                    <i class="fa-solid fa-grip"></i> Panel de Staff
+                </a>
+            @endcan
 
-            <button type="button" class="g_boton danger"
-                onclick="Livewire.dispatch('alertaConfirmar', { event: 'eliminarBloqueOn', titulo: 'Eliminar Bloque', texto: 'Esta accion no se puede deshacer.' })">
-                Eliminar <i class="fa-solid fa-trash"></i>
-            </button>
+            @can('itinerario.eliminar')
+                <button type="button" class="g_boton danger"
+                    onclick="Livewire.dispatch('alertaConfirmar', { event: 'eliminarBloqueOn', titulo: 'Eliminar Bloque', texto: 'Esta accion no se puede deshacer.' })">
+                    Eliminar <i class="fa-solid fa-trash"></i>
+                </button>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
@@ -29,8 +34,6 @@
     </div>
 
     <div class="g_fila">
-
-        {{-- COLUMNA PRINCIPAL: Formulario --}}
         <div class="g_columna_8">
             <form wire:submit.prevent="update" class="formulario g_panel g_gap_pagina">
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-pencil"></i> Datos del Bloque</h4>
@@ -88,23 +91,23 @@
                 </div>
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="update"><i class="fa-solid fa-save"></i>
-                            Actualizar</span>
-                        <span wire:loading wire:target="update"><i class="fa-solid fa-spinner fa-spin"></i>
-                            Guardando...</span>
-                    </button>
-                    <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton cancelar">
+                    @can('itinerario.editar')
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="update"><i class="fa-solid fa-save"></i>
+                                Actualizar</span>
+                            <span wire:loading wire:target="update"><i class="fa-solid fa-spinner fa-spin"></i>
+                                Actualizando...</span>
+                        </button>
+                    @endcan
+
+                    <button type="button" class="g_boton cancelar" onclick="history.back()">
                         <i class="fa-solid fa-times"></i> Cancelar
-                    </a>
+                    </button>
                 </div>
             </form>
         </div>
 
-        {{-- COLUMNA LATERAL --}}
         <div class="g_columna_4 g_gap_pagina">
-
-            {{-- Resumen del Bloque --}}
             <div class="g_panel">
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Resumen</h4>
 
@@ -123,7 +126,6 @@
                 </div>
             </div>
 
-            {{-- CHECKLIST --}}
             <div class="g_panel g_gap_pagina" style="gap:8px;">
                 <h4 class="g_panel_titulo">
                     <i class="fa-solid fa-list-check"></i> Checklist
@@ -132,24 +134,27 @@
                     </span>
                 </h4>
 
-                {{-- Lista de tareas --}}
                 @forelse($bloque->checklists as $item)
                     <div wire:key="task-{{ $item->id }}"
                         style="display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--borde-card-color, #f0f0f0); padding-bottom:8px;">
-                        <button wire:click="toggleTarea({{ $item->id }})"
-                            class="g_boton {{ $item->esta_listo ? 'success' : 'light' }}"
-                            style="width:28px; height:28px; padding:0; min-width:28px; border-radius:50%; flex-shrink:0;">
-                            <i class="fa-solid {{ $item->esta_listo ? 'fa-check' : 'fa-circle' }}"
-                                style="font-size:11px;"></i>
-                        </button>
+                        @can('itinerario.marcar-tarea')
+                            <button wire:click="toggleTarea({{ $item->id }})"
+                                class="g_boton {{ $item->esta_listo ? 'success' : 'light' }}"
+                                style="width:28px; height:28px; padding:0; min-width:28px; border-radius:50%; flex-shrink:0;">
+                                <i class="fa-solid {{ $item->esta_listo ? 'fa-check' : 'fa-circle' }}"
+                                    style="font-size:11px;"></i>
+                            </button>
+                        @endcan
                         <span
                             style="flex:1; {{ $item->esta_listo ? 'text-decoration:line-through; opacity:0.5;' : '' }} font-size:13px;">
                             {{ $item->tarea }}
                         </span>
-                        <button wire:click="eliminarTarea({{ $item->id }})" class="g_accion eliminar"
-                            title="Eliminar tarea">
-                            <i class="fa-solid fa-xmark" style="font-size:12px;"></i>
-                        </button>
+                        @can('itinerario.eliminar-tarea')
+                            <button wire:click="eliminarTarea({{ $item->id }})" class="g_accion eliminar"
+                                title="Eliminar tarea">
+                                <i class="fa-solid fa-xmark" style="font-size:12px;"></i>
+                            </button>
+                        @endcan
                     </div>
                 @empty
                     <div class="g_alerta info" style="padding:8px 12px; font-size:12px;">
@@ -157,15 +162,17 @@
                     </div>
                 @endforelse
 
-                {{-- Agregar nueva tarea --}}
                 <div style="display:flex; gap:8px; margin-top:4px;">
                     <input type="text" wire:model="nueva_tarea" wire:keydown.enter.prevent="agregarTarea"
                         placeholder="Nueva tarea..." style="flex:1; font-size:13px;">
-                    <button wire:click="agregarTarea" class="g_boton guardar" wire:loading.attr="disabled"
-                        wire:target="agregarTarea">
-                        <span wire:loading.remove wire:target="agregarTarea"><i class="fa-solid fa-plus"></i></span>
-                        <span wire:loading wire:target="agregarTarea"><i class="fa-solid fa-spinner fa-spin"></i></span>
-                    </button>
+
+                    @can('itinerario.crear-tarea')
+                        <button wire:click="agregarTarea" class="g_boton guardar" wire:loading.attr="disabled"
+                            wire:target="agregarTarea">
+                            <span wire:loading.remove wire:target="agregarTarea"><i class="fa-solid fa-plus"></i></span>
+                            <span wire:loading wire:target="agregarTarea"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                        </button>
+                    @endcan
                 </div>
                 @error('nueva_tarea') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>

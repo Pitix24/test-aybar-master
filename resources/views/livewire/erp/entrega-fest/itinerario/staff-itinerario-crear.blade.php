@@ -7,13 +7,17 @@
         </h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('itinerario.lista')
+                <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
+            @endcan
 
-            <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
-                <i class="fa-solid fa-grip"></i> Panel de Staff
-            </a>
+            @can('entrega-fest.ver-staff')
+                <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
+                    <i class="fa-solid fa-grip"></i> Panel de Staff
+                </a>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
@@ -71,18 +75,20 @@
                 </div>
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="store"><i class="fa-solid fa-save"></i> Guardar
-                            Bloque</span>
-                        <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i>
-                            Guardando...</span>
-                    </button>
-                    <a href="{{ route('erp.entrega-fest.itinerario.todo', $evento->id) }}" class="g_boton cancelar">
+                    @can('itinerario.crear')
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="store"><i class="fa-solid fa-save"></i> Crear
+                                Bloque</span>
+                            <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i>
+                                Creando...</span>
+                        </button>
+                    @endcan
+
+                    <button type="button" class="g_boton cancelar" onclick="history.back()">
                         <i class="fa-solid fa-times"></i> Cancelar
-                    </a>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-
 </div>

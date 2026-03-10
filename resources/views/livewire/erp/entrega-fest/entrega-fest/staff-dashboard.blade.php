@@ -21,9 +21,6 @@
         <div class="g_dashboard_hero_decor_1"></div>
         <div class="g_dashboard_hero_decor_2"></div>
         <div class="g_dashboard_hero_content">
-            <div style="display:flex; justify-content:center; margin-bottom:15px;">
-                <span class="g_badge info">Centro Operativo Activo</span>
-            </div>
             <h1 class="g_dashboard_hero_title">
                 <i class="fa-solid fa-shield-halved"></i> <span>Operaciones:</span> {{ $evento->nombre }}
             </h1>
