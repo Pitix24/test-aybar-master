@@ -186,15 +186,15 @@ class EntregaFestCrear extends Component
         }
     }
 
+    public function render()
+    {
+        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-crear');
+    }
+
     public function placeholder()
     {
         return <<<'HTML'
         <x-placeholder />
         HTML;
-    }
-
-    public function render()
-    {
-        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-crear');
     }
 }

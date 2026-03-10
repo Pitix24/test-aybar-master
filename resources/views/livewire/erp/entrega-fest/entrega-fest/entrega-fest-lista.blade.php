@@ -56,7 +56,7 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                @can('solicitud-evidencia-pago.exportar-filtro')
+                @can('entrega-fest.exportar-filtro')
                     <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
                         wire:target="exportExcelFiltro">
                         <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
@@ -66,7 +66,7 @@
                     </button>
                 @endcan
 
-                @can('solicitud-evidencia-pago.exportar-todo')
+                @can('entrega-fest.exportar-todo')
                     <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
                         wire:target="exportExcelTodo">
                         <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
@@ -111,18 +111,22 @@
                 <tbody>
                     @foreach ($items as $e)
                         <tr wire:key="evento-{{ $e->id }}">
-                            <td class="g_negrita" style="color: var(--color-primary);">#{{ $e->codigo }}</td>
+                            <td class="g_negrita">#{{ $e->codigo }}</td>
                             <td>
                                 <div class="g_negrita">{{ $e->nombre }}</div>
                                 <div>{{ Str::limit($e->descripcion, 70) }}</div>
                                 <div>
-                                    <a href="{{ route('erp.entrega-fest.vista.panel', $e->id) }}" class="g_boton info">
-                                        <i class="fa-solid fa-grip"></i> Panel de Gestión
-                                    </a>
+                                    @can('entrega-fest.ver-panel')
+                                        <a href="{{ route('erp.entrega-fest.vista.panel', $e->id) }}" class="g_boton info">
+                                            <i class="fa-solid fa-grip"></i> Panel de Gestión
+                                        </a>
+                                    @endcan
 
-                                    <a href="{{ route('erp.entrega-fest.vista.staff', $e->id) }}" class="g_boton danger">
-                                        <i class="fa-solid fa-shield-halved"></i> Panel de Staff
-                                    </a>
+                                    @can('entrega-fest.ver-staff')
+                                        <a href="{{ route('erp.entrega-fest.vista.staff', $e->id) }}" class="g_boton danger">
+                                            <i class="fa-solid fa-shield-halved"></i> Panel de Staff
+                                        </a>
+                                    @endcan
                                 </div>
                             </td>
                             <td>

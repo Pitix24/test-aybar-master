@@ -93,7 +93,7 @@ class TicketLista extends Component
         $this->areas = Area::all();
         $this->solicitudes = TipoSolicitud::all();
         $this->canales = Canal::all();
-        $this->usuarios_admin = User::role(['asesor-atc', 'supervisor-atc'])->get();
+        $this->usuarios_admin = User::permission('ticket.gestor')->get();
         $this->prioridades = PrioridadTicket::all();
         // Aplicamos filtros por defecto solo si NO están presentes en la URL
         // Esto permite que si regresas con ?desde=&hasta= (vacíos), se respeten.

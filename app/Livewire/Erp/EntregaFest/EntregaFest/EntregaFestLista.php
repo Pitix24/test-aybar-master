@@ -5,7 +5,6 @@ namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 use App\Models\EntregaFest;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
-use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
@@ -80,13 +79,6 @@ class EntregaFestLista extends Component
         $this->resetPage();
     }
 
-    public function placeholder()
-    {
-        return <<<'HTML'
-        <x-placeholder />
-        HTML;
-    }
-
     public function render()
     {
         $items = EntregaFest::query()
@@ -117,5 +109,12 @@ class EntregaFestLista extends Component
         return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-lista', [
             'items' => $items
         ]);
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }

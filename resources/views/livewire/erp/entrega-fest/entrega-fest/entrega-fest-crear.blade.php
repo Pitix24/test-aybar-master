@@ -5,9 +5,11 @@
         <h2>Crear Entrega Fest</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('entrega-fest.lista')
+                <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
@@ -120,14 +122,16 @@
                 @endif
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="store">
-                            <i class="fa-solid fa-save"></i> Crear
-                        </span>
-                        <span wire:loading wire:target="store">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Creando...
-                        </span>
-                    </button>
+                    @can('entrega-fest.crear')
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="store">
+                                <i class="fa-solid fa-save"></i> Crear
+                            </span>
+                            <span wire:loading wire:target="store">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                            </span>
+                        </button>
+                    @endcan
 
                     <button type="button" class="g_boton cancelar" onclick="history.back()">
                         <i class="fa-solid fa-times"></i> Cancelar

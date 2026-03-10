@@ -338,15 +338,15 @@ class EntregaFestEditar extends Component
         }
     }
 
+    public function render()
+    {
+        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-editar');
+    }
+
     public function placeholder()
     {
         return <<<'HTML'
         <x-placeholder />
         HTML;
-    }
-
-    public function render()
-    {
-        return view('livewire.erp.entrega-fest.entrega-fest.entrega-fest-editar');
     }
 }

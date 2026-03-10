@@ -11,3 +11,4 @@ php artisan make:import ComprobantePagoAntiguoImport
 
 composer require spatie/laravel-permission
 php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan permission:cache-reset

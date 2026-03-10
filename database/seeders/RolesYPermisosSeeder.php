@@ -184,6 +184,7 @@ class RolesYPermisosSeeder extends Seeder
                 'canal.exportar-todo',//ok
                 'ticket.navegacion',//ok
                 'ticket.lista',//ok
+                'ticket.gestor',//ok
                 'ticket.ver',//ok
                 'ticket.crear',//ok
                 'ticket.editar',//ok
@@ -217,6 +218,7 @@ class RolesYPermisosSeeder extends Seeder
                 'motivo-cita.exportar-todo',//ok
                 'cita.navegacion',//ok
                 'cita.lista',//ok
+                'cita.gestor',//ok
                 'cita.ver',//ok
                 'cita.crear',//ok
                 'cita.editar',//ok
@@ -238,6 +240,7 @@ class RolesYPermisosSeeder extends Seeder
                 'estado-solicitud-evidencia-pago.exportar-todo',//ok
                 'solicitud-evidencia-pago.navegacion',//ok
                 'solicitud-evidencia-pago.lista',//ok
+                'solicitud-evidencia-pago.gestor',//ok
                 'solicitud-evidencia-pago.ver',//ok
                 'solicitud-evidencia-pago.editar',//ok
                 'solicitud-evidencia-pago.exportar-filtro',//ok
@@ -265,6 +268,7 @@ class RolesYPermisosSeeder extends Seeder
                 'estado-solicitud-digitalizar-letra.exportar-todo',//ok
                 'solicitud-digitalizar-letra.navegacion',//ok
                 'solicitud-digitalizar-letra.lista',//ok
+                'solicitud-digitalizar-letra.gestor',//ok
                 'solicitud-digitalizar-letra.ver',//ok
                 'solicitud-digitalizar-letra.exportar-filtro',//ok
                 'solicitud-digitalizar-letra.exportar-todo',//ok
@@ -310,6 +314,7 @@ class RolesYPermisosSeeder extends Seeder
                 /* ENTREGA FEST */
                 'entrega-fest.navegacion',
                 'entrega-fest.lista',
+                'entrega-fest.gestor',//ok
                 'entrega-fest.ver',
                 'entrega-fest.crear',
                 'entrega-fest.editar',

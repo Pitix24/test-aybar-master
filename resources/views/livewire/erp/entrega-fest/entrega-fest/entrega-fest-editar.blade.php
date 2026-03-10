@@ -5,23 +5,28 @@
         <h2>Editar Entrega Fest</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('entrega-fest.lista')
+                <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
-            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
-                <i class="fa-solid fa-grip"></i> Panel de Gestión
-            </a>
+            @can('entrega-fest.ver-panel')
+                <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                    <i class="fa-solid fa-grip"></i> Panel de Gestión
+                </a>
+            @endcan
 
-            <button type="button" class="g_boton danger" onclick="confirmarEliminarCanal()">
-                Eliminar <i class="fa-solid fa-trash-can"></i>
-            </button>
+            @can('entrega-fest.eliminar')
+                <button type="button" class="g_boton danger" onclick="confirmarEliminarCanal()">
+                    Eliminar <i class="fa-solid fa-trash-can"></i>
+                </button>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
         </div>
     </div>
-
 
     <div class="g_fila">
         <div class="g_columna_8">
@@ -127,14 +132,16 @@
                 @endif
 
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="update">
-                            <i class="fa-solid fa-save"></i> Guardar Cambios
-                        </span>
-                        <span wire:loading wire:target="update">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                        </span>
-                    </button>
+                    @can('entrega-fest.editar')
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="update">
+                                <i class="fa-solid fa-save"></i> Actualizar
+                            </span>
+                            <span wire:loading wire:target="update">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                            </span>
+                        </button>
+                    @endcan
 
                     <button type="button" class="g_boton cancelar" onclick="history.back()">
                         <i class="fa-solid fa-times"></i> Cancelar
@@ -204,15 +211,17 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button wire:click="importarProspectos" class="g_boton dark" wire:loading.attr="disabled"
-                            wire:target="archivo_excel, importarProspectos">
-                            <span wire:loading.remove wire:target="importarProspectos">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
-                            </span>
-                            <span wire:loading wire:target="importarProspectos">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Importando...
-                            </span>
-                        </button>
+                        @can('entrega-fest.editar')
+                            <button wire:click="importarProspectos" class="g_boton dark" wire:loading.attr="disabled"
+                                wire:target="archivo_excel, importarProspectos">
+                                <span wire:loading.remove wire:target="importarProspectos">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
+                                </span>
+                                <span wire:loading wire:target="importarProspectos">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Importando...
+                                </span>
+                            </button>
+                        @endcan
                     </div>
 
                     <div wire:loading wire:target="archivo_excel" class="g_margin_top_10">
@@ -242,15 +251,17 @@
                     </div>
 
                     <div class="formulario_botones">
-                        <button wire:click="importarItinerario" class="g_boton dark" wire:loading.attr="disabled"
-                            wire:target="archivo_itinerario, importarItinerario">
-                            <span wire:loading.remove wire:target="importarItinerario">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
-                            </span>
-                            <span wire:loading wire:target="importarItinerario">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Importando...
-                            </span>
-                        </button>
+                        @can('entrega-fest.editar')
+                            <button wire:click="importarItinerario" class="g_boton dark" wire:loading.attr="disabled"
+                                wire:target="archivo_itinerario, importarItinerario">
+                                <span wire:loading.remove wire:target="importarItinerario">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
+                                </span>
+                                <span wire:loading wire:target="importarItinerario">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Importando...
+                                </span>
+                            </button>
+                        @endcan
                     </div>
 
                     <div wire:loading wire:target="archivo_itinerario" class="g_margin_top_10">
@@ -278,15 +289,17 @@
                 </div>
 
                 <div class="formulario_botones">
-                    <button wire:click="importarMopTareas" class="g_boton dark" wire:loading.attr="disabled"
-                        wire:target="archivo_mop_tareas, importarMopTareas">
-                        <span wire:loading.remove wire:target="importarMopTareas">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
-                        </span>
-                        <span wire:loading wire:target="importarMopTareas">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Importando...
-                        </span>
-                    </button>
+                    @can('entrega-fest.editar')
+                        <button wire:click="importarMopTareas" class="g_boton dark" wire:loading.attr="disabled"
+                            wire:target="archivo_mop_tareas, importarMopTareas">
+                            <span wire:loading.remove wire:target="importarMopTareas">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
+                            </span>
+                            <span wire:loading wire:target="importarMopTareas">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Importando...
+                            </span>
+                        </button>
+                    @endcan
                 </div>
 
                 <div wire:loading wire:target="archivo_mop_tareas" class="g_margin_top_10">

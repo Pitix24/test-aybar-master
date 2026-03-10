@@ -4,16 +4,22 @@
         <h2>Ver Entrega Fest</h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i></a>
+            @can('entrega-fest.lista')
+                <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i></a>
+            @endcan
 
-            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
-                <i class="fa-solid fa-grip"></i> Panel de Gestión
-            </a>
+            @can('entrega-fest.ver-panel')
+                <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                    <i class="fa-solid fa-grip"></i> Panel de Gestión
+                </a>
+            @endcan
 
-            <a href="{{ route('erp.entrega-fest.vista.editar', $evento->id) }}" class="g_boton primary">
-                Editar <i class="fa-solid fa-pencil"></i>
-            </a>
+            @can('entrega-fest.editar')
+                <a href="{{ route('erp.entrega-fest.vista.editar', $evento->id) }}" class="g_boton primary">
+                    Editar <i class="fa-solid fa-pencil"></i>
+                </a>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
