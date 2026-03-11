@@ -71,7 +71,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
     public function collection()
     {
         $query = Ticket::query()
-            ->with(['userCliente', 'area', 'estado', 'prioridad', 'gestor', 'unidadNegocio', 'proyecto', 'tipoSolicitud', 'subTipoSolicitud', 'canal']);
+            ->with(['userCliente', 'area', 'estado', 'prioridad', 'gestor', 'unidadNegocio', 'proyecto', 'tipoSolicitud', 'subTipoSolicitud', 'canal', 'creadoPor']);
 
         if (!$this->todo) {
             $query->when($this->buscar, function ($query) {
@@ -125,6 +125,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
                     $item->prioridad?->nombre ?? 'N/A',
                     $item->gestor?->name ?? 'Sin asignar',
                     $item->canal?->nombre ?? 'N/A',
+                    $item->creadoPor?->name ?? 'N/A',
                     $item->created_at->format('d/m/Y H:i'),
                     $item->updated_at->format('d/m/Y H:i'),
                 ];
@@ -147,8 +148,9 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
             'Sub Tipo Solicitud',
             'Estado',
             'Prioridad',
-            'Gestor',
+            'Gestor Asignado',
             'Canal',
+            'Creado por',
             'Fecha Creación',
             'Última Modificación',
         ];
