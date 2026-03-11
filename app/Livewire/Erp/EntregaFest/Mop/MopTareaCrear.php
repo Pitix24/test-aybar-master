@@ -120,7 +120,7 @@ class MopTareaCrear extends Component
 
     public function render()
     {
-        $usuarios = User::orderBy('name')->get(['id', 'name']);
+        $usuarios = User::permission('entrega-fest.gestor')->get();
         $plantillas = EntregaFestMopPlantilla::orderBy('fase')->orderBy('prioridad')->get();
 
         return view('livewire.erp.entrega-fest.mop.mop-tarea-crear', compact('usuarios', 'plantillas'));

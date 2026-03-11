@@ -60,7 +60,7 @@ class EntregaFestCrear extends Component
     public function mount()
     {
         $this->unidades_negocios = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
-        $this->gestores = User::role(['asesor-backoffice', 'supervisor-backoffice', 'super-admin'])->get();
+        $this->gestores = User::permission('entrega-fest.gestor')->get();
 
         $this->fecha_entrega = date('Y-m-d');
         // Autogenerar código sugerido

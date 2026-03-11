@@ -282,9 +282,9 @@ ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-proveedores
 7. proveedor.exportar-filtro
 8. proveedor.exportar-todo
 9. proveedor.crear-requerimiento
-10. proveedos.editar-requerimiento
-11. proveedos.eliminar-requerimiento
-12. proveedos.marcar-requerimiento
+10. proveedor.editar-requerimiento
+11. proveedor.eliminar-requerimiento
+12. proveedor.marcar-requerimiento
 
 INCIDENCIAS
 ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-incidencias
