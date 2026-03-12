@@ -4,7 +4,6 @@ namespace App\Livewire\Erp\EntregaFest\Prospecto;
 
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -64,7 +63,7 @@ class EntregaFestProspectoCrear extends Component
 
     public function store()
     {
-        $this->authorize('entrega-fest.prospectos');
+        $this->authorize('prospecto.crear');
 
         try {
             $this->validate();

@@ -31,7 +31,7 @@ class EntregaFestInvitado extends Component
     public $buscar = '';
 
     #[Url(keep: true)]
-    public $estado_confirmacion = '';
+    public $confirmado = '';
 
     #[Url(keep: true)]
     public $transporte = '';
@@ -46,14 +46,14 @@ class EntregaFestInvitado extends Component
 
     public function updated($property)
     {
-        if (in_array($property, ['buscar', 'estado_confirmacion', 'transporte', 'perPage'])) {
+        if (in_array($property, ['buscar', 'confirmado', 'transporte', 'perPage'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'estado_confirmacion', 'transporte']);
+        $this->reset(['buscar', 'confirmado', 'transporte']);
         $this->resetPage();
     }
 
@@ -65,7 +65,7 @@ class EntregaFestInvitado extends Component
             new \App\Exports\EntregaFest\EntregaFestInvitadoExport(
                 $this->evento->id,
                 $this->buscar,
-                $this->estado_confirmacion,
+                $this->confirmado,
                 $this->transporte,
                 false,
                 $this->perPage,
@@ -97,8 +97,7 @@ class EntregaFestInvitado extends Component
 
     public function enviarCorreoInstrucciones()
     {
-        $invitados = InvitadoEntregaFest::with(['prospecto.proyecto', 'copropietario.prospecto.proyecto', 'entregaFest'])
-            ->where('entrega_fest_id', $this->evento->id)
+        $invitados = InvitadoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->get()
             ->filter(fn($inv) => !empty($inv->email));
 
@@ -132,8 +131,7 @@ class EntregaFestInvitado extends Component
     {
         $imagenUrl = 'https://plataforma-digital.aybarcorp.com/assets/imagen/construccion-aybar-corp.jpg';
 
-        $invitados = InvitadoEntregaFest::with(['prospecto', 'copropietario', 'entregaFest'])
-            ->where('entrega_fest_id', $this->evento->id)
+        $invitados = InvitadoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->get()
             ->filter(fn($inv) => !empty($inv->celular));
 
@@ -172,13 +170,6 @@ class EntregaFestInvitado extends Component
         ]);
     }
 
-    public function placeholder()
-    {
-        return <<<'HTML'
-        <x-placeholder />
-        HTML;
-    }
-
     public function render()
     {
         $items = InvitadoEntregaFest::query()
@@ -189,20 +180,18 @@ class EntregaFestInvitado extends Component
             ->where('entrega_fest_id', $this->evento->id)
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
-                    // Buscar en titular
                     $q->whereHas('prospecto', function ($sub) {
                         $sub->where('nombres', 'like', '%' . $this->buscar . '%')
                             ->orWhere('dni', 'like', '%' . $this->buscar . '%');
                     })
-                        // Buscar en copropietario
-                        ->orWhereHas('copropietario', function ($sub) {
+                    ->orWhereHas('copropietario', function ($sub) {
                         $sub->where('nombres', 'like', '%' . $this->buscar . '%')
                             ->orWhere('dni', 'like', '%' . $this->buscar . '%');
                     })
-                        ->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
+                    ->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
                 });
             })
-            ->when($this->estado_confirmacion, fn($q) => $q->where('estado_confirmacion', $this->estado_confirmacion))
+            ->when($this->confirmado !== '', fn($q) => $q->where('confirmado', $this->confirmado))
             ->when($this->transporte, fn($q) => $q->where('transporte', $this->transporte))
             ->orderBy('id', 'desc')
             ->paginate($this->perPage);
@@ -210,5 +199,12 @@ class EntregaFestInvitado extends Component
         return view('livewire.erp.entrega-fest.invitado.entrega-fest-invitado', [
             'items' => $items
         ]);
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
     }
 }

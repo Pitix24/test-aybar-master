@@ -30,6 +30,7 @@ class EntregaFest extends Model
 
     protected $casts = [
         'fecha_entrega' => 'date',
+        'activo' => 'boolean',
     ];
 
     public function gestor()

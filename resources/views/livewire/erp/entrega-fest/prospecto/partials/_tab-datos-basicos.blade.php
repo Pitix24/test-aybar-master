@@ -47,8 +47,10 @@
     </div>
 
     <div class="g_tab_form_buttons">
-        <button type="submit" class="g_boton guardar">
-            <i class="fa-solid fa-save"></i> Actualizar Datos Personales
-        </button>
+        @can('prospecto.editar')
+            <button type="submit" class="g_boton guardar">
+                <i class="fa-solid fa-save"></i> Actualizar Datos Personales
+            </button>
+        @endcan
     </div>
 </form>

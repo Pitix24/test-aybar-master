@@ -12,7 +12,7 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
 {
     protected $entrega_fest_id;
     protected $buscar;
-    protected $estado_confirmacion;
+    protected $confirmado;
     protected $transporte;
     protected $todo;
     protected $perPage;
@@ -21,7 +21,7 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
     public function __construct(
         $entrega_fest_id,
         $buscar = '',
-        $estado_confirmacion = '',
+        $confirmado = '',
         $transporte = '',
         $todo = false,
         $perPage = null,
@@ -29,7 +29,7 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
     ) {
         $this->entrega_fest_id = $entrega_fest_id;
         $this->buscar = $buscar;
-        $this->estado_confirmacion = $estado_confirmacion;
+        $this->confirmado = $confirmado;
         $this->transporte = $transporte;
         $this->todo = $todo;
         $this->perPage = $perPage;
@@ -48,10 +48,15 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
                     $q->whereHas('prospecto', function ($sub) {
                         $sub->where('nombres', 'like', '%' . $this->buscar . '%')
                             ->orWhere('dni', 'like', '%' . $this->buscar . '%');
-                    })->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
+                    })
+                        ->orWhereHas('copropietario', function ($sub) {
+                            $sub->where('nombres', 'like', '%' . $this->buscar . '%')
+                                ->orWhere('dni', 'like', '%' . $this->buscar . '%');
+                        })
+                        ->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
                 });
             })
-                ->when($this->estado_confirmacion, fn($q) => $q->where('estado_confirmacion', $this->estado_confirmacion))
+                ->when($this->confirmado !== '', fn($q) => $q->where('confirmado', $this->confirmado))
                 ->when($this->transporte, fn($q) => $q->where('transporte', $this->transporte));
         }
 
@@ -70,20 +75,19 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
         $index++;
 
         $transporteTexto = match ($item->transporte) {
-            'bus' => 'BUS AYBAR',
-            'propio' => 'MOVILIDAD PROPIA',
-            'na' => 'N/A',
-            default => strtoupper($item->transporte),
+            'BUS' => 'BUS AYBAR',
+            'PROPIO' => 'MOVILIDAD PROPIA',
+            default => $item->transporte,
         };
 
         return [
             $index,
             $item->codigo_invitado,
-            $item->prospecto->dni ?? 'N/A',
-            $item->prospecto->nombres ?? 'N/A',
-            $item->prospecto->proyecto->nombre ?? 'N/A',
-            ($item->prospecto->lote ?? '') . ' ' . ($item->prospecto->manzana ?? ''),
-            strtoupper($item->estado_confirmacion),
+            $item->dni,
+            $item->nombre_completo,
+            $item->prospecto?->proyecto?->nombre ?? $item->copropietario?->prospecto?->proyecto?->nombre ?? 'N/A',
+            ($item->lote ?? '') . ' ' . ($item->manzana ?? ''),
+            $item->confirmado ? 'CONFIRMADO' : 'NO ASISTE',
             $item->cantidad_acompanantes_permitidos,
             $transporteTexto,
             $item->confirmado ? 'SÍ' : 'NO',

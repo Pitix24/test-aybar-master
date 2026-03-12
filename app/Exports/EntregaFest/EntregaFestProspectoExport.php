@@ -13,7 +13,8 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
     protected $entrega_fest_id;
     protected $buscar;
     protected $proyecto_id;
-    protected $estado;
+    protected $estado_backoffice;
+    protected $estado_contrato_preeliminar_emitido;
     protected $estado_firma_contrato_firmado;
     protected $grupo;
     protected $todo;
@@ -24,7 +25,8 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
         $entrega_fest_id,
         $buscar = '',
         $proyecto_id = '',
-        $estado = '',
+        $estado_backoffice = '',
+        $estado_contrato_preeliminar_emitido = '',
         $estado_firma_contrato_firmado = '',
         $grupo = '',
         $todo = false,
@@ -34,7 +36,8 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
         $this->entrega_fest_id = $entrega_fest_id;
         $this->buscar = $buscar;
         $this->proyecto_id = $proyecto_id;
-        $this->estado = $estado;
+        $this->estado_backoffice = $estado_backoffice;
+        $this->estado_contrato_preeliminar_emitido = $estado_contrato_preeliminar_emitido;
         $this->estado_firma_contrato_firmado = $estado_firma_contrato_firmado;
         $this->grupo = $grupo;
         $this->todo = $todo;
@@ -58,7 +61,8 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
                 });
             })
                 ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
-                ->when($this->estado, fn($q) => $q->where('estado', $this->estado))
+                ->when($this->estado_backoffice, fn($q) => $q->where('estado_backoffice', $this->estado_backoffice))
+                ->when($this->estado_contrato_preeliminar_emitido, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $this->estado_contrato_preeliminar_emitido))
                 ->when($this->estado_firma_contrato_firmado, fn($q) => $q->where('estado_firma_contrato_firmado', $this->estado_firma_contrato_firmado))
                 ->when($this->grupo, fn($q) => $q->where('grupo', $this->grupo));
         }
@@ -77,17 +81,23 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
         static $index = 0;
         $index++;
 
+        // Obtener etiquetas de estados
+        $estadoBackoffice = ProspectoEntregaFest::ESTADO_BACKOFFICE[$p->estado_backoffice]['label'] ?? $p->estado_backoffice;
+        $estadoContrato = ProspectoEntregaFest::ESTADO_CONTRATO_PRELIMINAR[$p->estado_contrato_preeliminar_emitido]['label'] ?? $p->estado_contrato_preeliminar_emitido;
+
         return [
             $index,
             $p->dni,
-            $p->nombres,
+            $p->nombre_completo . " (" . $p->email . " / " . $p->celular . ")",
             $p->proyecto->nombre ?? 'N/A',
-            ($p->lote ?? '') . ' ' . ($p->manzana ?? ''),
-            strtoupper($p->estado),
-            $p->link_carpeta_eecc ?? 'N/A',
-            $p->link_eecc_firmado ?? 'N/A',
-            strtoupper($p->estado_firma_contrato_firmado),
-            $p->fecha_firma ? \Carbon\Carbon::parse($p->fecha_firma)->format('d/m/Y') : 'N/A',
+            ($p->lote ?? '') . ($p->manzana ?? ''),
+            $p->fecha_culminacion_eecc ? \Carbon\Carbon::parse($p->fecha_culminacion_eecc)->format('d/m/Y') : '',
+            $p->link_carpeta_eecc ?? '',
+            $p->link_eecc_firmado ?? '',
+            strtoupper($estadoBackoffice),
+            strtoupper($estadoContrato),
+            $p->fecha_firma ? \Carbon\Carbon::parse($p->fecha_firma)->format('d/m/Y') : '',
+            $p->fecha_generacion_contrato ? \Carbon\Carbon::parse($p->fecha_generacion_contrato)->format('d/m/Y') : '',
             $p->invitado ? 'SÍ' : 'NO',
         ];
     }
@@ -100,11 +110,13 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
             'Cliente',
             'Proyecto',
             'Lote/Mz',
-            'Estado Prospecto',
-            'Carpeta EECC',
-            'Firma EECC',
+            'Fecha Culminación EECC',
+            'Enlace Carpeta EECC',
+            'Enlace EECC Firmado',
+            'BackOffice',
             'Estado Contrato Preliminar',
-            'Fecha Firma',
+            'Fecha para Firmar',
+            'Fecha Firmado',
             'Invitado',
         ];
     }

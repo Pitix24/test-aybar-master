@@ -11,6 +11,8 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\EntregaFest\EntregaFestExport;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
@@ -23,7 +25,7 @@ class EntregaFestLista extends Component
     public $buscar = '';
 
     #[Url(keep: true)]
-    public $activo = '1';
+    public $activo = '';
 
     #[Url(keep: true)]
     public $unidad_negocio_id = '';
@@ -32,7 +34,7 @@ class EntregaFestLista extends Component
     public $proyecto_id = '';
 
     #[Url(keep: true)]
-    public $perPage = 15;
+    public $perPage = 20;
 
     // Catálogos
     public $unidades_negocios = [];
@@ -77,6 +79,40 @@ class EntregaFestLista extends Component
     {
         $this->reset(['buscar', 'activo', 'unidad_negocio_id', 'proyecto_id']);
         $this->resetPage();
+    }
+
+    public function exportExcelFiltro()
+    {
+        $this->authorize('entrega-fest.exportar-filtro');
+
+        return Excel::download(
+            new EntregaFestExport(
+                $this->buscar,
+                $this->activo,
+                $this->unidad_negocio_id,
+                $this->proyecto_id,
+                false,
+                $this->perPage,
+                $this->getPage()
+            ),
+            'entrega_fest_filtrados.xlsx'
+        );
+    }
+
+    public function exportExcelTodo()
+    {
+        $this->authorize('entrega-fest.exportar-todo');
+
+        return Excel::download(
+            new EntregaFestExport(
+                '',
+                '',
+                '',
+                '',
+                true
+            ),
+            'entrega_fest_todo.xlsx'
+        );
     }
 
     public function render()

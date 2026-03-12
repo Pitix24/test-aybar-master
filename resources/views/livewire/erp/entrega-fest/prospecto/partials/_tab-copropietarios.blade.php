@@ -50,7 +50,6 @@
     </form>
 @endif
 
-
 <div class="g_tabla_cabecera">
     <div class="g_tabla_cabecera_botones">
         @if($cop_modo !== 'crear')

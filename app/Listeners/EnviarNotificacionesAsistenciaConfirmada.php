@@ -28,8 +28,8 @@ class EnviarNotificacionesAsistenciaConfirmada
 
         $evento = $invitado->entregaFest;
 
-        // Solo enviamos si confirmó asistencia (Estado en MAYÚSCULAS según migración)
-        if ($invitado->estado_confirmacion !== InvitadoEntregaFest::ESTADO_CONFIRMADO) {
+        // Solo enviamos si confirmó asistencia
+        if (!$invitado->confirmado) {
             return;
         }
 

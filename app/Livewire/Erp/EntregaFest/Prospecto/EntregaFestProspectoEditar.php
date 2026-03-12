@@ -8,12 +8,9 @@ use App\Models\ProspectoEntregaFest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use App\Events\ProspectoBackofficeConforme;
 use App\Events\ProspectoLegalConforme;
 use App\Events\EntregaFestFirmaRecordatorio;
-use App\Mail\EntregaFest\FirmaConfirmacionMail;
-use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
@@ -211,6 +208,8 @@ class EntregaFestProspectoEditar extends Component
 
     public function storeCopropietario(): void
     {
+        $this->authorize('prospecto.editar');
+
         $this->validate($this->reglasCoprietario(), [], $this->atributosCopropietario());
 
         try {
@@ -250,6 +249,8 @@ class EntregaFestProspectoEditar extends Component
 
     public function updateCopropietario(): void
     {
+        $this->authorize('prospecto.editar');
+
         $this->validate($this->reglasCoprietario(true), [], $this->atributosCopropietario());
 
         $cop = CopropietarioEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)
@@ -279,6 +280,8 @@ class EntregaFestProspectoEditar extends Component
 
     public function eliminarCopropietario(int $id): void
     {
+        $this->authorize('prospecto.editar');
+
         $cop = CopropietarioEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)->findOrFail($id);
 
         // Si ya tiene invitación, no se puede eliminar
@@ -452,6 +455,8 @@ class EntregaFestProspectoEditar extends Component
 
     public function enviarRecordatorioFirma()
     {
+        $this->authorize('prospecto.editar');
+
         // Recargar el prospecto actual desde BD con relaciones necesarias
         $prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
             ->find($this->prospecto->id);

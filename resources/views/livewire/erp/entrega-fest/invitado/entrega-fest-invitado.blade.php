@@ -9,10 +9,6 @@
                 <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
 
-            <a href="{{ route('erp.entrega-fest.invitado.todo', $evento->id) }}" class="g_boton primary">
-                Crear <i class="fa-solid fa-square-plus"></i>
-            </a>
-
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
@@ -24,16 +20,15 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Buscar (Nombre, DNI, Cód. Invitado)</label>
-                    <input type="text" wire:model.live.debounce.400ms="buscar" placeholder="Ej: Juan Pérez o INV-...">
+                    <input type="text" wire:model.live.debounce.400ms="buscar">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
-                    <label>Asistencia (Confirmación Web)</label>
-                    <select wire:model.live="estado_confirmacion">
+                    <label>Asistencia</label>
+                    <select wire:model.live="confirmado">
                         <option value="">Todos</option>
-                        <option value="pendiente">PENDIENTE</option>
-                        <option value="confirmado">CONFIRMADO</option>
-                        <option value="no_asiste">NO ASISTE</option>
+                        <option value="1">CONFIRMADO</option>
+                        <option value="0">NO ASISTE</option>
                     </select>
                 </div>
 
@@ -41,9 +36,8 @@
                     <label>Transporte</label>
                     <select wire:model.live="transporte">
                         <option value="">Todos</option>
-                        <option value="bus">BUS AYBAR</option>
-                        <option value="propio">MOVILIDAD PROPIA</option>
-                        <option value="na">NO APLICA / N/A</option>
+                        <option value="BUS">BUS AYBAR</option>
+                        <option value="PROPIO">MOVILIDAD PROPIA</option>
                     </select>
                 </div>
             </div>
@@ -138,26 +132,21 @@
                                             <span class="g_badge light">{{ $i->cantidad_acompanantes_permitidos }}</span>
                                         </td>
                                         <td class="g_celda_centro">
-                                            @php
-                                                $claseConf = match ($i->estado_confirmacion) {
-                                                    'pendiente' => 'primary',
-                                                    'confirmado' => 'success',
-                                                    'no_asiste' => 'danger',
-                                                    default => 'light',
-                                                };
-                                            @endphp
-                                            <span class="g_badge {{ $claseConf }}">{{ strtoupper($i->estado_confirmacion) }}</span>
+                                            @if ($i->confirmado)
+                                                <span class="g_badge success">CONFIRMADO</span>
+                                            @else
+                                                <span class="g_badge danger">NO ASISTE / PDTE.</span>
+                                            @endif
                                         </td>
                                         <td class="g_celda_centro">
                                             @php
                                                 $transporteTexto = match ($i->transporte) {
-                                                    'bus' => 'BUS',
-                                                    'propio' => 'PROPIO',
-                                                    'na' => 'N/A',
+                                                    'BUS' => 'BUS',
+                                                    'PROPIO' => 'PROPIO',
                                                     default => $i->transporte,
                                                 };
                                             @endphp
-                                            <span class="g_badge light">{{ strtoupper($transporteTexto) }}</span>
+                                            <span class="g_badge light">{{ $transporteTexto }}</span>
                                         </td>
                                         <td class="g_celda_acciones g_celda_centro">
                                             @can('invitado-entrega-fest.editar')

@@ -17,7 +17,6 @@
         </div>
     </div>
 
-
     <div class="g_fila">
         <div class="g_columna_8">
             <form wire:submit.prevent="store" class="formulario g_panel">

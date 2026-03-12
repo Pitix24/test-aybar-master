@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="g_columna_2">
-                    <label>Estado</label>
+                    <label>Activo</label>
                     <select wire:model.live="activo">
                         <option value="">Todos</option>
                         <option value="1">Activos</option>
@@ -145,7 +145,7 @@
                                 <span class="g_badge primary">{{ $e->invitados_count }}</span>
                             </td>
                             <td class="g_celda_centro">
-                                <span class="g_badge {{ $e->activo ? 'success' : 'error' }}">
+                                <span class="g_badge {{ $e->activo ? 'success' : 'danger' }}">
                                     {{ $e->activo ? 'Activo' : 'Inactivo' }}
                                 </span>
                             </td>

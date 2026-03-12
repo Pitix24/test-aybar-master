@@ -5,13 +5,17 @@
         <h2>Añadir Prospecto: <span style="color: var(--color-primary);">{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.prospecto.todo', $evento->id) }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+            @can('prospecto.lista')
+                <a href="{{ route('erp.entrega-fest.prospecto.todo', $evento->id) }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
+            @endcan
 
-            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
-                <i class="fa-solid fa-grip"></i> Panel de Gestión
-            </a>
+            @can('entrega-fest.ver-panel')
+                <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                    <i class="fa-solid fa-grip"></i> Panel de Gestión
+                </a>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
@@ -77,16 +81,17 @@
                     </div>
                 </div>
 
-
                 <div class="formulario_botones">
-                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="store">
-                            <i class="fa-solid fa-save"></i> Crear
-                        </span>
-                        <span wire:loading wire:target="store">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Creando...
-                        </span>
-                    </button>
+                    @can('prospecto.crear')
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="store">
+                                <i class="fa-solid fa-save"></i> Crear
+                            </span>
+                            <span wire:loading wire:target="store">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                            </span>
+                        </button>
+                    @endcan
 
                     <button type="button" class="g_boton cancelar" onclick="history.back()">
                         <i class="fa-solid fa-times"></i> Cancelar

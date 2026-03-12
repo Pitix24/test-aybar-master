@@ -5,13 +5,17 @@
         <h2>Prospectos: <span>{{ $evento->nombre }}</span></h2>
 
         <div class="cabecera_titulo_botones">
-            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
-                <i class="fa-solid fa-grip"></i> Panel de Gestión
-            </a>
+            @can('entrega-fest.ver-panel')
+                <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                    <i class="fa-solid fa-grip"></i> Panel de Gestión
+                </a>
+            @endcan
 
-            <a href="{{ route('erp.entrega-fest.prospecto.crear', $evento->id) }}" class="g_boton primary">
-                Crear <i class="fa-solid fa-square-plus"></i>
-            </a>
+            @can('prospecto.crear')
+                <a href="{{ route('erp.entrega-fest.prospecto.crear', $evento->id) }}" class="g_boton primary">
+                    Crear <i class="fa-solid fa-square-plus"></i>
+                </a>
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
@@ -74,21 +78,25 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
-                    wire:target="exportExcelFiltro">
-                    <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
-                            class="fa-regular fa-file-excel"></i></span>
-                    <span wire:loading wire:target="exportExcelFiltro">Generando... <i
-                            class="fa-solid fa-spinner fa-spin"></i></span>
-                </button>
+                @can('prospecto.exportar-filtro')
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                        wire:target="exportExcelFiltro">
+                        <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcelFiltro">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
 
-                <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
-                    wire:target="exportExcelTodo">
-                    <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
-                            class="fa-solid fa-file-export"></i></span>
-                    <span wire:loading wire:target="exportExcelTodo">Generando... <i
-                            class="fa-solid fa-spinner fa-spin"></i></span>
-                </button>
+                @can('prospecto.exportar-todo')
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
 
                 <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
@@ -182,10 +190,12 @@
                                 @endif
                             </td>
                             <td class="g_celda_acciones g_celda_centro">
-                                <a href="{{ route('erp.entrega-fest.prospecto.editar', [$evento->id, $p->id]) }}"
-                                    class="g_accion editar" title="Editar / Evaluar">
-                                    <i class="fa-solid fa-pencil"></i>
-                                </a>
+                                @can('prospecto.editar')
+                                    <a href="{{ route('erp.entrega-fest.prospecto.editar', [$evento->id, $p->id]) }}"
+                                        class="g_accion editar" title="Editar / Evaluar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

@@ -16,9 +16,11 @@
         </div>
 
         <div class="g_tab_form_buttons">
-            <button type="submit" class="g_boton guardar">
-                <i class="fa-solid fa-save"></i> Guardar Seguimiento Legal
-            </button>
+            @can('prospecto.editar')
+                <button type="submit" class="g_boton guardar">
+                    <i class="fa-solid fa-save"></i> Guardar Seguimiento Legal
+                </button>
+            @endcan
         </div>
     </form>
 
@@ -40,21 +42,25 @@
         </div>
 
         <div class="g_tab_form_buttons">
-            <button type="submit" class="g_boton guardar">
-                <i class="fa-solid fa-save"></i> Confirmar
-            </button>
+            @can('prospecto.editar')
+                <button type="submit" class="g_boton guardar">
+                    <i class="fa-solid fa-save"></i> Confirmar
+                </button>
+            @endcan
 
             @if($fecha_firma && $estado_firma_contrato_firmado === 'PENDIENTE')
-                <button type="button" wire:click="enviarRecordatorioFirma" wire:loading.attr="disabled"
-                    wire:target="enviarRecordatorioFirma" class="g_boton info"
-                    title="Enviar recordatorio de cita de firma al prospecto">
-                    <span wire:loading.remove wire:target="enviarRecordatorioFirma">
-                        <i class="fa-solid fa-envelope-circle-check"></i> Recordatorio de Firma
-                    </span>
-                    <span wire:loading wire:target="enviarRecordatorioFirma">
-                        Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
-                    </span>
-                </button>
+                @can('prospecto.editar')
+                    <button type="button" wire:click="enviarRecordatorioFirma" wire:loading.attr="disabled"
+                        wire:target="enviarRecordatorioFirma" class="g_boton info"
+                        title="Enviar recordatorio de cita de firma al prospecto">
+                        <span wire:loading.remove wire:target="enviarRecordatorioFirma">
+                            <i class="fa-solid fa-envelope-circle-check"></i> Recordatorio de Firma
+                        </span>
+                        <span wire:loading wire:target="enviarRecordatorioFirma">
+                            Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                @endcan
             @endif
         </div>
     </form>

@@ -10,11 +10,6 @@ class InvitadoEntregaFest extends Model
     /** @use HasFactory<\Database\Factories\InvitadoEntregaFestFactory> */
     use HasFactory;
 
-    // Estados de confirmación
-    const ESTADO_PENDIENTE = 'PENDIENTE';
-    const ESTADO_CONFIRMADO = 'CONFIRMADO';
-    const ESTADO_NO_ASISTE = 'NO_ASISTE';
-
     // Tipos de transporte
     const TRANSPORTE_BUS = 'BUS';
     const TRANSPORTE_PROPIO = 'PROPIO';
@@ -26,7 +21,6 @@ class InvitadoEntregaFest extends Model
         'codigo_invitado',
         'cantidad_acompanantes_permitidos',
         'confirmado',
-        'estado_confirmacion',
         'transporte',
         'observaciones_asistencia',
     ];
