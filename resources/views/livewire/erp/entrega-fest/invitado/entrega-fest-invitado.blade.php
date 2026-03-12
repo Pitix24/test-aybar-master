@@ -135,7 +135,7 @@
                                             @if ($i->confirmado)
                                                 <span class="g_badge success">CONFIRMADO</span>
                                             @else
-                                                <span class="g_badge danger">NO ASISTE / PDTE.</span>
+                                                <span class="g_badge danger">NO ASISTE</span>
                                             @endif
                                         </td>
                                         <td class="g_celda_centro">

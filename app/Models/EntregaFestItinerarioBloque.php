@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class EntregaFestItinerarioBloque extends Model
 {
     protected $table = 'entrega_fest_itinerario_bloques';
-    protected $fillable = ["entrega_fest_id", "hora_inicio", "hora_fin", "titulo", "descripcion", "ubicacion", "responsable_rol", "estado", "orden"];
+
+    const ESTADO_PENDIENTE = 'PENDIENTE';
+    const ESTADO_CURSO = 'CURSO';
+    const ESTADO_COMPLETADO = 'COMPLETADO';
+
+    protected $fillable = ["entrega_fest_id", "hora_inicio", "hora_fin", "titulo", "descripcion", "ubicacion", "estado", "orden"];
 
     public function checklists()
     {

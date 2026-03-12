@@ -39,8 +39,7 @@ class ItinerarioImport implements ToCollection, WithHeadingRow
                         'titulo' => $row['titulo'],
                         'descripcion' => $row['descripcion'] ?? null,
                         'ubicacion' => $row['ubicacion'] ?? null,
-                        'responsable_rol' => $row['responsable_rol'] ?? null,
-                        'estado' => 'PENDIENTE',
+                        'estado' => EntregaFestItinerarioBloque::ESTADO_PENDIENTE,
                         'orden' => $this->importados
                     ]);
 

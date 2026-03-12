@@ -58,15 +58,9 @@
                     </div>
                 </div>
 
-                <div class="g_fila">
-                    <div class="g_columna_6 g_margin_bottom_10">
-                        <label>Ubicacion / Zona</label>
-                        <input type="text" wire:model="ubicacion" placeholder="Ej: Puerta principal">
-                    </div>
-                    <div class="g_columna_6 g_margin_bottom_10">
-                        <label>Responsable / Rol</label>
-                        <input type="text" wire:model="responsable_rol" placeholder="Ej: Coordinador General">
-                    </div>
+                <div class="g_margin_bottom_10">
+                    <label>Ubicación / Zona</label>
+                    <input type="text" wire:model="ubicacion" placeholder="Ej: Puerta principal">
                 </div>
 
                 <div class="g_margin_bottom_10">

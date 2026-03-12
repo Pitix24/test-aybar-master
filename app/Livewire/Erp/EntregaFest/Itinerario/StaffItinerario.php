@@ -25,12 +25,30 @@ class StaffItinerario extends Component
         $bloque->update(['estado' => $nuevoEstado]);
 
         $this->evento->load('itinerarioBloques.checklists');
-        $this->dispatch('notificar', ['titulo' => 'Estado Actualizado', 'mensaje' => 'El bloque ha sido actualizado a ' . $nuevoEstado, 'tipo' => 'success']);
+        
+        $msg = match($nuevoEstado) {
+            EntregaFestItinerarioBloque::ESTADO_CURSO => 'El bloque ha iniciado.',
+            EntregaFestItinerarioBloque::ESTADO_COMPLETADO => 'El bloque ha sido finalizado.',
+            default => 'Estado actualizado.'
+        };
+
+        $this->dispatch('notificar', ['titulo' => 'Itinerario', 'mensaje' => $msg, 'tipo' => 'success']);
     }
 
     public function toggleChecklist($checklistId)
     {
-        $item = \App\Models\EntregaFestItinerarioChecklist::findOrFail($checklistId);
+        $item = \App\Models\EntregaFestItinerarioChecklist::with('bloque')->findOrFail($checklistId);
+        
+        // Solo permitir si el bloque está EN CURSO
+        if ($item->bloque->estado !== EntregaFestItinerarioBloque::ESTADO_CURSO) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Acción no permitida',
+                'text' => 'Primero debes INICIAR este bloque para marcar tareas.'
+            ]);
+            return;
+        }
+
         $item->update([
             'esta_listo' => !$item->esta_listo,
             'completado_at' => !$item->esta_listo ? now() : null,

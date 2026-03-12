@@ -48,24 +48,41 @@ class EntregaFestAsistencia extends Component
     {
         $this->authorize('entrega-fest.asistencia');
 
+        $input = strtoupper(trim($this->codigo_qr));
+
         $invitado = InvitadoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->where('codigo_invitado', strtoupper(trim($this->codigo_qr)))
+            ->where(function ($q) use ($input) {
+                $q->where('codigo_invitado', $input)
+                    ->orWhereHas('prospecto', fn($sub) => $sub->where('dni', $input))
+                    ->orWhereHas('copropietario', fn($sub) => $sub->where('dni', $input));
+            })
             ->with(['prospecto', 'copropietario.prospecto'])
             ->first();
 
         if (!$invitado) {
-            $this->mensaje = 'Código no reconocido para este evento.';
+            $this->mensaje = 'Código o DNI no reconocido para este evento.';
+            $this->mensajeTipo = 'error';
+        } elseif (!$invitado->confirmado) {
+            $this->mensaje = 'El invitado ' . ($invitado->nombre_completo) . ' NO ha confirmado su asistencia.';
             $this->mensajeTipo = 'error';
         } else {
             if ($invitado->asistencia) {
                 $this->mensaje = 'El invitado ' . ($invitado->nombre_completo) . ' ya registró su ingreso a las ' . $invitado->asistencia->fecha_checkin->format('H:i');
                 $this->mensajeTipo = 'warning';
             } else {
+                // Determinar el método de registro
+                $metodo = 'manual';
+                if ($input === $invitado->codigo_invitado) {
+                    $metodo = 'qr';
+                } elseif ($input === ($invitado->prospecto->dni ?? '') || $input === ($invitado->copropietario->dni ?? '')) {
+                    $metodo = 'dni';
+                }
+
                 AsistenciaEntregaFest::create([
                     'invitado_entrega_fest_id' => $invitado->id,
                     'user_id' => Auth::id(),
                     'fecha_checkin' => now(),
-                    'metodo' => 'qr',
+                    'metodo' => $metodo,
                 ]);
                 $this->mensaje = '¡Bienvenido(a) ' . ($invitado->nombre_completo) . '! Ingreso registrado.';
                 $this->mensajeTipo = 'success';
@@ -87,13 +104,6 @@ class EntregaFestAsistencia extends Component
     {
         $this->reset(['buscar']);
         $this->resetPage();
-    }
-
-    public function placeholder()
-    {
-        return <<<'HTML'
-        <x-placeholder />
-        HTML;
     }
 
     public function render()
@@ -129,4 +139,12 @@ class EntregaFestAsistencia extends Component
             'items' => $items
         ]);
     }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <x-placeholder />
+        HTML;
+    }
+
 }

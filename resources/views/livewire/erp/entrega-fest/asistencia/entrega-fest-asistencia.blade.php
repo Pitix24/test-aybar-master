@@ -37,9 +37,9 @@
                     </button>
 
                     <div class="g_margin_bottom_10">
-                        <label>Código QR / Manual</label>
+                        <label>Código QR / DNI</label>
                         <input type="text" wire:model.live="codigo_qr" id="scanner_input"
-                            placeholder="Escanee o escriba el código..." class="g_negrita"
+                            placeholder="Escanee o escriba el código o DNI..." class="g_negrita"
                             style="font-size: 1.2rem; text-align: center; border: 2px solid var(--color-primary);"
                             autofocus>
                     </div>

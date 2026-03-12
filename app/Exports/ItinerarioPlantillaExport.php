@@ -16,7 +16,6 @@ class ItinerarioPlantillaExport implements FromArray, WithHeadings
                 'titulo' => 'Apertura de Puertas',
                 'descripcion' => 'Ingreso de invitados y registro inicial',
                 'ubicacion' => 'Zona de Ingreso',
-                'responsable_rol' => 'Seguridad / Recepción',
                 'checklist' => 'Verificar QR;Entregar pulseras;Contar aforo'
             ],
             [
@@ -25,7 +24,6 @@ class ItinerarioPlantillaExport implements FromArray, WithHeadings
                 'titulo' => 'Palabras de Bienvenida',
                 'descripcion' => 'Discurso del Gerente General',
                 'ubicacion' => 'Escenario Principal',
-                'responsable_rol' => 'Gerencia',
                 'checklist' => 'Microfono listo;Agua en podio'
             ]
         ];
@@ -39,7 +37,6 @@ class ItinerarioPlantillaExport implements FromArray, WithHeadings
             'titulo',
             'descripcion',
             'ubicacion',
-            'responsable_rol',
             'checklist'
         ];
     }

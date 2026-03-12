@@ -26,7 +26,6 @@ class StaffItinerarioEditar extends Component
     public $hora_fin = '';
     public $descripcion = '';
     public $ubicacion = '';
-    public $responsable_rol = '';
     public $orden = 0;
     public $estado = 'PENDIENTE';
 
@@ -41,9 +40,8 @@ class StaffItinerarioEditar extends Component
             'hora_fin' => 'nullable',
             'descripcion' => 'nullable|string',
             'ubicacion' => 'nullable|string|max:255',
-            'responsable_rol' => 'nullable|string|max:100',
             'orden' => 'integer|min:0',
-            'estado' => 'required|in:PENDIENTE,EN_CURSO,COMPLETADO',
+            'estado' => 'required|in:' . EntregaFestItinerarioBloque::ESTADO_PENDIENTE . ',' . EntregaFestItinerarioBloque::ESTADO_CURSO . ',' . EntregaFestItinerarioBloque::ESTADO_COMPLETADO,
             'nueva_tarea' => 'nullable|string|max:255',
         ];
     }
@@ -75,7 +73,6 @@ class StaffItinerarioEditar extends Component
         $this->hora_fin = $this->bloque->hora_fin;
         $this->descripcion = $this->bloque->descripcion;
         $this->ubicacion = $this->bloque->ubicacion;
-        $this->responsable_rol = $this->bloque->responsable_rol;
         $this->orden = $this->bloque->orden;
         $this->estado = $this->bloque->estado;
     }
@@ -104,7 +101,6 @@ class StaffItinerarioEditar extends Component
                 'hora_fin' => $this->hora_fin ?: null,
                 'descripcion' => $this->descripcion ?: null,
                 'ubicacion' => $this->ubicacion ?: null,
-                'responsable_rol' => $this->responsable_rol ?: null,
                 'orden' => $this->orden,
                 'estado' => $this->estado,
             ]);
@@ -147,7 +143,7 @@ class StaffItinerarioEditar extends Component
                 'text' => "El bloque '$titulo' fue eliminado."
             ]);
 
-            return redirect()->route('erp.entrega-fest.staff.itinerario', $this->evento->id);
+            return redirect()->route('erp.entrega-fest.itinerario.todo', $this->evento->id);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -179,7 +175,17 @@ class StaffItinerarioEditar extends Component
 
     public function toggleTarea($checklistId)
     {
-        $item = EntregaFestItinerarioChecklist::findOrFail($checklistId);
+        $item = EntregaFestItinerarioChecklist::with('bloque')->findOrFail($checklistId);
+        
+        if ($item->bloque->estado !== EntregaFestItinerarioBloque::ESTADO_CURSO) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Acción no permitida',
+                'text' => 'Primero debes INICIAR el bloque para marcar tareas.'
+            ]);
+            return;
+        }
+
         $item->update([
             'esta_listo' => !$item->esta_listo,
             'completado_at' => !$item->esta_listo ? now() : null,

@@ -22,7 +22,6 @@ class StaffItinerarioCrear extends Component
     public $hora_fin = '';
     public $descripcion = '';
     public $ubicacion = '';
-    public $responsable_rol = '';
     public $orden = 0;
 
     protected function rules()
@@ -33,7 +32,6 @@ class StaffItinerarioCrear extends Component
             'hora_fin' => 'nullable',
             'descripcion' => 'nullable|string',
             'ubicacion' => 'nullable|string|max:255',
-            'responsable_rol' => 'nullable|string|max:100',
             'orden' => 'integer|min:0',
         ];
     }
@@ -83,9 +81,8 @@ class StaffItinerarioCrear extends Component
                 'hora_fin' => $this->hora_fin ?: null,
                 'descripcion' => $this->descripcion ?: null,
                 'ubicacion' => $this->ubicacion ?: null,
-                'responsable_rol' => $this->responsable_rol ?: null,
                 'orden' => $this->orden,
-                'estado' => 'PENDIENTE',
+                'estado' => EntregaFestItinerarioBloque::ESTADO_PENDIENTE,
             ]);
 
             DB::commit();
@@ -96,7 +93,7 @@ class StaffItinerarioCrear extends Component
                 'text' => 'Bloque de itinerario creado correctamente.'
             ]);
 
-            return redirect()->route('erp.entrega-fest.staff.itinerario', $this->evento->id);
+            return redirect()->route('erp.entrega-fest.itinerario.todo', $this->evento->id);
 
         } catch (\Exception $e) {
             DB::rollBack();

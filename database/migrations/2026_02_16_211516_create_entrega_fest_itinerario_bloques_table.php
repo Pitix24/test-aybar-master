@@ -15,8 +15,7 @@ return new class extends Migration {
             $table->string('titulo');
             $table->text('descripcion')->nullable();
             $table->string('ubicacion')->nullable();
-            $table->string('responsable_rol')->nullable();
-            $table->enum('estado', ['PENDIENTE', 'EN_CURSO', 'COMPLETADO'])->default('PENDIENTE');
+            $table->enum('estado', ['PENDIENTE', 'CURSO', 'COMPLETADO'])->default('PENDIENTE');
             $table->integer('orden')->default(0);
             $table->timestamps();
         });

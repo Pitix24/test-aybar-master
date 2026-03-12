@@ -25,7 +25,7 @@
 
     @forelse($evento->itinerarioBloques as $bloque)
         <div class="g_panel"
-            style="border-left: 4px solid {{ $bloque->estado === 'COMPLETADO' ? 'var(--color-success)' : ($bloque->estado === 'EN_CURSO' ? 'var(--color-warning)' : 'var(--borde-card-color, #e5e7eb)') }};">
+            style="border-left: 4px solid {{ $bloque->estado === 'COMPLETADO' ? 'var(--color-success)' : ($bloque->estado === 'CURSO' ? 'var(--color-warning)' : 'var(--borde-card-color, #e5e7eb)') }};">
 
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
                 <div style="flex:1;">
@@ -37,9 +37,6 @@
                         @endif
                     </p>
                     <h4 class="g_panel_titulo" style="margin:2px 0 4px 0;">{{ $bloque->titulo }}</h4>
-                    @if($bloque->responsable_rol)
-                        <span class="g_badge light g_mayuscula" style="font-size:11px;">{{ $bloque->responsable_rol }}</span>
-                    @endif
                 </div>
 
                 <div class="cabecera_titulo_botones">
@@ -52,16 +49,16 @@
 
                     @if($bloque->estado === 'COMPLETADO')
                         <span class="g_badge success"><i class="fa-solid fa-check"></i> Completado</span>
-                    @elseif($bloque->estado === 'EN_CURSO')
+                    @elseif($bloque->estado === 'CURSO')
                         <span class="g_badge warning"><i class="fa-solid fa-spinner fa-spin"></i> En Curso</span>
                         @can('itinerario.marcar-tarea')
                             <button wire:click="actualizarEstado({{ $bloque->id }}, 'COMPLETADO')" class="g_boton success">
-                                <i class="fa-solid fa-check"></i> Completar
+                                <i class="fa-solid fa-check"></i> Finalizar
                             </button>
                         @endcan
                     @else
                         @can('itinerario.marcar-tarea')
-                            <button wire:click="actualizarEstado({{ $bloque->id }}, 'EN_CURSO')" class="g_boton warning">
+                            <button wire:click="actualizarEstado({{ $bloque->id }}, 'CURSO')" class="g_boton warning">
                                 <i class="fa-solid fa-play"></i> Iniciar
                             </button>
                         @endcan
