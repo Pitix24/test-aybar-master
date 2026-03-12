@@ -77,7 +77,7 @@
                         <label>Estado Actual</label>
                         <select wire:model="estado" class="@error('estado') select-error @enderror">
                             <option value="PENDIENTE">Pendiente</option>
-                            <option value="EN_CURSO">En Curso</option>
+                            <option value="CURSO">En Curso</option>
                             <option value="COMPLETADO">Completado</option>
                         </select>
                         @error('estado') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -110,7 +110,7 @@
 
                 <p class="g_inferior g_mayuscula" style="margin:0 0 4px 0; font-size:10px;">Estado</p>
                 <span
-                    class="g_badge {{ $estado === 'COMPLETADO' ? 'success' : ($estado === 'EN_CURSO' ? 'warning' : 'light') }} g_mayuscula">
+                    class="g_badge {{ $estado === \App\Models\EntregaFestItinerarioBloque::ESTADO_COMPLETADO ? 'success' : ($estado === \App\Models\EntregaFestItinerarioBloque::ESTADO_CURSO ? 'warning' : 'light') }} g_mayuscula">
                     {{ $estado }}
                 </span>
 
@@ -131,14 +131,10 @@
                 @forelse($bloque->checklists as $item)
                     <div wire:key="task-{{ $item->id }}"
                         style="display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--borde-card-color, #f0f0f0); padding-bottom:8px;">
-                        @can('itinerario.marcar-tarea')
-                            <button wire:click="toggleTarea({{ $item->id }})"
-                                class="g_boton {{ $item->esta_listo ? 'success' : 'light' }}"
-                                style="width:28px; height:28px; padding:0; min-width:28px; border-radius:50%; flex-shrink:0;">
-                                <i class="fa-solid {{ $item->esta_listo ? 'fa-check' : 'fa-circle' }}"
-                                    style="font-size:11px;"></i>
-                            </button>
-                        @endcan
+                        <div style="width:28px; height:28px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <i class="fa-solid {{ $item->esta_listo ? 'fa-check-circle text-success' : 'fa-circle text-muted' }}"
+                                style="font-size:14px; color: {{ $item->esta_listo ? 'var(--color-success)' : '#ccc' }};"></i>
+                        </div>
                         <span
                             style="flex:1; {{ $item->esta_listo ? 'text-decoration:line-through; opacity:0.5;' : '' }} font-size:13px;">
                             {{ $item->tarea }}

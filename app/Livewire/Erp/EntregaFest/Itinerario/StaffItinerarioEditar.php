@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -27,7 +26,7 @@ class StaffItinerarioEditar extends Component
     public $descripcion = '';
     public $ubicacion = '';
     public $orden = 0;
-    public $estado = 'PENDIENTE';
+    public $estado = EntregaFestItinerarioBloque::ESTADO_PENDIENTE;
 
     // Checklist inline
     public $nueva_tarea = '';
@@ -173,27 +172,6 @@ class StaffItinerarioEditar extends Component
         $this->bloque->load('checklists');
     }
 
-    public function toggleTarea($checklistId)
-    {
-        $item = EntregaFestItinerarioChecklist::with('bloque')->findOrFail($checklistId);
-        
-        if ($item->bloque->estado !== EntregaFestItinerarioBloque::ESTADO_CURSO) {
-            $this->dispatch('alertaLivewire', [
-                'type' => 'warning',
-                'title' => 'Acción no permitida',
-                'text' => 'Primero debes INICIAR el bloque para marcar tareas.'
-            ]);
-            return;
-        }
-
-        $item->update([
-            'esta_listo' => !$item->esta_listo,
-            'completado_at' => !$item->esta_listo ? now() : null,
-            'completado_por_user_id' => !$item->esta_listo ? auth()->id() : null,
-        ]);
-
-        $this->bloque->load('checklists');
-    }
 
     public function eliminarTarea($checklistId)
     {

@@ -73,18 +73,46 @@
                     </p>
                     <div class="g_gap_pagina" style="gap:6px;">
                         @foreach($bloque->checklists as $item)
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                @can('itinerario.marcar-tarea')
-                                    <button wire:click="toggleChecklist({{ $item->id }})"
-                                        class="g_boton {{ $item->esta_listo ? 'success' : 'light' }}"
-                                        style="width:28px; height:28px; padding:0; min-width:28px; border-radius:50%;">
-                                        <i class="fa-solid {{ $item->esta_listo ? 'fa-check' : 'fa-circle' }}"
-                                            style="font-size:11px;"></i>
-                                    </button>
-                                @endcan
-                                <span style="{{ $item->esta_listo ? 'text-decoration:line-through; opacity:0.5;' : '' }}">
-                                    {{ $item->tarea }}
-                                </span>
+                            <div style="display:flex; align-items:center; gap:12px; padding: 4px 0;">
+                                <div style="position: relative;">
+                                    @if($item->esta_listo)
+                                        <div class="g_badge success" style="width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0;">
+                                            <i class="fa-solid fa-check"></i>
+                                        </div>
+                                    @else
+                                        @can('itinerario.marcar-tarea')
+                                            <label for="evidence-{{ $item->id }}" class="g_boton light" 
+                                                style="width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; border: 1px dashed var(--borde-card-color, #ccc);"
+                                                wire:loading.class="disabled" wire:target="evidencias.{{ $item->id }}">
+                                                <i class="fa-solid fa-camera" wire:loading.remove wire:target="evidencias.{{ $item->id }}"></i>
+                                                <i class="fa-solid fa-spinner fa-spin" wire:loading wire:target="evidencias.{{ $item->id }}"></i>
+                                            </label>
+                                            <input type="file" id="evidence-{{ $item->id }}" 
+                                                wire:model="evidencias.{{ $item->id }}" 
+                                                style="display:none;" accept="image/*" capture="environment">
+                                        @endcan
+                                    @endif
+                                </div>
+
+                                <div style="flex:1; cursor:pointer;" wire:click="toggleChecklist({{ $item->id }})">
+                                    <p style="margin:0; font-size:14px; {{ $item->esta_listo ? 'text-decoration:line-through; opacity:0.6;' : '' }}">
+                                        {{ $item->tarea }}
+                                    </p>
+                                    @if($item->esta_listo && $item->getFirstMediaUrl('evidencias'))
+                                        <div style="margin-top:4px;">
+                                            <a href="{{ $item->getFirstMediaUrl('evidencias') }}" target="_blank">
+                                                <img src="{{ $item->getFirstMediaUrl('evidencias') }}" 
+                                                    style="width:80px; height:60px; object-fit:cover; border-radius:4px; border: 1px solid var(--borde-card-color, #eee); display: block;">
+                                            </a>
+                                            <span class="g_inferior" style="font-size:10px; opacity:0.7;">
+                                                <i class="fa-solid fa-user"></i> {{ $item->user->name ?? 'Staff' }} 
+                                                @if($item->completado_at)
+                                                    &bull; {{ $item->completado_at->format('H:i') }}
+                                                @endif
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         @endforeach
                     </div>
