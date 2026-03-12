@@ -22,6 +22,7 @@ class EntregaFestIncidencia extends Model implements HasMedia
         'informante_user_id',
         'responsable_user_id',
         'estado',
+        'solucion',
     ];
 
     public function entregaFest()

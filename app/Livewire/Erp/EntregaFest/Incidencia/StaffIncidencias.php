@@ -26,7 +26,7 @@ class StaffIncidencias extends Component
     {
         $this->evento = EntregaFest::findOrFail($id);
         $this->cargarIncidencias();
-        $this->staff_users = User::all();
+        $this->staff_users = User::permission('entrega-fest.gestor')->get();
     }
 
     public function cargarIncidencias()
@@ -48,6 +48,18 @@ class StaffIncidencias extends Component
     {
         $this->authorize('entrega-fest.staff');
         EntregaFestIncidencia::where('id', $id)->update(['estado' => $estado]);
+        $this->cargarIncidencias();
+    }
+
+    public function guardarSolucion($id, $solucion)
+    {
+        $this->authorize('entrega-fest.staff');
+        EntregaFestIncidencia::where('id', $id)->update(['solucion' => $solucion]);
+        $this->dispatch('notificar', [
+            'titulo' => 'Solución guardada',
+            'mensaje' => 'La solución ha sido registrada correctamente.',
+            'tipo' => 'success'
+        ]);
         $this->cargarIncidencias();
     }
 

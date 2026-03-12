@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->string('tipo');
             $table->enum('prioridad', ['BAJA', 'MEDIA', 'ALTA'])->default('MEDIA');
             $table->text('descripcion');
+            $table->text('solucion')->nullable();
             $table->string('ubicacion')->nullable();
             $table->foreignId('informante_user_id')->constrained('users', indexName: 'ef_inc_inf_fk')->cascadeOnDelete();
             $table->foreignId('responsable_user_id')->nullable()->constrained('users', indexName: 'ef_inc_resp_fk')->nullOnDelete();

@@ -31,12 +31,13 @@ class StaffIncidenciasEditar extends Component
     public $fotos = [];
     public $estado;
     public $responsable_user_id;
+    public $solucion;
 
     public function mount($id, $incidenciasId)
     {
         $this->evento = EntregaFest::findOrFail($id);
         $this->incidencia = EntregaFestIncidencia::where('entrega_fest_id', $id)->findOrFail($incidenciasId);
-        $this->staff_users = User::all();
+        $this->staff_users = User::permission('entrega-fest.gestor')->get();
 
         // Cargar datos
         $this->tipo = $this->incidencia->tipo;
@@ -45,6 +46,7 @@ class StaffIncidenciasEditar extends Component
         $this->ubicacion = $this->incidencia->ubicacion;
         $this->estado = $this->incidencia->estado;
         $this->responsable_user_id = $this->incidencia->responsable_user_id;
+        $this->solucion = $this->incidencia->solucion;
     }
 
     protected function rules()
@@ -56,6 +58,7 @@ class StaffIncidenciasEditar extends Component
             'ubicacion' => 'nullable|string|max:200',
             'estado' => 'required|in:ABIERTO,PROCESO,RESUELTO',
             'responsable_user_id' => 'nullable|exists:users,id',
+            'solucion' => 'nullable|string',
             'fotos.*' => 'image|max:5120', // 5MB max
         ];
     }
@@ -83,6 +86,7 @@ class StaffIncidenciasEditar extends Component
                 'ubicacion' => $this->ubicacion,
                 'estado' => $this->estado,
                 'responsable_user_id' => $this->responsable_user_id ?: null,
+                'solucion' => $this->solucion,
             ]);
 
             foreach ($this->fotos as $foto) {
