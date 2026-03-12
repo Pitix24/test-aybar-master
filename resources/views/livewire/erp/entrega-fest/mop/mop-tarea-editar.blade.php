@@ -65,16 +65,6 @@
                     @error('instruccion') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
-                <div class="g_margin_bottom_10">
-                    <label>Estado</label>
-                    <div class="g_switch-wrapper">
-                        <label class="g_switch">
-                            <input type="checkbox" wire:model.live="esta_completado">
-                            <span class="g_switch-slider"></span>
-                        </label>
-                        <span class="g_switch-label">{{ $esta_completado ? 'Completada' : 'Pendiente' }}</span>
-                    </div>
-                </div>
 
                 <div class="formulario_botones">
                     <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
@@ -93,15 +83,23 @@
             <div class="g_panel">
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Resumen</h4>
                 <p class="g_inferior g_mayuscula" style="margin:0 0 4px 0; font-size:10px;">Estado</p>
-                <span class="g_badge {{ $esta_completado ? 'success' : 'light' }} g_mayuscula">
-                    {{ $esta_completado ? 'Completada' : 'Pendiente' }}
+                <span class="g_badge {{ $tarea->esta_completado ? 'success' : 'light' }} g_mayuscula">
+                    {{ $tarea->esta_completado ? 'Completada' : 'Pendiente' }}
                 </span>
-                @if($tarea->completado_at)
+                @if($tarea->esta_completado)
                     <div style="margin-top:12px; border-top:1px solid var(--borde-card-color, #e5e7eb); padding-top:12px;">
                         <p class="g_inferior g_mayuscula" style="margin:0 0 4px 0; font-size:10px;">Completada el</p>
                         <p class="g_inferior" style="margin:0;">
-                            {{ \Carbon\Carbon::parse($tarea->completado_at)->format('d/m/Y H:i') }}
+                            {{ $tarea->completado_at ? $tarea->completado_at->format('d/m/Y H:i') : 'N/A' }}
                         </p>
+                        
+                        @if($tarea->getFirstMediaUrl('evidencias'))
+                            <p class="g_inferior g_mayuscula" style="margin:8px 0 4px 0; font-size:10px;">Evidencia</p>
+                            <a href="{{ $tarea->getFirstMediaUrl('evidencias') }}" target="_blank">
+                                <img src="{{ $tarea->getFirstMediaUrl('evidencias') }}" 
+                                    style="width:100%; height:auto; border-radius:8px; border:1px solid #ddd;">
+                            </a>
+                        @endif
                     </div>
                 @endif
                 <div style="margin-top:12px; border-top:1px solid var(--borde-card-color, #e5e7eb); padding-top:12px;">

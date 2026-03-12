@@ -24,7 +24,6 @@ class MopTareaEditar extends Component
     public $titulo = '';
     public $fase = 'ANTES';
     public $instruccion = '';
-    public $esta_completado = false;
 
     protected function rules()
     {
@@ -33,7 +32,6 @@ class MopTareaEditar extends Component
             'titulo' => 'required|string|max:255',
             'fase' => 'required|in:ANTES,DURANTE,CIERRE',
             'instruccion' => 'required|string',
-            'esta_completado' => 'boolean',
         ];
     }
 
@@ -61,7 +59,6 @@ class MopTareaEditar extends Component
         $this->titulo = $this->tarea->titulo;
         $this->fase = $this->tarea->fase;
         $this->instruccion = $this->tarea->instruccion;
-        $this->esta_completado = (bool) $this->tarea->esta_completado;
     }
 
     public function update()
@@ -85,8 +82,6 @@ class MopTareaEditar extends Component
                 'titulo' => trim($this->titulo),
                 'fase' => $this->fase,
                 'instruccion' => trim($this->instruccion),
-                'esta_completado' => $this->esta_completado,
-                'completado_at' => $this->esta_completado ? ($this->tarea->completado_at ?? now()) : null,
             ]);
 
             DB::commit();
