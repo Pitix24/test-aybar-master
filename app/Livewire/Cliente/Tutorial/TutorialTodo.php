@@ -10,6 +10,9 @@ class TutorialTodo extends Component
 {
     public function registrarClick($id)
     {
+        if (session()->has('impersonator_id')) {
+            return;
+        }
         $tutorial = Tutorial::find($id);
         if ($tutorial) {
             $tutorial->increment('clicks');

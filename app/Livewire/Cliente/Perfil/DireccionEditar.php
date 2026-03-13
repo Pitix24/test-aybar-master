@@ -107,6 +107,11 @@ class DireccionEditar extends Component
 
     public function saveDireccion()
     {
+        if (session()->has('impersonator_id')) {
+            session()->flash('error', 'Como administrador, usted solo tiene permisos de visualización. No puede realizar cambios en la cuenta del cliente.');
+            return;
+        }
+
         try {
             $this->validate();
         } catch (ValidationException $e) {

@@ -41,3 +41,15 @@ Route::get('/evento/{slug}/copropietario/{copropietarioId}', AsistenciaPublicaCo
 // Entrega Fest - Agendamiento Firma de Contrato (solo Titular)
 Route::get('/evento/{slug}/firma/{id}', FirmaPublica::class)
     ->name('public.entrega-fest.firma');
+
+Route::get('/impersonate/leave', function () {
+    if (!session()->has('impersonator_id')) {
+        return redirect()->route('home');
+    }
+
+    $admin = \App\Models\User::find(session('impersonator_id'));
+    session()->forget('impersonator_id');
+    auth()->login($admin);
+
+    return redirect()->route('erp.cliente.vista.todo');
+})->name('impersonate.leave')->middleware('auth');

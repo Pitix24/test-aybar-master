@@ -118,6 +118,20 @@ class ClienteLista extends Component
         );
     }
 
+    public function impersonate(User $user)
+    {
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
+
+        $this->authorize('cliente.portal');
+
+        session(['impersonator_id' => auth()->id()]);
+        auth()->login($user);
+
+        return redirect()->route('cliente.home');
+    }
+
     public function render()
     {
         $items = User::query()

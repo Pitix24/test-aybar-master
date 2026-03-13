@@ -188,6 +188,11 @@ NO agregues explicación ni texto adicional. Solo JSON.",
 
     public function guardar()
     {
+        if (session()->has('impersonator_id')) {
+            session()->flash('error', 'Como administrador, usted solo tiene permisos de visualización. No puede realizar cambios en la cuenta del cliente.');
+            return;
+        }
+
         $this->validate();
 
         try {

@@ -180,6 +180,14 @@
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>
                                 @endcan
+
+                                @can('cliente.portal')
+                                    <button wire:click="impersonate({{ $item->id }})" class="g_accion dark"
+                                        title="Entrar como {{ $item->name }}"
+                                        wire:confirm="¿Estás seguro de que deseas entrar como {{ $item->name }}?">
+                                        <i class="fa-solid fa-user-secret"></i>
+                                    </button>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

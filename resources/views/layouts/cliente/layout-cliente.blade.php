@@ -2,6 +2,16 @@
 
 @section('contenido')
     <div class="layout_cliente">
+        @if (session()->has('impersonator_id'))
+            <div
+                style="background: #1e293b; color: white; padding: 10px; text-align: center; font-size: 0.9rem; border-bottom: 2px solid #ef4444;">
+                Usted está visualizando el portal como <strong>{{ auth()->user()->name }}</strong>.
+                <a href="{{ route('impersonate.leave') }}"
+                    style="color: #ef4444; margin-left: 10px; text-decoration: underline; font-weight: bold;">
+                    Regresar al Administrador
+                </a>
+            </div>
+        @endif
         <div class="g_centrar_pagina">
             @if (session('bienvenida_cliente'))
                 <x-modal maxWidth="600px" :title="session('bienvenida_cliente')">
