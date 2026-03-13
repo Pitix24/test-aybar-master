@@ -26,11 +26,11 @@ class EntregaFestPanel extends Component
         $this->evento = EntregaFest::findOrFail($id);
 
         $this->totalProspectos = $this->evento->prospectos()->count();
-        $this->aprobados = $this->evento->prospectos()->where('estado_backoffice', 'aprobado')->count();
+        $this->aprobados = $this->evento->prospectos()->where('estado_backoffice', 'CONFORME')->count();
         $this->totalInvitados = $this->evento->invitados()->count();
         $this->confirmados = $this->evento->invitados()->where('confirmado', true)->count();
-        $this->asistentes = $this->evento->invitados()->where('estado_confirmacion', 'confirmado')->count();
-        $this->totalIncidencias = $this->evento->incidencias()->where('estado', 'Abierta')->count();
+        $this->asistentes = $this->evento->invitados()->has('asistencia')->count();
+        $this->totalIncidencias = $this->evento->incidencias()->where('estado', 'ABIERTO')->count();
     }
 
     public function render()

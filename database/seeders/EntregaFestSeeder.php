@@ -172,7 +172,7 @@ class EntregaFestSeeder extends Seeder
                     'titulo' => $b[2],
                     'ubicacion' => $b[3],
                     'responsable_rol' => $b[4],
-                    'estado' => $idx === 0 ? 'COMPLETADO' : ($idx === 1 ? 'EN_CURSO' : 'PENDIENTE'),
+                    'estado' => $idx === 0 ? 'COMPLETADO' : ($idx === 1 ? 'CURSO' : 'PENDIENTE'),
                     'orden' => $idx
                 ]);
 
