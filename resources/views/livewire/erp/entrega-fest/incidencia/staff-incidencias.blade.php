@@ -3,8 +3,8 @@
     {{-- CABECERA --}}
     <div class="g_panel cabecera_titulo_pagina">
         <h2>
-            Canal de Incidencias
             <span>{{ $evento->nombre }}</span>
+            Canal de Incidencias
         </h2>
         <div class="cabecera_titulo_botones">
             <a href="{{ route('erp.entrega-fest.vista.staff', $evento->id) }}" class="g_boton info">
@@ -24,106 +24,95 @@
     </div>
 
     {{-- LISTA DE INCIDENCIAS --}}
-    <div class="g_gap_pagina" style="display: flex; flex-direction: column; gap: 20px;">
+    <div class="g_gap_pagina" style="display: flex; flex-direction: column; gap: 15px;">
         @forelse($incidencias as $inc)
             <div class="g_panel"
-                style="border-left: 5px solid {{ $inc->prioridad === 'ALTA' ? '#ef4444' : ($inc->prioridad === 'MEDIA' ? '#f59e0b' : '#3b82f6') }}; padding: 0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                style="border-left: 4px solid {{ $inc->prioridad === 'ALTA' ? 'var(--color-danger)' : ($inc->prioridad === 'MEDIA' ? 'var(--color-warning)' : 'var(--color-info)') }}; padding: 0; overflow: hidden;">
                 
                 {{-- CARD HEADER: Estados y Acciones --}}
-                <div style="background: #fafafa; padding: 12px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <span style="font-size: 11px; font-weight: 800; color: #888; letter-spacing: 0.5px;">INC-#{{ $inc->id }}</span>
-                        <span class="g_badge light" style="font-size: 11px; border: 1px solid #ddd;">{{ $inc->tipo }}</span>
+                <div style="background: rgba(0,0,0,0.02); padding: 10px 20px; border-bottom: 1px solid var(--borde-card-color, #eee); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="g_inferior g_mayuscula" style="font-weight: 800; opacity: 0.6;">#{{ $inc->id }}</span>
+                        <span class="g_badge light" style="font-size: 10px;">{{ $inc->tipo }}</span>
                         
-                        {{-- Prioridad Selector / Badge --}}
-                        @can('entrega-fest.staff')
-                            <select wire:change="cambiarPrioridad({{ $inc->id }}, $event.target.value)"
-                                class="g_badge {{ $inc->prioridad === 'ALTA' ? 'danger' : ($inc->prioridad === 'MEDIA' ? 'warning' : 'info') }}"
-                                style="border:none; cursor:pointer; font-size: 11px; height: 22px; padding: 0 8px;">
-                                <option value="BAJA" {{ $inc->prioridad === 'BAJA' ? 'selected' : '' }}>BAJA</option>
-                                <option value="MEDIA" {{ $inc->prioridad === 'MEDIA' ? 'selected' : '' }}>MEDIA</option>
-                                <option value="ALTA" {{ $inc->prioridad === 'ALTA' ? 'selected' : '' }}>ALTA</option>
-                            </select>
-                        @else
-                            <span class="g_badge {{ $inc->prioridad === 'ALTA' ? 'danger' : ($inc->prioridad === 'MEDIA' ? 'warning' : 'info') }}" style="font-size: 11px;">
-                                {{ $inc->prioridad }}
-                            </span>
-                        @endcan
+                        {{-- Prioridad Badge (Read-only) --}}
+                        <span class="g_badge {{ $inc->prioridad === 'ALTA' ? 'danger' : ($inc->prioridad === 'MEDIA' ? 'warning' : 'info') }}" style="font-size: 10px;">
+                            {{ $inc->prioridad }}
+                        </span>
                     </div>
 
-                    <div style="display: flex; gap: 15px; align-items: center;">
-                        {{-- Estado Selector --}}
-                        @can('entrega-fest.staff')
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <label style="font-size: 11px; color: #777; font-weight: 600;">ESTADO:</label>
-                                <select wire:change="cambiarEstado({{ $inc->id }}, $event.target.value)" 
-                                    class="g_badge {{ $inc->estado === 'RESUELTO' ? 'success' : 'light' }}"
-                                    style="border:1px solid #ddd; cursor:pointer; font-size: 11px; height: 26px; padding: 0 10px;">
-                                    <option value="ABIERTO" {{ $inc->estado === 'ABIERTO' ? 'selected' : '' }}>ABIERTO</option>
-                                    <option value="PROCESO" {{ $inc->estado === 'PROCESO' ? 'selected' : '' }}>PROCESO</option>
-                                    <option value="RESUELTO" {{ $inc->estado === 'RESUELTO' ? 'selected' : '' }}>RESUELTO</option>
-                                </select>
-                            </div>
-
-                            <div style="display: flex; gap: 6px; border-left: 1px solid #ddd; padding-left: 15px; margin-left: 5px;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        {{-- Botones de Estado tipo Itinerario --}}
+                        <div class="cabecera_titulo_botones">
+                            @can('entrega-fest.staff')
                                 <a href="{{ route('erp.entrega-fest.incidencia.editar', [$evento->id, $inc->id]) }}"
-                                    class="g_boton info small" title="Editar"
-                                    style="width:28px; height:28px; padding:0; display:flex; align-items:center; justify-content:center; border-radius: 6px;">
-                                    <i class="fa-solid fa-pencil" style="font-size:11px;"></i>
+                                    class="g_accion editar" title="Editar incidencia">
+                                    <i class="fa-solid fa-pencil"></i>
                                 </a>
-                                <button type="button"
-                                    onclick="Livewire.dispatch('alertaConfirmar', { event: 'eliminarIncidenciaOn', titulo: '¿Eliminar Incidencia?', texto: 'Esta acción no se puede deshacer.', id: {{ $inc->id }} })"
-                                    class="g_boton danger small" title="Eliminar"
-                                    style="width:28px; height:28px; padding:0; display:flex; align-items:center; justify-content:center; border-radius: 6px;">
-                                    <i class="fa-solid fa-trash" style="font-size:11px;"></i>
-                                </button>
-                            </div>
-                        @else
-                            <span class="g_badge {{ $inc->estado === 'RESUELTO' ? 'success' : 'light' }}" style="font-size: 11px; font-weight: 700;">{{ $inc->estado }}</span>
-                        @endcan
+
+                                @if($inc->estado === 'RESUELTO')
+                                    <span class="g_badge success"><i class="fa-solid fa-check-double"></i> Resuelto</span>
+                                    <button wire:click="cambiarEstado({{ $inc->id }}, 'ABIERTO')" class="g_boton dark small" style="padding: 4px 8px; font-size: 10px;">
+                                        Reabrir
+                                    </button>
+                                @elseif($inc->estado === 'PROCESO')
+                                    <span class="g_badge warning"><i class="fa-solid fa-spinner fa-spin"></i> En Curso</span>
+                                    <button wire:click="cambiarEstado({{ $inc->id }}, 'RESUELTO')" class="g_boton success">
+                                        <i class="fa-solid fa-check"></i> Finalizar
+                                    </button>
+                                @else
+                                    <button wire:click="cambiarEstado({{ $inc->id }}, 'PROCESO')" class="g_boton warning">
+                                        <i class="fa-solid fa-play"></i> En Curso
+                                    </button>
+                                @endif
+                            @else
+                                <span class="g_badge {{ $inc->estado === 'RESUELTO' ? 'success' : ($inc->estado === 'PROCESO' ? 'warning' : 'light') }}" style="font-size: 11px;">
+                                    {{ $inc->estado }}
+                                </span>
+                            @endcan
+                        </div>
                     </div>
                 </div>
 
                 {{-- CARD BODY --}}
                 <div class="g_fila" style="gap: 0;">
-                    {{-- Información del Reporte --}}
-                    <div class="g_columna_7" style="padding: 25px;">
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937; margin: 0 0 15px 0; line-height: 1.4;">
+                    <div class="g_columna_7" style="padding: 20px;">
+                        <p style="font-size: 15px; font-weight: 600; color: var(--color-dark); margin: 0 0 12px 0; line-height: 1.5;">
                             {{ $inc->descripcion }}
-                        </h3>
+                        </p>
                         
-                        <div style="display: flex; flex-wrap: wrap; gap: 20px; color: #6b7280; font-size: 13px;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 15px; color: var(--color-gray); font-size: 12px;">
                             @if($inc->ubicacion)
-                                <span><i class="fa-solid fa-location-dot" style="color: #ef4444; margin-right: 5px;"></i> <strong>Ubicación:</strong> {{ $inc->ubicacion }}</span>
+                                <span><i class="fa-solid fa-location-dot" style="color: var(--color-danger);"></i> {{ $inc->ubicacion }}</span>
                             @endif
-                            <span><i class="fa-solid fa-user" style="margin-right: 5px;"></i> <strong>Reportó:</strong> {{ $inc->informante->name }}</span>
-                            <span><i class="fa-solid fa-clock" style="margin-right: 5px;"></i> {{ $inc->created_at->diffForHumans() }}</span>
+                            <span><i class="fa-solid fa-user"></i> {{ $inc->informante->name }}</span>
+                            <span><i class="fa-solid fa-clock"></i> {{ $inc->created_at->diffForHumans() }}</span>
                         </div>
 
                         @if($inc->media->count() > 0)
-                            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; padding-top:15px; border-top: 1px dashed #eee;">
+                            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px; padding-top:12px; border-top: 1px dotted var(--borde-card-color, #eee);">
                                 @foreach($inc->getMedia('evidencias') as $media)
-                                    <a href="{{ $media->getUrl() }}" target="_blank" style="transition: transform 0.2s; display: block;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    <a href="{{ $media->getUrl() }}" target="_blank" style="display: block;">
                                         <img src="{{ $media->getUrl() }}"
-                                            style="width:70px; height:70px; object-fit:cover; border-radius:10px; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            style="width:65px; height:65px; object-fit:cover; border-radius:8px; border: 1px solid var(--borde-card-color, #eee);">
                                     </a>
                                 @endforeach
                             </div>
                         @endif
                     </div>
 
-                    {{-- Gestión de la Resolución --}}
-                    <div class="g_columna_5" style="background: #fbfbfb; border-left: 1px solid #eee; padding: 25px;">
-                        <h4 style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #4b5563; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-toolbox" style="color: #6366f1;"></i> Gestión de Resolución
-                        </h4>
+                    {{-- Gestión --}}
+                    <div class="g_columna_5" style="background: rgba(0,0,0,0.01); border-left: 1px solid var(--borde-card-color, #eee); padding: 20px;">
+                        <p class="g_inferior g_mayuscula" style="margin: 0 0 12px 0; font-size: 10px; font-weight: 700; color: var(--color-gray);">
+                            <i class="fa-solid fa-toolbox"></i> Gestión de Resolución
+                        </p>
 
                         @can('entrega-fest.staff')
                             <div style="margin-bottom: 15px;">
-                                <label style="font-size: 11px; font-weight: 700; color: #6b7280; display: block; margin-bottom: 6px;">Persona Responsable:</label>
+                                <label class="g_inferior" style="display: block; margin-bottom: 4px;">Responsable:</label>
                                 <select wire:change="asignarResponsable({{ $inc->id }}, $event.target.value)" class="g_input"
-                                    style="font-size: 13px; height: 38px; background: #fff;">
-                                    <option value="">-- Seleccionar Responsable --</option>
+                                    style="font-size: 12px; height: 34px;">
+                                    <option value="">-- Sin asignar --</option>
                                     @foreach($staff_users as $u)
                                         <option value="{{ $u->id }}" {{ $inc->responsable_user_id == $u->id ? 'selected' : '' }}>
                                             {{ $u->name }}
@@ -133,42 +122,33 @@
                             </div>
 
                             <div>
-                                <label style="font-size: 11px; font-weight: 700; color: #6b7280; display: block; margin-bottom: 6px;">Solución / Bitácora:</label>
+                                <label class="g_inferior" style="display: block; margin-bottom: 4px;">Bitácora de Solución:</label>
                                 <textarea 
                                     wire:blur="guardarSolucion({{ $inc->id }}, $event.target.value)"
                                     class="g_input" 
                                     rows="3" 
-                                    placeholder="Describe cómo se resolvió la incidencia..." 
-                                    style="font-size: 13px; background: #fff; min-height: 100px; padding: 12px; line-height: 1.5;">{{ $inc->solucion }}</textarea>
-                                <p style="font-size: 10px; color: #9ca3af; margin-top: 6px; font-style: italic;">
-                                    <i class="fa-solid fa-info-circle"></i> Los cambios se guardan al salir del campo.
-                                </p>
+                                    placeholder="Detalles sobre la solución..." 
+                                    style="font-size: 12px; min-height: 80px;">{{ $inc->solucion }}</textarea>
                             </div>
                         @else
-                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
                                 @if($inc->responsable)
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <div style="width: 32px; height: 32px; background: #e0e7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4338ca;">
-                                            <i class="fa-solid fa-user-gear" style="font-size: 14px;"></i>
-                                        </div>
-                                        <div>
-                                            <p style="font-size: 11px; font-weight: 700; color: #6b7280; margin: 0;">RESPONSABLE</p>
-                                            <p style="font-size: 13px; font-weight: 600; color: #1f2937; margin: 0;">{{ $inc->responsable->name }}</p>
-                                        </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="fa-solid fa-user-gear" style="color: var(--color-info); font-size: 14px;"></i>
+                                        <span style="font-size: 13px; color: var(--color-dark);">{{ $inc->responsable->name }}</span>
                                     </div>
                                 @endif
 
                                 @if($inc->solucion)
-                                    <div style="background: #ecfdf5; border: 1px solid #d1fae5; padding: 15px; border-radius: 12px;">
-                                        <p style="font-size: 11px; font-weight: 800; color: #065f46; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            <i class="fa-solid fa-check-circle" style="margin-right: 5px;"></i> Resolución oficial
+                                    <div style="background: var(--bg-success, #ecfdf5); border: 1px solid var(--color-success); padding: 10px; border-radius: 8px;">
+                                        <p style="font-size: 11px; font-weight: 800; color: var(--color-success); margin: 0 0 4px 0;">
+                                            SOLUCIÓN
                                         </p>
-                                        <p style="font-size: 13px; color: #064e3b; margin: 0; line-height: 1.5; white-space: pre-wrap;">{{ $inc->solucion }}</p>
+                                        <p style="font-size: 12px; color: var(--color-dark); margin: 0; line-height: 1.4;">{{ $inc->solucion }}</p>
                                     </div>
                                 @else
-                                    <div style="background: #fef3c7; border: 1px solid #fde68a; padding: 12px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
-                                        <i class="fa-solid fa-triangle-exclamation" style="color: #d97706;"></i>
-                                        <p style="font-size: 12px; color: #92400e; margin: 0; font-weight: 600;">Pendiente de resolución</p>
+                                    <div class="g_alerta info" style="padding: 8px; font-size: 11px; margin: 0;">
+                                        <i class="fa-solid fa-circle-info"></i> Resolución pendiente
                                     </div>
                                 @endif
                             </div>
@@ -177,14 +157,11 @@
                 </div>
             </div>
         @empty
-            <div class="g_panel" style="text-align: center; padding: 60px 20px; color: #6b7280;">
-                <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.3;">
-                    <i class="fa-solid fa-shield-check"></i>
-                </div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 10px;">¡Todo bajo control!</h3>
-                <p>No hay incidencias reportadas en este momento para el evento.</p>
+            <div class="g_panel" style="text-align: center; padding: 40px 20px;">
+                <i class="fa-solid fa-shield-check" style="font-size: 3rem; color: var(--color-success); opacity: 0.2; margin-bottom: 15px;"></i>
+                <h3 class="g_panel_titulo">¡No hay incidencias!</h3>
+                <p class="g_inferior">Todo parece estar en orden en este evento.</p>
             </div>
         @endforelse
     </div>
-
 </div>

@@ -20,8 +20,6 @@ class StaffIncidencias extends Component
     public $incidencias;
     public $staff_users;
 
-    protected $listeners = ['eliminarIncidenciaOn' => 'eliminarIncidencia'];
-
     public function mount($id)
     {
         $this->evento = EntregaFest::findOrFail($id);
@@ -37,67 +35,56 @@ class StaffIncidencias extends Component
             ->get();
     }
 
-    public function cambiarPrioridad($id, $prio)
-    {
-        $this->authorize('entrega-fest.staff');
-        EntregaFestIncidencia::where('id', $id)->update(['prioridad' => $prio]);
-        $this->cargarIncidencias();
-    }
-
     public function cambiarEstado($id, $estado)
     {
         $this->authorize('entrega-fest.staff');
-        EntregaFestIncidencia::where('id', $id)->update(['estado' => $estado]);
+        
+        $incidencia = EntregaFestIncidencia::findOrFail($id);
+        $incidencia->update(['estado' => $estado]);
+
+        $msg = match($estado) {
+            'PROCESO' => 'La incidencia ahora está en curso.',
+            'RESUELTO' => 'La incidencia ha sido marcada como resuelta.',
+            'ABIERTO' => 'La incidencia ha sido reabierta.',
+            default => 'Estado actualizado.'
+        };
+
+        $this->dispatch('notificar', [
+            'titulo' => 'Incidencias',
+            'mensaje' => $msg,
+            'tipo' => 'success'
+        ]);
+
         $this->cargarIncidencias();
     }
 
     public function guardarSolucion($id, $solucion)
     {
         $this->authorize('entrega-fest.staff');
+        
         EntregaFestIncidencia::where('id', $id)->update(['solucion' => $solucion]);
+        
         $this->dispatch('notificar', [
-            'titulo' => 'Solución guardada',
+            'titulo' => 'Bitácora',
             'mensaje' => 'La solución ha sido registrada correctamente.',
             'tipo' => 'success'
         ]);
+        
         $this->cargarIncidencias();
     }
 
     public function asignarResponsable($id, $userId)
     {
         $this->authorize('entrega-fest.staff');
-        EntregaFestIncidencia::where('id', $id)->update(['responsable_user_id' => $userId]);
+        EntregaFestIncidencia::where('id', $id)->update(['responsable_user_id' => $userId ?: null]);
+        
+        $this->dispatch('notificar', [
+            'titulo' => 'Asignación',
+            'mensaje' => 'Responsable actualizado.',
+            'tipo' => 'success'
+        ]);
+
         $this->cargarIncidencias();
-    }
-
-    public function eliminarIncidencia($id)
-    {
-        $this->authorize('entrega-fest.staff');
-        $incidencia = EntregaFestIncidencia::where('entrega_fest_id', $this->evento->id)->findOrFail($id);
-
-        try {
-            DB::beginTransaction();
-            $incidencia->clearMediaCollection('evidencias');
-            $incidencia->delete();
-            DB::commit();
-
-            $this->dispatch('alertaLivewire', [
-                'type' => 'success',
-                'title' => '¡Eliminada!',
-                'text' => 'La incidencia ha sido eliminada correctamente.'
-            ]);
-
-            $this->cargarIncidencias();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('[STAFF INCIDENCIA ELIMINAR] ' . $e->getMessage());
-            $this->dispatch('alertaLivewire', [
-                'type' => 'error',
-                'title' => 'Error',
-                'text' => 'No se pudo eliminar la incidencia.'
-            ]);
-        }
     }
 
     public function render()
