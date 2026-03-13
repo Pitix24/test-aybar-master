@@ -107,7 +107,7 @@ class StaffProveedoresCrear extends Component
                 'text' => 'Proveedor añadido correctamente al evento.'
             ]);
 
-            return redirect()->route('erp.entrega-fest.vista.staff.proveedores', $this->evento->id);
+            return redirect()->route('erp.entrega-fest.proveedor.todo', $this->evento->id);
 
         } catch (\Exception $e) {
             DB::rollBack();

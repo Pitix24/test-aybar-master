@@ -81,13 +81,46 @@
                         <p class="g_inferior g_mayuscula" style="margin:0 0 6px 0; font-size:10px;">Requerimientos Técnicos</p>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
                             @foreach($prov->requerimientos as $req)
-                                <div wire:click="toggleRequerimiento({{ $req->id }})"
-                                    style="display:flex; align-items:center; gap:8px; cursor:pointer;"
-                                    title="Clic para cambiar estado">
-                                    <i class="fa-solid {{ $req->esta_cubierto ? 'fa-circle-check' : 'fa-circle' }}"
-                                        style="color: {{ $req->esta_cubierto ? 'var(--color-success)' : 'var(--color-claro-texto)' }}; font-size:13px;"></i>
-                                    <span class="g_inferior {{ $req->esta_cubierto ? 'g_tachado' : '' }}"
-                                        style="margin:0;">{{ $req->requerimiento }}</span>
+                                <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:8px;">
+                                    <div wire:click="toggleRequerimiento({{ $req->id }})"
+                                        style="display:flex; align-items:center; gap:8px; cursor:pointer;"
+                                        title="Clic para cambiar estado">
+                                        <i class="fa-solid {{ $req->esta_cubierto ? 'fa-circle-check' : 'fa-circle' }}"
+                                            style="color: {{ $req->esta_cubierto ? 'var(--color-success)' : 'var(--color-claro-texto)' }}; font-size:13px;"></i>
+                                    </div>
+
+                                    <div style="flex:1;">
+                                        <span class="g_inferior {{ $req->esta_cubierto ? 'g_tachado' : '' }}"
+                                            style="margin:0; display:block;">{{ $req->requerimiento }}</span>
+
+                                        @if($req->esta_cubierto)
+                                            <div style="display:flex; align-items:center; gap:10px; margin-top:4px;">
+                                                @if($req->media->count() > 0)
+                                                    <a href="{{ $req->getFirstMediaUrl('evidencias') }}" target="_blank" class="g_foto_preview">
+                                                        <img src="{{ $req->getFirstMediaUrl('evidencias') }}" 
+                                                            style="width:35px; height:35px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
+                                                    </a>
+                                                @endif
+                                                <div style="display:flex; flex-direction:column;">
+                                                    <span class="g_inferior" style="font-size:9px; opacity:0.8; line-height:1;">
+                                                        <i class="fa-solid fa-user" style="font-size:8px;"></i> {{ $req->user->name ?? 'N/A' }}
+                                                    </span>
+                                                    @if($req->completado_at)
+                                                        <span class="g_inferior" style="font-size:9px; opacity:0.6; line-height:1; margin-top:2px;">
+                                                            {{ $req->completado_at->format('H:i') }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    @if(!$req->esta_cubierto)
+                                        <label for="foto-req-{{ $req->id }}" style="cursor:pointer; margin:0;" title="Subir Evidencia">
+                                            <i class="fa-solid fa-camera" style="color:var(--color-info); opacity:0.6; font-size:14px;"></i>
+                                            <input type="file" id="foto-req-{{ $req->id }}" wire:model="evidencias.{{ $req->id }}" accept="image/*" style="display:none;">
+                                        </label>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>

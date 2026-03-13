@@ -12,6 +12,15 @@ return new class extends Migration {
             $table->foreignId('proveedor_id')->constrained('entrega_fest_proveedores', indexName: 'ef_pr_prov_fk')->cascadeOnDelete();
             $table->string('requerimiento');
             $table->boolean('esta_cubierto')->default(false);
+
+            // Trazabilidad (Seguimiento)
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->timestamp('completado_at')->nullable();
+
             $table->timestamps();
         });
     }
