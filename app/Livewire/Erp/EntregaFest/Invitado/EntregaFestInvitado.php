@@ -176,6 +176,7 @@ class EntregaFestInvitado extends Component
             ->with([
                 'prospecto.proyecto',
                 'copropietario.prospecto.proyecto',
+                'acompanantes',
             ])
             ->where('entrega_fest_id', $this->evento->id)
             ->when($this->buscar, function ($query) {

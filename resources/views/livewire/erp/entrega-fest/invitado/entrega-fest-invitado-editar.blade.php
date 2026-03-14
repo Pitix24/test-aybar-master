@@ -30,13 +30,13 @@
                     <div class="g_perfil_avatar_wrapper">
                         <div class="g_perfil_avatar">
                             <div class="g_perfil_avatar_placeholder">
-                                {{ substr($invitado->prospecto->nombres, 0, 1) }}
+                                {{ substr($invitado->nombre_completo, 0, 1) }}
                             </div>
                         </div>
                     </div>
                     <div class="g_perfil_avatar_info">
-                        <h3 class="g_negrita">{{ $invitado->prospecto->nombres }}</h3>
-                        <p>{{ $invitado->prospecto->dni }}</p>
+                        <h3 class="g_negrita">{{ $invitado->nombre_completo }}</h3>
+                        <p>{{ $invitado->dni }}</p>
                     </div>
                 </div>
 
@@ -80,12 +80,12 @@
                         <div class="informacion_resumen_item">
                             <span class="informacion_resumen_label">Proyecto</span>
                             <span
-                                class="informacion_resumen_valor">{{ $invitado->prospecto->proyecto?->nombre ?? 'N/A' }}</span>
+                                class="informacion_resumen_valor">{{ $invitado->prospecto?->proyecto?->nombre ?? $invitado->copropietario?->prospecto?->proyecto?->nombre ?? 'N/A' }}</span>
                         </div>
                         <div class="informacion_resumen_item">
                             <span class="informacion_resumen_label">Registrado por</span>
                             <span
-                                class="informacion_resumen_valor">{{ $invitado->prospecto->user?->name ?? 'Sistema' }}</span>
+                                class="informacion_resumen_valor">{{ $invitado->prospecto?->user?->name ?? $invitado->copropietario?->prospecto?->user?->name ?? 'Sistema' }}</span>
                         </div>
                     </div>
                 </div>
@@ -93,11 +93,11 @@
                 <div>
                     <div class="informacion_beneficio_item">
                         <i class="fa-solid fa-envelope"></i>
-                        <span>{{ $invitado->prospecto->email }}</span>
+                        <span>{{ $invitado->email ?? '—' }}</span>
                     </div>
                     <div class="informacion_beneficio_item" style="margin-top: 8px;">
                         <i class="fa-solid fa-phone"></i>
-                        <span>{{ $invitado->prospecto->celular }}</span>
+                        <span>{{ $invitado->celular ?? '—' }}</span>
                     </div>
                 </div>
             </div>
@@ -114,6 +114,15 @@
                         <button @click="activeTab = 'prospecto'" class="g_tab_boton"
                             :class="activeTab === 'prospecto' ? 'g_tab_active' : 'g_tab_inactive'">
                             <i class="fa-solid fa-address-card"></i> Datos Prospecto
+                        </button>
+                        <button @click="activeTab = 'acompanantes'" class="g_tab_boton"
+                            :class="activeTab === 'acompanantes' ? 'g_tab_active' : 'g_tab_inactive'">
+                            <i class="fa-solid fa-users"></i> Acompañantes
+                            @if(count($acompanantes) > 0)
+                                <span class="g_badge_circular info" style="margin-left:6px;">
+                                    {{ count($acompanantes) }} / {{ $cantidad_acompanantes_permitidos }}
+                                </span>
+                            @endif
                         </button>
                     </div>
                 </div>
@@ -168,12 +177,12 @@
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_6">
                                 <label>Nombres Completos</label>
-                                <input type="text" value="{{ $invitado->prospecto->nombres }}" class="g_input_disabled"
+                                <input type="text" value="{{ $invitado->nombre_completo }}" class="g_input_disabled"
                                     disabled>
                             </div>
                             <div class="g_margin_bottom_10 g_columna_6">
                                 <label>DNI / Documento</label>
-                                <input type="text" value="{{ $invitado->prospecto->dni }}" class="g_input_disabled"
+                                <input type="text" value="{{ $invitado->dni }}" class="g_input_disabled"
                                     disabled>
                             </div>
                         </div>
@@ -181,17 +190,17 @@
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Proyecto</label>
-                                <input type="text" value="{{ $invitado->prospecto->proyecto?->nombre ?? 'N/A' }}"
+                                <input type="text" value="{{ $invitado->prospecto?->proyecto?->nombre ?? $invitado->copropietario?->prospecto?->proyecto?->nombre ?? 'N/A' }}"
                                     class="g_input_disabled" disabled>
                             </div>
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Manzana</label>
-                                <input type="text" value="{{ $invitado->prospecto->manzana }}" class="g_input_disabled"
+                                <input type="text" value="{{ $invitado->manzana }}" class="g_input_disabled"
                                     disabled>
                             </div>
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Lote</label>
-                                <input type="text" value="{{ $invitado->prospecto->lote }}" class="g_input_disabled"
+                                <input type="text" value="{{ $invitado->lote }}" class="g_input_disabled"
                                     disabled>
                             </div>
                         </div>
@@ -199,22 +208,32 @@
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Grupo</label>
-                                <input type="text" value="GRUPO {{ $invitado->prospecto->grupo }}"
+                                <input type="text" value="GRUPO {{ $invitado->prospecto?->grupo ?? $invitado->copropietario?->prospecto?->grupo ?? 'N/A' }}"
                                     class="g_input_disabled" disabled>
                             </div>
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Estado BackOffice</label>
-                                <input type="text" value="{{ strtoupper($invitado->prospecto->estado_backoffice) }}"
+                                @php
+                                    $estadoBo = $invitado->prospecto?->estado_backoffice ?? $invitado->copropietario?->prospecto?->estado_backoffice ?? 'N/A';
+                                @endphp
+                                <input type="text" value="{{ strtoupper($estadoBo) }}"
                                     class="g_input_disabled" disabled>
                             </div>
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Fecha Firma Contrato</label>
+                                @php
+                                    $fechaFirma = $invitado->prospecto?->fecha_firma ?? $invitado->copropietario?->prospecto?->fecha_firma;
+                                @endphp
                                 <input type="text"
-                                    value="{{ $invitado->prospecto->fecha_firma ? date('d/m/Y', strtotime($invitado->prospecto->fecha_firma)) : 'N/A' }}"
+                                    value="{{ $fechaFirma ? date('d/m/Y', strtotime($fechaFirma)) : 'N/A' }}"
                                     class="g_input_disabled" disabled>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div x-show="activeTab === 'acompanantes'" x-transition class="g_tab_content">
+                    @include('livewire.erp.entrega-fest.invitado.partials._tab-acompanantes')
                 </div>
             </div>
         </div>

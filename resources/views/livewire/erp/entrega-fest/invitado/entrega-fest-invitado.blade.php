@@ -9,6 +9,10 @@
                 <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
 
+            <a href="{{ route('erp.entrega-fest.asistencia.todo', $evento->id) }}" class="g_boton success">
+                Asistencia <i class="fa-solid fa-user-group"></i>
+            </a>
+
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
@@ -129,7 +133,30 @@
                                             </div>
                                         </td>
                                         <td class="g_celda_centro">
-                                            <span class="g_badge light">{{ $i->cantidad_acompanantes_permitidos }}</span>
+                                            @php
+                                                $totalPermitido = $i->cantidad_acompanantes_permitidos;
+                                                $registrados = $i->acompanantes->count();
+                                                $restantes = $totalPermitido - $registrados;
+                                            @endphp
+                                            <div style="font-weight: bold; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 5px;">
+                                                {{ $registrados }} / {{ $totalPermitido }}
+                                            </div>
+
+                                            @if($registrados > 0)
+                                                <div style="font-size: 0.75rem; text-align: left; background: #f9f9f9; padding: 6px; border-radius: 6px; border: 1px solid #eee; display: inline-block;">
+                                                    @foreach($i->acompanantes as $ac)
+                                                        <div style="margin-bottom: 2px;">
+                                                            <i class="fa-solid fa-user-check" style="color: #10B981; font-size: 0.65rem;"></i> {{ Str::limit($ac->nombres, 15) }} 
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                            
+                                            @if($restantes > 0 && $totalPermitido > 0)
+                                                 <div style="font-size: 0.70rem; color: #f59e0b; margin-top: 5px;">
+                                                     Faltan {{ $restantes }}
+                                                 </div>
+                                            @endif
                                         </td>
                                         <td class="g_celda_centro">
                                             @if ($i->confirmado)
@@ -149,10 +176,10 @@
                                             <span class="g_badge light">{{ $transporteTexto }}</span>
                                         </td>
                                         <td class="g_celda_acciones g_celda_centro">
-                                            @can('invitado-entrega-fest.editar')
+                                            @can('invitado.editar')
                                                 <a href="{{ route('erp.entrega-fest.invitado.editar', [$evento->id, $i->id]) }}"
-                                                    class="g_accion editar" title="Ver Detalles">
-                                                    <i class="fa-solid fa-eye"></i>
+                                                    class="g_accion editar" title="Editar">
+                                                    <i class="fa-solid fa-pencil"></i>
                                                 </a>
                                             @endcan
                                         </td>

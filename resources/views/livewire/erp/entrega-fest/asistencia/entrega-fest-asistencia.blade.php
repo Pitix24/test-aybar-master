@@ -12,6 +12,10 @@
                 <i class="fa-solid fa-grip"></i> Panel de Gestión
             </a>
 
+            <a href="{{ route('erp.entrega-fest.invitado.todo', $evento->id) }}" class="g_boton success">
+                Invitados <i class="fa-solid fa-user-group"></i>
+            </a>
+
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
@@ -141,6 +145,18 @@
                                 ?? $a->invitado->copropietario?->dni
                                 ?? 'N/A' }}
                                                             </div>
+                                                            @if($a->invitado->acompanantes->count() > 0)
+                                                                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ddd;">
+                                                                    <div style="font-size: 0.75rem; color: #666; font-weight: bold; margin-bottom: 2px;">
+                                                                        <i class="fa-solid fa-users" style="color:var(--color-primary)"></i> Acompañantes:
+                                                                    </div>
+                                                                    @foreach($a->invitado->acompanantes as $ac)
+                                                                        <div style="font-size: 0.75rem; color: #555;">
+                                                                            &bull; {{ Str::limit($ac->nombres, 20) }}
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            @endif
                                                         </td>
                                                         <td>
                                                             <div style="font-size: 0.85rem;">

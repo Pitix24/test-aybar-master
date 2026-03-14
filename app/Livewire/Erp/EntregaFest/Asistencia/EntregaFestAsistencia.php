@@ -112,6 +112,7 @@ class EntregaFestAsistencia extends Component
             ->with([
                 'invitado.prospecto.proyecto',
                 'invitado.copropietario.prospecto.proyecto',
+                'invitado.acompanantes',
                 'user',
             ])
             ->whereHas('invitado', function ($q) {

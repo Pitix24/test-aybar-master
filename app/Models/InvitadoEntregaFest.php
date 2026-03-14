@@ -52,6 +52,11 @@ class InvitadoEntregaFest extends Model
         return $this->hasOne(AsistenciaEntregaFest::class, 'invitado_entrega_fest_id');
     }
 
+    public function acompanantes()
+    {
+        return $this->hasMany(AcompananteEntregaFest::class, 'invitado_entrega_fest_id');
+    }
+
     /**
      * Devuelve el nombre del invitado (titular o copropietario).
      */
