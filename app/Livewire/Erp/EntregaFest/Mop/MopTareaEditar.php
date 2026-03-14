@@ -137,7 +137,7 @@ class MopTareaEditar extends Component
 
     public function render()
     {
-        $usuarios = User::orderBy('name')->get(['id', 'name']);
+        $usuarios = User::permission('entrega-fest.gestor')->get();
         return view('livewire.erp.entrega-fest.mop.mop-tarea-editar', compact('usuarios'));
     }
 }

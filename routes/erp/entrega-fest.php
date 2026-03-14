@@ -98,9 +98,9 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
             ->name('entrega-fest.mop.')
             ->group(function () {
                 Route::get('/{id}', StaffMop::class)->middleware('permission:mop.lista')->name('todo');
-                Route::get('/tareas/{id}', MopTareaLista::class)->middleware('permission:mop.tareas')->name('tareas');
-                Route::get('/tareas/crear/{id}', MopTareaCrear::class)->middleware('permission:mop.tareas.crear')->name('tareas.crear');
-                Route::get('/tareas/{id}/editar/{tareaId}', MopTareaEditar::class)->middleware('permission:mop.tareas.editar')->name('tareas.editar');
+                Route::get('/tareas/{id}', MopTareaLista::class)->middleware('permission:mop.lista-tarea')->name('tareas');
+                Route::get('/tareas/crear/{id}', MopTareaCrear::class)->middleware('permission:mop.crear-tarea')->name('tareas.crear');
+                Route::get('/tareas/{id}/editar/{tareaId}', MopTareaEditar::class)->middleware('permission:mop.editar-tarea')->name('tareas.editar');
             });
     });
 
@@ -255,6 +255,7 @@ ROLES: supervisor-entrega-fest, asesor-entrega-fest, staff-mop
 6. mop.eliminar
 7. mop.exportar-filtro
 8. mop.exportar-todo
+9. mop.lista-tarea
 9. mop.crear-tarea
 10. mop.editar-tarea
 11. mop.eliminar-tarea

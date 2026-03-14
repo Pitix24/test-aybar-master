@@ -107,7 +107,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($items as $t)
+                    @foreach($items as $t)
                         <tr wire:key="tarea-{{ $t->id }}">
                             <td>
                                 <p class="g_negrita" style="margin:0;">{{ $t->user->name ?? '—' }}</p>
@@ -155,14 +155,27 @@
                                 </a>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="g_celda_centro g_inferior">No hay tareas asignadas para este evento.</td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:10px;">{{ $items->links() }}</div>
+
+        @if ($items->hasPages())
+            <div class="g_paginacion">
+                {{ $items->links('vendor.pagination.default-livewire') }}
+            </div>
+        @endif
+
+        @if ($items->isEmpty())
+            <div class="g_vacio">
+                <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay items disponibles.' }}</p>
+                <i class="fa-regular fa-face-grin-wink"></i>
+            </div>
+        @else
+            <div class="g_paginacion">
+                Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
+                de {{ $items->total() }} registros
+            </div>
+        @endif
     </div>
 </div>
