@@ -97,6 +97,14 @@
 
                 <div class="g_tabla_cabecera">
                     <div class="g_tabla_cabecera_botones">
+                        <button wire:click="exportExcelTodo" class="g_boton excel" wire:loading.attr="disabled"
+                            wire:target="exportExcelTodo">
+                            <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                                    class="fa-solid fa-file-export"></i></span>
+                            <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                    class="fa-solid fa-spinner fa-spin"></i></span>
+                        </button>
+
                         <button wire:click="resetFiltros" class="g_boton danger" title="Limpiar">
                             <i class="fa-solid fa-rotate-left"></i>
                         </button>

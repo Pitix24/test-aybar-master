@@ -109,6 +109,17 @@ class EntregaFestAsistencia extends Component
         $this->resetPage();
     }
 
+    public function exportExcelTodo()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\EntregaFest\EntregaFestAsistenciaExport(
+                $this->evento->id,
+                true
+            ),
+            'asistencia_todo_' . $this->evento->codigo . '.xlsx'
+        );
+    }
+
     public function render()
     {
         $items = AsistenciaEntregaFest::query()
