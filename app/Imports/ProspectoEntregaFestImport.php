@@ -32,8 +32,8 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
                 // Según lo que vimos en el Excel anterior:
                 // proyecto_id, user_id, dni, nombres, email, celular, lote, manzana, grupo ...
 
-                if (empty($row['dni']))
-                    continue;
+                /*if (empty($row['dni']))
+                    continue;*/
 
                 $numFila = $index + 2;
                 $proyectoId = (int) $row['proyecto_id'];
@@ -55,6 +55,7 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
                     [
                         'entrega_fest_id' => $this->entrega_fest_id,
                         'dni' => $dniTitular,
+                        'lote' => $row['lote'], // Añadido para diferenciar si un DNI tiene varios lotes
                     ],
                     [
                         'proyecto_id' => $proyectoId,
@@ -62,7 +63,6 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
                         'nombres' => $row['nombres'],
                         'email' => $row['email'] ?? '',
                         'celular' => $row['celular'] ?? '',
-                        'lote' => $row['lote'],
                         'manzana' => $row['manzana'],
                         'grupo' => in_array($row['grupo'], ['A', 'B', 'C', 'D']) ? $row['grupo'] : 'A',
                         'gestor_backoffice_id' => is_numeric($row['gestor_backoffice_id']) ? $row['gestor_backoffice_id'] : null,

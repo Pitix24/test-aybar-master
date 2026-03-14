@@ -19,8 +19,8 @@ return new class extends Migration {
 
             $table->string('dni', 15);
             $table->string('nombres');
-            $table->string('email');
-            $table->string('celular');
+            $table->string('email')->nullable();
+            $table->string('celular')->nullable();
 
             $table->string('lote')->nullable();
             $table->string('manzana')->nullable();
@@ -62,7 +62,8 @@ return new class extends Migration {
             $table->dateTime('fecha_generacion_contrato')->nullable(); //fecha generacion contrato
 
             $table->timestamps();
-            $table->unique(['entrega_fest_id', 'dni']);
+            // Comentado para permitir que un prospecto (DNI) pueda tener múltiples lotes
+            // $table->unique(['entrega_fest_id', 'dni']);
         });
     }
 
