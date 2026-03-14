@@ -72,6 +72,7 @@ class EntregaFestInvitadoEditar extends Component
 
     public function abrirFormCrear(): void
     {
+        /* // Comentado para permitir superar el límite
         if (count($this->acompanantes) >= $this->invitado->cantidad_acompanantes_permitidos) {
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
@@ -80,6 +81,7 @@ class EntregaFestInvitadoEditar extends Component
             ]);
             return;
         }
+        */
 
         $this->resetAcompananteForm();
         $this->acomp_modo = 'crear';
@@ -131,6 +133,7 @@ class EntregaFestInvitadoEditar extends Component
     {
         $this->authorize('invitado.editar');
 
+        /* // Comentado para permitir superar el límite
         if (count($this->acompanantes) >= $this->invitado->cantidad_acompanantes_permitidos) {
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
@@ -139,6 +142,7 @@ class EntregaFestInvitadoEditar extends Component
             ]);
             return;
         }
+        */
 
         $this->validate($this->reglasAcompanante(), [], $this->atributosAcompanante());
 

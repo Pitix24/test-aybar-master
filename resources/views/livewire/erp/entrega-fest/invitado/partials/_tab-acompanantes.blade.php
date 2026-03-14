@@ -54,14 +54,13 @@
     <div class="g_tabla_cabecera_botones">
         @if($acomp_modo !== 'crear')
             @if(count($acompanantes) >= $cantidad_acompanantes_permitidos)
-                <div class="g_alert info" style="margin: 0; padding: 10px;">
-                    <i class="fa-solid fa-circle-info"></i> Límite de {{ $cantidad_acompanantes_permitidos }} acompañantes alcanzado.
+                <div class="g_alert warning" style="margin: 0; padding: 10px; margin-bottom: 10px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Límite de {{ $cantidad_acompanantes_permitidos }} acompañantes superado.
                 </div>
-            @else
-                <button wire:click="abrirFormCrear" class="g_boton primary">
-                    <i class="fa-solid fa-plus"></i> Agregar Acompañante
-                </button>
             @endif
+            <button wire:click="abrirFormCrear" class="g_boton primary">
+                <i class="fa-solid fa-plus"></i> Agregar Acompañante
+            </button>
         @endif
     </div>
 </div>
