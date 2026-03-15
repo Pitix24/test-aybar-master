@@ -128,8 +128,58 @@ Si se desea agilizar la creación de flujos conversacionales y evitar programar 
 
 > **Respuesta Rápida:** Sí, n8n es gratis si usas la versión Self-Hosted. Para instalarlo, necesitas ejecutar un contenedor de Docker en tu mismo servidor. Si en el futuro prefieres no lidiar con Docker, n8n ofrece planes de pago en la nube, o puedes programar todo el bot directamente en código PHP (Laravel) sin usar n8n en absoluto.
 
-n8n: Por defecto usa el 5678.
-Laravel Reverb: Por defecto usa el 8080.
-Tu Web (Laravel): Usa el 80 (HTTP) o 443 (HTTPS).
+## 🏗️ Arquitectura Técnica Detallada
 
-ARQUITECTURA:
+Esta sección define el ecosistema de servicios, sus puertos y cómo fluye la información entre ellos para el Asistente EntregaFest.
+
+### 🔌 Mapa de Puertos y Servicios (Servidor Dedicado)
+
+| Servicio | Puerto | Protocolo | Función |
+| :--- | :--- | :--- | :--- |
+| **Laravel ERP** | `80` / `443` | HTTP / HTTPS | Backend principal y fuente de datos (MySQL). |
+| **Laravel Reverb** | `8080` | WS / WSS | Sincronización en tiempo real para el chat administrativo. |
+| **n8n (Docker)** | `5678` | HTTP | Orquestador de flujos de IA para WhatsApp. |
+| **MySQL** | `3306` | TCP | Base de datos (acceso interno para Laravel y n8n). |
+
+---
+
+### 💬 Flujo 1: Chat de WhatsApp
+**Ruta:** Meta ↔️ n8n ↔️ OpenAI ↔️ Laravel
+
+1.  **Entrada:** El cliente envía un mensaje a través de WhatsApp.
+2.  **Recepción:** Meta (WhatsApp Cloud API) envía un Webhook al **n8n** (que corre localmente en el puerto `5678`).
+3.  **Análisis (n8n):**
+    *   n8n recibe el mensaje y el número de teléfono.
+    *   n8n consulta a la **API de Laravel** (`/api/ia/cliente`) para saber quién es y qué lotes tiene.
+    *   n8n envía el mensaje + los datos del cliente a **OpenAI**.
+4.  **Respuesta:** OpenAI genera la respuesta y n8n la envía de vuelta al cliente mediante la API de Meta.
+5.  **Sincronización:** n8n notifica a Laravel que hay un nuevo mensaje. Laravel emite un evento vía **Reverb (puerto 8080)** para que el asesor vea el mensaje en su panel sin refrescar.
+
+---
+
+### 📞 Flujo 2: Llamada de Voz (Real-Time)
+**Ruta:** Twilio ↔️ Vapi.ai ↔️ OpenAI ↔️ Laravel
+
+1.  **Entrada:** El cliente llama al número de Twilio.
+2.  **Conexión:** Twilio transfiere el flujo de audio a **Vapi.ai** mediante WebSockets (SIP/WebStream).
+3.  **Inteligencia (Vapi.ai + OpenAI):**
+    *   Vapi transcribe el audio a texto en milisegundos.
+    *   Vapi envía ese texto a **OpenAI** para decidir qué responder.
+    *   Si el cliente pregunta por su deuda o proyecto, **Vapi hace una petición HTTP "Tool Call"** a los Endpoints de Laravel en el puerto `443`.
+4.  **Salida:** Vapi convierte la respuesta de texto de OpenAI en voz (TTS) y la envía de vuelta a Twilio para que el cliente la escuche.
+5.  **Cierre:** Al colgar, Vapi envía un resumen de la llamada a Laravel para guardarlo en el historial del prospecto.
+
+---
+
+### 🧩 Resumen de Herramientas
+*   **Twilio:** Troncal telefónica (El "Chip" virtual).
+*   **Meta WAPI:** Conector oficial de mensajes.
+*   **Vapi.ai:** El "Cerebro de Voz" que gestiona la latencia y el audio.
+*   **n8n (Local):** El "Director de Orquesta" que une WhatsApp con Laravel y OpenAI.
+*   **Laravel Reverb:** El "Mensajero" interno para que el Staff vea todo en tiempo real.
+*   **OpenAI (GPT-4o):** El motor de lenguaje que genera el razonamiento.
+
+---
+
+### 🚀 Ventaja de esta Configuración
+Al tener **n8n y Reverb** corriendo en tu propio servidor dedicado, la latencia es mínima y los costos de orquestación son cero (solo pagas por el consumo de tokens de OpenAI y minutos de Vapi/Twilio). Tu base de datos siempre está protegida detrás de los Endpoints de Laravel.
