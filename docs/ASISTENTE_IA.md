@@ -62,7 +62,41 @@ Dado que la carga pesada de inteligencia y transmisión recae en los servicios e
 
 1.  **Exposición de APIs:** Debemos crear rutas específicas (ej. `routes/api/ia.php`) protegidas mediante tokens.
 2.  **Endpoints Funcionales:** Ejemplos: `/api/ia/consultar-prospecto`, `/api/ia/validar-asistencia`, `/api/ia/extraer-itinerario`.
-3.  **Registro de Actividad:** Cada vez que el bot (por chat o voz) finalice una interacción, debe hacer un POST a nuestro CRM para guardar el "Log" o "Resumen de la llamada/chat" en el historial del **Prospecto** respectivo.
+6.  **Registro de Actividad:** Cada vez que el bot (por chat o voz) finalice una interacción, debe hacer un POST a nuestro CRM para guardar el "Log" o "Resumen de la llamada/chat" en el historial del **Prospecto** respectivo.
+
+---
+
+## 🔍 ¿Cómo interactúa la IA con nuestra Base de Datos?
+
+Para que los clientes puedan preguntar sobre un dato específico (Ej. *"¿Cuál es mi número de lote?"* o *"¿En qué proyecto estoy?"*), existen dos enfoques. **Para este proyecto, se recomienda el Enfoque 1 (Endpoints de API):**
+
+### Enfoque 1: Endpoints de API / Function Calling (🚀 RECOMENDADO)
+En lugar de darle acceso libre a la IA a la base de datos, nosotros construimos "puertas controladas" (Endpoints) en Laravel. Cuando un cliente pregunta algo, la IA sabe que debe golpear esa puerta para pedir la información.
+
+**El Flujo:**
+1.  **El cliente dice:** *"Quiero saber sobre qué lote es mi contrato"*.
+2.  **La IA deduce:** *"Necesito usar la herramienta `consultar-lote-cliente` que me proporcionaron"*.
+3.  **La IA hace una petición HTTP (API Rest):** Hace un `POST /api/ia/consultar-lote-cliente` enviando el número de teléfono del cliente (que ya conoce por WhatsApp).
+4.  **Laravel hace el trabajo seguro:** Tu código en Laravel recibe la petición, hace la consulta controlada con Eloquent (ej. `Cliente::where('telefono', $request->telefono)->with('lotes')->first()`), y le devuelve un JSON limpio a la IA.
+5.  **La IA responde:** Toma el JSON y formula la frase: *"Hola, veo en el sistema que tu contrato corresponde al Lote 15 del Proyecto Valle Verde."*
+
+**Ventajas:**
+*   **100% Seguro:** La IA nunca ve ni toca la base de datos directamente.
+*   **Lógica de Negocio Protegida:** Laravel sigue manejando los permisos, cálculos complejos o validaciones antes de entregar la información.
+*   **Esta es la estrategia que se detalla en la sección "Requisitos en nuestro Backend (Laravel)".**
+
+### Enfoque 2: Agentes de Base de Datos (Text-to-SQL)
+Este enfoque le da a la IA el "mapa" de tu base de datos y le permite escribir y ejecutar consultas SQL (`SELECT`) directamente. Generalmente se implementa usando el nodo *SQL Agent* de **n8n**.
+
+**El Flujo:**
+1.  **El Gerente dice:** *"¿Cuántos contratos firmamos hoy en el proyecto X?"*.
+2.  **La IA deduce:** Convierte esa frase a `SELECT COUNT(*) FROM contratos WHERE proyecto = 'X' AND DATE(created_at) = CURDATE()`.
+3.  **n8n ejecuta:** n8n toma ese SQL generado, lo ejecuta contra la base de datos (con un usuario de *solo lectura*), y devuelve el resultado a la IA.
+
+**Desventajas y Cuándo Usarlo:**
+*   **Riesgo de "Alucinaciones":** La IA podría escribir mal la consulta si la estructura de la base de datos es muy compleja (muchos *JOINs*).
+*   **No recomendado para clientes finales:** Es peligroso e ineficiente que la IA genere SQL dinámico cada vez que un cliente pregunta por su lote.
+*   **Recomendación:** Este enfoque es útil **solo para un bot interno** (uso administrativo/gerencial) donde un usuario interno quiere hacer preguntas analíticas o estadísticas complejas que no valdría la pena programar como un endpoint fijo de Laravel.
 
 ---
 
@@ -80,10 +114,22 @@ Dado que contamos con un **servidor dedicado**, Reverb es la opción ideal:
 
 ## 🤖 Orquestador de IA Opcional: n8n (Self-Hosted)
 
-Si se desea agilizar la creación de flujos conversacionales y evitar programar la lógica de negocio de la IA manualmente en PHP, se recomienda integrar **n8n**.
+Si se desea agilizar la creación de flujos conversacionales y evitar programar la lógica de negocio de la IA manualmente en PHP, se recomienda integrar **n8n**. 
 
-Dado que contamos con un **servidor dedicado**, la opción ideal y lógica es usar la versión **Self-Hosted (100% Gratuita)**:
-*   **Instalación:** Se despliega fácilmente mediante **Docker** en la misma máquina donde reside nuestro proyecto Laravel, operando en un puerto separado (ej. 5678).
-*   **Ahorro Económico:** Al auto-alojarlo con nuestros propios recursos (RAM/CPU), es gratuito de por vida. Evitamos cualquier pago mensual o restricciones en la cantidad de envíos/ejecuciones.
-*   **Privacidad y Seguridad:** Los datos sensibles de los clientes y transacciones fluyen directamente desde la API oficial de Meta hacia nuestro propio servidor y hacia la IA, sin ser retenidos por servidores de orquestación de terceros.
-*   **Delegación Operativa:** Permite que cualquier cambio en el comportamiento del chatbot o conexión a nuevos documentos (como PDFs para RAG) se realice mediante un panel cien por ciento visual, liberando a los desarrolladores de modificar `c:\laragon\www\aybar` a cada instante.
+**¿Cuál es el rol de n8n vs Laravel?**
+* **Laravel (El Cerebro de Datos):** Sigue siendo dueño de la base de datos MySQL. Se encarga de exponer los Endpoints (`/api/ia/consultar-prospecto`).
+* **n8n (El Director de Orquesta):** En lugar de escribir en Laravel todo el código de *"Si el cliente dice X, mándale el prompt Y a OpenAI y luego junta el JSON"*, lo haces visualmente en n8n arrastrando cajitas. n8n recibe el mensaje de WhatsApp, llama a OpenAI, y si OpenAI necesita datos, n8n es quien hace la petición HTTP a tu Endpoint de Laravel.
+
+**Ventajas y Detalles de usar n8n Self-Hosted (en servidor dedicado):**
+*   **Costos (¡Es Gratis!):** n8n tiene una versión "Community Edition" que es **100% gratuita de por vida** si la alojas tú mismo. A diferencia de su versión de pago en la nube (n8n Cloud) o herramientas como Zapier, al alojarlo en tu servidor no hay límites de tareas ni pagos mensuales.
+*   **Instalación requerida (Docker):** Sí, para que sea gratis, tú debes gestionar el software. Se instala usando **Docker** directamente en tu servidor dedicado. Correrá junto a tu proyecto de Laravel pero en un puerto diferente (ej. `tu-dominio.com:5678`).
+*   **Privacidad:** Los mensajes fluyen por nuestro propio servidor, no por un Saas externo de terceros.
+*   **Libertad Visual:** Permite ajustar el comportamiento del bot (cambiar "System Prompts", agregar documentos RAG) sin tocar el código fuente de `c:\laragon\www\aybar` a cada minuto.
+
+> **Respuesta Rápida:** Sí, n8n es gratis si usas la versión Self-Hosted. Para instalarlo, necesitas ejecutar un contenedor de Docker en tu mismo servidor. Si en el futuro prefieres no lidiar con Docker, n8n ofrece planes de pago en la nube, o puedes programar todo el bot directamente en código PHP (Laravel) sin usar n8n en absoluto.
+
+n8n: Por defecto usa el 5678.
+Laravel Reverb: Por defecto usa el 8080.
+Tu Web (Laravel): Usa el 80 (HTTP) o 443 (HTTPS).
+
+ARQUITECTURA:
