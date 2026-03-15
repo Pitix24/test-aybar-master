@@ -183,3 +183,6 @@ Esta sección define el ecosistema de servicios, sus puertos y cómo fluye la in
 
 ### 🚀 Ventaja de esta Configuración
 Al tener **n8n y Reverb** corriendo en tu propio servidor dedicado, la latencia es mínima y los costos de orquestación son cero (solo pagas por el consumo de tokens de OpenAI y minutos de Vapi/Twilio). Tu base de datos siempre está protegida detrás de los Endpoints de Laravel.
+
+
+Solución en Laravel: Tendrías que configurar Queue Workers, Redis, y Jobs para procesar todo en segundo plano. No es imposible, pero suma mucha complejidad técnica de infraestructura.
