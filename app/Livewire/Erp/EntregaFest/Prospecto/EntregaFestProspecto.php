@@ -114,7 +114,7 @@ class EntregaFestProspecto extends Component
             ->get()
             ->toArray();
 
-        Http::post(config('services.n8n.webhook_invitaciones'), [
+        Http::post(config('services.n8n.webhook_email_invitaciones'), [
             'contactos' => $contactos,
             'asunto' => 'Pre-invitación: ' . $this->evento->nombre,
             'evento' => $this->evento->nombre,
@@ -125,6 +125,27 @@ class EntregaFestProspecto extends Component
             'type' => 'success',
             'title' => '¡Pre-invitaciones enviadas!',
             'text' => 'Pre-invitaciones enviadas a ' . count($contactos) . ' prospectos ✅',
+        ]);
+    }
+
+    public function enviarPreInvitacionWhatsapp()
+    {
+        $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->whereNotNull('celular')
+            ->select('celular', 'nombres', 'email', 'dni')
+            ->get()
+            ->toArray();
+
+        Http::post(config('services.n8n.webhook_whatsapp_invitaciones'), [
+            'contactos' => $contactos,
+            'evento' => $this->evento->nombre,
+            'fecha' => $this->evento->fecha ?? '',
+        ]);
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡WhatsApp enviados!',
+            'text' => 'Pre-invitaciones WhatsApp enviadas a ' . count($contactos) . ' prospectos ✅',
         ]);
     }
 
