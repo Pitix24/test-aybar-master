@@ -57,6 +57,10 @@ return [
         'url' => env('AYBAR_SLIN_URL', 'https://aybarcorp.com/slin'),
     ],
 
+    'n8n' => [
+        'webhook_invitaciones' => env('N8N_WEBHOOK_INVITACIONES'),
+    ],
+
     'whatsapp' => [
         'token' => env('WHATSAPP_TOKEN'),
         'phone_id' => env('WHATSAPP_PHONE_ID'),

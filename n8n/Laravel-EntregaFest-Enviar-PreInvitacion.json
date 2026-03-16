@@ -1,0 +1,203 @@
+{
+  "name": "Laravel -> Enviar Pre-Invitaciones (Correo Masivo)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enviar-invitaciones",
+        "options": {}
+      },
+      "id": "73750f32-3a7b-44ef-8986-445ac781a1df",
+      "name": "Webhook (recibe de Laravel)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -208
+      ],
+      "webhookId": "a9638aec-9ed9-4184-84a6-7e654d9948e1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrae la lista de contactos del body enviado por Laravel\nconst body = $json.body ?? $json;\nconst contactos = body.contactos ?? [];\nconst asunto = body.asunto ?? 'Invitación al evento';\nconst evento = body.evento ?? '';\nconst fecha = body.fecha ?? '';\n\n// Convierte cada contacto en un item separado\nreturn contactos.map(c => ({\n  json: {\n    email:   c.email,\n    nombres: c.nombres,\n    celular: c.celular ?? '',\n    dni:     c.dni ?? '',\n    asunto,\n    evento,\n    fecha\n  }\n}));"
+      },
+      "id": "f787be81-257d-4279-a67e-035cf8f59329",
+      "name": "Expandir contactos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 50,
+        "options": {}
+      },
+      "id": "8599b306-a234-4948-9694-560b3e5f703c",
+      "name": "Split en lotes de 50",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        288,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "adm-response@aybarsac.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.asunto }}",
+        "html": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background: #f9f9f9;\">\n  <div style=\"background: #1a3c6e; padding: 20px; border-radius: 8px 8px 0 0;\">\n    <h1 style=\"color: #ffffff; margin: 0; font-size: 22px;\">Aybar Corp SAC</h1>\n  </div>\n  <div style=\"background: #ffffff; padding: 30px; border-radius: 0 0 8px 8px;\">\n    <h2 style=\"color: #1a3c6e;\">Estimado/a {{ $json.nombres }},</h2>\n    <p style=\"color: #555; font-size: 16px;\">\n      Nos complace invitarle al siguiente evento:\n    </p>\n    <div style=\"background: #f0f4ff; border-left: 4px solid #c8a951; padding: 15px; margin: 20px 0; border-radius: 4px;\">\n      <h3 style=\"color: #c8a951; margin: 0;\">{{ $json.evento }}</h3>\n      <p style=\"margin: 5px 0 0; color: #555;\">Fecha: {{ $json.fecha }}</p>\n    </div>\n    <p style=\"color: #555;\">Para mayor información comuníquese con nosotros.</p>\n    <br>\n    <p style=\"color: #333;\"><strong>Atentamente,<br>Aybar Corp SAC</strong></p>\n  </div>\n</div>\n",
+        "options": {}
+      },
+      "id": "b7664339-c96a-40ec-b858-45e2c0fd6f3e",
+      "name": "Enviar correo",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        528,
+        -112
+      ],
+      "webhookId": "652a781f-e7c5-4cd1-a02e-188a8e3cde8d",
+      "credentials": {
+        "smtp": {
+          "id": "nFrcmjvGHAuSVgqd",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "012d0c67-604c-47e4-8202-c383dc96b690",
+      "name": "Esperar 2s entre lotes",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        752,
+        -128
+      ],
+      "webhookId": "wait-invitaciones"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "54029fa4-1ed0-4a3f-bf38-05544953a62e",
+              "name": "status",
+              "value": "completado",
+              "type": "string"
+            },
+            {
+              "id": "081cfbc4-078a-4b72-b282-285a0d7faf6a",
+              "name": "mensaje",
+              "value": "Todos los correos de invitación fueron enviados",
+              "type": "string"
+            },
+            {
+              "id": "30f6259a-9cb5-4c3f-aa4e-ca64cb72cdf0",
+              "name": "timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "2beb95d4-233b-4be9-81e1-209888d24966",
+              "name": "workflow",
+              "value": "Laravel -> Enviar Pre-Invitaciones",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        -256
+      ],
+      "id": "99ac209a-83a9-4ef6-b186-bf879f3739f3",
+      "name": "Resumen Final"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook (recibe de Laravel)": {
+      "main": [
+        [
+          {
+            "node": "Expandir contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expandir contactos": {
+      "main": [
+        [
+          {
+            "node": "Split en lotes de 50",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split en lotes de 50": {
+      "main": [
+        [
+          {
+            "node": "Resumen Final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar correo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar correo": {
+      "main": [
+        [
+          {
+            "node": "Esperar 2s entre lotes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Esperar 2s entre lotes": {
+      "main": [
+        [
+          {
+            "node": "Split en lotes de 50",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4378c70c-2093-44de-97cc-0a257b8970b4",
+  "meta": {
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
+  },
+  "id": "12cHHSyUhPSvATV3",
+  "tags": []
+}

@@ -17,6 +17,10 @@
                 </a>
             @endcan
 
+            <button wire:click="enviarPreInvitacion" class="g_boton primary">
+                Enviar pre invitación <i class="fa-solid fa-envelope"></i>
+            </button>
+
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>

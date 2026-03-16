@@ -10,6 +10,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EntregaFest\EntregaFestProspectoExport;
 
@@ -103,6 +104,28 @@ class EntregaFestProspecto extends Component
             ),
             'prospectos_todo_' . $this->evento->codigo . '.xlsx'
         );
+    }
+
+    public function enviarPreInvitacion()
+    {
+        $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->whereNotNull('email')
+            ->select('email', 'nombres', 'celular', 'dni')
+            ->get()
+            ->toArray();
+
+        Http::post(config('services.n8n.webhook_invitaciones'), [
+            'contactos' => $contactos,
+            'asunto' => 'Pre-invitación: ' . $this->evento->nombre,
+            'evento' => $this->evento->nombre,
+            'fecha' => $this->evento->fecha ?? '',
+        ]);
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡Pre-invitaciones enviadas!',
+            'text' => 'Pre-invitaciones enviadas a ' . count($contactos) . ' prospectos ✅',
+        ]);
     }
 
     public function render()
