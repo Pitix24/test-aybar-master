@@ -8,6 +8,7 @@ use App\Models\WhatsappConversacion;
 use App\Models\WhatsappMensaje;
 use App\Models\Cliente;
 use App\Jobs\ProcessIncomingWhatsapp;
+use App\Models\WhatsappContacto;
 
 class WhatsappController extends Controller
 {
@@ -56,6 +57,82 @@ class WhatsappController extends Controller
         } catch (\Exception $e) {
             Log::channel('whatsapp')->error("Error al despachar job: " . $e->getMessage());
             return response('Error', 500);
+        }
+    }
+
+    /**
+     * Guarda un mensaje interno enviado desde n8n
+     */
+    public function storeInternal(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'wa_id' => 'required|string',
+                'nombre_wa' => 'nullable|string',
+                'direccion' => 'required|in:entrante,saliente',
+                'tipo' => 'required|string',
+                'contenido' => 'required|string',
+                'wa_message_id' => 'required|string',
+            ]);
+
+            $wa_id = $validated['wa_id'];
+            $profileName = $validated['nombre_wa'] ?? 'Usuario WhatsApp';
+
+            // 1. Buscar o crear el CONTACTO
+            $contacto = WhatsappContacto::where('wa_id', $wa_id)->first();
+            if (!$contacto) {
+                $cleanFrom = str_replace('+', '', $wa_id);
+                $cliente = Cliente::where('telefono_principal', 'LIKE', "%$cleanFrom%")->first();
+                $contacto = WhatsappContacto::create([
+                    'wa_id' => $wa_id,
+                    'nombre_wa' => $profileName,
+                    'numero_celular' => $wa_id,
+                    'cliente_id' => $cliente ? $cliente->id : null
+                ]);
+            }
+
+            // 2. Buscar conversación activa
+            $conversacion = WhatsappConversacion::where('contacto_id', $contacto->id)
+                ->where('estado', '!=', 'cerrado')
+                ->latest()
+                ->first();
+
+            if (!$conversacion) {
+                $conversacion = WhatsappConversacion::create([
+                    'contacto_id' => $contacto->id,
+                    'cliente_id' => $contacto->cliente_id,
+                    'estado' => 'nuevo',
+                    'last_message_at' => now()
+                ]);
+            }
+
+            // Actualizar metadata
+            if ($validated['direccion'] === 'entrante' && $conversacion->estado !== 'asignado') {
+                $conversacion->increment('mensajes_sin_leer');
+            }
+            $conversacion->update(['last_message_at' => now()]);
+
+            // 3. Guardar el mensaje (revisar si ya existe por wa_message_id para evitar duplicados de n8n)
+            $mensaje = WhatsappMensaje::updateOrCreate(
+                ['wa_message_id' => $validated['wa_message_id']],
+                [
+                    'conversacion_id' => $conversacion->id,
+                    'direccion' => $validated['direccion'],
+                    'tipo' => $validated['tipo'],
+                    'contenido' => $validated['contenido'],
+                    'estado' => 'leido'
+                ]
+            );
+
+            return response()->json([
+                'status' => 'success',
+                'message_id' => $mensaje->id,
+                'conversacion_id' => $conversacion->id
+            ]);
+
+        } catch (\Exception $e) {
+            Log::channel('whatsapp')->error("Error en storeInternal: " . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 

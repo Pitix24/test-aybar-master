@@ -41,6 +41,9 @@ Route::middleware('api')->group(function () {
     Route::get('/slin/comprobante', [SlinController::class, 'getComprobante'])->name('slin.comprobante');
     Route::post('/slin/guardar-evidencia', [SlinController::class, 'postGuardarEvidencia'])->name('slin.guardar-evidencia');
 
+    // WhatsApp internal save (from n8n)
+    Route::post('/whatsapp/internal/store', [WhatsappController::class, 'storeInternal']);
+
     // WhatsApp CRM Webhook
     Route::get('/whatsapp/webhook', [WhatsappController::class, 'verifyWebhook']);
     Route::post('/whatsapp/webhook', [WhatsappController::class, 'handleWebhook']);
