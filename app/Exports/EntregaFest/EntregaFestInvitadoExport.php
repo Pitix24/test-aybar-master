@@ -39,7 +39,7 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
     public function collection()
     {
         $query = InvitadoEntregaFest::query()
-            ->with(['prospecto.proyecto', 'prospecto.user'])
+            ->with(['prospecto.proyecto', 'prospecto.user', 'acompanantes'])
             ->where('entrega_fest_id', $this->entrega_fest_id);
 
         if (!$this->todo) {
@@ -80,7 +80,7 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
             default => $item->transporte,
         };
 
-        return [
+        $data = [
             $index,
             $item->codigo_invitado,
             $item->dni,
@@ -93,6 +93,15 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
             $item->confirmado ? 'SÍ' : 'NO',
             $item->created_at->format('d/m/Y H:i'),
         ];
+
+        // Agregar datos de hasta 3 acompañantes
+        for ($i = 0; $i < 3; $i++) {
+            $acompanante = $item->acompanantes[$i] ?? null;
+            $data[] = $acompanante ? $acompanante->nombres : '';
+            $data[] = $acompanante ? $acompanante->dni : '';
+        }
+
+        return $data;
     }
 
     public function headings(): array
@@ -109,6 +118,12 @@ class EntregaFestInvitadoExport implements FromCollection, WithHeadings, ShouldA
             'Transporte',
             'Confirmado Web',
             'Fecha Registro',
+            'Acompañante 1 Nombre',
+            'Acompañante 1 DNI',
+            'Acompañante 2 Nombre',
+            'Acompañante 2 DNI',
+            'Acompañante 3 Nombre',
+            'Acompañante 3 DNI',
         ];
     }
 }

@@ -1,0 +1,898 @@
+{
+  "name": "ava 2 Asistente OpenAI - WhatsApp API v7 (Persistencia STATE + Submenú sin bucle)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "id": "4e12a119-03a4-47bc-8313-8c6c6a87b2d7",
+      "name": "WhatsApp Trigger",
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        48
+      ],
+      "webhookId": "wa-asistente-aybar",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "ZU5BA9VOXghhBOAn",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst message = item.messages?.[0] || null;\nconst contact = item.contacts?.[0] || null;\nif (!message) return [];\n\nconst tipo = message.type;\nlet texto = '';\nif (tipo === 'text') texto = message?.text?.body ?? '';\nif (tipo === 'button') texto = message?.button?.text ?? '';\nif (tipo === 'interactive') {\n  texto = message?.interactive?.button_reply?.title ?? message?.interactive?.list_reply?.title ?? '';\n}\ntexto = (texto || '').trim();\nif (!texto) return [];\n\nreturn [{ json: { from: message.from, messageId: message.id, tipo, texto, nombre: contact?.profile?.name ?? 'Cliente' } }];\n"
+      },
+      "id": "579cc827-712f-4c09-907c-61926faf9dfc",
+      "name": "Parsear Mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -304,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $(\"Parsear Mensaje\").item.json.from }}",
+        "contextWindowLength": 20
+      },
+      "id": "ee0f0e45-c143-4e72-8a14-281bfba3ba48",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "554de03a-3186-4e45-b592-354a9dbbfac2",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        288
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "q695YCGVaztjeNOj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "Clasifica el mensaje del usuario en UN SOLO intent. Responde SOLO con una palabra:\nBIENVENIDA\nCONSULTA_CLIENTE\nCOMPRA\nEMPRESA\nASESOR\n\nReglas:\n- BIENVENIDA: hola/menú/opciones.\n- CONSULTA_CLIENTE: soy cliente, mis proyectos, lotes, contrato, estado, o envía documento.\n- COMPRA: quiero comprar, precios, info.\n- EMPRESA: quiénes son, ubicación, horario.\n- ASESOR: asesor/humano.\nSi hay duda: CONSULTA_CLIENTE."
+        }
+      },
+      "id": "eb786883-21df-4db5-991d-4ccf8a2aee84",
+      "name": "Intent Classifier (AI)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -80,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = ($json.output || '').trim().toUpperCase();\nconst allowed = new Set(['BIENVENIDA','CONSULTA_CLIENTE','COMPRA','EMPRESA','ASESOR']);\nconst intent = allowed.has(raw) ? raw : 'CONSULTA_CLIENTE';\nreturn [{ json: { ...$json, intent } }];\n"
+      },
+      "id": "0834d663-28a5-4f89-a002-8d155426f43b",
+      "name": "Normalizar Intent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "BIENVENIDA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "BIENVENIDA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "CONSULTA_CLIENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "CONSULTA_CLIENTE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "COMPRA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "COMPRA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "EMPRESA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "EMPRESA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "ASESOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "ASESOR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ca8b7284-3889-4f97-8e77-526f37fd2e81",
+      "name": "Switch Intent",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        352,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, output: \"¡Hola! 👋 Bienvenido a *Aybar Corp SAC*.\\nSoy Aya, tu asistente virtual. ¿En qué puedo ayudarte hoy?\\n1️⃣ Soy cliente — consultar mis proyectos\\n2️⃣ Quiero comprar — información de proyectos\\n3️⃣ Información de la empresa\\n4️⃣ Hablar con un asesor\" } }];"
+      },
+      "id": "d9fc42cc-06a5-4ecc-8b12-197f694c1ef9",
+      "name": "Agente Bienvenida (leaf)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "={{ $json.from }}"
+      },
+      "id": "db72fb45-8a55-428e-9b14-88dda383ef2e",
+      "name": "Data Store Get STATE",
+      "type": "n8n-nodes-base.dataStore",
+      "typeVersion": 1,
+      "position": [
+        560,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const v = $json.value;\nlet state = null;\nif (v) {\n  try { state = typeof v === 'string' ? JSON.parse(v) : v; } catch(e) { state = null; }\n}\nreturn [{ json: { ...$json, state, tiene_state: !!state } }];\n"
+      },
+      "id": "b95f7576-cb1a-47e1-abf1-4463a6961432",
+      "name": "Parse STATE del Data Store",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.tiene_state }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c5bb4542-47dc-48eb-9b5c-faaf978f1ef6",
+      "name": "IF Ya hay STATE guardado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "Eres Aya. SOLO verificas cliente.\n\nSi el mensaje NO parece documento (solo dígitos o CE+digitos), responde EXACTAMENTE:\n\"Hola, estoy aquí para ayudarte. 👋  \nPor favor, ingresa tu número de documento nuevamente:  \n📄 DNI / Carnet de Extranjería / RUC\"\n(NO llames tools)\n\nSi el mensaje SI parece documento:\n- envíalo TAL CUAL (trim) a consultar_cliente como numero_documento.\n\nSi API no encuentra: responde el texto de no encontrado.\n\nSi API encuentra:\n- Responde el submenú y AL FINAL agrega:\nSTATE: {\"apellidos_nombres\":\"...\",\"empresas\":[{\"codigo\":\"...\",\"id_empresa\":\"...\",\"razon_social\":\"...\"}]}\n(STATE en última línea, JSON válido.)"
+        }
+      },
+      "id": "32c4ed50-3b62-4e5a-9985-94c292d51b65",
+      "name": "Agente Cliente (verifica)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1248,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = $json.output || '';\nconst match = out.match(/STATE:\\s*(\\{[\\s\\S]*\\})\\s*$/);\nlet state = null;\nlet cleanOutput = out;\nif (match) {\n  try { state = JSON.parse(match[1]); cleanOutput = out.replace(match[0], '').trim(); } catch(e) { state = null; }\n}\nreturn [{ json: { ...$json, output: cleanOutput, state, tiene_state: !!state } }];\n"
+      },
+      "id": "338636a1-463a-43c1-9964-bdaa7ac21822",
+      "name": "Extraer STATE (del output)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $json.from }}",
+        "value": "={{ JSON.stringify($json.state) }}"
+      },
+      "id": "b972cffd-f12f-4a5d-b75c-a3881d20e032",
+      "name": "Data Store Set STATE",
+      "type": "n8n-nodes-base.dataStore",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.tiene_state }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "10eba765-9b9a-4651-bf6b-77a712b5a0a7",
+      "name": "IF Cliente verificado (tiene STATE)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "Clasifica la opción del submenú de CLIENTE. Responde SOLO:\nPROYECTOS\nLOTES\nMENU\n\n- PROYECTOS: 1, 'proyectos'\n- LOTES: 2, 'lotes'\n- MENU: 3, 'menú principal'\nSi duda: LOTES."
+        }
+      },
+      "id": "b89d61ef-0b8a-49bc-92a9-62aea7521b24",
+      "name": "Submenu Classifier (AI)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1248,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = ($json.output || '').trim().toUpperCase();\nconst allowed = new Set(['PROYECTOS','LOTES','MENU']);\nconst submenu_intent = allowed.has(raw) ? raw : 'LOTES';\nreturn [{ json: { ...$json, submenu_intent } }];\n"
+      },
+      "id": "a6c744d5-ef72-40d4-8887-a178a38f360c",
+      "name": "Normalizar Submenu Intent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.submenu_intent }}",
+                    "rightValue": "PROYECTOS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "PROYECTOS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.submenu_intent }}",
+                    "rightValue": "LOTES",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "LOTES"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.submenu_intent }}",
+                    "rightValue": "MENU",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "MENU"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8853f942-fc55-41a0-9d3c-1ccc5184d6e1",
+      "name": "Switch Submenú Cliente",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        1648,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const state = $json.state;\nif (!state?.empresas?.length) {\n  return [{ json: { ...$json, output: 'Primero necesito identificarte. Envíame tu documento:\\n📄 DNI / Carnet de Extranjería / RUC' } }];\n}\nconst lines = ['Estos son tus proyectos/empresas:'];\nstate.empresas.forEach((e,i)=>lines.push(`${i+1}️⃣ ${e.razon_social}`));\nreturn [{ json: { ...$json, output: lines.join('\\n') } }];\n"
+      },
+      "id": "f263c794-a400-4182-91a2-bca6658127df",
+      "name": "Agente Proyectos (leaf)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "Eres Aya. Atiendes LOTES. Tienes state.empresas.\nSi hay 1 empresa, llama consultar_lotes con su (codigo,id_empresa).\nSi hay varias, pide elegir (1/2/3) y luego llama consultar_lotes con el par exacto.\nNunca mezcles codigo con id_empresa.\nSi []: indica sin lotes.\nSi hay lotes: lista breve."
+        }
+      },
+      "id": "fc8d985b-9971-4dc3-a3c8-293bcca4d153",
+      "name": "Agente Lotes (AI + tools)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1840,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ $json.from }}"
+      },
+      "id": "5022465e-67ff-4af1-b582-c0b2b9afd217",
+      "name": "Data Store Delete STATE",
+      "type": "n8n-nodes-base.dataStore",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, output: \"¡Hola! 👋 Bienvenido a *Aybar Corp SAC*.\\nSoy Aya, tu asistente virtual. ¿En qué puedo ayudarte hoy?\\n1️⃣ Soy cliente — consultar mis proyectos\\n2️⃣ Quiero comprar — información de proyectos\\n3️⃣ Información de la empresa\\n4️⃣ Hablar con un asesor\" } }];"
+      },
+      "id": "79e52450-5da8-405c-9ec9-3cefe075596f",
+      "name": "Agente Bienvenida (leaf) [from redirect]",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2048,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "111079285343903",
+        "recipientPhoneNumber": "={{ $json.from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "id": "e6ab0c8d-cfc7-4ea5-972b-1a200e72fb86",
+      "name": "Send message",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        0
+      ],
+      "webhookId": "556a9e67-dd86-4cae-80a8-54b2f3b033d3",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "wsfypPUomJK3uU3v",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Consulta los proyectos/empresas de un cliente por número de documento (DNI/CE/RUC).",
+        "url": "=https://aybarcorp.com/slin/cliente/{{ $fromAI('numero_documento', 'Documento tal cual (DNI/CE/RUC)') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1440,
+        320
+      ],
+      "id": "b3460b6a-011c-46e0-a5fb-f75614d9d4e8",
+      "name": "consultar_cliente"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Consulta lotes por empresa.",
+        "url": "=https://aybarcorp.com/slin/lotes?id_cliente={{ $fromAI('id_cliente', 'codigo') }}&id_empresa={{ $fromAI('id_empresa', 'id_empresa') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        2048,
+        -64
+      ],
+      "id": "2374ec66-0a25-4609-8a55-bceda9ed54e2",
+      "name": "consultar_lotes"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parsear Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Mensaje": {
+      "main": [
+        [
+          {
+            "node": "Intent Classifier (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Classifier (AI)": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Intent": {
+      "main": [
+        [
+          {
+            "node": "Switch Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Intent": {
+      "main": [
+        [
+          {
+            "node": "Agente Bienvenida (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Agente Bienvenida (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Bienvenida (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Bienvenida (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Bienvenida (leaf)": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse STATE del Data Store": {
+      "main": [
+        [
+          {
+            "node": "IF Ya hay STATE guardado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Ya hay STATE guardado?": {
+      "main": [
+        [
+          {
+            "node": "Submenu Classifier (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Cliente (verifica)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Cliente (verifica)": {
+      "main": [
+        [
+          {
+            "node": "Extraer STATE (del output)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Cliente verificado (tiene STATE)?": {
+      "main": [
+        [
+          {
+            "node": "Submenu Classifier (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submenu Classifier (AI)": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Submenu Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Submenu Intent": {
+      "main": [
+        [
+          {
+            "node": "Switch Submenú Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Submenú Cliente": {
+      "main": [
+        [
+          {
+            "node": "Agente Proyectos (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Lotes (AI + tools)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Proyectos (leaf)": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Lotes (AI + tools)": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Bienvenida (leaf) [from redirect]": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultar_cliente": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Cliente (verifica)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultar_lotes": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Lotes (AI + tools)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Intent Classifier (AI)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agente Cliente (verifica)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Submenu Classifier (AI)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agente Lotes (AI + tools)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Intent Classifier (AI)",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Agente Cliente (verifica)",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Submenu Classifier (AI)",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Agente Lotes (AI + tools)",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "daa87834-97f7-46df-a438-d5342d7e2ccf",
+  "meta": {
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
+  },
+  "id": "Ynd4xnur2XuwdIT3",
+  "tags": []
+}
