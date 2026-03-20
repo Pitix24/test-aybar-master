@@ -15,6 +15,8 @@ class CopropietarioEntregaFest extends Model
         'nombres',
         'email',
         'celular',
+        'enviado_preinvitacion',
+        'preinvitacion_confirmada',
     ];
 
     /**

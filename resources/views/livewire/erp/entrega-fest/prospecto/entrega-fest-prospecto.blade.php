@@ -17,7 +17,7 @@
                 </a>
             @endcan
 
-            <button wire:click="enviarPreInvitacion" class="g_boton primary">
+            <button wire:click="enviarPreInvitacionLaravel" class="g_boton primary">
                 Enviar pre invitación <i class="fa-solid fa-envelope"></i>
             </button>
 

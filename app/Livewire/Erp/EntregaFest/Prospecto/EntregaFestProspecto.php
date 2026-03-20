@@ -11,6 +11,9 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EntregaFest\PreInvitacionPropietarioMail;
+use App\Mail\EntregaFest\PreInvitacionCopropietarioMail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EntregaFest\EntregaFestProspectoExport;
 
@@ -106,6 +109,39 @@ class EntregaFestProspecto extends Component
         );
     }
 
+    public function enviarPreInvitacionLaravel()
+    {
+        $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->whereNotNull('email')
+            ->with(['proyecto', 'copropietarios'])
+            ->get();
+
+        $contadorEmails = 0;
+
+        /** @var \App\Models\ProspectoEntregaFest $prospecto */
+        foreach ($contactos as $prospecto) {
+            // Enviar al Propietario
+            Mail::to($prospecto->email)->queue(new PreInvitacionPropietarioMail($prospecto));
+            $prospecto->update(['enviado_preinvitacion' => true]);
+            $contadorEmails++;
+
+            // Enviar a los Copropietarios
+            foreach ($prospecto->copropietarios as $copropietario) {
+                if ($copropietario->email) {
+                    Mail::to($copropietario->email)->queue(new PreInvitacionCopropietarioMail($copropietario));
+                    $copropietario->update(['enviado_preinvitacion' => true]);
+                    $contadorEmails++;
+                }
+            }
+        }
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡Pre-invitaciones enviadas!',
+            'text' => 'Se han enviado ' . $contadorEmails . ' correos a propietarios y copropietarios ✅',
+        ]);
+    }
+
     public function enviarPreInvitacion()
     {
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
@@ -118,7 +154,7 @@ class EntregaFestProspecto extends Component
             'contactos' => $contactos,
             'asunto' => 'Pre-invitación: ' . $this->evento->nombre,
             'evento' => $this->evento->nombre,
-            'fecha' => $this->evento->fecha ?? '',
+            'fecha' => $this->evento->fecha_entrega ?? '',
         ]);
 
         $this->dispatch('alertaLivewire', [

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\CavaliController;
 use App\Http\Controllers\SlinController;
+use App\Livewire\Public\EntregaFest\PreInvitacionPropietario;
+use App\Livewire\Public\EntregaFest\PreInvitacionCopropietario;
 use App\Livewire\Public\EntregaFest\AsistenciaPublica;
 use App\Livewire\Public\EntregaFest\AsistenciaPublicaCopropietario;
 use App\Livewire\Public\EntregaFest\FirmaPublica;
@@ -30,12 +32,20 @@ Route::get('/cavali/constancia/ver/{numeroLetra}', [CavaliController::class, 've
 Route::get('/cavali/constancia/validar/{numeroLetra}', [CavaliController::class, 'validarLetra'])->name('cavali.constancia.validar');
 Route::post('/consulta-codigo-cliente', [ConsultaCodigoClienteController::class, 'consultarClienteDbApi'])->name('consulta-codigo-cliente');
 
+// Entrega Fest - Pre-Invitación (Titular)
+Route::get('/pre-invitacion/{slug}/{id}', PreInvitacionPropietario::class)
+    ->name('public.entrega-fest.pre-invitacion');
+
+// Entrega Fest - Pre-Invitación (Copropietario)
+Route::get('/pre-invitacion-copropietario/{slug}/{copropietarioId}', PreInvitacionCopropietario::class)
+    ->name('public.entrega-fest.pre-invitacion.copropietario');
+
 // Entrega Fest - Asistencia Pública (Titular)
-Route::get('/evento/{slug}/{id}', AsistenciaPublica::class)
+Route::get('/asistencia/{slug}/{id}', AsistenciaPublica::class)
     ->name('public.entrega-fest.asistencia');
 
 // Entrega Fest - Asistencia Pública (Copropietario)
-Route::get('/evento/{slug}/copropietario/{copropietarioId}', AsistenciaPublicaCopropietario::class)
+Route::get('/asistencia-copropietario/{slug}/{copropietarioId}', AsistenciaPublicaCopropietario::class)
     ->name('public.entrega-fest.asistencia.copropietario');
 
 // Entrega Fest - Agendamiento Firma de Contrato (solo Titular)

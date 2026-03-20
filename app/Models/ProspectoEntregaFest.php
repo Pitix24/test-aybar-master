@@ -87,6 +87,8 @@ class ProspectoEntregaFest extends Model
         'estado_firma_contrato_firmado',
         'fecha_firma',
         'fecha_generacion_contrato',
+        'enviado_preinvitacion',
+        'preinvitacion_confirmada',
     ];
 
     // ---------------------------------------------------------------
