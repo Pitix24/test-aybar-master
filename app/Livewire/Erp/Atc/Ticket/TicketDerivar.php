@@ -47,7 +47,7 @@ class TicketDerivar extends Component
         $this->ticket = Ticket::with(['area', 'gestor', 'estado'])->findOrFail($id);
 
         $this->areas = Area::where('activo', true)
-            ->where('id', '!=', $this->ticket->area_id)
+            //->where('id', '!=', $this->ticket->area_id)
             ->orderBy('nombre')
             ->get();
 
