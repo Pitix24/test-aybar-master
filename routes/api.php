@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Erp\ProspectoEntregaFestController;
 use App\Http\Controllers\SlinController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
@@ -47,4 +48,6 @@ Route::middleware('api')->group(function () {
     // WhatsApp CRM Webhook
     Route::get('/whatsapp/webhook', [WhatsappController::class, 'verifyWebhook']);
     Route::post('/whatsapp/webhook', [WhatsappController::class, 'handleWebhook']);
+
+    Route::post('/entrega-fest/marcar-enviado', [ProspectoEntregaFestController::class, 'marcarEnviado']);
 });

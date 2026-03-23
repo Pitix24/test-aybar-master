@@ -79,3 +79,5 @@ C:\laragon\bin\ngrok\ngrok.exe http 8000 --region=sa
 C:\laragon\bin\ngrok\ngrok.exe http 5678
 http://host.docker.internal:8000/api/whatsapp/internal/store
 https://darcie-semitropical-todd.ngrok-free.dev/webhook-test/enviar-invitaciones
+
+http://host.docker.internal:8000/api/entrega-fest/marcar-enviado
