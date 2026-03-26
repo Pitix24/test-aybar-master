@@ -45,6 +45,9 @@ class EntregaFestProspecto extends Component
     public $grupo = '';
 
     #[Url(keep: true)]
+    public $filtro_confirmacion = '';
+
+    #[Url(keep: true)]
     public $perPage = 20;
 
     // Catálogos
@@ -58,14 +61,14 @@ class EntregaFestProspecto extends Component
 
     public function updated($property)
     {
-        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage'])) {
+        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo']);
+        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion']);
         $this->resetPage();
     }
 
@@ -186,6 +189,13 @@ class EntregaFestProspecto extends Component
             ->when($this->estado_contrato_preeliminar_emitido, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $this->estado_contrato_preeliminar_emitido))
             ->when($this->estado_firma_contrato_firmado, fn($q) => $q->where('estado_firma_contrato_firmado', $this->estado_firma_contrato_firmado))
             ->when($this->grupo, fn($q) => $q->where('grupo', $this->grupo))
+            ->when($this->filtro_confirmacion !== '', function ($query) {
+                if ($this->filtro_confirmacion === 'pendiente') {
+                    $query->whereNull('preinvitacion_confirmada');
+                } else {
+                    $query->where('preinvitacion_confirmada', $this->filtro_confirmacion);
+                }
+            })
             ->orderBy('id', 'desc')
             ->paginate($this->perPage);
 

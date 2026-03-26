@@ -24,7 +24,6 @@ return new class extends Migration {
             $table->string('email')->nullable();
             $table->string('celular')->nullable();
 
-            $table->boolean('enviado_preinvitacion')->default(false);
             $table->boolean('preinvitacion_confirmada')->nullable();
 
             $table->timestamps();

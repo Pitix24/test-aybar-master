@@ -75,6 +75,16 @@
                         <option value="D">Grupo D</option>
                     </select>
                 </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Confirmación Pre-invitación</label>
+                    <select wire:model.live="filtro_confirmacion">
+                        <option value="">Todas</option>
+                        <option value="1">Aceptó</option>
+                        <option value="0">No Aceptó</option>
+                        <option value="pendiente">Pendiente</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -128,6 +138,7 @@
                         <th>Cliente</th>
                         <th>Proyecto</th>
                         <th>Lote/Mz</th>
+                        <th class="g_celda_centro">Pre-invitación</th>
                         <th class="g_celda_centro">Fecha Culminación EECC</th>
                         <th class="g_celda_centro">Enlace Carpeta EECC</th>
                         <th class="g_celda_centro">Enlace EECC Firmado</th>
@@ -154,6 +165,15 @@
                             </td>
                             <td>{{ $p->proyecto->nombre ?? 'N/A' }}</td>
                             <td>{{ $p->lote }}{{ $p->manzana }}</td>
+                            <td class="g_celda_centro">
+                                @if (is_null($p->preinvitacion_confirmada))
+                                    <span class="g_badge info" title="Pendiente">Pendiente</span>
+                                @elseif($p->preinvitacion_confirmada)
+                                    <span class="g_badge success" title="Aceptó">Aceptó</span>
+                                @else
+                                    <span class="g_badge danger" title="Rechazó">Rechazó</span>
+                                @endif
+                            </td>
                             <td class="g_celda_centro">
                                 {{ $p->fecha_culminacion_eecc ? date('d/m/Y', strtotime($p->fecha_culminacion_eecc)) : '' }}
                             </td>
