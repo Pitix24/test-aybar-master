@@ -29,50 +29,70 @@ class EnviarInvitacionesAsistencia
         // 1. Buscamos la plantilla oficial de "confirmacion"
         $plantilla = $evento->plantillas()->where('tipo', 'confirmacion')->first();
 
-        // 2. DISPARO PARA EL TITULAR (PROPIETARIO)
+        // 2. Data del Titular (Propietario)
+        $dataPropietario = null;
         if (!$prospecto->invitado) {
             $mailPropietario = new AsistenciaLinkMail($prospecto);
-            $this->enviarAN8N($prospecto, $evento, $plantilla, $mailPropietario->render(), 'Propietario', route('public.entrega-fest.asistencia', [$evento->slug, $prospecto->id]));
+            $dataPropietario = [
+                'id'      => $prospecto->id,
+                'nombres' => $prospecto->nombres,
+                'email'   => $prospecto->email,
+                'celular' => $prospecto->celular,
+                'dni'     => $prospecto->dni,
+                'link'    => $mailPropietario->link,
+                'html'    => $mailPropietario->render(),
+                'tipo'    => 'Propietario',
+            ];
         }
 
-        // 3. DISPARO PARA CADA COPROPIETARIO
+        // 3. Data de Copropietarios
+        $dataCopropietarios = [];
         foreach ($prospecto->copropietarios as $cop) {
             if ($cop->invitado) continue;
-            
-            $mailCopro = new \App\Mail\EntregaFest\AsistenciaLinkCopropietarioMail($cop);
-            $this->enviarAN8N($cop, $evento, $plantilla, $mailCopro->render(), 'Copropietario', route('public.entrega-fest.asistencia.copropietario', [$evento->slug, $cop->id]));
+
+            $mailCopro = new AsistenciaLinkCopropietarioMail($cop);
+            $dataCopropietarios[] = [
+                'id'      => $cop->id,
+                'nombres' => $cop->nombres,
+                'email'   => $cop->email,
+                'celular' => $cop->celular,
+                'dni'     => $cop->dni,
+                'link'    => $mailCopro->link,
+                'html'    => $mailCopro->render(),
+                'tipo'    => 'Copropietario',
+            ];
         }
+
+        // 4. Si no hay nadie por invitar, nos retiramos
+        if (!$dataPropietario && empty($dataCopropietarios)) {
+            return;
+        }
+
+        // 5. ENVIAMOS UN SOLO PAQUETE A N8N
+        $this->enviarPaqueteAN8N($dataPropietario, $dataCopropietarios, $evento, $plantilla);
     }
 
-    private function enviarAN8N($persona, $evento, $plantilla, $html, $tipoPersona, $link)
+    private function enviarPaqueteAN8N($propietario, $copropietarios, $evento, $plantilla)
     {
         try {
             Http::post(config('services.n8n.webhook_entrega_fest_confirmacion'), [
-                'contacto' => [
-                    'id'      => $persona->id,
-                    'email'   => $persona->email,
-                    'nombres' => $persona->nombres,
-                    'celular' => $persona->celular,
-                    'dni'     => $persona->dni,
-                    'link'    => $link,
-                    'html'    => $html,
-                    'tipo'    => $tipoPersona,
-                ],
-                'evento'   => $evento->nombre,
-                'plantilla' => [
+                'titular'        => $propietario,
+                'copropietarios' => $copropietarios,
+                'evento'         => $evento->nombre,
+                'plantilla'      => [
                     'titulo'      => $plantilla?->titulo ?? '¡Confirmación Oficial!: ' . $evento->nombre,
                     'subtitulo'   => $plantilla?->subtitulo ?? 'Te invitamos a confirmar tu asistencia.',
                     'descripcion' => $plantilla?->descripcion ?? '',
                     'imagen_url'  => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton'  => $plantilla?->link_boton ?? '',
                 ],
-                'etapa' => 'invitacion' // Muy importante para tu API de historial
+                'etapa' => 'confirmacion' // Etapa para historial
             ]);
 
-            Log::channel('entrega-fest')->info("[INVITACION-INDIVIDUAL-N8N] Enviada a {$tipoPersona} #{$persona->id}");
+            Log::channel('entrega-fest')->info("[INVITACION-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$propietario['id']} con " . count($copropietarios) . " copropietarios.");
 
         } catch (\Exception $e) {
-            Log::error("[INVITACION-INDIVIDUAL-N8N] Error: " . $e->getMessage());
+            Log::error("[INVITACION-PAQUETE-N8N] Error: " . $e->getMessage());
         }
     }
 
