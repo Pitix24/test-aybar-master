@@ -29,6 +29,7 @@ class StaffProveedoresEditar extends Component
     public $h_show;
     public $h_desmontaje;
     public $estado = 'CONFIRMADO';
+    public $observaciones = '';
 
     public $requerimientos = []; // List of objects (id and text)
 
@@ -46,6 +47,7 @@ class StaffProveedoresEditar extends Component
         $this->h_show = $this->proveedor->h_show;
         $this->h_desmontaje = $this->proveedor->h_desmontaje;
         $this->estado = $this->proveedor->estado;
+        $this->observaciones = $this->proveedor->observaciones;
 
         foreach ($this->proveedor->requerimientos as $req) {
             $this->requerimientos[] = [
@@ -68,6 +70,7 @@ class StaffProveedoresEditar extends Component
             'h_show' => 'nullable',
             'h_desmontaje' => 'nullable',
             'estado' => 'required|in:CONFIRMADO,EN_SITIO,COMPLETADO',
+            'observaciones' => 'nullable|string',
             'requerimientos.*.texto' => 'nullable|string|max:255',
         ];
     }
@@ -117,6 +120,7 @@ class StaffProveedoresEditar extends Component
                 'h_show' => $this->h_show ?: null,
                 'h_desmontaje' => $this->h_desmontaje ?: null,
                 'estado' => $this->estado,
+                'observaciones' => trim($this->observaciones),
             ]);
 
             // Sync requirements

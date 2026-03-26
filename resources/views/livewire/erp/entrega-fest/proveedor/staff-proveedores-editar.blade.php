@@ -105,7 +105,7 @@
             </form>
         </div>
 
-        <div class="g_columna_4">
+        <div class="g_columna_4 g_gap_pagina">
             <div class="g_panel">
                 <h4 class="g_panel_titulo"><i class="fa-solid fa-list-check"></i> Requerimientos Técnicos</h4>
                 <p class="g_panel_parrafo">Añade qué necesita el proveedor (puntos de luz, agua, espacio libre, etc.)
@@ -127,6 +127,12 @@
                         <i class="fa-solid fa-plus"></i> Añadir Requerimiento
                     </button>
                 </div>
+            </div>
+
+            <div class="g_panel formulario">
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-list-check"></i> Observaciones </h4>
+                <p class="g_panel_parrafo g_margin_bottom_10">Observaciones adicionales sobre el proveedor.</p>
+                <textarea wire:model="observaciones" placeholder="Escribir observaciones..." rows="8"></textarea>
             </div>
         </div>
     </div>

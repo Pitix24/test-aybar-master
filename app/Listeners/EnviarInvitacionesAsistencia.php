@@ -12,6 +12,7 @@ use App\Models\WhatsappMensaje;
 use App\Services\WhatsappService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 
 class EnviarInvitacionesAsistencia
 {
@@ -25,62 +26,54 @@ class EnviarInvitacionesAsistencia
         $prospecto = $event->prospecto->fresh(['invitado', 'copropietarios.invitado', 'entregaFest']);
         $evento = $prospecto->entregaFest;
 
-        $enviadosEmail = 0;
-        $enviadosWsp = 0;
+        // 1. Buscamos la plantilla oficial de "confirmacion"
+        $plantilla = $evento->plantillas()->where('tipo', 'confirmacion')->first();
 
-        // ── 1. TITULAR ──────────────────────────────────────────────────
+        // 2. DISPARO PARA EL TITULAR (PROPIETARIO)
         if (!$prospecto->invitado) {
-            if ($prospecto->email) {
-                try {
-                    Mail::to($prospecto->email)->send(new AsistenciaLinkMail($prospecto));
-                    $enviadosEmail++;
-                } catch (\Exception $e) {
-                    Log::error("[INVITACION-ASISTENCIA] Correo titular {$prospecto->email}: " . $e->getMessage());
-                }
-            }
-
-            if ($prospecto->celular) {
-                $celular = $this->formatearCelular($prospecto->celular);
-                $link = route('public.entrega-fest.asistencia', [$evento->slug, $prospecto->id]);
-                $mensaje = "Hola *{$prospecto->nombres}*, ya tenemos tu evaluación lista para el evento *{$evento->nombre}*. Confirma tu asistencia aquí: $link";
-
-                $response = $this->whatsapp->sendText($celular, $mensaje);
-                if ($response) {
-                    $enviadosWsp++;
-                    $this->registrarMensajeWsp($celular, $prospecto->nombres, $prospecto->dni, $mensaje, $response['messages'][0]['id'] ?? 'AUTO_' . uniqid());
-                }
-            }
+            $mailPropietario = new AsistenciaLinkMail($prospecto);
+            $this->enviarAN8N($prospecto, $evento, $plantilla, $mailPropietario->render(), 'Propietario', route('public.entrega-fest.asistencia', [$evento->slug, $prospecto->id]));
         }
 
-        // ── 2. COPROPIETARIOS ────────────────────────────────────────────
+        // 3. DISPARO PARA CADA COPROPIETARIO
         foreach ($prospecto->copropietarios as $cop) {
-            if ($cop->invitado) {
-                continue;
-            }
-
-            if ($cop->email) {
-                try {
-                    Mail::to($cop->email)->send(new AsistenciaLinkCopropietarioMail($cop));
-                    $enviadosEmail++;
-                } catch (\Exception $e) {
-                    Log::error("[INVITACION-ASISTENCIA] Correo copropietario {$cop->email}: " . $e->getMessage());
-                }
-            }
-
-            if ($cop->celular) {
-                $celular = $this->formatearCelular($cop->celular);
-                $link = route('public.entrega-fest.asistencia.copropietario', [$evento->slug, $cop->id]);
-                $mensaje = "Hola *{$cop->nombres}*, ya tienes evaluación lista para el evento *{$evento->nombre}*. Confirma tu asistencia aquí: $link";
-
-                $response = $this->whatsapp->sendText($celular, $mensaje);
-                if ($response) {
-                    $enviadosWsp++;
-                    $this->registrarMensajeWsp($celular, $cop->nombres, $cop->dni, $mensaje, $response['messages'][0]['id'] ?? 'AUTO_COP_' . uniqid());
-                }
-            }
+            if ($cop->invitado) continue;
+            
+            $mailCopro = new \App\Mail\EntregaFest\AsistenciaLinkCopropietarioMail($cop);
+            $this->enviarAN8N($cop, $evento, $plantilla, $mailCopro->render(), 'Copropietario', route('public.entrega-fest.asistencia.copropietario', [$evento->slug, $cop->id]));
         }
+    }
 
-        Log::channel('entrega-fest')->info("[INVITACION-ASISTENCIA] Prospecto {$prospecto->id}: {$enviadosEmail} correos, {$enviadosWsp} WhatsApp enviados.");
+    private function enviarAN8N($persona, $evento, $plantilla, $html, $tipoPersona, $link)
+    {
+        try {
+            Http::post(config('services.n8n.webhook_entrega_fest_confirmacion'), [
+                'contacto' => [
+                    'id'      => $persona->id,
+                    'email'   => $persona->email,
+                    'nombres' => $persona->nombres,
+                    'celular' => $persona->celular,
+                    'dni'     => $persona->dni,
+                    'link'    => $link,
+                    'html'    => $html,
+                    'tipo'    => $tipoPersona,
+                ],
+                'evento'   => $evento->nombre,
+                'plantilla' => [
+                    'titulo'      => $plantilla?->titulo ?? '¡Confirmación Oficial!: ' . $evento->nombre,
+                    'subtitulo'   => $plantilla?->subtitulo ?? 'Te invitamos a confirmar tu asistencia.',
+                    'descripcion' => $plantilla?->descripcion ?? '',
+                    'imagen_url'  => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
+                    'link_boton'  => $plantilla?->link_boton ?? '',
+                ],
+                'etapa' => 'invitacion' // Muy importante para tu API de historial
+            ]);
+
+            Log::channel('entrega-fest')->info("[INVITACION-INDIVIDUAL-N8N] Enviada a {$tipoPersona} #{$persona->id}");
+
+        } catch (\Exception $e) {
+            Log::error("[INVITACION-INDIVIDUAL-N8N] Error: " . $e->getMessage());
+        }
     }
 
     private function formatearCelular(string $raw): string

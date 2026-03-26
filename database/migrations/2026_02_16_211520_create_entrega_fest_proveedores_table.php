@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->time('h_show')->nullable();
             $table->time('h_desmontaje')->nullable();
             $table->enum('estado', ['CONFIRMADO', 'EN_SITIO', 'COMPLETADO'])->default('CONFIRMADO');
+            $table->text('observaciones')->nullable();
             $table->timestamps();
         });
     }
