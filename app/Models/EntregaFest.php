@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class EntregaFest extends Model
+class EntregaFest extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\EntregaFestFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
         'gestor_id',
@@ -88,5 +90,10 @@ class EntregaFest extends Model
     public function contingencias()
     {
         return $this->hasMany(EntregaFestContingencia::class, 'entrega_fest_id')->orderBy('orden');
+    }
+
+    public function plantillas()
+    {
+        return $this->hasMany(EntregaFestPlantilla::class, 'entrega_fest_id');
     }
 }

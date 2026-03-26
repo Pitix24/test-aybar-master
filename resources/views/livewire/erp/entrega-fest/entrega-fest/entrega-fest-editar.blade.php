@@ -28,284 +28,176 @@
         </div>
     </div>
 
-    <div class="g_fila">
+    <div class="g_fila" x-data="{ activeTab: 'general' }">
         <div class="g_columna_8">
-            <form wire:submit.prevent="update" class="formulario g_panel">
-                <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Información General</h4>
-
-                <div class="g_margin_bottom_10">
-                    <label for="estado_activo">
-                        Estado <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
-                    </label>
-
-                    <div class="g_switch-wrapper">
-                        <label class="g_switch">
-                            <input id="estado_activo" type="checkbox" wire:model.live="activo">
-                            <span class="g_switch-slider"></span>
-                        </label>
-
-                        <span class="g_switch-label">
-                            {{ $activo ? 'Activo' : 'Inactivo' }}
-                        </span>
-
-                        @error('activo')
-                            <p class="mensaje_error">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="g_fila">
-                    <div class="g_margin_bottom_10 g_columna_6">
-                        <label>Nombre del Evento <span class="obligatorio"><i
-                                    class="fa-solid fa-asterisk"></i></span></label>
-                        <input type="text" wire:model="nombre" class="@error('nombre') input-error @enderror">
-                        @error('nombre') <p class="mensaje_error">{{ $message }}</p> @enderror
-                        <p class="leyenda">Ej: Entrega Fest Verano 2026</p>
-                    </div>
-
-                    <div class="g_margin_bottom_10 g_columna_6">
-                        <label>Código único <span class="obligatorio"><i
-                                    class="fa-solid fa-asterisk"></i></span></label>
-                        <input type="text" wire:model="codigo" class="@error('codigo') input-error @enderror">
-                        @error('codigo') <p class="mensaje_error">{{ $message }}</p> @enderror
-                        <p class="leyenda">Ej: EF-2026-001</p>
-                    </div>
-                </div>
-
-                <div class="g_margin_bottom_10">
-                    <label>Descripción del Evento</label>
-                    <textarea wire:model="descripcion" rows="3"></textarea>
-                    @error('descripcion') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="g_fila">
-                    <div class="g_margin_bottom_10 g_columna_6">
-                        <label>Fecha de Entrega <span class="obligatorio"><i
-                                    class="fa-solid fa-asterisk"></i></span></label>
-                        <input type="date" wire:model="fecha_entrega"
-                            class="@error('fecha_entrega') input-error @enderror">
-                        @error('fecha_entrega') <p class="mensaje_error">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div class="g_margin_bottom_10 g_columna_6">
-                        <label>Responsable <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                        <select wire:model="gestor_id" class="@error('gestor_id') select-error @enderror">
-                            <option value="">Seleccione...</option>
-                            @foreach ($gestores as $g)
-                                <option value="{{ $g->id }}">{{ $g->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('gestor_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                    </div>
-                </div>
-
-                @if (!empty($proyectos_agregados))
-                    <div class="g_margin_bottom_10">
-                        <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Proyectos vinculados</h4>
-
-                        <div class="g_contenedor_tabla">
-                            <table class="g_tabla">
-                                <thead>
-                                    <tr>
-                                        <th>Empresa</th>
-                                        <th>Proyecto</th>
-                                        <th class="g_celda_centro">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($proyectos_agregados as $p)
-                                        <tr wire:key="p-agregado-{{ $p['id'] }}">
-                                            <td class="g_negrita">{{ $p['unidad_negocio_nombre'] }}</td>
-                                            <td>ID: {{ $p['id'] }} - {{ $p['nombre'] }} </td>
-                                            <td class="g_celda_acciones g_celda_centro">
-                                                <button type="button" wire:click="quitarProyecto({{ $p['id'] }})"
-                                                    class="g_boton danger" title="Quitar">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                @endif
-
-                <div class="formulario_botones">
-                    @can('entrega-fest.editar')
-                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-save"></i> Actualizar
-                            </span>
-                            <span wire:loading wire:target="update">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
+            <div class="g_panel" style="padding: 0;">
+                <div class="g_tab_navegacion">
+                    <div class="g_tab_botones">
+                        <button type="button" @click="activeTab = 'general'"
+                            :class="activeTab === 'general' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-circle-info"></i> Gral.
                         </button>
-                    @endcan
-
-                    <button type="button" class="g_boton cancelar" onclick="history.back()">
-                        <i class="fa-solid fa-times"></i> Cancelar
-                    </button>
+                        <button type="button" @click="activeTab = 'mensajeria'"
+                            :class="activeTab === 'mensajeria' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-envelope-open-text"></i> Mensajería
+                        </button>
+                        <button type="button" @click="activeTab = 'prospectos'"
+                            :class="activeTab === 'prospectos' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-users"></i> Prospectos
+                        </button>
+                        <button type="button" @click="activeTab = 'itinerario'"
+                            :class="activeTab === 'itinerario' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-clock"></i> Cronograma
+                        </button>
+                        <button type="button" @click="activeTab = 'mop'"
+                            :class="activeTab === 'mop' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-tasks"></i> Tareas MOP
+                        </button>
+                    </div>
                 </div>
-            </form>
+
+                <!-- TAB: GENERAL -->
+                <div x-show="activeTab === 'general'" x-transition class="g_tab_content" style="padding: 20px;">
+                    <form wire:submit.prevent="update" class="formulario">
+                        <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Información del Evento</h4>
+
+                        <div class="g_margin_bottom_10">
+                            <label for="estado_activo">Estado</label>
+                            <div class="g_switch-wrapper">
+                                <label class="g_switch">
+                                    <input id="estado_activo" type="checkbox" wire:model.live="activo">
+                                    <span class="g_switch-slider"></span>
+                                </label>
+                                <span class="g_switch-label">{{ $activo ? 'Activo' : 'Inactivo' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Nombre del Evento</label>
+                                <input type="text" wire:model="nombre">
+                            </div>
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Código único</label>
+                                <input type="text" wire:model="codigo">
+                            </div>
+                        </div>
+
+                        <div class="g_margin_bottom_10">
+                            <label>Descripción General</label>
+                            <textarea wire:model="descripcion" rows="3"></textarea>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Fecha de Entrega</label>
+                                <input type="date" wire:model="fecha_entrega">
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Responsable</label>
+                                <select wire:model="gestor_id">
+                                    <option value="">Seleccione...</option>
+                                    @foreach ($gestores as $g)
+                                        <option value="{{ $g->id }}">{{ $g->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="formulario_botones g_margin_top_10">
+                            <button type="submit" class="g_boton guardar">
+                                <i class="fa-solid fa-save"></i> Actualizar Información
+                            </button>
+                        </div>
+                    </form>
+
+                    @if (!empty($proyectos_agregados))
+                        <div class="g_margin_top_20">
+                            <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Proyectos vinculados</h4>
+                            <div class="g_contenedor_tabla">
+                                <table class="g_tabla">
+                                    <thead>
+                                        <tr>
+                                            <th>Empresa</th>
+                                            <th>Proyecto</th>
+                                            <th class="g_celda_centro">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($proyectos_agregados as $p)
+                                            <tr wire:key="p-agregado-{{ $p['id'] }}">
+                                                <td class="g_negrita">{{ $p['unidad_negocio_nombre'] }}</td>
+                                                <td>{{ $p['nombre'] }} </td>
+                                                <td class="g_celda_centro">
+                                                    <button type="button" wire:click="quitarProyecto({{ $p['id'] }})"
+                                                        class="g_boton danger small">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- TAB: MENSAJERÍA -->
+                <div x-show="activeTab === 'mensajeria'">
+                    @livewire('erp.entrega-fest.entrega-fest.entrega-fest-mensaje', ['evento' => $evento])
+                </div>
+
+                <!-- TAB: PROSPECTOS -->
+                <div x-show="activeTab === 'prospectos'">
+                   @livewire('erp.entrega-fest.entrega-fest.entrega-fest-importar-prospecto', ['evento' => $evento])
+                </div>
+
+                <!-- TAB: ITINERARIO -->
+                <div x-show="activeTab === 'itinerario'">
+                    @livewire('erp.entrega-fest.entrega-fest.entrega-fest-importar-itinerario', ['evento' => $evento])
+                </div>
+
+                <!-- TAB: TAREAS MOP -->
+                <div x-show="activeTab === 'mop'">
+                    @livewire('erp.entrega-fest.entrega-fest.entrega-fest-importar-mop', ['evento' => $evento])
+                </div>
+
+            </div>
         </div>
 
-        <div class="g_columna_4 formulario">
-            <div class="g_panel">
-                <h4 class="g_panel_titulo"><i class="fa-solid fa-diagram-project"></i> Proyectos</h4>
-
+        <!-- BARRA LATERAL -->
+        <div class="g_columna_4">
+            <div class="g_panel formulario" x-show="activeTab === 'general'">
+                <h4 class="g_panel_titulo"><i class="fa-solid fa-diagram-project"></i> Gestión de Proyectos</h4>
                 <div class="g_margin_bottom_10">
-                    <label>Unidad de Negocio <span class="obligatorio"><i
-                                class="fa-solid fa-asterisk"></i></span></label>
-                    <select wire:model.live="unidad_negocio_id"
-                        class="@error('unidad_negocio_id') select-error @enderror">
+                    <label>Unidad de Negocio</label>
+                    <select wire:model.live="unidad_negocio_id">
                         <option value="">Seleccione...</option>
                         @foreach ($unidades_negocios as $u)
                             <option value="{{ $u->id }}">{{ $u->nombre }}</option>
                         @endforeach
                     </select>
-                    @error('unidad_negocio_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
-
                 <div class="g_margin_bottom_10">
-                    <label>Proyecto <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                    <div style="display: flex; gap: 10px;">
-                        <select wire:model="proyecto_id" style="flex: 1;" {{ !$unidad_negocio_id ? 'disabled' : '' }}>
-                            <option value="">Seleccione un proyecto...</option>
-                            @foreach ($proyectos as $p)
-                                <option value="{{ $p->id }}">{{ $p->nombre }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @error('proyectos_agregados')
-                        <p class="mensaje_error" style="margin-top: 5px;">{{ $message }}</p>
-                    @enderror
+                    <label>Proyecto</label>
+                    <select wire:model="proyecto_id" {{ !$unidad_negocio_id ? 'disabled' : '' }}>
+                        <option value="">Seleccione proyecto...</option>
+                        @foreach ($proyectos as $p)
+                            <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                        @endforeach
+                    </select>
                 </div>
-
-                <div class="formulario_botones">
-                    <button wire:click="agregarProyecto" class="g_boton guardar" wire:loading.attr="disabled"
-                        wire:target="agregarProyecto">
-                        <span wire:loading.remove wire:target="agregarProyecto"><i class="fa-solid fa-plus"></i>
-                            Agregar</span>
-                        <span wire:loading wire:target="agregarProyecto">Agregando...</span>
-                    </button>
-                </div>
+                <button wire:click="agregarProyecto" class="g_boton guardar g_ancho_completo">
+                    <i class="fa-solid fa-plus"></i> Vincular Proyecto
+                </button>
             </div>
 
-            @if ($evento->prospectos()->doesntExist())
-                <div class="g_panel g_margin_top_20">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-file-excel"></i> Importar
-                            Prospectos</h4>
-                        <button wire:click="descargarPlantilla" class="g_boton info small" title="Descargar formato Excel">
-                            <i class="fa-solid fa-download"></i> Plantilla
-                        </button>
-                    </div>
-                    <p class="leyenda" style="margin-bottom: 15px;">Arrastra o selecciona el archivo Excel con el formato de
-                        titulares y copropietarios.</p>
-
-                    <div class="g_margin_bottom_10">
-                        <input type="file" wire:model="archivo_excel" id="archivo_excel"
-                            class="@error('archivo_excel') input-error @enderror">
-                        @error('archivo_excel') <p class="mensaje_error">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div class="formulario_botones">
-                        @can('entrega-fest.editar')
-                            <button wire:click="importarProspectos" class="g_boton dark" wire:loading.attr="disabled"
-                                wire:target="archivo_excel, importarProspectos">
-                                <span wire:loading.remove wire:target="importarProspectos">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
-                                </span>
-                                <span wire:loading wire:target="importarProspectos">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Importando...
-                                </span>
-                            </button>
-                        @endcan
-                    </div>
-
-                    <div wire:loading wire:target="archivo_excel" class="g_margin_top_10">
-                        <p style="font-size: 0.8em; color: var(--color-primary);"><i
-                                class="fa-solid fa-spinner fa-spin"></i> Cargando archivo...</p>
-                    </div>
-                </div>
-            @endif
-
-            @if ($evento->itinerarioBloques()->doesntExist())
-                <div class="g_panel g_margin_top_20">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-clock"></i> Importar
-                            Itinerario</h4>
-                        <button wire:click="descargarPlantillaItinerario" class="g_boton info small"
-                            title="Descargar formato Excel">
-                            <i class="fa-solid fa-download"></i> Plantilla
-                        </button>
-                    </div>
-                    <p class="leyenda" style="margin-bottom: 15px;">Carga el cronograma de actividades desde un archivo
-                        Excel para este evento.</p>
-
-                    <div class="g_margin_bottom_10">
-                        <input type="file" wire:model="archivo_itinerario" id="archivo_itinerario"
-                            class="@error('archivo_itinerario') input-error @enderror">
-                        @error('archivo_itinerario') <p class="mensaje_error">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div class="formulario_botones">
-                        @can('entrega-fest.editar')
-                            <button wire:click="importarItinerario" class="g_boton dark" wire:loading.attr="disabled"
-                                wire:target="archivo_itinerario, importarItinerario">
-                                <span wire:loading.remove wire:target="importarItinerario">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
-                                </span>
-                                <span wire:loading wire:target="importarItinerario">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Importando...
-                                </span>
-                            </button>
-                        @endcan
-                    </div>
-
-                    <div wire:loading wire:target="archivo_itinerario" class="g_margin_top_10">
-                        <p style="font-size: 0.8em; color: var(--color-primary);"><i
-                                class="fa-solid fa-spinner fa-spin"></i> Cargando archivo...</p>
-                    </div>
-                </div>
-            @endif
-
-            <div class="g_panel g_margin_top_20">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-tasks"></i> Tareas MOP</h4>
-                    <button wire:click="descargarPlantillaMopTareas" class="g_boton info small"
-                        title="Descargar formato Excel">
-                        <i class="fa-solid fa-download"></i> Plantilla
-                    </button>
-                </div>
-                <p class="leyenda" style="margin-bottom: 15px;">Asigna tareas operativas específicas a miembros del
-                    staff para este evento.</p>
-
-                <div class="g_margin_bottom_10">
-                    <input type="file" wire:model="archivo_mop_tareas" id="archivo_mop_tareas"
-                        class="@error('archivo_mop_tareas') input-error @enderror">
-                    @error('archivo_mop_tareas') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="formulario_botones">
-                    @can('entrega-fest.editar')
-                        <button wire:click="importarMopTareas" class="g_boton dark" wire:loading.attr="disabled"
-                            wire:target="archivo_mop_tareas, importarMopTareas">
-                            <span wire:loading.remove wire:target="importarMopTareas">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Procesar Excel
-                            </span>
-                            <span wire:loading wire:target="importarMopTareas">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Importando...
-                            </span>
-                        </button>
-                    @endcan
-                </div>
-
-                <div wire:loading wire:target="archivo_mop_tareas" class="g_margin_top_10">
-                    <p style="font-size: 0.8em; color: var(--color-primary);"><i
-                            class="fa-solid fa-spinner fa-spin"></i> Cargando archivo...</p>
-                </div>
+            <div class="g_panel" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;" x-show="activeTab !== 'general'">
+                <h4 class="g_panel_titulo" style="color: #166534;"><i class="fa-solid fa-circle-info"></i> Resumen</h4>
+                <p class="leyenda">Editando evento: <b>{{ $nombre }}</b>.</p>
+                <p class="leyenda">Toda la configuración de esta pestaña se guarda independientemente.</p>
             </div>
         </div>
     </div>

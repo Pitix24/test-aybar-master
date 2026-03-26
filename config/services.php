@@ -58,8 +58,7 @@ return [
     ],
 
     'n8n' => [
-        'webhook_email_invitaciones' => env('N8N_WEBHOOK_EMAIL_INVITACIONES'),
-        'webhook_whatsapp_invitaciones' => env('N8N_WEBHOOK_WHATSAPP_INVITACIONES'),
+        'webhook_entrega_fest_pre_invitacion' => env('N8N_WEBHOOK_ENTREGA_FEST_PRE_INVITACION'),
     ],
 
     'whatsapp' => [

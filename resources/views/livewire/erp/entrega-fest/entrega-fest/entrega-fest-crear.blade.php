@@ -105,7 +105,7 @@
                                     @foreach ($proyectos_agregados as $p)
                                         <tr wire:key="p-agregado-{{ $p['id'] }}">
                                             <td class="g_negrita">{{ $p['unidad_negocio_nombre'] }}</td>
-                                            <td>{{ $p['nombre'] }}</td>
+                                            <td>ID: {{ $p['id'] }} - {{ $p['nombre'] }}</td>
                                             <td class="g_celda_acciones g_celda_centro">
                                                 <button type="button" wire:click="quitarProyecto({{ $p['id'] }})"
                                                     class="g_boton danger" title="Quitar">

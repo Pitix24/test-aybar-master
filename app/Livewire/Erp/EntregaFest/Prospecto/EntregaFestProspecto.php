@@ -109,48 +109,18 @@ class EntregaFestProspecto extends Component
         );
     }
 
-    public function enviarPreInvitacionLaravel()
-    {
-        $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->whereNotNull('email')
-            ->with(['proyecto', 'copropietarios'])
-            ->get();
-
-        $contadorEmails = 0;
-
-        /** @var \App\Models\ProspectoEntregaFest $prospecto */
-        foreach ($contactos as $prospecto) {
-            // Enviar al Propietario
-            Mail::to($prospecto->email)->queue(new PreInvitacionPropietarioMail($prospecto));
-            $prospecto->update(['enviado_preinvitacion' => true]);
-            $contadorEmails++;
-
-            // Enviar a los Copropietarios
-            foreach ($prospecto->copropietarios as $copropietario) {
-                if ($copropietario->email) {
-                    Mail::to($copropietario->email)->queue(new PreInvitacionCopropietarioMail($copropietario));
-                    $copropietario->update(['enviado_preinvitacion' => true]);
-                    $contadorEmails++;
-                }
-            }
-        }
-
-        $this->dispatch('alertaLivewire', [
-            'type' => 'success',
-            'title' => '¡Pre-invitaciones enviadas!',
-            'text' => 'Se han enviado ' . $contadorEmails . ' correos a propietarios y copropietarios ✅',
-        ]);
-    }
-
     public function enviarPreInvitacionN8N()
     {
+        // 1. Buscamos la plantilla configurada para este evento
+        $plantilla = $this->evento->plantillas()->where('tipo', 'pre-invitacion')->first();
+
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
             ->whereNotNull('email')
-            ->with(['copropietarios', 'entregaFest']) // Cargamos relaciones necesarias
+            ->with(['copropietarios', 'entregaFest'])
             ->get()
             ->map(function ($prospecto) {
 
-                // 1. Preparamos el Mail del PROPIETARIO para obtener su link y HTML
+                // Preparamos el Mail del PROPIETARIO para obtener su link y HTML
                 $mailPropietario = new PreInvitacionPropietarioMail($prospecto);
 
                 return [
@@ -159,79 +129,42 @@ class EntregaFestProspecto extends Component
                     'nombres' => $prospecto->nombres,
                     'celular' => $prospecto->celular,
                     'dni' => $prospecto->dni,
-                    'link' => $mailPropietario->link,   // El link generado en el constructor del Mail
-                    'html' => $mailPropietario->render(), // El HTML completo del email
-    
-                    'copropietarios' => $prospecto->copropietarios->map(function ($copro) {
-                        // 2. Preparamos el Mail de cada COPROPIETARIO
-                        $mailCopro = new PreInvitacionCopropietarioMail($copro);
+                    'link' => $mailPropietario->link,
+                    'html' => $mailPropietario->render(),
 
+                    'copropietarios' => $prospecto->copropietarios->map(function ($copro) {
+                        $mailCopro = new PreInvitacionCopropietarioMail($copro);
                         return [
                             'id' => $copro->id,
                             'nombres' => $copro->nombres,
                             'email' => $copro->email,
                             'celular' => $copro->celular,
                             'dni' => $copro->dni,
-                            'link' => $mailCopro->link,   // Link único del copropietario
-                            'html' => $mailCopro->render(), // HTML único del copropietario
+                            'link' => $mailCopro->link,
+                            'html' => $mailCopro->render(),
                         ];
                     })
                 ];
             })
             ->toArray();
-        // Enviamos todo el paquete a n8n
-        Http::post(config('services.n8n.webhook_email_invitaciones'), [
-            'contactos' => $contactos,
-            'asunto' => 'Pre-invitación: ' . $this->evento->nombre,
-            'evento' => $this->evento->nombre,
-        ]);
-        $this->dispatch('alertaLivewire', [
-            'type' => 'success',
-            'title' => '¡Pre-invitaciones enviadas!',
-            'text' => 'Enviado a ' . count($contactos) . ' prospectos con sus HTML y links personalizados ✅',
-        ]);
-    }
 
-    public function enviarPreInvitacion()
-    {
-        $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->whereNotNull('email')
-            ->select('email', 'nombres', 'celular', 'dni')
-            ->get()
-            ->toArray();
-
-        Http::post(config('services.n8n.webhook_email_invitaciones'), [
+        // 2. Enviamos todo el paquete a n8n incluyendo la data de la PLANTILLA
+        Http::post(config('services.n8n.webhook_entrega_fest_pre_invitacion'), [
             'contactos' => $contactos,
-            'asunto' => 'Pre-invitación: ' . $this->evento->nombre,
             'evento' => $this->evento->nombre,
-            'fecha' => $this->evento->fecha_entrega ?? '',
+            'plantilla' => [
+                'titulo' => $plantilla?->titulo ?? 'Pre-invitación: ' . $this->evento->nombre,
+                'subtitulo' => $plantilla?->subtitulo ?? '',
+                'descripcion' => $plantilla?->descripcion ?? '',
+                'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $this->evento->getFirstMediaUrl('imagen_invitacion'),
+                'link_boton' => $plantilla?->link_boton ?? '',
+            ]
         ]);
 
         $this->dispatch('alertaLivewire', [
             'type' => 'success',
             'title' => '¡Pre-invitaciones enviadas!',
-            'text' => 'Pre-invitaciones enviadas a ' . count($contactos) . ' prospectos ✅',
-        ]);
-    }
-
-    public function enviarPreInvitacionWhatsapp()
-    {
-        $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->whereNotNull('celular')
-            ->select('celular', 'nombres', 'email', 'dni')
-            ->get()
-            ->toArray();
-
-        Http::post(config('services.n8n.webhook_whatsapp_invitaciones'), [
-            'contactos' => $contactos,
-            'evento' => $this->evento->nombre,
-            'fecha' => $this->evento->fecha ?? '',
-        ]);
-
-        $this->dispatch('alertaLivewire', [
-            'type' => 'success',
-            'title' => '¡WhatsApp enviados!',
-            'text' => 'Pre-invitaciones WhatsApp enviadas a ' . count($contactos) . ' prospectos ✅',
+            'text' => 'Se ha enviado la plantilla de "' . ($plantilla?->titulo ?? 'Pre-invitación') . '" a ' . count($contactos) . ' prospectos ✅',
         ]);
     }
 
