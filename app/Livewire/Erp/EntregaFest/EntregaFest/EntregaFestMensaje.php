@@ -15,9 +15,13 @@ class EntregaFestMensaje extends Component
     public EntregaFest $evento;
     public $plantillas_data = [];
     public $pre_invitacion_file;
-    public $confirmacion_file;
+    public $asistencia_invitacion_file;
     public $asistencia_confirmacion_file;
     public $instrucciones_file;
+    public $contrato_preliminar_file;
+    public $cita_agendar_file;
+    public $cita_confirmacion_file;
+    public $cita_recordatorio_file;
 
     public function mount(EntregaFest $evento)
     {
