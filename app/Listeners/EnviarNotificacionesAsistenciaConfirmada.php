@@ -25,19 +25,15 @@ class EnviarNotificacionesAsistenciaConfirmada
             return;
         }
 
-        // 1. Buscamos la plantilla específica para confirmación de asistencia
-        $plantilla = $evento->plantillas()->where('tipo', 'asistencia-confirmacion')->first();
-
-        // 2. Generamos el HTML del Ticket (para que n8n lo envíe por email)
-        $mailTicket = new TicketAsistenciaMail($invitado);
-
-        // 3. Obtenemos el link dinámico desde la mailable original de invitación
-        // (Es el mismo link, que ahora mostrará el ticket al estar ya confirmado)
+        // 1. Obtenemos el link dinámico desde la mailable original de invitación
         $linkTicket = $invitado->prospecto_entrega_fest_id
             ? (new AsistenciaLinkMail($invitado->prospecto))->link
             : (new AsistenciaLinkCopropietarioMail($invitado->copropietario))->link;
 
-        // 4. Preparamos el contacto (puede ser Prospecto Titular o Copropietario automáticamente)
+        // 2. Generamos el HTML del Ticket (para que n8n lo envíe por email)
+        $mailTicket = new TicketAsistenciaMail($invitado);
+
+        // 3. Preparamos el contacto base
         $contacto = [
             'id' => $invitado->id,
             'nombres' => $invitado->nombre_completo,
@@ -50,24 +46,29 @@ class EnviarNotificacionesAsistenciaConfirmada
             'transporte' => $invitado->transporte,
             'acompanantes' => $invitado->cantidad_acompanantes_permitidos,
             'observaciones' => $invitado->observaciones_asistencia,
-            'html' => $mailTicket->render(), // Renderizado de la plantilla de Ticket
+            'html' => $mailTicket->render(),
         ];
 
-        // 5. ENVIAMOS EL WEBHOOK A N8N
-        $this->enviarConfirmacionAN8N($contacto, $evento, $plantilla);
+        // 4. DISPARO 1: Confirmación de Asistencia (Ticket)
+        //$plantillaConf = $evento->plantillas()->where('tipo', 'asistencia-confirmacion')->first();
+        //$this->enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantillaConf);
+
+        // 5. DISPARO 2: Instrucciones del Evento
+        $plantillaInst = $evento->plantillas()->where('tipo', 'instrucciones')->first();
+        $this->enviarInstruccionesAN8N($contacto, $evento, $plantillaInst);
     }
 
     /**
-     * Envía la notificación de registro exitoso a n8n.
+     * Envía la notificación de asistencia confirmada (Ticket) a n8n.
      */
-    private function enviarConfirmacionAN8N($contacto, $evento, $plantilla)
+    private function enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantilla)
     {
         try {
             Http::post(config('services.n8n.webhook_entrega_fest_invitacion_confirmacion'), [
                 'contacto' => $contacto,
                 'evento' => $evento->nombre,
                 'plantilla' => [
-                    'titulo' => $plantilla?->titulo ?? '🎉 ¡Registro Exitoso!: ' . $evento->nombre,
+                    'titulo' => $plantilla?->titulo ?? '🎉 ¡Asistencia Confirmada!: ' . $evento->nombre,
                     'subtitulo' => $plantilla?->subtitulo ?? 'Te confirmamos la recepción de tus datos.',
                     'descripcion' => $plantilla?->descripcion ?? '',
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
@@ -77,9 +78,33 @@ class EnviarNotificacionesAsistenciaConfirmada
             ]);
 
             Log::channel('entrega-fest')->info("[CONFIRMACION-REGISTRO-N8N] Enviada para {$contacto['tipo']} #{$contacto['id']}");
-
         } catch (\Exception $e) {
             Log::error("[CONFIRMACION-REGISTRO-N8N] Error: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Envía las instrucciones del evento a n8n.
+     */
+    private function enviarInstruccionesAN8N($contacto, $evento, $plantilla)
+    {
+        try {
+            Http::post(config('services.n8n.webhook_entrega_fest_instrucciones'), [
+                'contacto' => $contacto,
+                'evento' => $evento->nombre,
+                'plantilla' => [
+                    'titulo' => $plantilla?->titulo ?? '📄 Instrucciones para el Evento',
+                    'subtitulo' => $plantilla?->subtitulo ?? 'Te compartimos información importante.',
+                    'descripcion' => $plantilla?->descripcion ?? '',
+                    'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
+                    'link_boton' => $plantilla?->link_boton ?? '',
+                ],
+                'etapa' => 'instrucciones'
+            ]);
+
+            Log::channel('entrega-fest')->info("[INSTRUCCIONES-REGISTRO-N8N] Enviadas para {$contacto['tipo']} #{$contacto['id']}");
+        } catch (\Exception $e) {
+            Log::error("[INSTRUCCIONES-REGISTRO-N8N] Error: " . $e->getMessage());
         }
     }
 }

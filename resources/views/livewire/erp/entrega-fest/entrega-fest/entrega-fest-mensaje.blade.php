@@ -1,5 +1,5 @@
 <div style="padding: 20px;">
-    @foreach(['pre-invitacion', 'confirmacion', 'asistencia-confirmacion'] as $tipo)
+    @foreach(['pre-invitacion', 'confirmacion', 'asistencia-confirmacion', 'instrucciones'] as $tipo)
         <div class="g_panel g_margin_bottom_20"
             style="border-left: 5px solid {{ $tipo == 'pre-invitacion' ? '#4f46e5' : '#10b981' }};">
             <h4 class="g_panel_titulo" style="display: flex; justify-content: space-between; align-items: center;">

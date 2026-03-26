@@ -17,6 +17,7 @@ class EntregaFestMensaje extends Component
     public $pre_invitacion_file;
     public $confirmacion_file;
     public $asistencia_confirmacion_file;
+    public $instrucciones_file;
 
     public function mount(EntregaFest $evento)
     {
@@ -26,7 +27,7 @@ class EntregaFestMensaje extends Component
 
     public function cargarPlantillas()
     {
-        foreach (['pre-invitacion', 'confirmacion', 'asistencia-confirmacion'] as $tipo) {
+        foreach (['pre-invitacion', 'confirmacion', 'asistencia-confirmacion', 'instrucciones'] as $tipo) {
             $p = $this->evento->plantillas()->where('tipo', $tipo)->first();
             $this->plantillas_data[$tipo] = [
                 'id' => $p?->id,
