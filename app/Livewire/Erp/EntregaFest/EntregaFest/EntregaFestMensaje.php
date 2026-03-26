@@ -27,7 +27,16 @@ class EntregaFestMensaje extends Component
 
     public function cargarPlantillas()
     {
-        foreach (['pre-invitacion', 'confirmacion', 'asistencia-confirmacion', 'instrucciones'] as $tipo) {
+        foreach ([
+            'pre-invitacion',
+            'asistencia-invitacion',
+            'asistencia-confirmacion',
+            'instrucciones',
+            'contrato-preliminar',
+            'cita-agendar',
+            'cita-confirmacion',
+            'cita-recordatorio'
+        ] as $tipo) {
             $p = $this->evento->plantillas()->where('tipo', $tipo)->first();
             $this->plantillas_data[$tipo] = [
                 'id' => $p?->id,
