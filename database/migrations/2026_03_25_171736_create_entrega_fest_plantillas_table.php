@@ -15,7 +15,7 @@ return new class extends Migration {
 
             $table->foreignId('entrega_fest_id')->constrained('entrega_fests')->cascadeOnDelete();
 
-            $table->string('tipo')->comment('pre-invitacion, confirmacion, recordatorio');
+            $table->string('tipo')->comment('pre-invitacion, confirmacion, asistencia-confirmacion, instrucciones, recordatorio');
             $table->string('titulo')->nullable(); //es como el titulo
             $table->string('subtitulo')->nullable(); //subtitulo
             $table->text('descripcion')->nullable(); //descripcion

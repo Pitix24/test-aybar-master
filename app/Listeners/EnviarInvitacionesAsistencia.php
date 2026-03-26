@@ -34,32 +34,33 @@ class EnviarInvitacionesAsistencia
         if (!$prospecto->invitado) {
             $mailPropietario = new AsistenciaLinkMail($prospecto);
             $dataPropietario = [
-                'id'      => $prospecto->id,
+                'id' => $prospecto->id,
                 'nombres' => $prospecto->nombres,
-                'email'   => $prospecto->email,
+                'email' => $prospecto->email,
                 'celular' => $prospecto->celular,
-                'dni'     => $prospecto->dni,
-                'link'    => $mailPropietario->link,
-                'html'    => $mailPropietario->render(),
-                'tipo'    => 'Propietario',
+                'dni' => $prospecto->dni,
+                'link' => $mailPropietario->link,
+                'html' => $mailPropietario->render(),
+                'tipo' => 'Propietario',
             ];
         }
 
         // 3. Data de Copropietarios
         $dataCopropietarios = [];
         foreach ($prospecto->copropietarios as $cop) {
-            if ($cop->invitado) continue;
+            if ($cop->invitado)
+                continue;
 
             $mailCopro = new AsistenciaLinkCopropietarioMail($cop);
             $dataCopropietarios[] = [
-                'id'      => $cop->id,
+                'id' => $cop->id,
                 'nombres' => $cop->nombres,
-                'email'   => $cop->email,
+                'email' => $cop->email,
                 'celular' => $cop->celular,
-                'dni'     => $cop->dni,
-                'link'    => $mailCopro->link,
-                'html'    => $mailCopro->render(),
-                'tipo'    => 'Copropietario',
+                'dni' => $cop->dni,
+                'link' => $mailCopro->link,
+                'html' => $mailCopro->render(),
+                'tipo' => 'Copropietario',
             ];
         }
 
@@ -76,15 +77,15 @@ class EnviarInvitacionesAsistencia
     {
         try {
             Http::post(config('services.n8n.webhook_entrega_fest_confirmacion'), [
-                'titular'        => $propietario,
+                'titular' => $propietario,
                 'copropietarios' => $copropietarios,
-                'evento'         => $evento->nombre,
-                'plantilla'      => [
-                    'titulo'      => $plantilla?->titulo ?? '¡Confirmación Oficial!: ' . $evento->nombre,
-                    'subtitulo'   => $plantilla?->subtitulo ?? 'Te invitamos a confirmar tu asistencia.',
+                'evento' => $evento->nombre,
+                'plantilla' => [
+                    'titulo' => $plantilla?->titulo ?? '¡Confirmación Oficial!: ' . $evento->nombre,
+                    'subtitulo' => $plantilla?->subtitulo ?? 'Te invitamos a confirmar tu asistencia.',
                     'descripcion' => $plantilla?->descripcion ?? '',
-                    'imagen_url'  => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
-                    'link_boton'  => $plantilla?->link_boton ?? '',
+                    'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
+                    'link_boton' => $plantilla?->link_boton ?? '',
                 ],
                 'etapa' => 'confirmacion' // Etapa para historial
             ]);
@@ -94,33 +95,5 @@ class EnviarInvitacionesAsistencia
         } catch (\Exception $e) {
             Log::error("[INVITACION-PAQUETE-N8N] Error: " . $e->getMessage());
         }
-    }
-
-    private function formatearCelular(string $raw): string
-    {
-        $cel = preg_replace('/\D/', '', $raw);
-        return strlen($cel) === 9 ? '51' . $cel : $cel;
-    }
-
-    private function registrarMensajeWsp(string $celular, string $nombre, string $dni, string $mensaje, string $waMessageId): void
-    {
-        $cliente = Cliente::where('dni', $dni)->first();
-        $contacto = WhatsappContacto::updateOrCreate(
-            ['wa_id' => $celular],
-            ['nombre_wa' => $nombre, 'numero_celular' => $celular, 'cliente_id' => $cliente?->id]
-        );
-        $conversacion = WhatsappConversacion::firstOrCreate(
-            ['contacto_id' => $contacto->id],
-            ['cliente_id' => $cliente?->id, 'estado' => 'asignado', 'departamento_destino' => 'backoffice', 'agente_id' => auth()->id()]
-        );
-        $conversacion->update(['last_message_at' => now()]);
-        WhatsappMensaje::create([
-            'conversacion_id' => $conversacion->id,
-            'direccion' => 'saliente',
-            'tipo' => 'texto',
-            'contenido' => $mensaje,
-            'wa_message_id' => $waMessageId,
-            'estado' => 'enviado',
-        ]);
     }
 }

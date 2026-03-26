@@ -16,6 +16,7 @@ class EntregaFestMensaje extends Component
     public $plantillas_data = [];
     public $pre_invitacion_file;
     public $confirmacion_file;
+    public $asistencia_confirmacion_file;
 
     public function mount(EntregaFest $evento)
     {
@@ -25,7 +26,7 @@ class EntregaFestMensaje extends Component
 
     public function cargarPlantillas()
     {
-        foreach (['pre-invitacion', 'confirmacion'] as $tipo) {
+        foreach (['pre-invitacion', 'confirmacion', 'asistencia-confirmacion'] as $tipo) {
             $p = $this->evento->plantillas()->where('tipo', $tipo)->first();
             $this->plantillas_data[$tipo] = [
                 'id' => $p?->id,
@@ -62,7 +63,7 @@ class EntregaFestMensaje extends Component
                 $plantilla->addMedia($this->$fileVar->getRealPath())
                     ->usingFileName($this->$fileVar->getClientOriginalName())
                     ->toMediaCollection('imagen');
-                
+
                 $this->reset($fileVar);
             }
 
