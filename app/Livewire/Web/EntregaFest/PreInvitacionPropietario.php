@@ -20,13 +20,13 @@ class PreInvitacionPropietario extends Component
     public $enviado = false;
     public $mensaje_exito = '';
 
-    public function mount($slug, $id)
+    public function mount($slug, $propietarioId)
     {
         $this->slug = $slug;
-        $this->id = $id;
+        $this->id = $propietarioId;
 
         $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
-            ->findOrFail($id);
+            ->findOrFail($propietarioId);
 
         $this->evento = $this->prospecto->entregaFest;
 

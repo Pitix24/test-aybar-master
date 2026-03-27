@@ -3,8 +3,8 @@
 namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
-use App\Mail\EntregaFest\InvitacionAsistenciaCopropietarioMail;
-use App\Mail\EntregaFest\InvitacionAsistenciaPropietarioMail;
+use App\Mail\EntregaFest\AsistenciaInvitacionCopropietarioMail;
+use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -16,12 +16,12 @@ class EntregaFestInvitacionAsistenciaN8N
         $evento = $prospecto->entregaFest;
 
         // 1. Buscamos la plantilla oficial de "confirmacion"
-        $plantilla = $evento->plantillas()->where('tipo', 'confirmacion')->first();
+        $plantilla = $evento->plantillas()->where('tipo', 'asistencia-invitacion')->first();
 
         // 2. Data del Titular (Propietario)
         $dataPropietario = null;
         if (!$prospecto->invitado) {
-            $mailPropietario = new InvitacionAsistenciaPropietarioMail($prospecto);
+            $mailPropietario = new AsistenciaInvitacionPropietarioMail($prospecto);
             $dataPropietario = [
                 'id' => $prospecto->id,
                 'nombres' => $prospecto->nombres,
@@ -40,7 +40,7 @@ class EntregaFestInvitacionAsistenciaN8N
             if ($cop->invitado)
                 continue;
 
-            $mailCopro = new InvitacionAsistenciaCopropietarioMail($cop);
+            $mailCopro = new AsistenciaInvitacionCopropietarioMail($cop);
             $dataCopropietarios[] = [
                 'id' => $cop->id,
                 'nombres' => $cop->nombres,
@@ -65,7 +65,7 @@ class EntregaFestInvitacionAsistenciaN8N
     private function enviarPaqueteAN8N($propietario, $copropietarios, $evento, $plantilla)
     {
         try {
-            Http::post(config('services.n8n.webhook_entrega_fest_confirmacion'), [
+            Http::post(config('services.n8n.entregafest.asistencia_invitacion'), [
                 'titular' => $propietario,
                 'copropietarios' => $copropietarios,
                 'evento' => $evento->nombre,

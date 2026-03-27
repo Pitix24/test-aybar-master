@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InvitacionAsistenciaPropietarioMail extends Mailable
+class AsistenciaInvitacionPropietarioMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -24,7 +24,10 @@ class InvitacionAsistenciaPropietarioMail extends Mailable
     {
         $this->prospecto = $prospecto;
         $this->evento = $prospecto->entregaFest;
-        $this->link = route('public.entrega-fest.asistencia', [$this->evento->slug, $this->prospecto->id]);
+        $this->link = route('entrega-fest.asistencia-invitacion.propietario', [
+            'slug' => $this->evento->slug,
+            'propietarioId' => $prospecto->id,
+        ]);
     }
 
     /**
@@ -43,7 +46,7 @@ class InvitacionAsistenciaPropietarioMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.entrega-fest.asistencia-link',
+            view: 'emails.entrega-fest.asistencia-invitacion-propietario',
         );
     }
 

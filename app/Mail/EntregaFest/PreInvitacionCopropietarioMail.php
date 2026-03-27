@@ -46,7 +46,7 @@ class PreInvitacionCopropietarioMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.entrega-fest.preinvitacion-copropietario',
+            view: 'emails.entrega-fest.pre-invitacion-copropietario',
         );
     }
 

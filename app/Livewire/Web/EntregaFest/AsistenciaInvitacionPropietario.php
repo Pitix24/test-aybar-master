@@ -29,13 +29,13 @@ class AsistenciaInvitacionPropietario extends Component
     public $mensaje_exito = '';
     public $codigo_invitado = '';
 
-    public function mount($slug, $id)
+    public function mount($slug, $propietarioId)
     {
         $this->slug = $slug;
-        $this->id = $id;
+        $this->id = $propietarioId;
 
         $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
-            ->findOrFail($id);
+            ->findOrFail($propietarioId);
 
         $this->evento = $this->prospecto->entregaFest;
 
