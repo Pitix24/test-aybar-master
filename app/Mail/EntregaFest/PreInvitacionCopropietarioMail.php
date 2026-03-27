@@ -24,7 +24,7 @@ class PreInvitacionCopropietarioMail extends Mailable
     {
         $this->copropietario = $copropietario;
         $this->evento = $copropietario->prospecto->entregaFest;
-        $this->link = route('public.entrega-fest.pre-invitacion.copropietario', [
+        $this->link = route('entrega-fest.pre-invitacion.copropietario', [
             'slug' => $this->evento->slug,
             'copropietarioId' => $this->copropietario->id
         ]);

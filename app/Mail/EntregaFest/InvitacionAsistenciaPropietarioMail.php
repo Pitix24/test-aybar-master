@@ -2,14 +2,14 @@
 
 namespace App\Mail\EntregaFest;
 
-use App\Models\ProspectoEntregaFest;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PreInvitacionMail extends Mailable
+class InvitacionAsistenciaPropietarioMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -20,15 +20,11 @@ class PreInvitacionMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(ProspectoEntregaFest $prospecto)
+    public function __construct($prospecto)
     {
         $this->prospecto = $prospecto;
         $this->evento = $prospecto->entregaFest;
-        // El link lleva a la página de asistencia donde el usuario confirmará su interés
-        $this->link = route('public.entrega-fest.asistencia', [
-            'slug' => $this->evento->slug,
-            'id' => $this->prospecto->id
-        ]);
+        $this->link = route('public.entrega-fest.asistencia', [$this->evento->slug, $this->prospecto->id]);
     }
 
     /**
@@ -37,7 +33,7 @@ class PreInvitacionMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pre-invitación: ' . $this->evento->nombre,
+            subject: 'Confirma tu asistencia - ' . $this->evento->nombre,
         );
     }
 
@@ -47,7 +43,7 @@ class PreInvitacionMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.entrega-fest.preinvitacion',
+            view: 'emails.entrega-fest.asistencia-link',
         );
     }
 

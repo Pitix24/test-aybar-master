@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Erp\EntregaFest\Prospecto;
 
+use App\Events\EntregaFest\EntregaFestPreInvitacion;
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
 use Livewire\Attributes\Layout;
@@ -10,10 +11,6 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\EntregaFest\PreInvitacionPropietarioMail;
-use App\Mail\EntregaFest\PreInvitacionCopropietarioMail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EntregaFest\EntregaFestProspectoExport;
 
@@ -114,60 +111,12 @@ class EntregaFestProspecto extends Component
 
     public function enviarPreInvitacionN8N()
     {
-        // 1. Buscamos la plantilla configurada para este evento
-        $plantilla = $this->evento->plantillas()->where('tipo', 'pre-invitacion')->first();
-
-        $contactos = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->whereNotNull('email')
-            ->with(['copropietarios', 'entregaFest'])
-            ->get()
-            ->map(function ($prospecto) {
-
-                // Preparamos el Mail del PROPIETARIO para obtener su link y HTML
-                $mailPropietario = new PreInvitacionPropietarioMail($prospecto);
-
-                return [
-                    'id' => $prospecto->id,
-                    'email' => $prospecto->email,
-                    'nombres' => $prospecto->nombres,
-                    'celular' => $prospecto->celular,
-                    'dni' => $prospecto->dni,
-                    'link' => $mailPropietario->link,
-                    'html' => $mailPropietario->render(),
-
-                    'copropietarios' => $prospecto->copropietarios->map(function ($copro) {
-                        $mailCopro = new PreInvitacionCopropietarioMail($copro);
-                        return [
-                            'id' => $copro->id,
-                            'nombres' => $copro->nombres,
-                            'email' => $copro->email,
-                            'celular' => $copro->celular,
-                            'dni' => $copro->dni,
-                            'link' => $mailCopro->link,
-                            'html' => $mailCopro->render(),
-                        ];
-                    })
-                ];
-            })
-            ->toArray();
-
-        // 2. Enviamos todo el paquete a n8n incluyendo la data de la PLANTILLA
-        Http::post(config('services.n8n.webhook_entrega_fest_pre_invitacion'), [
-            'contactos' => $contactos,
-            'evento' => $this->evento->nombre,
-            'plantilla' => [
-                'titulo' => $plantilla?->titulo ?? 'Pre-invitación: ' . $this->evento->nombre,
-                'subtitulo' => $plantilla?->subtitulo ?? '',
-                'descripcion' => $plantilla?->descripcion ?? '',
-                'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $this->evento->getFirstMediaUrl('imagen_invitacion'),
-                'link_boton' => $plantilla?->link_boton ?? '',
-            ]
-        ]);
+        EntregaFestPreInvitacion::dispatch($this->evento);
 
         $this->dispatch('alertaLivewire', [
             'type' => 'success',
-            'title' => '¡Pre-invitaciones enviadas!',
-            'text' => 'Se ha enviado la plantilla de "' . ($plantilla?->titulo ?? 'Pre-invitación') . '" a ' . count($contactos) . ' prospectos ✅',
+            'title' => '¡Solicitud de envío procesada!',
+            'text' => 'Se ha enviado la orden de envío masivo de "Pre-invitación" a n8n',
         ]);
     }
 

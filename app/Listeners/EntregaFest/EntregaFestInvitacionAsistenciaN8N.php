@@ -1,27 +1,16 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Listeners\EntregaFest;
 
-use App\Events\ProspectoBackofficeConforme;
-use App\Mail\EntregaFest\AsistenciaLinkMail;
-use App\Mail\EntregaFest\AsistenciaLinkCopropietarioMail;
-use App\Models\Cliente;
-use App\Models\WhatsappContacto;
-use App\Models\WhatsappConversacion;
-use App\Models\WhatsappMensaje;
-use App\Services\WhatsappService;
+use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
+use App\Mail\EntregaFest\InvitacionAsistenciaCopropietarioMail;
+use App\Mail\EntregaFest\InvitacionAsistenciaPropietarioMail;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 
-class EnviarInvitacionesAsistencia
+class EntregaFestInvitacionAsistenciaN8N
 {
-    public function __construct(private WhatsappService $whatsapp)
-    {
-        //
-    }
-
-    public function handle(ProspectoBackofficeConforme $event): void
+    public function handle(EntregaFestAsistenciaInvitacion $event): void
     {
         $prospecto = $event->prospecto->fresh(['invitado', 'copropietarios.invitado', 'entregaFest']);
         $evento = $prospecto->entregaFest;
@@ -32,7 +21,7 @@ class EnviarInvitacionesAsistencia
         // 2. Data del Titular (Propietario)
         $dataPropietario = null;
         if (!$prospecto->invitado) {
-            $mailPropietario = new AsistenciaLinkMail($prospecto);
+            $mailPropietario = new InvitacionAsistenciaPropietarioMail($prospecto);
             $dataPropietario = [
                 'id' => $prospecto->id,
                 'nombres' => $prospecto->nombres,
@@ -51,7 +40,7 @@ class EnviarInvitacionesAsistencia
             if ($cop->invitado)
                 continue;
 
-            $mailCopro = new AsistenciaLinkCopropietarioMail($cop);
+            $mailCopro = new InvitacionAsistenciaCopropietarioMail($cop);
             $dataCopropietarios[] = [
                 'id' => $cop->id,
                 'nombres' => $cop->nombres,

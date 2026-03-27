@@ -47,6 +47,10 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\EntregaFestFirmaRecordatorio::class => [
             \App\Listeners\EnviarRecordatorioFirma::class,
         ],
+
+        \App\Events\EntregaFestPreInvitacionSolicitada::class => [
+            \App\Listeners\ProcesarEnvioPreInvitacionN8N::class,
+        ],
     ];
 
     public function boot(): void

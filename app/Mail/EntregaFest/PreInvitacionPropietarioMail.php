@@ -24,7 +24,7 @@ class PreInvitacionPropietarioMail extends Mailable
     {
         $this->prospecto = $prospecto;
         $this->evento = $prospecto->entregaFest;
-        $this->link = route('public.entrega-fest.pre-invitacion', [
+        $this->link = route('entrega-fest.pre-invitacion.propietario', [
             'slug' => $this->evento->slug,
             'id' => $this->prospecto->id
         ]);
@@ -46,7 +46,7 @@ class PreInvitacionPropietarioMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.entrega-fest.preinvitacion',
+            view: 'emails.entrega-fest.preinvitacion-propietario',
         );
     }
 

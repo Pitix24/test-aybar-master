@@ -1,36 +1,34 @@
 <?php
 
-namespace App\Livewire\Public\EntregaFest;
+namespace App\Livewire\Web\EntregaFest;
 
-use App\Models\CopropietarioEntregaFest;
+use App\Models\ProspectoEntregaFest;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts.web.layout-web')]
-#[Title('Confirmar Interés (Copropietario) - Entrega Fest')]
-class PreInvitacionCopropietario extends Component
+#[Title('Confirmar Interés - Entrega Fest')]
+class PreInvitacionPropietario extends Component
 {
     public $slug;
-    public $copropietarioId;
-    public $copropietario;
+    public $id;
+    public $prospecto;
     public $evento;
 
     public $interes = 'si';
     public $enviado = false;
     public $mensaje_exito = '';
 
-    public function mount($slug, $copropietarioId)
+    public function mount($slug, $id)
     {
         $this->slug = $slug;
-        $this->copropietarioId = $copropietarioId;
+        $this->id = $id;
 
-        $this->copropietario = CopropietarioEntregaFest::with([
-            'prospecto.entregaFest',
-            'prospecto.proyecto',
-        ])->findOrFail($copropietarioId);
+        $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
+            ->findOrFail($id);
 
-        $this->evento = $this->copropietario->prospecto->entregaFest;
+        $this->evento = $this->prospecto->entregaFest;
 
         // Validar slug
         if ($this->evento->slug !== $slug) {
@@ -38,9 +36,9 @@ class PreInvitacionCopropietario extends Component
         }
 
         // Si ya confirmó la pre-invitación anteriormente (ya sea si o no)
-        if ($this->copropietario->preinvitacion_confirmada !== null) {
+        if ($this->prospecto->preinvitacion_confirmada !== null) {
             $this->enviado = true;
-            $this->mensaje_exito = ($this->copropietario->preinvitacion_confirmada) 
+            $this->mensaje_exito = ($this->prospecto->preinvitacion_confirmada)
                 ? 'Ya hemos registrado tu interés anteriormente. ¡Muchas gracias!'
                 : 'Ya has indicado anteriormente que no podrás participar. ¡Gracias por informarnos!';
         }
@@ -54,19 +52,19 @@ class PreInvitacionCopropietario extends Component
     public function guardarInteres($respuesta)
     {
         $this->interes = $respuesta;
-        
-        $this->copropietario->update([
+
+        $this->prospecto->update([
             'preinvitacion_confirmada' => ($respuesta === 'si')
         ]);
 
         $this->enviado = true;
-        $this->mensaje_exito = ($respuesta === 'si') 
-            ? '¡Excelente! Como copropietario, hemos registrado tu interés. Te contactaremos pronto.'
+        $this->mensaje_exito = ($respuesta === 'si')
+            ? '¡Excelente! Hemos registrado tu interés en participar. Te contactaremos pronto con más detalles.'
             : 'Gracias por informarnos. Entendemos que no puedas participar en esta ocasión.';
     }
 
     public function render()
     {
-        return view('livewire.public.entrega-fest.pre-invitacion-copropietario');
+        return view('livewire.public.entrega-fest.pre-invitacion-propietario');
     }
 }

@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Erp\EntregaFest\Prospecto;
 
+use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Events\ProspectoBackofficeConforme;
 use App\Events\ProspectoLegalConforme;
 use App\Events\EntregaFestFirmaRecordatorio;
 use Livewire\Attributes\Layout;
@@ -412,7 +412,7 @@ class EntregaFestProspectoEditar extends Component
 
         // Si se acaba de aprobar (CONFORME), disparamos el evento de invitaciones
         if ($this->estado_backoffice === 'CONFORME') {
-            ProspectoBackofficeConforme::dispatch($this->prospecto);
+            EntregaFestAsistenciaInvitacion::dispatch($this->prospecto);
         }
     }
 

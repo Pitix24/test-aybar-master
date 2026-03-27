@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Public\EntregaFest;
+namespace App\Livewire\Web\EntregaFest;
 
 use App\Models\ProspectoEntregaFest;
 use Illuminate\Support\Facades\Log;

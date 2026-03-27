@@ -31,6 +31,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('cliente')
                 ->name('cliente.')
                 ->group(base_path('routes/cliente.php'));
+
+            Route::middleware('web')
+                ->group(function () {
+                    foreach (glob(base_path('routes/web/*.php')) as $file) {
+                        require $file;
+                    }
+                });
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

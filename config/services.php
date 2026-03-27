@@ -58,10 +58,16 @@ return [
     ],
 
     'n8n' => [
-        'webhook_entrega_fest_pre_invitacion' => env('N8N_WEBHOOK_ENTREGA_FEST_PRE_INVITACION'),
-        'webhook_entrega_fest_confirmacion' => env('N8N_WEBHOOK_ENTREGA_FEST_CONFIRMACION'),
-        'webhook_entrega_fest_invitacion_confirmacion' => env('N8N_WEBHOOK_ENTREGA_FEST_INVITACION_CONFIRMACION'),
-        'webhook_entrega_fest_instrucciones' => env('N8N_WEBHOOK_ENTREGA_FEST_INSTRUCCIONES'),
+        'entregafest' => [
+            'pre_invitacion' => env('N8N_WEBHOOK_ENTREGA_FEST_PRE_INVITACION'),
+            'asistencia_invitacion' => env('N8N_WEBHOOK_ENTREGA_FEST_ASISTENCIA_INVITACION'),
+            'asistencia_confirmacion' => env('N8N_WEBHOOK_ENTREGA_FEST_ASISTENCIA_CONFIRMACION'),
+            'instrucciones' => env('N8N_WEBHOOK_ENTREGA_FEST_INSTRUCCIONES'),
+            'contrato_preliminar' => env('N8N_WEBHOOK_ENTREGA_FEST_CONTRATO_PRELIMINAR'),
+            'cita_agendar' => env('N8N_WEBHOOK_ENTREGA_FEST_CITA_AGENDAR'),
+            'cita_confirmacion' => env('N8N_WEBHOOK_ENTREGA_FEST_CITA_CONFIRMACION'),
+            'cita_recordatorio' => env('N8N_WEBHOOK_ENTREGA_FEST_CITA_RECORDATORIO'),
+        ],
     ],
 
     'whatsapp' => [

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\EntregaFest;
 
 use App\Models\ProspectoEntregaFest;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ProspectoBackofficeConforme
+class EntregaFestAsistenciaInvitacion
 {
     use Dispatchable, SerializesModels;
 
