@@ -107,6 +107,6 @@ class FirmaPublica extends Component
 
     public function render()
     {
-        return view('livewire.public.entrega-fest.firma-publica');
+        return view('livewire.web.entrega-fest.firma-publica');
     }
 }

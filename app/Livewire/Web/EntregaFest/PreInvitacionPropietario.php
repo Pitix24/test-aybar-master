@@ -65,6 +65,6 @@ class PreInvitacionPropietario extends Component
 
     public function render()
     {
-        return view('livewire.public.entrega-fest.pre-invitacion-propietario');
+        return view('livewire.web.entrega-fest.pre-invitacion-propietario');
     }
 }

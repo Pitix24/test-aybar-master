@@ -67,6 +67,6 @@ class PreInvitacionCopropietario extends Component
 
     public function render()
     {
-        return view('livewire.public.entrega-fest.pre-invitacion-copropietario');
+        return view('livewire.web.entrega-fest.pre-invitacion-copropietario');
     }
 }

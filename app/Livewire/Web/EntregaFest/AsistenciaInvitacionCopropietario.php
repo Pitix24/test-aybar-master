@@ -116,6 +116,6 @@ class AsistenciaInvitacionCopropietario extends Component
 
     public function render()
     {
-        return view('livewire.public.entrega-fest.asistencia-publica-copropietario');
+        return view('livewire.web.entrega-fest.asistencia-publica-copropietario');
     }
 }
