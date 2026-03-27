@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Web\EntregaFest;
 
+use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
 use App\Models\InvitadoEntregaFest;
 use App\Models\ProspectoEntregaFest;
 use Illuminate\Support\Facades\DB;
@@ -99,7 +100,7 @@ class AsistenciaInvitacionPropietario extends Component
             DB::commit();
 
             // Despachar evento para notificaciones (Email/WhatsApp)
-            \App\Events\EntregaFestAsistenciaConfirmada::dispatch($invitado);
+            EntregaFestAsistenciaConfirmacion::dispatch($invitado);
 
             $this->enviado = true;
             $this->codigo_invitado = $codigo;

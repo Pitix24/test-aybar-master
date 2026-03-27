@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TicketAsistenciaMail extends Mailable
+class AsistenciaConfirmacionMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -53,7 +53,7 @@ class TicketAsistenciaMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.entrega-fest.ticket-asistencia',
+            view: 'emails.entrega-fest.asistencia-confirmacion',
         );
     }
 

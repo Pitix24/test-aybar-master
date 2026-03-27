@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Listeners\EntregaFest;
 
-use App\Events\EntregaFestAsistenciaConfirmada;
+use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
+use App\Mail\EntregaFest\AsistenciaInvitacionCopropietarioMail;
+use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
 use App\Mail\EntregaFest\TicketAsistenciaMail;
-use App\Mail\EntregaFest\AsistenciaLinkMail;
-use App\Mail\EntregaFest\AsistenciaLinkCopropietarioMail;
 use App\Models\InvitadoEntregaFest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
-class EnviarNotificacionesAsistenciaConfirmada
+class EntregaFestAsistenciaConfirmacionN8N
 {
     /**
      * Handle the event.
      */
-    public function handle(EntregaFestAsistenciaConfirmada $event): void
+    public function handle(EntregaFestAsistenciaConfirmacion $event): void
     {
         $invitado = $event->invitado->load(['prospecto', 'copropietario', 'entregaFest']);
         $evento = $invitado->entregaFest;
@@ -27,8 +27,8 @@ class EnviarNotificacionesAsistenciaConfirmada
 
         // 1. Obtenemos el link dinámico desde la mailable original de invitación
         $linkTicket = $invitado->prospecto_entrega_fest_id
-            ? (new AsistenciaLinkMail($invitado->prospecto))->link
-            : (new AsistenciaLinkCopropietarioMail($invitado->copropietario))->link;
+            ? (new AsistenciaInvitacionPropietarioMail($invitado->prospecto))->link
+            : (new AsistenciaInvitacionCopropietarioMail($invitado->copropietario))->link;
 
         // 2. Generamos el HTML del Ticket (para que n8n lo envíe por email)
         $mailTicket = new TicketAsistenciaMail($invitado);
