@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Erp\EntregaFestMensajeHistorialController;
 use App\Http\Controllers\Erp\ProspectoEntregaFestController;
 use App\Http\Controllers\SlinController;
 use Illuminate\Support\Facades\Artisan;
@@ -49,5 +50,5 @@ Route::middleware('api')->group(function () {
     Route::get('/whatsapp/webhook', [WhatsappController::class, 'verifyWebhook']);
     Route::post('/whatsapp/webhook', [WhatsappController::class, 'handleWebhook']);
 
-    Route::post('/entrega-fest/marcar-enviado', [ProspectoEntregaFestController::class, 'marcarEnviado']);
+    Route::post('/entrega-fest/mensaje-historial', [EntregaFestMensajeHistorialController::class, 'mensajeHistorial']);
 });

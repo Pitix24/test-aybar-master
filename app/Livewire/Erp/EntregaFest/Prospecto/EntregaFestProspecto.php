@@ -109,7 +109,7 @@ class EntregaFestProspecto extends Component
         );
     }
 
-    public function enviarPreInvitacionN8N()
+    public function enviarPreInvitacion()
     {
         EntregaFestPreInvitacion::dispatch($this->evento);
 

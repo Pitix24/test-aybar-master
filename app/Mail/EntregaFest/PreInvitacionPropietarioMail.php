@@ -26,7 +26,7 @@ class PreInvitacionPropietarioMail extends Mailable
         $this->evento = $prospecto->entregaFest;
         $this->link = route('entrega-fest.pre-invitacion.propietario', [
             'slug' => $this->evento->slug,
-            'id' => $this->prospecto->id
+            'propietarioId' => $this->prospecto->id
         ]);
     }
 

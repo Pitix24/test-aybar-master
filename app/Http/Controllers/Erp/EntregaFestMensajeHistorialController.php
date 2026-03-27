@@ -14,9 +14,9 @@ use App\Models\CorreoContacto;
 use App\Models\CorreoCampana;
 use Illuminate\Support\Facades\DB;
 
-class ProspectoEntregaFestController extends Controller
+class EntregaFestMensajeHistorialController extends Controller
 {
-    public function marcarEnviado(Request $request)
+    public function mensajeHistorial(Request $request)
     {
         $id = $request->id;
         $tipo = $request->tipo;

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
+use App\Imports\ProspectoEntregaFestImport;
 use App\Models\EntregaFest;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -33,10 +34,12 @@ class EntregaFestImportarProspecto extends Component
             return;
         }
 
+        $proyectosValidos = collect($this->evento->proyectos)->pluck('id')->toArray();
+
         try {
             DB::beginTransaction();
 
-            $import = new \App\Imports\EntregaFest\EntregaFestProspectoImport($this->evento->id);
+            $import = new ProspectoEntregaFestImport($this->evento->id, $proyectosValidos);
             Excel::import($import, $this->archivo_excel->getRealPath());
 
             DB::commit();
@@ -47,9 +50,6 @@ class EntregaFestImportarProspecto extends Component
                 'title' => '¡Éxito!',
                 'text' => 'Prospectos importados correctamente.'
             ]);
-
-            return redirect()->route('erp.entrega-fest.vista.prospecto', $this->evento->id);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("[PROSPECTO-IMPORT] : " . $e->getMessage());

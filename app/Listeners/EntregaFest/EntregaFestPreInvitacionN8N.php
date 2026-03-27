@@ -63,7 +63,7 @@ class EntregaFestPreInvitacionN8N
 
         // 2. Enviamos todo el paquete a n8n incluyendo la data de la PLANTILLA
         try {
-            Http::post(config('services.n8n.webhook_entrega_fest_pre_invitacion'), [
+            Http::post(config('services.n8n.entregafest.pre_invitacion'), [
                 'contactos' => $contactos,
                 'evento' => $evento->nombre,
                 'plantilla' => [

@@ -17,7 +17,7 @@
                 </a>
             @endcan
 
-            <button wire:click="enviarPreInvitacionN8N" class="g_boton success">
+            <button wire:click="enviarPreInvitacion" class="g_boton success">
                 Enviar pre invitación <i class="fa-solid fa-envelope"></i> <i class="fa-brands fa-whatsapp"></i>
             </button>
 
