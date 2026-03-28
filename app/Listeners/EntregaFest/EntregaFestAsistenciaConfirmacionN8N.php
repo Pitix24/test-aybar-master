@@ -3,10 +3,9 @@
 namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
+use App\Mail\EntregaFest\AsistenciaConfirmacionMail;
 use App\Mail\EntregaFest\AsistenciaInvitacionCopropietarioMail;
 use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
-use App\Mail\EntregaFest\TicketAsistenciaMail;
-use App\Models\InvitadoEntregaFest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -31,7 +30,7 @@ class EntregaFestAsistenciaConfirmacionN8N
             : (new AsistenciaInvitacionCopropietarioMail($invitado->copropietario))->link;
 
         // 2. Generamos el HTML del Ticket (para que n8n lo envíe por email)
-        $mailTicket = new TicketAsistenciaMail($invitado);
+        $mailTicket = new AsistenciaConfirmacionMail($invitado);
 
         // 3. Preparamos el contacto base
         $contacto = [
@@ -50,8 +49,8 @@ class EntregaFestAsistenciaConfirmacionN8N
         ];
 
         // 4. DISPARO 1: Confirmación de Asistencia (Ticket)
-        //$plantillaConf = $evento->plantillas()->where('tipo', 'asistencia-confirmacion')->first();
-        //$this->enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantillaConf);
+        $plantillaConf = $evento->plantillas()->where('tipo', 'asistencia-confirmacion')->first();
+        $this->enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantillaConf);
 
         // 5. DISPARO 2: Instrucciones del Evento
         $plantillaInst = $evento->plantillas()->where('tipo', 'instrucciones')->first();
@@ -64,7 +63,7 @@ class EntregaFestAsistenciaConfirmacionN8N
     private function enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantilla)
     {
         try {
-            Http::post(config('services.n8n.webhook_entrega_fest_invitacion_confirmacion'), [
+            Http::post(config('services.n8n.entregafest.asistencia_confirmacion'), [
                 'contacto' => $contacto,
                 'evento' => $evento->nombre,
                 'plantilla' => [
@@ -89,7 +88,7 @@ class EntregaFestAsistenciaConfirmacionN8N
     private function enviarInstruccionesAN8N($contacto, $evento, $plantilla)
     {
         try {
-            Http::post(config('services.n8n.webhook_entrega_fest_instrucciones'), [
+            Http::post(config('services.n8n.entregafest.instrucciones'), [
                 'contacto' => $contacto,
                 'evento' => $evento->nombre,
                 'plantilla' => [

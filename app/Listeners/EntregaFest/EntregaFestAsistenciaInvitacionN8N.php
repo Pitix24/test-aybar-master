@@ -8,7 +8,7 @@ use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
-class EntregaFestInvitacionAsistenciaN8N
+class EntregaFestAsistenciaInvitacionN8N
 {
     public function handle(EntregaFestAsistenciaInvitacion $event): void
     {
