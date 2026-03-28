@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class FirmaLinkMail extends Mailable
+class ContratoPreliminarMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -30,14 +30,14 @@ class FirmaLinkMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '📅 Agenda tu Cita de Firma - ' . $this->evento->nombre,
+            subject: '📅 Contrato Preliminar - ' . $this->evento->nombre,
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.entrega-fest.firma-link',
+            view: 'emails.entrega-fest.contrato-preliminar',
         );
     }
 

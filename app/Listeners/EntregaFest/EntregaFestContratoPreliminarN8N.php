@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Listeners\EntregaFest;
 
-use App\Events\ProspectoLegalConforme;
-use App\Mail\EntregaFest\FirmaLinkMail;
+use App\Events\EntregaFest\EntregaFestContratoPreliminar;
+use App\Mail\EntregaFest\ContratoPreliminarMail;
 use App\Models\Cliente;
 use App\Models\WhatsappContacto;
 use App\Models\WhatsappConversacion;
@@ -12,14 +12,14 @@ use App\Services\WhatsappService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class EnviarLinkFirma
+class EntregaFestContratoPreliminarN8N
 {
     public function __construct(private WhatsappService $whatsapp)
     {
         //
     }
 
-    public function handle(ProspectoLegalConforme $event): void
+    public function handle(EntregaFestContratoPreliminar $event): void
     {
         $prospecto = $event->prospecto->fresh(['entregaFest']);
         $evento = $prospecto->entregaFest;
@@ -35,10 +35,10 @@ class EnviarLinkFirma
         // ── Email ────────────────────────────────────────────────────────
         if ($prospecto->email) {
             try {
-                Mail::to($prospecto->email)->send(new FirmaLinkMail($prospecto));
+                Mail::to($prospecto->email)->send(new ContratoPreliminarMail($prospecto));
                 $enviadoEmail = true;
             } catch (\Exception $e) {
-                Log::error('[FIRMA-LINK] Correo a ' . $prospecto->email . ': ' . $e->getMessage());
+                Log::error('[CONTRATO PRELIMINAR] Correo a ' . $prospecto->email . ': ' . $e->getMessage());
             }
         }
 
@@ -55,7 +55,7 @@ class EnviarLinkFirma
             }
         }
 
-        Log::channel('entrega-fest')->info("[FIRMA-LINK] Prospecto {$prospecto->id}: email={$enviadoEmail}, wsp={$enviadoWsp}.");
+        Log::channel('entrega-fest')->info("[CONTRATO PRELIMINAR] Prospecto {$prospecto->id}: email={$enviadoEmail}, wsp={$enviadoWsp}.");
     }
 
     private function formatearCelular(string $raw): string
