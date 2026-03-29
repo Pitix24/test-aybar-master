@@ -1,6 +1,6 @@
 n8n	5678	http://localhost:5678	Automatizaciones y flujos.
 Evolution API	8080	http://localhost:8080	El servidor de WhatsApp.
-Dashboard	8080	http://localhost:8080/manager	Panel para escanear el QR.
+Dashboard	8080	http://localhost:8080/manager	Panel para escanear el QR. aybar_secure_token_2025
 Postgres	5432	(Interno)	Base de datos (no accesible desde fuera de Docker).
 Redis	6379	(Interno)	Caché de sesiones (no accesible desde fuera de Docker).
 

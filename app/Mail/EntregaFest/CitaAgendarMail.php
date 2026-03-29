@@ -22,8 +22,8 @@ class CitaAgendarMail extends Mailable
         $this->prospecto = $prospecto;
         $this->evento = $prospecto->entregaFest;
         $this->link = route('entrega-fest.cita-agendar.propietario', [
-            $this->evento->slug,
-            $prospecto->id,
+            'slug' => $this->evento->slug,
+            'propietarioId' => $prospecto->id,
         ]);
     }
 

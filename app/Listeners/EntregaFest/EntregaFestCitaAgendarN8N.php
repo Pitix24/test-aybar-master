@@ -4,22 +4,11 @@ namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestCitaAgendar;
 use App\Mail\EntregaFest\CitaAgendarMail;
-use App\Mail\EntregaFest\ContratoPreliminarMail;
-use App\Models\Cliente;
-use App\Models\WhatsappContacto;
-use App\Models\WhatsappConversacion;
-use App\Models\WhatsappMensaje;
-use App\Services\WhatsappService;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 
 class EntregaFestCitaAgendarN8N
 {
-    public function __construct(private WhatsappService $whatsapp)
-    {
-        //
-    }
-
     public function handle(EntregaFestCitaAgendar $event): void
     {
         $prospecto = $event->prospecto->fresh(['entregaFest']);
@@ -30,60 +19,47 @@ class EntregaFestCitaAgendarN8N
             return;
         }
 
-        $enviadoEmail = false;
-        $enviadoWsp = false;
+        // 1. Buscamos la plantilla oficial de "cita-agendar"
+        $plantilla = $evento->plantillas()->where('tipo', 'cita-agendar')->first();
 
-        // ── Email ────────────────────────────────────────────────────────
-        if ($prospecto->email) {
-            try {
-                Mail::to($prospecto->email)->send(new CitaAgendarMail($prospecto));
-                $enviadoEmail = true;
-            } catch (\Exception $e) {
-                Log::error('[CITA AGENDAR] Correo a ' . $prospecto->email . ': ' . $e->getMessage());
-            }
-        }
+        // 2. Data del Titular (Propietario)
+        $mail = new CitaAgendarMail($prospecto);
+        $dataPropietario = [
+            'id' => $prospecto->id,
+            'nombres' => $prospecto->nombres,
+            'email' => $prospecto->email,
+            'celular' => $prospecto->celular,
+            'dni' => $prospecto->dni,
+            'link' => $mail->link,
+            'html' => $mail->render(),
+            'tipo' => 'Propietario',
+        ];
 
-        // ── WhatsApp ─────────────────────────────────────────────────────
-        if ($prospecto->celular) {
-            $celular = $this->formatearCelular($prospecto->celular);
-            $link = route('public.entrega-fest.firma', [$evento->slug, $prospecto->id]);
-            $mensaje = "Hola *{$prospecto->nombres}*, tu contrato preliminar para el evento *{$evento->nombre}* está aprobado 🎉. Agenda aquí tu cita de firma: $link";
-
-            $response = $this->whatsapp->sendText($celular, $mensaje);
-            if ($response) {
-                $enviadoWsp = true;
-                $this->registrarMensajeWsp($celular, $prospecto->nombres, $prospecto->dni, $mensaje, $response['messages'][0]['id'] ?? 'AUTO_FIRMA_' . uniqid());
-            }
-        }
-
-        Log::channel('entrega-fest')->info("[CONTRATO PRELIMINAR] Prospecto {$prospecto->id}: email={$enviadoEmail}, wsp={$enviadoWsp}.");
+        // 3. ENVIAMOS UN SOLO PAQUETE A N8N (Sin copropietarios)
+        $this->enviarPaqueteAN8N($dataPropietario, $evento, $plantilla);
     }
 
-    private function formatearCelular(string $raw): string
+    private function enviarPaqueteAN8N($propietario, $evento, $plantilla)
     {
-        $cel = preg_replace('/\D/', '', $raw);
-        return strlen($cel) === 9 ? '51' . $cel : $cel;
-    }
+        try {
+            Http::post(config('services.n8n.entregafest.cita_agendar'), [
+                'titular' => $propietario,
+                'copropietarios' => [], // Solicitado: no deben entrar los copropietarios
+                'evento' => $evento->nombre,
+                'plantilla' => [
+                    'titulo' => $plantilla?->titulo ?? '📅 Contrato Preliminar: ' . $evento->nombre,
+                    'subtitulo' => $plantilla?->subtitulo ?? 'Agenda tu cita de firma.',
+                    'descripcion' => $plantilla?->descripcion ?? '',
+                    'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
+                    'link_boton' => $plantilla?->link_boton ?? '',
+                ],
+                'etapa' => 'cita_agendar' // Etapa para historial
+            ]);
 
-    private function registrarMensajeWsp(string $celular, string $nombre, string $dni, string $mensaje, string $waMessageId): void
-    {
-        $cliente = Cliente::where('dni', $dni)->first();
-        $contacto = WhatsappContacto::updateOrCreate(
-            ['wa_id' => $celular],
-            ['nombre_wa' => $nombre, 'numero_celular' => $celular, 'cliente_id' => $cliente?->id]
-        );
-        $conversacion = WhatsappConversacion::firstOrCreate(
-            ['contacto_id' => $contacto->id],
-            ['cliente_id' => $cliente?->id, 'estado' => 'asignado', 'departamento_destino' => 'backoffice', 'agente_id' => auth()->id()]
-        );
-        $conversacion->update(['last_message_at' => now()]);
-        WhatsappMensaje::create([
-            'conversacion_id' => $conversacion->id,
-            'direccion' => 'saliente',
-            'tipo' => 'texto',
-            'contenido' => $mensaje,
-            'wa_message_id' => $waMessageId,
-            'estado' => 'enviado',
-        ]);
+            Log::channel('entrega-fest')->info("[CITA-AGENDAR-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$propietario['id']}");
+
+        } catch (\Exception $e) {
+            Log::error("[CITA-AGENDAR-PAQUETE-N8N] Error: " . $e->getMessage());
+        }
     }
 }

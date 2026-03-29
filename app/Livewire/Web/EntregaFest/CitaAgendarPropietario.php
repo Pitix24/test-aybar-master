@@ -10,7 +10,7 @@ use Livewire\Component;
 
 #[Layout('layouts.web.layout-web')]
 #[Title('Agenda tu Cita de Firma')]
-class CitaAgendar extends Component
+class CitaAgendarPropietario extends Component
 {
     public $slug;
     public $prospecto;
@@ -22,10 +22,10 @@ class CitaAgendar extends Component
     public $enviado = false;
     public $mensaje_exito = '';
 
-    public function mount($slug, $id)
+    public function mount($slug, $propietarioId)
     {
         $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
-            ->findOrFail($id);
+            ->findOrFail($propietarioId);
 
         $this->evento = $this->prospecto->entregaFest;
 
