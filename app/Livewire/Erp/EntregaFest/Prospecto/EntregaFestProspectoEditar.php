@@ -3,6 +3,7 @@
 namespace App\Livewire\Erp\EntregaFest\Prospecto;
 
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
+use App\Events\EntregaFest\EntregaFestCitaAgendar;
 use App\Events\EntregaFest\EntregaFestContratoPreliminar;
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
@@ -431,7 +432,7 @@ class EntregaFestProspectoEditar extends Component
 
         // Si se aprueba legal (CONFORME), disparamos el evento de firma
         if ($this->estado_contrato_preeliminar_emitido === 'CONFORME') {
-            EntregaFestContratoPreliminar::dispatch($this->prospecto);
+            EntregaFestCitaAgendar::dispatch($this->prospecto);
         }
     }
 

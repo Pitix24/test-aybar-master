@@ -10,7 +10,7 @@ use Livewire\Component;
 
 #[Layout('layouts.web.layout-web')]
 #[Title('Agenda tu Cita de Firma')]
-class FirmaPublica extends Component
+class CitaAgendar extends Component
 {
     public $slug;
     public $prospecto;

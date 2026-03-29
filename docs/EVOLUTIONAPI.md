@@ -34,3 +34,7 @@ C:\laragon\bin\ngrok\ngrok.exe http 5678
 
 # Levantar ngrok para laravel
 C:\laragon\bin\ngrok\ngrok.exe http 8000 --region=sa
+
+https://darcie-semitropical-todd.ngrok-free.dev/webhook-test/enviar-invitaciones
+
+http://host.docker.internal:8000/api/entrega-fest/marcar-enviado
