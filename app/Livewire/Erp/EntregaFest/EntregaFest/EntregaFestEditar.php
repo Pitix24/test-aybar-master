@@ -41,7 +41,7 @@ class EntregaFestEditar extends Component
         $this->nombre = $this->evento->nombre;
         $this->descripcion = $this->evento->descripcion;
         $this->codigo = $this->evento->codigo;
-        $this->fecha_entrega = $this->evento->fecha_entrega;
+        $this->fecha_entrega = $this->evento->fecha_entrega ? $this->evento->fecha_entrega->format('Y-m-d') : null;
         $this->gestor_id = $this->evento->gestor_id;
         $this->activo = $this->evento->activo;
 
@@ -53,7 +53,7 @@ class EntregaFestEditar extends Component
         ])->toArray();
 
         $this->unidades_negocios = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
-        $this->gestores = User::where('activo', true)->orderBy('name')->limit(100)->get();
+        $this->gestores = User::permission('entrega-fest.gestor')->get();
     }
 
     public function updatedUnidadNegocioId($value)
@@ -68,7 +68,8 @@ class EntregaFestEditar extends Component
 
     public function agregarProyecto()
     {
-        if (!$this->proyecto_id) return;
+        if (!$this->proyecto_id)
+            return;
 
         $proyecto = Proyecto::with('unidadNegocio')->find($this->proyecto_id);
 
@@ -95,6 +96,12 @@ class EntregaFestEditar extends Component
     public function update()
     {
         $this->authorize('entrega-fest.editar');
+
+        $this->validate([
+            'nombre' => 'required|string|max:255',
+            'gestor_id' => 'required',
+            'fecha_entrega' => 'required|date',
+        ]);
 
         try {
             DB::beginTransaction();
