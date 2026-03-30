@@ -40,16 +40,32 @@ class EventServiceProvider extends ServiceProvider
             EnviarLinkFirma::class,
         ],
 
-        \App\Events\EntregaFestAsistenciaConfirmada::class => [
-            \App\Listeners\EnviarNotificacionesAsistenciaConfirmada::class,
+        \App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion::class => [
+            \App\Listeners\EntregaFest\EntregaFestAsistenciaConfirmacionN8N::class,
         ],
 
-        \App\Events\EntregaFestFirmaRecordatorio::class => [
-            \App\Listeners\EnviarRecordatorioFirma::class,
+        \App\Events\EntregaFest\EntregaFestInstrucciones::class => [
+            \App\Listeners\EntregaFest\EntregaFestInstruccionesN8N::class,
         ],
 
-        \App\Events\EntregaFestPreInvitacionSolicitada::class => [
-            \App\Listeners\ProcesarEnvioPreInvitacionN8N::class,
+        \App\Events\EntregaFest\EntregaFestCitaAgendar::class => [
+            \App\Listeners\EntregaFest\EntregaFestCitaAgendarN8N::class,
+        ],
+
+        \App\Events\EntregaFest\EntregaFestCitaConfirmacion::class => [
+            \App\Listeners\EntregaFest\EntregaFestCitaConfirmacionN8N::class,
+        ],
+
+        \App\Events\EntregaFest\EntregaFestCitaRecordatorio::class => [
+            \App\Listeners\EntregaFest\EntregaFestCitaRecordatorioN8N::class,
+        ],
+
+        \App\Events\EntregaFest\EntregaFestPreInvitacion::class => [
+            \App\Listeners\EntregaFest\EntregaFestPreInvitacionN8N::class,
+        ],
+
+        \App\Events\EntregaFest\EntregaFestAsistenciaInvitacion::class => [
+            \App\Listeners\EntregaFest\EntregaFestAsistenciaInvitacionN8N::class,
         ],
     ];
 

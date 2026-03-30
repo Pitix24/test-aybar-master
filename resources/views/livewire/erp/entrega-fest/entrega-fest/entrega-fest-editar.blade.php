@@ -128,7 +128,7 @@
                                         @foreach ($proyectos_agregados as $p)
                                             <tr wire:key="p-agregado-{{ $p['id'] }}">
                                                 <td class="g_negrita">{{ $p['unidad_negocio_nombre'] }}</td>
-                                                <td>{{ $p['nombre'] }} </td>
+                                                <td>ID: {{ $p['id'] }} - {{ $p['nombre'] }} </td>
                                                 <td class="g_celda_centro">
                                                     <button type="button" wire:click="quitarProyecto({{ $p['id'] }})"
                                                         class="g_boton danger small">
@@ -151,7 +151,7 @@
 
                 <!-- TAB: PROSPECTOS -->
                 <div x-show="activeTab === 'prospectos'">
-                   @livewire('erp.entrega-fest.entrega-fest.entrega-fest-importar-prospecto', ['evento' => $evento])
+                    @livewire('erp.entrega-fest.entrega-fest.entrega-fest-importar-prospecto', ['evento' => $evento])
                 </div>
 
                 <!-- TAB: ITINERARIO -->
@@ -194,7 +194,8 @@
                 </button>
             </div>
 
-            <div class="g_panel" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;" x-show="activeTab !== 'general'">
+            <div class="g_panel" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;"
+                x-show="activeTab !== 'general'">
                 <h4 class="g_panel_titulo" style="color: #166534;"><i class="fa-solid fa-circle-info"></i> Resumen</h4>
                 <p class="leyenda">Editando evento: <b>{{ $nombre }}</b>.</p>
                 <p class="leyenda">Toda la configuración de esta pestaña se guarda independientemente.</p>
