@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class FirmaConfirmacionMail extends Mailable
+class CitaConfirmacionMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -37,7 +37,7 @@ class FirmaConfirmacionMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.entrega-fest.firma-confirmacion',
+            view: 'emails.entrega-fest.cita-confirmacion',
         );
     }
 

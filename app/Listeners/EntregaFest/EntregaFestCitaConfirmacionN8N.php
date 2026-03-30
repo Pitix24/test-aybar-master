@@ -3,86 +3,68 @@
 namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestCitaConfirmacion;
-use App\Mail\EntregaFest\ContratoPreliminarMail;
-use App\Models\Cliente;
-use App\Models\WhatsappContacto;
-use App\Models\WhatsappConversacion;
-use App\Models\WhatsappMensaje;
-use App\Services\WhatsappService;
+use App\Mail\EntregaFest\CitaConfirmacionMail;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 
 class EntregaFestCitaConfirmacionN8N
 {
-    public function __construct(private WhatsappService $whatsapp)
-    {
-        //
-    }
-
     public function handle(EntregaFestCitaConfirmacion $event): void
     {
-        $prospecto = $event->prospecto->fresh(['entregaFest']);
+        $prospecto = $event->prospecto->fresh(['entregaFest', 'proyecto']);
         $evento = $prospecto->entregaFest;
 
-        // Solo si aún no tiene fecha de firma agendada
-        if ($prospecto->fecha_firma) {
+        // Solo procesamos si ya tiene fecha de firma agendada
+        if (!$prospecto->fecha_firma) {
             return;
         }
 
-        $enviadoEmail = false;
-        $enviadoWsp = false;
+        // 1. Generamos el HTML del Email usando la mailable
+        // Esto le permite a n8n tener el cuerpo del correo ya renderizado
+        $mail = new CitaConfirmacionMail($prospecto);
 
-        // ── Email ────────────────────────────────────────────────────────
-        if ($prospecto->email) {
-            try {
-                Mail::to($prospecto->email)->send(new ContratoPreliminarMail($prospecto));
-                $enviadoEmail = true;
-            } catch (\Exception $e) {
-                Log::error('[CONTRATO PRELIMINAR] Correo a ' . $prospecto->email . ': ' . $e->getMessage());
-            }
-        }
+        // 2. Preparamos el contacto base
+        $contacto = [
+            'id' => $prospecto->id,
+            'nombres' => $prospecto->nombres,
+            'email' => $prospecto->email,
+            'celular' => $prospecto->celular,
+            'dni' => $prospecto->dni,
+            'tipo' => 'Propietario',
+            'proyecto' => $prospecto->proyecto?->nombre,
+            'fecha_firma' => $prospecto->fecha_firma,
+            'fecha_firma_formateada' => $mail->fechaFormateada,
+            'html' => $mail->render(),
+        ];
 
-        // ── WhatsApp ─────────────────────────────────────────────────────
-        if ($prospecto->celular) {
-            $celular = $this->formatearCelular($prospecto->celular);
-            $link = route('public.entrega-fest.firma', [$evento->slug, $prospecto->id]);
-            $mensaje = "Hola *{$prospecto->nombres}*, tu contrato preliminar para el evento *{$evento->nombre}* está aprobado 🎉. Agenda aquí tu cita de firma: $link";
-
-            $response = $this->whatsapp->sendText($celular, $mensaje);
-            if ($response) {
-                $enviadoWsp = true;
-                $this->registrarMensajeWsp($celular, $prospecto->nombres, $prospecto->dni, $mensaje, $response['messages'][0]['id'] ?? 'AUTO_FIRMA_' . uniqid());
-            }
-        }
-
-        Log::channel('entrega-fest')->info("[CONTRATO PRELIMINAR] Prospecto {$prospecto->id}: email={$enviadoEmail}, wsp={$enviadoWsp}.");
+        // 3. ENVIAMOS EL PAQUETE A N8N
+        $plantilla = $evento->plantillas()->where('tipo', 'cita-confirmacion')->first();
+        $this->enviarCitaConfirmacionAN8N($contacto, $evento, $plantilla);
     }
 
-    private function formatearCelular(string $raw): string
+    /**
+     * Envía la notificación de cita confirmada a n8n.
+     */
+    private function enviarCitaConfirmacionAN8N($contacto, $evento, $plantilla)
     {
-        $cel = preg_replace('/\D/', '', $raw);
-        return strlen($cel) === 9 ? '51' . $cel : $cel;
-    }
+        try {
+            Http::post(config('services.n8n.entregafest.cita_confirmacion'), [
+                'contacto' => $contacto,
+                'evento' => $evento->nombre,
+                'plantilla' => [
+                    'titulo' => $plantilla?->titulo ?? '🎉 ¡Cita de Firma Confirmada!: ' . $evento->nombre,
+                    'subtitulo' => $plantilla?->subtitulo ?? "Tu cita está agendada para: {$contacto['fecha_firma_formateada']}",
+                    'descripcion' => $plantilla?->descripcion ?? '',
+                    'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
+                    'link_boton' => $plantilla?->link_boton ?? '',
+                ],
+                'etapa' => 'cita-confirmacion' // Etapa para historial
+            ]);
 
-    private function registrarMensajeWsp(string $celular, string $nombre, string $dni, string $mensaje, string $waMessageId): void
-    {
-        $cliente = Cliente::where('dni', $dni)->first();
-        $contacto = WhatsappContacto::updateOrCreate(
-            ['wa_id' => $celular],
-            ['nombre_wa' => $nombre, 'numero_celular' => $celular, 'cliente_id' => $cliente?->id]
-        );
-        $conversacion = WhatsappConversacion::firstOrCreate(
-            ['contacto_id' => $contacto->id],
-            ['cliente_id' => $cliente?->id, 'estado' => 'asignado', 'departamento_destino' => 'backoffice', 'agente_id' => auth()->id()]
-        );
-        $conversacion->update(['last_message_at' => now()]);
-        WhatsappMensaje::create([
-            'conversacion_id' => $conversacion->id,
-            'direccion' => 'saliente',
-            'tipo' => 'texto',
-            'contenido' => $mensaje,
-            'wa_message_id' => $waMessageId,
-            'estado' => 'enviado',
-        ]);
+            Log::channel('entrega-fest')->info("[CITA-CONFIRMACION-PAQUETE-N8N] Enviada exitosamente para Prospecto #{$contacto['id']}");
+
+        } catch (\Exception $e) {
+            Log::error("[CITA-CONFIRMACION-PAQUETE-N8N] Error: " . $e->getMessage());
+        }
     }
 }

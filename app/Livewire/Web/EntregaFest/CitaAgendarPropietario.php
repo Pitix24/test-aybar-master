@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Web\EntregaFest;
 
+use App\Events\EntregaFest\EntregaFestCitaConfirmacion;
 use App\Models\ProspectoEntregaFest;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
@@ -34,9 +35,9 @@ class CitaAgendarPropietario extends Component
             abort(404, 'Evento no encontrado o link inválido.');
         }
 
-        // Solo prospectos con contrato preliminar aprobado
+        // Solo prospectos con contrato preliminar aprobado en backoffice
         if ($this->prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
-            abort(403, 'Tu contrato aún no ha sido aprobado.');
+            abort(403, 'Tu contrato aún no ha sido aprobado para agendar firma.');
         }
 
         // Si ya tiene fecha de firma agendada, mostrar confirmación
@@ -50,11 +51,7 @@ class CitaAgendarPropietario extends Component
     protected function rules(): array
     {
         return [
-            'fecha_firma' => [
-                'required',
-                'date',
-                'after:today', // debe ser una fecha futura
-            ],
+            'fecha_firma' => 'required|date|after:today',
         ];
     }
 
@@ -72,36 +69,26 @@ class CitaAgendarPropietario extends Component
         $this->validate();
 
         try {
+            // Actualizar la fecha de firma
             $this->prospecto->update([
                 'fecha_firma' => $this->fecha_firma,
             ]);
 
-            // Recargar el modelo para que el mail tenga datos frescos
-            $this->prospecto->refresh()->load(['entregaFest', 'proyecto']);
-
-            // Enviar correo de confirmación si tiene email registrado
-            if ($this->prospecto->email) {
-                try {
-                    \Illuminate\Support\Facades\Mail::to($this->prospecto->email)
-                        ->send(new \App\Mail\EntregaFest\FirmaConfirmacionMail($this->prospecto));
-                } catch (\Exception $mailEx) {
-                    Log::error('[FIRMA PUBLICA] Error enviando confirmación: ' . $mailEx->getMessage());
-                }
-            }
+            // Disparar evento para notificaciones vía n8n (Email y WhatsApp)
+            EntregaFestCitaConfirmacion::dispatch($this->prospecto->refresh());
 
             $this->enviado = true;
-            $this->mensaje_exito = '¡Listo! Tu cita de firma ha sido agendada para el ' .
-                \Carbon\Carbon::parse($this->fecha_firma)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY [a las] HH:mm') .
-                '. Te hemos enviado un correo de confirmación.';
+            $this->mensaje_exito = '¡Listo! Tu cita de firma ha sido agendada con éxito. ' .
+                'Te hemos enviado los detalles de confirmación a tu correo y WhatsApp.';
 
-            Log::info('[FIRMA PUBLICA] Fecha agendada', [
+            Log::info('[CITA AGENDAR PUBLICA] Fecha agendada', [
                 'prospecto_id' => $this->prospecto->id,
                 'fecha_firma' => $this->fecha_firma,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('[FIRMA PUBLICA] Error: ' . $e->getMessage());
-            session()->flash('error', 'Ocurrió un error al guardar tu fecha. Por favor intenta más tarde.');
+            Log::error('[CITA AGENDAR PUBLICA] Error: ' . $e->getMessage());
+            session()->flash('error', 'Ocurrió un error al guardar tu cita. Por favor intenta más tarde.');
         }
     }
 
