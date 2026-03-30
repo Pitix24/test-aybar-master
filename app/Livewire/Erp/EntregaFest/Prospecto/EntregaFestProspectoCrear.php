@@ -114,7 +114,7 @@ class EntregaFestProspectoCrear extends Component
                 'text' => 'Prospecto ' . $this->nombres . ' registrado correctamente.'
             ]);
 
-            return redirect()->route('erp.entrega-fest.vista.prospectos', $this->evento->id);
+            return redirect()->route('erp.entrega-fest.prospecto.todo', $this->evento->id);
 
         } catch (\Exception $e) {
             DB::rollBack();

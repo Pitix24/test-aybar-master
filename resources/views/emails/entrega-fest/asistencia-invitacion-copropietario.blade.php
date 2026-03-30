@@ -18,15 +18,16 @@
                     style="max-width: 600px; background-color: #ffffff; border-radius: 40px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
                     <!-- HEADER GRADIENTE -->
                     <tr>
-                        <td align="center"
-                            style="background: linear-gradient(135deg, #f8cc00 0%, #ff7e33 100%); padding: 50px 30px 40px;">
+                        <td align="center" bgcolor="#ff7c31"
+                            style="background-color: #ff7c31; background-image: linear-gradient(135deg, #fec400 0%, #ff7e33 100%); padding: 50px 30px 40px;">
                             <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png"
                                 alt="Entrega Fest"
-                                style="width: 260px; max-width: 90%; height: auto; display: block; margin-bottom: 20px;">
-                            <h1
-                                style="margin: 0; font-size: 20px; color: #004d55; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
-                                Confirmación de Asistencia
-                            </h1>
+                                style="width: 280px; max-width: 90%; height: auto; display: block; margin-bottom: 20px;">
+                            <p style="margin: 0; color: #004d55; font-size: 18px; font-weight: 400; line-height: 1.4;">
+                                Confirma tu <strong style="font-weight: 700;">asistencia</strong> al
+                                <br>
+                                <strong style="font-weight: 700; font-size: 20px;">{{ $evento->nombre }}</strong>
+                            </p>
                         </td>
                     </tr>
 
@@ -34,7 +35,8 @@
                     <tr>
                         <td style="padding: 40px;">
                             <div style="text-align: center; margin-bottom: 15px;">
-                                <span style="background: #e8f5e9; color: #1b5e20; padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase;">Copropietario</span>
+                                <span
+                                    style="background: #e8f5e9; color: #1b5e20; padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase;">Copropietario</span>
                             </div>
 
                             <h2
@@ -44,8 +46,8 @@
 
                             <p
                                 style="margin: 0 0 30px 0; color: #555555; font-size: 16px; line-height: 1.6; text-align: center;">
-                                Nos complace invitarte a participar en este gran evento. A continuación, los detalles de
-                                tu registro:
+                                Lo invitamos cordialmente a confirmar su asistencia. Por favor, complete el siguiente
+                                formulario:
                             </p>
 
                             <!-- TARJETA DE INFO DARK -->
@@ -84,18 +86,13 @@
                                 </tr>
                             </table>
 
-                            <p
-                                style="margin: 0 0 25px 0; color: #333333; font-size: 17px; font-weight: 700; text-align: center;">
-                                ¿Confirmas tu asistencia al evento?
-                            </p>
-
                             <!-- BOTÓN DE ACCIÓN -->
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="10">
                                 <tr>
                                     <td align="center">
                                         <a href="{{ $link }}" target="_blank"
-                                            style="background-color: #004d55; color: #ffffff; padding: 18px 40px; text-decoration: none; border-radius: 15px; font-size: 18px; font-weight: 700; display: inline-block;">
-                                            Confirmar aquí
+                                            style="background-color: #e68a00; color: #ffffff; padding: 18px 35px; text-decoration: none; border-radius: 15px; font-size: 18px; font-weight: 700; display: inline-block; text-shadow: 0 1px 2px rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(230,138,0,0.3);">
+                                            Confirmar mi asistencia
                                         </a>
                                     </td>
                                 </tr>
