@@ -4,15 +4,13 @@ namespace App\Livewire\Erp\EntregaFest\Prospecto;
 
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
 use App\Events\EntregaFest\EntregaFestCitaAgendar;
-use App\Events\EntregaFest\EntregaFestContratoPreliminar;
+use App\Events\EntregaFest\EntregaFestCitaRecordatorio;
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Events\ProspectoLegalConforme;
-use App\Events\EntregaFestFirmaRecordatorio;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
@@ -492,7 +490,7 @@ class EntregaFestProspectoEditar extends Component
         }
 
         // Despachar evento para notificaciones (Email/WhatsApp)
-        EntregaFestFirmaRecordatorio::dispatch($prospecto);
+        EntregaFestCitaRecordatorio::dispatch($prospecto);
 
         $this->dispatch('alertaLivewire', [
             'type' => 'success',
