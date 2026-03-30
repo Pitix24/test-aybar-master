@@ -21,9 +21,9 @@ class ContratoPreliminarMail extends Mailable
     {
         $this->prospecto = $prospecto;
         $this->evento = $prospecto->entregaFest;
-        $this->link = route('public.entrega-fest.firma', [
-            $this->evento->slug,
-            $prospecto->id,
+        $this->link = route('entrega-fest.cita-agendar.propietario', [
+            'slug' => $this->evento->slug,
+            'propietarioId' => $prospecto->id,
         ]);
     }
 

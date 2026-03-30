@@ -3,86 +3,78 @@
 namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestContratoPreliminar;
+use App\Events\EntregaFest\EntregaFestCitaAgendar;
 use App\Mail\EntregaFest\ContratoPreliminarMail;
-use App\Models\Cliente;
-use App\Models\WhatsappContacto;
-use App\Models\WhatsappConversacion;
-use App\Models\WhatsappMensaje;
-use App\Services\WhatsappService;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 
 class EntregaFestContratoPreliminarN8N
 {
-    public function __construct(private WhatsappService $whatsapp)
-    {
-        //
-    }
-
+    /**
+     * Handle the event.
+     */
     public function handle(EntregaFestContratoPreliminar $event): void
     {
-        $prospecto = $event->prospecto->fresh(['entregaFest']);
+        $prospecto = $event->prospecto->fresh(['entregaFest', 'proyecto']);
         $evento = $prospecto->entregaFest;
 
-        // Solo si aún no tiene fecha de firma agendada
-        if ($prospecto->fecha_firma) {
+        // Solo procesamos si el estado es CONFORME
+        if ($prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
             return;
         }
 
-        $enviadoEmail = false;
-        $enviadoWsp = false;
+        // 1. Mailable para el HTML del correo
+        $mail = new ContratoPreliminarMail($prospecto);
 
-        // ── Email ────────────────────────────────────────────────────────
-        if ($prospecto->email) {
-            try {
-                Mail::to($prospecto->email)->send(new ContratoPreliminarMail($prospecto));
-                $enviadoEmail = true;
-            } catch (\Exception $e) {
-                Log::error('[CONTRATO PRELIMINAR] Correo a ' . $prospecto->email . ': ' . $e->getMessage());
-            }
-        }
+        // 2. Resolver URL del PDF cargado en la pestaña Legal
+        $urlPdf = $prospecto->getFirstMediaUrl('contrato-preliminar');
 
-        // ── WhatsApp ─────────────────────────────────────────────────────
-        if ($prospecto->celular) {
-            $celular = $this->formatearCelular($prospecto->celular);
-            $link = route('public.entrega-fest.firma', [$evento->slug, $prospecto->id]);
-            $mensaje = "Hola *{$prospecto->nombres}*, tu contrato preliminar para el evento *{$evento->nombre}* está aprobado 🎉. Agenda aquí tu cita de firma: $link";
+        // 3. Preparar el contacto (Titular) para n8n
+        $titular = [
+            'id' => $prospecto->id,
+            'nombres' => $prospecto->nombres,
+            'email' => $prospecto->email,
+            'celular' => $prospecto->celular,
+            'dni' => $prospecto->dni,
+            'tipo' => 'Titular',
+            'proyecto' => $prospecto->proyecto?->nombre,
+            'pdf_url' => $urlPdf ?: null,
+            'link_agendar' => $mail->link,
+            'html' => $mail->render(),
+        ];
 
-            $response = $this->whatsapp->sendText($celular, $mensaje);
-            if ($response) {
-                $enviadoWsp = true;
-                $this->registrarMensajeWsp($celular, $prospecto->nombres, $prospecto->dni, $mensaje, $response['messages'][0]['id'] ?? 'AUTO_FIRMA_' . uniqid());
-            }
-        }
+        // 4. DISPARO A N8N: Envío de Contrato Preliminar
+        $plantilla = $evento->plantillas()->where('tipo', 'contrato-preliminar')->first();
+        $this->enviarContratoPreliminarAN8N($titular, $evento, $plantilla);
 
-        Log::channel('entrega-fest')->info("[CONTRATO PRELIMINAR] Prospecto {$prospecto->id}: email={$enviadoEmail}, wsp={$enviadoWsp}.");
+        // 5. EMITIMOS EVENTO HIJO: Invitación para agendar cita
+        // Esto activará el listener EntregaFestCitaAgendarN8N
+        EntregaFestCitaAgendar::dispatch($prospecto);
     }
 
-    private function formatearCelular(string $raw): string
+    /**
+     * Envía la notificación de contrato preliminar (PDF) a n8n con la clave 'titular'.
+     */
+    private function enviarContratoPreliminarAN8N($titular, $evento, $plantilla)
     {
-        $cel = preg_replace('/\D/', '', $raw);
-        return strlen($cel) === 9 ? '51' . $cel : $cel;
-    }
+        try {
+            Http::post(config('services.n8n.entregafest.contrato_preliminar'), [
+                'titular' => $titular,
+                'evento' => $evento->nombre,
+                'plantilla' => [
+                    'titulo' => $plantilla?->titulo ?? '📄 Contrato Preliminar Aprobado: ' . $evento->nombre,
+                    'subtitulo' => $plantilla?->subtitulo ?? 'Tu contrato preliminar ya está disponible para revisión.',
+                    'descripcion' => $plantilla?->descripcion ?? '',
+                    'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
+                    'link_boton' => $titular['pdf_url'] ?: $plantilla?->link_boton,
+                ],
+                'etapa' => 'contrato-preliminar'
+            ]);
 
-    private function registrarMensajeWsp(string $celular, string $nombre, string $dni, string $mensaje, string $waMessageId): void
-    {
-        $cliente = Cliente::where('dni', $dni)->first();
-        $contacto = WhatsappContacto::updateOrCreate(
-            ['wa_id' => $celular],
-            ['nombre_wa' => $nombre, 'numero_celular' => $celular, 'cliente_id' => $cliente?->id]
-        );
-        $conversacion = WhatsappConversacion::firstOrCreate(
-            ['contacto_id' => $contacto->id],
-            ['cliente_id' => $cliente?->id, 'estado' => 'asignado', 'departamento_destino' => 'backoffice', 'agente_id' => auth()->id()]
-        );
-        $conversacion->update(['last_message_at' => now()]);
-        WhatsappMensaje::create([
-            'conversacion_id' => $conversacion->id,
-            'direccion' => 'saliente',
-            'tipo' => 'texto',
-            'contenido' => $mensaje,
-            'wa_message_id' => $waMessageId,
-            'estado' => 'enviado',
-        ]);
+            Log::channel('entrega-fest')->info("[CONTRATO-PRELIMINAR-N8N] Enviado para Titular Prospecto #{$titular['id']}");
+
+        } catch (\Exception $e) {
+            Log::error("[CONTRATO-PRELIMINAR-N8N] Error: " . $e->getMessage());
+        }
     }
 }
