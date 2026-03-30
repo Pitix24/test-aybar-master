@@ -15,12 +15,15 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Lazy]
 #[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Evaluar Prospecto - Entrega Fest')]
 class EntregaFestProspectoEditar extends Component
 {
+    use WithFileUploads;
+
     public EntregaFest $evento;
     public ProspectoEntregaFest $prospecto;
 
@@ -35,6 +38,9 @@ class EntregaFestProspectoEditar extends Component
     // Legal
     public $estado_contrato_preeliminar_emitido, $estado_firma_contrato_firmado;
     public $fecha_firma, $fecha_generacion_contrato;
+
+    // Archivos
+    public $archivo_contrato_preeliminar;
 
     public $proyectos = [];
 
@@ -418,19 +424,62 @@ class EntregaFestProspectoEditar extends Component
 
     public function updateLegal()
     {
+        // 1. Verificación manual para disparar la Alerta SweetAlert
+        $isConforme = ($this->estado_contrato_preeliminar_emitido === 'CONFORME');
+        $hasFile = $this->prospecto->hasMedia('contrato-preliminar');
+
+        if ($isConforme && !$hasFile && !$this->archivo_contrato_preeliminar) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => '¡Contrato requerido!',
+                'text' => 'Para establecer el estado en CONFORME, debes adjuntar obligatoriamente el contrato preliminar en formato PDF.',
+            ]);
+            return;
+        }
+
+        // 2. Validación estándar (tipo de archivo, tamaño, etc)
         $rules = [
             'estado_contrato_preeliminar_emitido' => 'required|in:PENDIENTE,GENERADO,OBSERVADO,CONFORME',
+            'archivo_contrato_preeliminar' => [
+                'nullable', // Se deja nullable porque ya validamos manualmente la obligatoriedad arriba
+                'file',
+                'mimes:pdf',
+                'max:10240', // 10MB
+            ],
         ];
 
         $this->validate($rules);
 
+        // 3. Subir archivo si ha sido seleccionado
+        if ($this->archivo_contrato_preeliminar) {
+            try {
+                // Reemplazar colección anterior
+                $this->prospecto->clearMediaCollection('contrato-preliminar');
+                $this->prospecto->addMedia($this->archivo_contrato_preeliminar->getRealPath())
+                    ->usingFileName('CONTRATO_PRELIMINAR_' . $this->prospecto->dni . '.pdf')
+                    ->toMediaCollection('contrato-preliminar');
+
+                $this->archivo_contrato_preeliminar = null;
+                $this->prospecto->refresh(); // Refrescar para que el Blade vea la media inmediatamente
+            } catch (\Exception $e) {
+                Log::channel('entrega-fest')->error('[LEGAL UPLOAD] ' . $e->getMessage());
+                $this->dispatch('alertaLivewire', [
+                    'type' => 'error',
+                    'title' => 'Error de carga',
+                    'text' => 'No se pudo guardar el archivo PDF. Inténtelo de nuevo.'
+                ]);
+                return;
+            }
+        }
+
+        // 4. Actualización del estado
         $this->handleUpdate([
             'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
         ], 'PROSPECTO EDITAR - LEGAL');
 
-        // Si se aprueba legal (CONFORME), disparamos el evento de firma
+        // Si se aprueba legal (CONFORME), disparamos el evento de cita
         if ($this->estado_contrato_preeliminar_emitido === 'CONFORME') {
-            EntregaFestCitaAgendar::dispatch($this->prospecto);
+            EntregaFestCitaAgendar::dispatch($this->prospecto->refresh());
         }
     }
 
