@@ -1,0 +1,291 @@
+{
+  "name": "Entrega Fest - Contrato Preliminar (Email + Evolution API Whatsap)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "entregafest-contrato-preliminar",
+        "options": {}
+      },
+      "id": "5876103a-31fa-442c-970c-45c7c91d1094",
+      "name": "webhook-laravel",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        368
+      ],
+      "webhookId": "79e57869-6201-44d3-bdb2-1d70273d750d"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo de Cita Agendar, usamos \"titular\" (que es el Propietario)\nconst contacto = body.titular; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? 'Agenda tu Cita de Firma';\n\nif (!contacto) return []; // Si no hay titular, no procesamos nada\n\nreturn [{\n    json: {\n        ...contacto, // Esto expande: id, nombres, email, celular, dni, tipo, html, link, etc.\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
+      },
+      "id": "e0272b16-e268-4c2e-9663-fd7048e00c04",
+      "name": "formatear-contactos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution_api:8080/message/sendMedia/Aybar",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "aybar_secure_token_2025"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "=51{{ $json.celular }}"
+            },
+            {
+              "name": "mediatype",
+              "value": "document"
+            },
+            {
+              "name": "media",
+              "value": "=https://partidopoliticocivicoobras.com/wp-content/uploads/2026/03/LIMA-METRPOLITANA-1.pdf"
+            },
+            {
+              "name": "caption",
+              "value": "=*{{ $json.plantilla_titulo }}*\n\n{{ $json.plantilla_subtitulo }}\n\nHola *{{ $json.nombres }}*, {{ $json.plantilla_descripcion }}\n\n✅ *Puedes descargar tu contrato arriba.*\n\n📅 *Una vez revisado, agenda tu cita de firma aquí:*\n{{ $json.link_agendar }}\n"
+            },
+            {
+              "name": "fileName",
+              "value": "=Contrato_Preliminar_{{ $json.dni }}.pdf"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -304,
+        448
+      ],
+      "id": "c43137e9-5e03-4310-b474-97f93d614759",
+      "name": "enviar-mensaje-wsp",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "email"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        448
+      ],
+      "id": "71dd9902-6424-45ef-a643-6e192c5b8227",
+      "name": "set-laravel-mensaje-1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fromEmail": "adm-response@aybarsac.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.asunto }}",
+        "html": "={{ $json.html }}",
+        "options": {
+          "attachments": "=data"
+        }
+      },
+      "id": "f71d9583-8527-495f-952b-bba3db82e90c",
+      "name": "enviar-mensaje-email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        240
+      ],
+      "webhookId": "445a452f-0e2e-4857-bfdc-0b3bb412e6a3",
+      "credentials": {
+        "smtp": {
+          "id": "z4X6l9CLUHgSXEqh",
+          "name": "SMTP account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "email"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        304,
+        240
+      ],
+      "id": "6fb415e1-4be7-458a-8021-bd6ec29257c1",
+      "name": "set-laravel-mensaje-2",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://partidopoliticocivicoobras.com/wp-content/uploads/2026/03/LIMA-METRPOLITANA-1.pdf",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -304,
+        240
+      ],
+      "id": "36ddfe5f-cfc7-44c7-bcc5-f1f29ad5bdea",
+      "name": "pdf"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "webhook-laravel": {
+      "main": [
+        [
+          {
+            "node": "formatear-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "formatear-contactos": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviar-mensaje-wsp": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-1": {
+      "main": [
+        []
+      ]
+    },
+    "enviar-mensaje-email": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-2": {
+      "main": [
+        []
+      ]
+    },
+    "pdf": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "89c17c1b-c434-4fa6-8cba-262556c50732",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
+  },
+  "id": "tl0BuSPUin8uyuda",
+  "tags": []
+}

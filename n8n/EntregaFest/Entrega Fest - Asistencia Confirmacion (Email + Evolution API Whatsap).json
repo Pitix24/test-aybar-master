@@ -7,13 +7,13 @@
         "path": "entregafest-asistencia-confirmacion",
         "options": {}
       },
-      "id": "516dfc94-b8b8-4123-ad28-6c65444c013a",
+      "id": "13148427-ba6e-48cc-a9c4-5e217b519c8f",
       "name": "webhook-laravel",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -784,
-        -16
+        -464,
+        128
       ],
       "webhookId": "4a4f7952-b6ae-444c-acbf-23e2f044f4b4"
     },
@@ -21,13 +21,13 @@
       "parameters": {
         "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo siempre recibimos un solo \"contacto\" (ya sea el Titular o el Copropietario)\nconst contacto = body.contacto; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? 'Confirmación de Registro';\n\nif (!contacto) return []; // Si no hay contacto, no procesamos nada\n\nreturn [{\n    json: {\n        ...contacto, // Esto expande: id, nombres, email, celular, dni, tipo, html (ticket), etc.\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
       },
-      "id": "bf0bd2fd-7589-4200-8445-5617da7f0e69",
+      "id": "9d151966-5020-4180-a053-0a413eb13812",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -576,
-        -16
+        -256,
+        128
       ]
     },
     {
@@ -35,13 +35,13 @@
         "batchSize": 10,
         "options": {}
       },
-      "id": "0eb94b67-60b5-487e-b6bf-57401ecb4922",
+      "id": "b73b6e95-5275-4a21-86c7-4fc9c164e61e",
       "name": "split-10-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -160,
-        128
+        160,
+        272
       ]
     },
     {
@@ -83,10 +83,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        96,
-        224
+        416,
+        368
       ],
-      "id": "64983a62-b4b0-4dca-8635-81eadd339a30",
+      "id": "605417f0-e887-4114-b843-24b1230cf954",
       "name": "enviar-mensaje-wsp",
       "onError": "continueRegularOutput"
     },
@@ -125,10 +125,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        96,
-        32
+        416,
+        176
       ],
-      "id": "5a9ce5f0-b395-4dbb-8ef7-16867d253a8a",
+      "id": "85d96794-c490-4ccc-b3cd-e501bf00c76d",
       "name": "resumen-1"
     },
     {
@@ -138,10 +138,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        384,
-        32
+        704,
+        176
       ],
-      "id": "ba67a492-4fae-41a7-bada-f083bad622e3",
+      "id": "40fa61ea-3bac-4578-adbf-479471d5616c",
       "name": "formatear-resultados-1"
     },
     {
@@ -174,10 +174,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        384,
-        224
+        704,
+        368
       ],
-      "id": "6bead4ed-f27b-40ef-bf38-15ce333c4154",
+      "id": "57e12bba-9cab-4952-aeb0-e03989e714d0",
       "name": "set-laravel-mensaje-1",
       "onError": "continueRegularOutput"
     },
@@ -192,15 +192,15 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        672,
-        32
+        992,
+        176
       ],
-      "id": "ef77abf8-6aa4-42e9-b441-2463dac64415",
+      "id": "39084dfb-f0c2-499d-bdfb-f22040367608",
       "name": "enviar-email-constancia-1",
       "webhookId": "89879534-aefb-4b87-ab40-08fb6f6d6c33",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       }
@@ -209,13 +209,13 @@
       "parameters": {
         "amount": 3
       },
-      "id": "ee06c03a-6c0e-4f65-a512-cde09fd23a5e",
+      "id": "441ee5e9-3c6b-4adb-9585-f8b636811794",
       "name": "espera-45s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        672,
-        224
+        992,
+        368
       ],
       "webhookId": "d22e9044-e301-4f6b-9d33-a6ecf194cfca"
     },
@@ -224,13 +224,13 @@
         "batchSize": 50,
         "options": {}
       },
-      "id": "1a3ef6d1-6486-4f7b-9702-27d443b75565",
+      "id": "a165ba8c-ba36-48fd-97da-f090c5ffc96c",
       "name": "split-25-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -160,
-        -288
+        160,
+        -144
       ]
     },
     {
@@ -268,10 +268,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        96,
-        -384
+        416,
+        -240
       ],
-      "id": "335a5c3e-4068-45e4-bcc3-903dfc25dd96",
+      "id": "3ab04f54-a461-4f45-94c5-52f6ddc0a7ea",
       "name": "resumen-2"
     },
     {
@@ -281,10 +281,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        384,
-        -384
+        704,
+        -240
       ],
-      "id": "8622219f-5d48-4e5e-bcbe-b824d7bf580e",
+      "id": "44aa5c7e-deda-4eb3-b62e-a145ce539881",
       "name": "formatear-resultados-2"
     },
     {
@@ -298,15 +298,15 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        672,
-        -384
+        992,
+        -240
       ],
-      "id": "909dac7d-bb14-423c-b19e-6419a92cb3f5",
+      "id": "b21ab2dd-47a5-477b-bec7-bfe2cea97ba7",
       "name": "enviar-email-constancia-2",
       "webhookId": "7f9c8836-2399-45b0-a37a-6a0169fe54d5",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       }
@@ -315,13 +315,13 @@
       "parameters": {
         "amount": 2
       },
-      "id": "c702f8b5-49bb-4485-9999-2c81adc14ff9",
+      "id": "027c48c3-ded2-4986-b829-4eae57f26d71",
       "name": "espera-12s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        672,
-        -208
+        992,
+        -64
       ],
       "webhookId": "21522353-cf4b-4905-b5a8-d25d3907334e"
     },
@@ -355,10 +355,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        384,
-        -208
+        704,
+        -64
       ],
-      "id": "b87bef31-deae-4f3a-aff6-ddb60aaa1589",
+      "id": "5cacebf2-2ec9-44f0-91f7-6ffa162babdd",
       "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
     },
@@ -370,18 +370,18 @@
         "html": "={{ $json.html }}",
         "options": {}
       },
-      "id": "20929018-f82f-433b-b6bc-f90323e52b91",
+      "id": "6896dac8-ae33-45ad-8718-8293643bfe39",
       "name": "enviar-mensaje-email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        96,
-        -208
+        416,
+        -64
       ],
       "webhookId": "04094bff-0b9c-4194-81f7-e5eb9d13b409",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       },
@@ -564,17 +564,17 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "b045aa9a-8ee1-4d42-b61b-707a61b9f0d0",
+  "versionId": "efde4195-7f21-489b-944b-fdfe76e444b4",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
+    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
   },
-  "id": "IowuMcRcQ85CBWtS",
+  "id": "dwO25A84qjZdHhGT",
   "tags": []
 }

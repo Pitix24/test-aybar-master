@@ -12,15 +12,15 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        672,
-        32
+        576,
+        416
       ],
-      "id": "3286d402-ee83-4ecd-870d-1018f42159a6",
+      "id": "a920a8a8-d349-40c1-80bf-6d5f7b4947e1",
       "name": "Send an Email2",
       "webhookId": "bdc71a8b-a5fe-4c21-b8d7-1e1465dde6be",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       }
@@ -31,13 +31,13 @@
         "path": "entregafest-asistencia-invitacion",
         "options": {}
       },
-      "id": "ca3e044f-f40b-444c-b9a5-e047a5f57250",
+      "id": "b936e307-8a5f-49ad-8f9f-e7f570ee1040",
       "name": "webhook-laravel",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -784,
-        -16
+        -880,
+        368
       ],
       "webhookId": "00ba6ad0-16fc-431f-8c1c-7e7f1ec2ecbe"
     },
@@ -45,13 +45,13 @@
       "parameters": {
         "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// Mapeamos los campos según la nueva estructura\nconst titular = body.titular;\nconst copropietarios = body.copropietarios ?? [];\nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto predeterminado\nconst asunto = plantilla.titulo ?? 'Invitación al evento';\n\nlet finalItems = [];\n\n// 1. Añadimos al Titular (Propietario) si existe\nif (titular) {\n    finalItems.push({\n        json: {\n            id: titular.id,\n            email: titular.email,\n            nombres: titular.nombres,\n            celular: titular.celular ?? '',\n            dni: titular.dni ?? '',\n            link: titular.link,\n            html: titular.html,\n            tipo: 'Propietario',\n            asunto: asunto,\n            evento: evento,\n            // --- CAMPOS DE LA PLANTILLA ---\n            plantilla_titulo: plantilla.titulo ?? '',\n            plantilla_subtitulo: plantilla.subtitulo ?? '',\n            plantilla_descripcion: plantilla.descripcion ?? '',\n            plantilla_imagen: plantilla.imagen_url ?? '',\n            plantilla_link_boton: plantilla.link_boton ?? ''\n        }\n    });\n}\n\n// 2. Recorremos y añadimos a cada Copropietario\ncopropietarios.forEach(cp => {\n    finalItems.push({\n        json: {\n            id: cp.id,\n            email: cp.email ?? '',\n            nombres: cp.nombres,\n            celular: cp.celular ?? '',\n            dni: cp.dni ?? '',\n            link: cp.link,\n            html: cp.html,\n            tipo: 'Copropietario',\n            asunto: asunto,\n            evento: evento,\n            // --- CAMPOS DE LA PLANTILLA ---\n            plantilla_titulo: plantilla.titulo ?? '',\n            plantilla_subtitulo: plantilla.subtitulo ?? '',\n            plantilla_descripcion: plantilla.descripcion ?? '',\n            plantilla_imagen: plantilla.imagen_url ?? '',\n            plantilla_link_boton: plantilla.link_boton ?? ''\n        }\n    });\n});\n\nreturn finalItems;\n"
       },
-      "id": "6e50b3cc-6ef0-4bd2-a838-ed70d33de9a4",
+      "id": "81df78c3-5787-4e4d-90de-5d374e948d64",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -576,
-        -16
+        -672,
+        368
       ]
     },
     {
@@ -59,13 +59,13 @@
         "batchSize": 10,
         "options": {}
       },
-      "id": "5a6fb514-74c7-4001-ba47-3d7af88a96df",
+      "id": "924427d1-2163-462c-b720-5ac97f9c9a33",
       "name": "split-10-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -160,
-        128
+        -256,
+        512
       ]
     },
     {
@@ -103,10 +103,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        96,
-        32
+        0,
+        416
       ],
-      "id": "8d8c95c2-cbc7-46a0-b899-c400a058b416",
+      "id": "da1c16e8-a231-4f17-974f-9c6e7a12a88b",
       "name": "resumen-1"
     },
     {
@@ -148,10 +148,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        96,
-        224
+        0,
+        608
       ],
-      "id": "9311a9da-9360-497e-ad50-33adf0f0a1fa",
+      "id": "4211f65b-e46d-4124-b23a-d02513df266d",
       "name": "enviar-mensaje-wsp",
       "onError": "continueRegularOutput"
     },
@@ -185,10 +185,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        400,
-        224
+        304,
+        608
       ],
-      "id": "a849420f-70cf-46a4-b157-30ec0c456b95",
+      "id": "01ebf8ec-0d44-420b-bd24-1d4e7ae34589",
       "name": "set-laravel-mensaje-1",
       "onError": "continueRegularOutput"
     },
@@ -199,23 +199,23 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        384,
-        32
+        288,
+        416
       ],
-      "id": "fcf3e2fd-0f8b-4ae5-87bc-576ad63636d3",
+      "id": "fd65aba8-26c9-4a56-bc1e-f15fe93b6122",
       "name": "formatear-resultados-1"
     },
     {
       "parameters": {
         "amount": 4
       },
-      "id": "3694d71a-738b-4751-99cb-67422ecb6c41",
+      "id": "3da95c3b-fa0a-4106-83fb-0789f1aa28f6",
       "name": "espera-45s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        688,
-        224
+        592,
+        608
       ],
       "webhookId": "37334787-ce60-4648-87b5-98951c7247ea"
     },
@@ -224,13 +224,13 @@
         "batchSize": 25,
         "options": {}
       },
-      "id": "d51dd869-5754-4bc5-818b-8e5486625c98",
+      "id": "375dbe25-08eb-4823-b9e3-2d3f63412cbe",
       "name": "split-25-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -160,
-        -288
+        -256,
+        96
       ]
     },
     {
@@ -241,18 +241,18 @@
         "html": "={{ $json.html }}",
         "options": {}
       },
-      "id": "9333cb40-448b-4627-a924-3b74c4568b97",
+      "id": "f9eeae00-88d0-4ba4-9607-8a2bcf944bb8",
       "name": "enviar-mensaje-email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        96,
-        -208
+        0,
+        176
       ],
       "webhookId": "3d610a53-fdfd-47ed-bfcb-761fb8f38fd8",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       },
@@ -288,10 +288,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        384,
-        -208
+        288,
+        176
       ],
-      "id": "550d76d8-0394-44bc-b35e-83b87a405d81",
+      "id": "188001ff-44c1-4beb-b93d-881b54189639",
       "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
     },
@@ -299,13 +299,13 @@
       "parameters": {
         "amount": 12
       },
-      "id": "946634eb-25df-48e2-8aed-cad58e133c47",
+      "id": "80798b24-70ca-46b3-91b8-10e526a8fb6c",
       "name": "espera-12s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        672,
-        -208
+        576,
+        176
       ],
       "webhookId": "95f07778-d83f-4db8-88c0-4040d67e878f"
     },
@@ -344,10 +344,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        96,
-        -384
+        0,
+        0
       ],
-      "id": "39da76e9-f160-45a0-86e1-a85c8171cee4",
+      "id": "af66934c-ae20-4eb1-bcc9-f4bdfb7c04b9",
       "name": "resumen-2"
     },
     {
@@ -357,10 +357,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        384,
-        -384
+        288,
+        0
       ],
-      "id": "87806177-240d-4022-8f48-3d883cbc9f8c",
+      "id": "e9c1b44a-1135-4dc6-8adf-b51489aa847d",
       "name": "formatear-resultados-2"
     },
     {
@@ -374,15 +374,15 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        672,
-        -384
+        576,
+        0
       ],
-      "id": "55092ad2-fa1c-4a7f-9ac2-7ec8cdc1029f",
+      "id": "f792a303-2586-468f-a9b4-ae1da231636b",
       "name": "enviar-email-constancia-2",
       "webhookId": "21275a5b-8b41-4848-8d05-5ef8462c813b",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       }
@@ -564,17 +564,17 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "5fb58af7-341e-4666-8c1c-24c3216a7b61",
+  "versionId": "13d79c38-9dd1-48d6-ab22-4feb5a234375",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
+    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
   },
-  "id": "AtLpr9Vwc77PSza8",
+  "id": "6rwqAfemk7LTsuCp",
   "tags": []
 }

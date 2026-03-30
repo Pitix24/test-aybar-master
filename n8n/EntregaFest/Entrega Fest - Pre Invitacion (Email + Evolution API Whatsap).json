@@ -7,13 +7,13 @@
         "path": "entregafest-pre-invitacion",
         "options": {}
       },
-      "id": "793538f0-6c2b-4800-929f-e042adfafdd2",
+      "id": "28df74ef-66a4-41f2-9bd2-4c45aa3315ac",
       "name": "webhook-laravel",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -784,
-        -16
+        -880,
+        368
       ],
       "webhookId": "67ae8c37-d8c0-424c-ad93-7b709dddfcf9"
     },
@@ -21,13 +21,13 @@
       "parameters": {
         "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\nconst contactos = body.contactos ?? [];\nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto predeterminado\nconst asunto = plantilla.titulo ?? 'Invitación al evento';\n\nlet finalItems = [];\n\n// Recorremos cada contacto principal\ncontactos.forEach(c => {\n    \n    // 1. Añadimos al Propietario principal\n    finalItems.push({\n        json: {\n            id: c.id,\n            email: c.email,\n            nombres: c.nombres,\n            celular: c.celular ?? '',\n            dni: c.dni ?? '',\n            link: c.link,\n            html: c.html,\n            tipo: 'Propietario',\n            asunto: asunto,\n            evento: evento,\n            // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n            plantilla_titulo: plantilla.titulo ?? '',\n            plantilla_subtitulo: plantilla.subtitulo ?? '',\n            plantilla_descripcion: plantilla.descripcion ?? '',\n            plantilla_imagen: plantilla.imagen_url ?? '',\n            plantilla_link_boton: plantilla.link_boton ?? ''\n        }\n    });\n\n    // 2. Si tiene copropietarios, los añadimos también\n    if (c.copropietarios && c.copropietarios.length > 0) {\n        c.copropietarios.forEach(cp => {\n            finalItems.push({\n                json: {\n                    id: cp.id,\n                    email: cp.email ?? '',\n                    nombres: cp.nombres,\n                    celular: cp.celular ?? '',\n                    dni: cp.dni ?? '',\n                    link: cp.link,\n                    html: cp.html,\n                    tipo: 'Copropietario',\n                    asunto: asunto,\n                    evento: evento,\n                    // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n                    plantilla_titulo: plantilla.titulo ?? '',\n                    plantilla_subtitulo: plantilla.subtitulo ?? '',\n                    plantilla_descripcion: plantilla.descripcion ?? '',\n                    plantilla_imagen: plantilla.imagen_url ?? '',\n                    plantilla_link_boton: plantilla.link_boton ?? ''\n                }\n            });\n        });\n    }\n});\n\nreturn finalItems;\n"
       },
-      "id": "f3ed6c4c-d177-472c-b23e-7767dc28b26c",
+      "id": "2ec9b60d-bfef-415c-8606-5f6806460862",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -576,
-        -16
+        -672,
+        368
       ]
     },
     {
@@ -69,10 +69,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        96,
-        224
+        0,
+        608
       ],
-      "id": "ddad46ba-913c-486b-8e85-f33c96549e50",
+      "id": "79bc0f3c-ddb5-4008-b0b5-9f4dc5736d83",
       "name": "enviar-mensaje-wsp",
       "onError": "continueRegularOutput"
     },
@@ -84,18 +84,18 @@
         "html": "={{ $json.html }}",
         "options": {}
       },
-      "id": "3754e98d-5ea8-4196-bb61-1fa32f67a97e",
+      "id": "fb2ca9e1-f0a3-4f25-a5c7-66408745d328",
       "name": "enviar-mensaje-email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        96,
-        -208
+        0,
+        176
       ],
       "webhookId": "742895cd-5477-46ec-a948-875fa433a61c",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       },
@@ -131,10 +131,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        384,
-        224
+        288,
+        608
       ],
-      "id": "0294640f-8623-473a-b842-c74b58ba398e",
+      "id": "2b2946d8-1320-4356-98d5-526f5ff8ce72",
       "name": "set-laravel-mensaje-1",
       "onError": "continueRegularOutput"
     },
@@ -168,10 +168,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        384,
-        -208
+        288,
+        176
       ],
-      "id": "045c9d12-0f92-4925-904d-c1e090662793",
+      "id": "d64ef932-5e2e-43e2-9ce1-e4ce57518738",
       "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
     },
@@ -188,7 +188,7 @@
             {
               "id": "081cfbc4-078a-4b72-b282-285a0d7faf6a",
               "name": "mensaje",
-              "value": "Todos los correos de invitación fueron enviados",
+              "value": "Todos los mensajes de invitación fueron enviados",
               "type": "string"
             },
             {
@@ -210,10 +210,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        96,
-        32
+        0,
+        416
       ],
-      "id": "cd4411c2-dd2b-46c1-bc9d-7e316829bbe1",
+      "id": "19da7412-7660-49d2-acf9-f696f9867c88",
       "name": "resumen-1"
     },
     {
@@ -223,10 +223,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        384,
-        32
+        288,
+        416
       ],
-      "id": "80e3d56e-88eb-49b6-9bb4-6602cb6ed000",
+      "id": "9841c4fc-a8c4-42b3-a874-9f6b02afc022",
       "name": "formatear-resultados-1"
     },
     {
@@ -240,15 +240,15 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        672,
-        32
+        576,
+        416
       ],
-      "id": "43e7269f-e9ea-4ce5-bc40-7757681da54b",
+      "id": "5d7d9904-0764-41bc-b529-7b92e3a67beb",
       "name": "enviar-email-constancia-1",
       "webhookId": "8607b6fe-6589-43a3-a235-a321adaeb88f",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       }
@@ -288,10 +288,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        96,
-        -384
+        0,
+        0
       ],
-      "id": "55c7c925-d7de-46a0-a4ee-9f39bda79214",
+      "id": "6cc85646-1d7a-4245-a424-edce2b19b7be",
       "name": "resumen-2"
     },
     {
@@ -301,10 +301,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        384,
-        -384
+        288,
+        0
       ],
-      "id": "512d29bc-d382-4d63-bc21-b3f97032dc69",
+      "id": "de085d78-9558-4f01-9334-821e8d9588f5",
       "name": "formatear-resultados-2"
     },
     {
@@ -318,15 +318,15 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        672,
-        -384
+        576,
+        0
       ],
-      "id": "38b64e68-6d01-4015-8ef4-efdd2f60a10c",
+      "id": "b789ad53-2b6b-4780-ad62-b0ab3c81c072",
       "name": "enviar-email-constancia-2",
       "webhookId": "a93a9b47-ac33-4792-bb05-fda061420417",
       "credentials": {
         "smtp": {
-          "id": "nFrcmjvGHAuSVgqd",
+          "id": "z4X6l9CLUHgSXEqh",
           "name": "SMTP account"
         }
       }
@@ -336,26 +336,26 @@
         "batchSize": 25,
         "options": {}
       },
-      "id": "1c802b40-db41-4fd7-ac6f-fec1fa21283d",
+      "id": "bc18b934-452b-41e2-a965-d42e24520827",
       "name": "split-25-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -160,
-        -288
+        -256,
+        96
       ]
     },
     {
       "parameters": {
         "amount": 12
       },
-      "id": "76a57e81-4614-4dc6-b1b6-8d95e255a64f",
+      "id": "77b05726-70f9-42ac-842e-b323955e6ae6",
       "name": "espera-12s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        672,
-        -208
+        576,
+        176
       ],
       "webhookId": "19bacfd8-9ef8-40a8-a38a-c535fadd510d"
     },
@@ -364,26 +364,26 @@
         "batchSize": 10,
         "options": {}
       },
-      "id": "0157cdc3-2c7c-4b04-8d1a-9e864f03c853",
+      "id": "e78eff27-7962-4976-816d-2f898eb421a8",
       "name": "split-10-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -160,
-        128
+        -256,
+        512
       ]
     },
     {
       "parameters": {
         "amount": 45
       },
-      "id": "772d4dfe-7ee6-4861-a0ca-30be025b7299",
+      "id": "a41f7a69-2d39-4828-b59a-3157dde11620",
       "name": "espera-45s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        672,
-        224
+        576,
+        608
       ],
       "webhookId": "640533c5-89b4-43db-8c02-27051ac13ced"
     }
@@ -564,17 +564,17 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "b70ff79b-9659-412e-9424-28997ec3d930",
+  "versionId": "67fd925e-f608-4da5-adc0-8fa39e4f7c93",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
+    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
   },
-  "id": "OMsd6qXkbF9z6zaW",
+  "id": "YP2WGOPSKOys6P4v",
   "tags": []
 }

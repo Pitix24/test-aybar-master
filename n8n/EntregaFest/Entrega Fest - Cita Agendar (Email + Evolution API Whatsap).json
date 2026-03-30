@@ -1,0 +1,254 @@
+{
+  "name": "Entrega Fest - Cita Agendar (Email + Evolution API Whatsap)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "entregafest-cita-agendar",
+        "options": {}
+      },
+      "id": "308b96b1-c536-4606-89c0-de846b3fd464",
+      "name": "webhook-laravel",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        368
+      ],
+      "webhookId": "787a023d-4b2e-47ac-b4a3-cd882034499c"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo de Cita Agendar, usamos \"titular\" (que es el Propietario)\nconst contacto = body.titular; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? 'Agenda tu Cita de Firma';\n\nif (!contacto) return []; // Si no hay titular, no procesamos nada\n\nreturn [{\n    json: {\n        ...contacto, // Esto expande: id, nombres, email, celular, dni, tipo, html, link, etc.\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
+      },
+      "id": "9956d639-c02c-4a73-bdd8-b0d9b8a0e055",
+      "name": "formatear-contactos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution_api:8080/message/sendMedia/Aybar",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "aybar_secure_token_2025"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "=51{{ $json.celular }}"
+            },
+            {
+              "name": "mediatype",
+              "value": "image"
+            },
+            {
+              "name": "media",
+              "value": "=https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png"
+            },
+            {
+              "name": "caption",
+              "value": "=*{{ $json.plantilla_titulo }}*  \n\n{{ $json.plantilla_subtitulo }}  \nHola *{{ $json.nombres }}*,  {{ $json.plantilla_descripcion }}  \n\n👉 *Tu link de ticket de invitación:* {{ $json.link }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -304,
+        448
+      ],
+      "id": "f3b87dd9-753f-4282-94d0-c060cb950c9c",
+      "name": "enviar-mensaje-wsp",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "email"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        448
+      ],
+      "id": "8a409430-78ea-4fe6-9892-e39fdaab4abc",
+      "name": "set-laravel-mensaje-1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fromEmail": "adm-response@aybarsac.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.asunto }}",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "c20f47d2-e576-4172-8577-9f30e8d45c83",
+      "name": "enviar-mensaje-email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        240
+      ],
+      "webhookId": "d6308e02-6738-4c4b-81e3-3e0427cab3af",
+      "credentials": {
+        "smtp": {
+          "id": "z4X6l9CLUHgSXEqh",
+          "name": "SMTP account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "email"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        240
+      ],
+      "id": "948cbb9e-9379-4997-a9d6-f2d49382194c",
+      "name": "set-laravel-mensaje-2",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "webhook-laravel": {
+      "main": [
+        [
+          {
+            "node": "formatear-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "formatear-contactos": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "enviar-mensaje-email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviar-mensaje-wsp": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-1": {
+      "main": [
+        []
+      ]
+    },
+    "enviar-mensaje-email": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9e98738b-f81e-4994-b095-a7c14b86b33a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
+  },
+  "id": "HiR0Qsq3kMHRGpKz",
+  "tags": []
+}
