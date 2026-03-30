@@ -75,8 +75,10 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'nombres',
         'email',
         'celular',
+        'preinvitacion_confirmada',
         'lote',
         'manzana',
+        'estado_cliente',
         'grupo',
         'gestor_backoffice_id',
         'fecha_culminacion_eecc',
@@ -90,7 +92,6 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'fecha_firma',
         'fecha_generacion_contrato',
         'enviado_preinvitacion',
-        'preinvitacion_confirmada',
     ];
 
     // ---------------------------------------------------------------

@@ -57,3 +57,6 @@ Ahora tus URLs para Laravel o n8n serán:
 ## 🔐 Seguridad
 La API Key de Evolution API se mantiene como: `aybar_secure_token_2025`.
 Pásala siempre en el header `apikey`.
+
+Nombre tunel: Aybar-Prod-Server
+Instalador: cloudflared.exe service install eyJhIjoiZTRkZjA4ZGE4MWY0ODYxYmE3OGI2MmUzMWQwYmQ3NGEiLCJ0IjoiNTAxZWVlN2QtMzBmNC00YzY3LTg4N2MtMzYxYjIwYzYyZGVhIiwicyI6Ik9HSXdPVFU1TTJJdFpEVm1NeTAwTUdOaUxXRXdaall0TVRjMVpETmtNREkxWldVNSJ

@@ -27,6 +27,11 @@ return new class extends Migration {
             $table->string('lote')->nullable();
             $table->string('manzana')->nullable();
 
+            $table->enum('estado_cliente', [
+                'VIGENTE',
+                'DESISTIDO',
+            ])->default('VIGENTE');
+
             // BackOffice
             $table->enum('grupo', [
                 'A',

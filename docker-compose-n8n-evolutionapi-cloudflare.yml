@@ -29,7 +29,7 @@ services:
       - LOG_LEVEL=ERROR,WARN,DEBUG,INFO
       - AUTHENTICATION_TYPE=apikey
       - AUTHENTICATION_API_KEY=aybar_secure_token_2025
-      - SERVER_URL=https://api.aybarcorp.com
+      - SERVER_URL=https://evol-api.aybarcorp.com
       - STORE_MESSAGES=true
       - DATABASE_ENABLED=true
       - DATABASE_PROVIDER=postgresql
