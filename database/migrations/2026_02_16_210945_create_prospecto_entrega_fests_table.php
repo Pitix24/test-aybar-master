@@ -28,8 +28,12 @@ return new class extends Migration {
             $table->string('manzana')->nullable();
 
             $table->enum('estado_cliente', [
-                'VIGENTE',
-                'DESISTIDO',
+                'ADENDA',
+                'DESISTIMIENTO',
+                'DEVOLUCION_DE_APORTES',
+                'CARTA_NOTARIAL',
+                'PLANTON',
+                'RESOLUCION_DE_CONTRATO'
             ])->default('VIGENTE');
 
             // BackOffice

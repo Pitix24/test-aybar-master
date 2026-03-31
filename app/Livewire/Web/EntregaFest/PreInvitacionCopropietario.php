@@ -20,6 +20,9 @@ class PreInvitacionCopropietario extends Component
     public $enviado = false;
     public $mensaje_exito = '';
 
+    public $plantilla;
+
+
     public function mount($slug, $copropietarioId)
     {
         $this->slug = $slug;
@@ -31,6 +34,11 @@ class PreInvitacionCopropietario extends Component
         ])->findOrFail($copropietarioId);
 
         $this->evento = $this->copropietario->prospecto->entregaFest;
+
+        // Cargar la plantilla de pre-invitación si existe
+        $this->plantilla = $this->evento->plantillas()
+            ->where('tipo', 'pre-invitacion')
+            ->first();
 
         // Validar slug
         if ($this->evento->slug !== $slug) {

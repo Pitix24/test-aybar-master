@@ -10,32 +10,29 @@
                 <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
                     class="ef_logo_main">
                 <p class="ef_header_text">Confirmación de Interés en Participar</p>
-                <div class="ef_badge_type">Titular del lote</div>
             </div>
 
             <div class="ef_body">
-                <div class="text-center mb-6">
-                    <h2 class="text-3xl font-bold text-[#004d55] mb-2" style="font-family: 'Outfit', sans-serif;">¡Hola, {{ $prospecto->nombres }}!</h2>
-                    <p class="text-gray-600" style="font-size: 1.1rem;">
-                        Queremos confirmar si estás interesado(a) en asistir a nuestro gran evento de entrega.
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h2 style="margin: 0 0 10px 0; color: #004d55; font-size: 24px; font-weight: 700; text-align: center;">
+                        ¡Hola, {{ $prospecto->nombres }}!
+                    </h2>
+                    <p style="font-size: 1.1rem; color: #555555; line-height: 1.6; text-align: center;">
+                        Por favor, complete este formulario solo si desea participar en el evento.
                     </p>
                 </div>
 
                 <div class="ef_info_card">
                     <div class="ef_info_group">
-                        <label>Nombre Completo</label>
-                        <span>{{ $prospecto->nombres }}</span>
-                    </div>
-                    <div class="ef_info_group">
-                        <label>DNI / Documento</label>
-                        <span>{{ $prospecto->dni }}</span>
-                    </div>
-                    <div class="ef_info_group">
                         <label>Proyecto</label>
                         <span>{{ $prospecto->proyecto?->nombre ?? 'N/A' }}</span>
                     </div>
                     <div class="ef_info_group">
-                        <label>Terreno / MZ</label>
+                        <label>DNI/RUC/CE</label>
+                        <span>{{ $prospecto->dni }}</span>
+                    </div>
+                    <div class="ef_info_group">
+                        <label>Lote/MZ</label>
                         <span>
                             {{ $prospecto->lote ?? '—' }}
                             - {{ $prospecto->manzana ?? '—' }}
@@ -44,24 +41,21 @@
                 </div>
 
                 <div class="mt-8">
-                    <p class="ef_question" style="text-align: center; margin-bottom: 25px;">¿Confirmas tu interés en participar del {{ $evento->nombre }}?</p>
-
-                    <div class="ef_btn_group" style="display: grid; grid-template-columns: 1fr; gap: 15px; padding: 0 10px;">
-                        <button wire:click="guardarInteres('si')" 
-                                class="ef_btn_choice active_si" 
-                                style="width: 100%; padding: 20px; text-transform: uppercase; font-weight: 800; border: none; cursor: pointer; border-radius: 15px;">
-                            SÍ, estoy interesado(a)
+                    <div class="ef_btn_group"
+                        style="display: grid; grid-template-columns: 1fr; gap: 15px; padding: 0 10px;">
+                        <button wire:click="guardarInteres('si')" class="ef_btn_choice active_si"
+                            style="width: 100%; padding: 20px; text-transform: uppercase; font-weight: 800; border: none; cursor: pointer; border-radius: 15px;">
+                            Sí, estoy interesado
                         </button>
-                        <button wire:click="guardarInteres('no')" 
-                                class="ef_btn_choice" 
-                                style="width: 100%; padding: 20px; text-transform: uppercase; font-weight: 800; border: none; cursor: pointer; background: #e5ddd0; color: #8e8271; border-radius: 15px;">
-                            NO podré participar
+                        <button wire:click="guardarInteres('no')" class="ef_btn_choice"
+                            style="width: 100%; padding: 20px; text-transform: uppercase; font-weight: 800; border: none; cursor: pointer; background: #e5ddd0; color: #8e8271; border-radius: 15px;">
+                            No estoy interesado
                         </button>
                     </div>
                 </div>
 
                 <p style="margin-top: 30px; text-align: center; font-size: 0.85rem; color: #777; font-style: italic;">
-                    * Al confirmar, te consideraremos para el aforo y logística del evento.
+                    *Este correo no es una confirmación de asistencia.
                 </p>
             </div>
 
@@ -69,7 +63,7 @@
             <div class="ef_header">
                 <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
                     class="ef_logo_main">
-                <p class="ef_header_text">¡Registro Recibido! 🎫</p>
+                <p class="ef_header_text">¡Registro Recibido!</p>
             </div>
 
             <div class="ef_body">
@@ -81,11 +75,6 @@
                     <p class="ef_success_text" style="font-size: 1.1rem; line-height: 1.6; color: #4b5563;">
                         {{ $mensaje_exito }}
                     </p>
-                    
-                    <div style="margin-top: 40px; opacity: 0.5;">
-                        <img src="https://aybarcorp.com/public/assets/entregafest/logo-aybar-corp-fondo-blanco.png" 
-                             alt="Aybar Corp" style="width: 120px; filter: grayscale(1);">
-                    </div>
                 </div>
             </div>
         @endif
