@@ -16,13 +16,15 @@ class PreInvitacionPropietarioMail extends Mailable
     public $prospecto;
     public $evento;
     public $link;
+    public $plantilla;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(ProspectoEntregaFest $prospecto)
+    public function __construct(ProspectoEntregaFest $prospecto, $plantilla = null)
     {
         $this->prospecto = $prospecto;
+        $this->plantilla = $plantilla;
         $this->evento = $prospecto->entregaFest;
         $this->link = route('entrega-fest.pre-invitacion.propietario', [
             'slug' => $this->evento->slug,

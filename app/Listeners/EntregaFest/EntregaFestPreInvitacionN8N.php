@@ -26,10 +26,10 @@ class EntregaFestPreInvitacionN8N
             ->whereNotNull('email')
             ->with(['copropietarios', 'entregaFest'])
             ->get()
-            ->map(function (ProspectoEntregaFest $prospecto) {
+            ->map(function (ProspectoEntregaFest $prospecto) use ($plantilla) {
 
                 // Preparamos el Mail del PROPIETARIO para obtener su link y HTML
-                $mailPropietario = new PreInvitacionPropietarioMail($prospecto);
+                $mailPropietario = new PreInvitacionPropietarioMail($prospecto, $plantilla);
 
                 return [
                     'id' => $prospecto->id,
@@ -40,8 +40,8 @@ class EntregaFestPreInvitacionN8N
                     'link' => $mailPropietario->link,
                     'html' => $mailPropietario->render(),
 
-                    'copropietarios' => $prospecto->copropietarios->map(function (CopropietarioEntregaFest $copro) {
-                        $mailCopro = new PreInvitacionCopropietarioMail($copro);
+                    'copropietarios' => $prospecto->copropietarios->map(function (CopropietarioEntregaFest $copro) use ($plantilla) {
+                        $mailCopro = new PreInvitacionCopropietarioMail($copro, $plantilla);
                         return [
                             'id' => $copro->id,
                             'nombres' => $copro->nombres,
