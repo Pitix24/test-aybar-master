@@ -72,7 +72,8 @@ class EntregaFestPreInvitacionN8N
                     'descripcion' => $plantilla?->descripcion ?? '',
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton' => $plantilla?->link_boton ?? '',
-                ]
+                ],
+                'etapa' => 'pre-invitacion'
             ]);
 
             Log::channel('entrega-fest')->info("[PRE-INVITACION-N8N] Enviada exitosamente para " . count($contactos) . " prospectos del evento #{$evento->id}");

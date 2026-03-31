@@ -58,13 +58,13 @@ class EntregaFestCitaRecordatorioN8N
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton' => $plantilla?->link_boton ?? '',
                 ],
-                'etapa' => 'cita-confirmacion' // Etapa para historial
+                'etapa' => 'cita-recordatorio' // Etapa para historial
             ]);
 
-            Log::channel('entrega-fest')->info("[CITA-CONFIRMACION-PAQUETE-N8N] Enviada exitosamente para Prospecto #{$contacto['id']}");
+            Log::channel('entrega-fest')->info("[CITA-RECORDATORIO-PAQUETE-N8N] Enviada exitosamente para Prospecto #{$contacto['id']}");
 
         } catch (\Exception $e) {
-            Log::error("[CITA-CONFIRMACION-PAQUETE-N8N] Error: " . $e->getMessage());
+            Log::error("[CITA-RECORDATORIO-PAQUETE-N8N] Error: " . $e->getMessage());
         }
     }
 }

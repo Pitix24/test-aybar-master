@@ -76,7 +76,7 @@ class EntregaFestAsistenciaInvitacionN8N
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton' => $plantilla?->link_boton ?? '',
                 ],
-                'etapa' => 'confirmacion' // Etapa para historial
+                'etapa' => 'asistencia-invitacion' // Etapa para historial
             ]);
 
             Log::channel('entrega-fest')->info("[INVITACION-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$propietario['id']} con " . count($copropietarios) . " copropietarios.");

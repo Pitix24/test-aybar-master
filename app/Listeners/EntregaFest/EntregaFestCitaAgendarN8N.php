@@ -53,7 +53,7 @@ class EntregaFestCitaAgendarN8N
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton' => $plantilla?->link_boton ?? '',
                 ],
-                'etapa' => 'cita_agendar' // Etapa para historial
+                'etapa' => 'cita-agendar' // Etapa para historial
             ]);
 
             Log::channel('entrega-fest')->info("[CITA-AGENDAR-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$propietario['id']}");

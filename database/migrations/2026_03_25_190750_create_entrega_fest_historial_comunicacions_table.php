@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,22 +14,22 @@ return new class extends Migration
             $table->id();
 
             // Relación Polimórfica: Con el índice acortado para evitar el error de MySQL
-            $table->morphs('persona', 'idx_persona_com'); 
-            
+            $table->morphs('persona', 'idx_persona_com');
+
             // Canal: whatsapp, correo, sms
             $table->string('canal')->comment('whatsapp, correo, sms');
-            
+
             // Etapa: pre-invitacion, invitacion, recordatorio
-            $table->string('etapa')->comment('pre-invitacion, invitacion, recordatorio');
+            $table->string('etapa')->comment('pre-invitacion, asistencia-invitacion, asistencia-confirmacion, instrucciones, contrato-preliminar, cita-agendar, cita-confirmacion, cita-recordatorio');
 
             // Estado para saber si llegó o falló
             $table->string('estado')->default('enviado')->comment('borrador, enviado, fallido, leido');
-            
+
             // Un campo extra por si n8n manda algún error o ID de mensaje
             $table->json('metadata')->nullable();
 
             $table->timestamp('fecha_envio')->nullable();
-            
+
             $table->timestamps();
             $table->softDeletes();
         });
