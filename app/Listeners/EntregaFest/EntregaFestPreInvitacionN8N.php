@@ -24,6 +24,7 @@ class EntregaFestPreInvitacionN8N
 
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $evento->id)
             ->whereNotNull('email')
+            ->whereNotIn('estado_cliente', ['PLANTON', 'DESISTIMIENTO', 'DEVOLUCION_DE_APORTES'])
             ->with(['copropietarios', 'entregaFest'])
             ->get()
             ->map(function (ProspectoEntregaFest $prospecto) use ($plantilla) {
