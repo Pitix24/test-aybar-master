@@ -16,6 +16,11 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
     protected $entrega_fest_id;
     protected $proyectosValidos;
     public $importados = 0;
+    public $nuevos = 0;
+    public $actualizados = 0;
+    public $filasActualizadas = [];
+    public $filasRepetidasExcel = [];
+    protected $llavesProcesadas = [];
     public $errores = [];
 
     public function __construct($entrega_fest_id, $proyectosValidos)
@@ -51,20 +56,34 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
 
                 $dniTitular = str_replace("'", "", $row['dni']);
 
+                // Detectar las llaves correctas por si tienen espacios o mayúsculas en el Excel
+                $keyLote = collect(array_keys($row->toArray()))->filter(fn($k) => trim(strtolower($k)) == 'lote')->first() ?? 'lote';
+                $keyManzana = collect(array_keys($row->toArray()))->filter(fn($k) => trim(strtolower($k)) == 'manzana')->first() ?? 'manzana';
+
+                $mza = (string) strtoupper(trim($row[$keyManzana] ?? ''));
+                $lot = (string) strtoupper(trim($row[$keyLote] ?? ''));
+                $proy = (string) $proyectoId;
+                $llaveFila = $proy . '-' . $mza . '-' . $lot;
+
+                if (isset($this->llavesProcesadas[$llaveFila])) {
+                    $this->filasRepetidasExcel[] = $index + 2;
+                }
+                $this->llavesProcesadas[$llaveFila] = true;
+
                 $prospecto = ProspectoEntregaFest::updateOrCreate(
                     [
-                        'entrega_fest_id' => $this->entrega_fest_id,
-                        'dni' => $dniTitular,
-                        'lote' => $row['lote'], // Añadido para diferenciar si un DNI tiene varios lotes
+                        'entrega_fest_id' => (int) $this->entrega_fest_id,
+                        'proyecto_id' => (int) $proyectoId,
+                        'lote' => $lot,
+                        'manzana' => $mza,
                     ],
                     [
-                        'proyecto_id' => $proyectoId,
+                        'dni' => $dniTitular,
                         'user_id' => auth()->id(),
                         'nombres' => $row['nombres'],
                         'email' => $row['email'] ?? '',
                         'celular' => $row['celular'] ?? '',
-                        'manzana' => $row['manzana'],
-                        'grupo' => in_array($row['grupo'], ['A', 'B', 'C', 'D']) ? $row['grupo'] : 'A',
+                        'grupo' => in_array(strtoupper($row['grupo']), ['A', 'B', 'C', 'D']) ? strtoupper($row['grupo']) : 'A',
                         'gestor_backoffice_id' => is_numeric($row['gestor_backoffice_id']) ? $row['gestor_backoffice_id'] : null,
                         'fecha_culminacion_eecc' => $this->transformDate($row['fecha_culminacion_eecc']),
                         'link_carpeta_eecc' => $row['link_carpeta_eecc'],
@@ -83,6 +102,13 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
                 $this->procesarCopropietario($prospecto->id, $row, '2');
                 $this->procesarCopropietario($prospecto->id, $row, '3');
                 $this->procesarCopropietario($prospecto->id, $row, '4');
+
+                if ($prospecto->wasRecentlyCreated) {
+                    $this->nuevos++;
+                } else {
+                    $this->actualizados++;
+                    $this->filasActualizadas[] = $index + 2;
+                }
 
                 $this->importados++;
             }
@@ -116,8 +142,20 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
 
     private function limpiarEstado($value)
     {
-        $value = strtolower(trim($value));
-        return in_array($value, ['pendiente', 'observado', 'aprobado', 'rechazado']) ? $value : 'pendiente';
+        if (empty($value)) return 'PENDIENTE';
+
+        $value = strtoupper(trim($value));
+
+        // Consolidado de todos tus estados de la migración
+        $validos = [
+            'PENDIENTE', 'BANCARIZAR', 'PENALIDAD', 'OBSERVADO', 'CONFORME', // BackOffice
+            'GENERADO',                                                     // Legal - Preeliminar
+            'FIRMADO',                                                       // Legal - Firmado
+            'ADENDA', 'DESISTIMIENTO', 'DEVOLUCION_DE_APORTES',              // Cliente
+            'CARTA_NOTARIAL', 'PLANTON', 'RESOLUCION_DE_CONTRATO', 'VIGENTE'
+        ];
+
+        return in_array($value, $validos) ? $value : 'PENDIENTE';
     }
 
     private function transformDate($value)

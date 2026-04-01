@@ -24,8 +24,8 @@ return new class extends Migration {
 
             $table->boolean('preinvitacion_confirmada')->nullable();
 
-            $table->string('lote')->nullable();
-            $table->string('manzana')->nullable();
+            $table->string('lote')->nullable()->collation('utf8mb4_bin');
+            $table->string('manzana')->nullable()->collation('utf8mb4_bin');
 
             $table->enum('estado_cliente', [
                 'ADENDA',
@@ -73,8 +73,7 @@ return new class extends Migration {
             $table->dateTime('fecha_generacion_contrato')->nullable(); //fecha generacion contrato
 
             $table->timestamps();
-            // Comentado para permitir que un prospecto (DNI) pueda tener múltiples lotes
-            // $table->unique(['entrega_fest_id', 'dni']);
+            $table->unique(['entrega_fest_id', 'proyecto_id', 'lote', 'manzana'], 'prospecto_entrega_fest_unique');
         });
     }
 

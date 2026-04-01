@@ -45,10 +45,26 @@ class EntregaFestImportarProspecto extends Component
             DB::commit();
             $this->reset('archivo_excel');
 
+            $text = "Importación completada: Se han registrado {$import->nuevos} prospectos correctamente.";
+            $title = '¡Importación Exitosa!';
+            $type = 'success';
+
+            if ($import->actualizados > 0) {
+                $text = "Se han importado {$import->nuevos} registros nuevos y actualizado {$import->actualizados} existentes.";
+                $title = 'Importación con Actualizaciones';
+                $type = 'info';
+            }
+
+            if (count($import->errores) > 0) {
+                $text .= " | Atención: " . count($import->errores) . " filas no se pudieron procesar por errores.";
+                $type = 'warning';
+            }
+
             $this->dispatch('alertaLivewire', [
-                'type' => 'success',
-                'title' => '¡Éxito!',
-                'text' => 'Prospectos importados correctamente.'
+                'type' => $type,
+                'title' => $title,
+                'text' => $text,
+                'showConfirmButton' => true
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
