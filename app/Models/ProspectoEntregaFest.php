@@ -137,6 +137,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
         return $this->belongsTo(User::class, 'validador_backoffice_id');
     }
 
+    public function historialComunicaciones()
+    {
+        return $this->morphMany(\App\Models\Erp\EntregaFest\EntregaFestHistorialComunicacion::class, 'persona');
+    }
+
     // ---------------------------------------------------------------
     // Accessors
     // ---------------------------------------------------------------

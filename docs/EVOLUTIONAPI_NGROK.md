@@ -38,3 +38,5 @@ C:\laragon\bin\ngrok\ngrok.exe http 8000 --region=sa
 https://darcie-semitropical-todd.ngrok-free.dev/webhook-test/enviar-invitaciones
 
 http://host.docker.internal:8000/api/entrega-fest/marcar-enviado
+https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial
+http://host.docker.internal:8000/api/entrega-fest/mensaje-historial

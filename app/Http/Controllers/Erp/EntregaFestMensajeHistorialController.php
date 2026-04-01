@@ -30,6 +30,17 @@ class EntregaFestMensajeHistorialController extends Controller
         if (!$persona)
             return response()->json(['error' => 'No encontrado'], 404);
 
+        // Preparamos nombres dinámicos para los reportes
+        $etapaNombre = ucwords(str_replace(['-', '_'], ' ', $request->etapa ?? 'pre-invitacion'));
+        $eventoNombre = $persona->entregaFest->nombre ?? 'EntregaFest';
+
+        $estadoReal = strtolower($request->estado ?? 'enviado');
+
+        // Mapeo para cada tabla según sus Enums
+        $estadoEmail = ($estadoReal === 'enviado') ? 'ENVIADO' : 'ERROR';
+        $estadoWhatsapp = ($estadoReal === 'enviado') ? 'enviado' : 'fallido';
+        $estadoHistorial = ($estadoReal === 'enviado') ? 'enviado' : 'fallido';
+
         if ($canal === 'whatsapp') {
             // --- WHATSAPP LOGIC ---
             $wa_contacto = WhatsappContacto::firstOrCreate(
@@ -46,9 +57,9 @@ class EntregaFestMensajeHistorialController extends Controller
                 'conversacion_id' => $conversacion->id,
                 'direccion' => 'saliente',
                 'tipo' => 'texto',
-                'contenido' => $mensaje ?? 'Invitación enviada por WhatsApp',
+                'contenido' => $mensaje ?? "Envío de {$etapaNombre} para {$eventoNombre}",
                 'wa_message_id' => 'mass_' . uniqid(),
-                'estado' => 'enviado'
+                'estado' => $estadoWhatsapp
             ]);
 
         } elseif ($canal === 'email') {
@@ -56,18 +67,18 @@ class EntregaFestMensajeHistorialController extends Controller
 
             // 1. Aseguramos la Lista
             $lista_id = DB::table('correo_listas')->insertGetId([
-                'nombre' => 'EntregaFest',
+                'nombre' => "Lista - {$eventoNombre}",
                 'created_at' => now(),
                 'updated_at' => now()
-            ]) ?? DB::table('correo_listas')->where('nombre', 'EntregaFest')->value('id');
+            ]) ?? DB::table('correo_listas')->where('nombre', "Lista - {$eventoNombre}")->value('id');
 
-            // 2. Aseguramos la Plantilla (Corregido: 'asunto' y 'cuerpo')
+            // 2. Aseguramos la Plantilla
             $plantilla_id = DB::table('correo_plantillas')->value('id');
             if (!$plantilla_id) {
                 $plantilla_id = DB::table('correo_plantillas')->insertGetId([
-                    'nombre' => 'Plantilla Base',
-                    'asunto' => 'Invitación EntregaFest',
-                    'cuerpo' => 'Invitación EntregaFest',
+                    'nombre' => "Plantilla - {$etapaNombre}",
+                    'asunto' => "Invitación {$eventoNombre}",
+                    'cuerpo' => "Invitación {$eventoNombre}",
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
@@ -79,11 +90,11 @@ class EntregaFestMensajeHistorialController extends Controller
                 ['nombres' => $persona->nombres]
             );
 
-            // 4. Campaña
+            // 4. Campaña Dinámica
             $campana = CorreoCampana::firstOrCreate(
-                ['nombre' => 'Pre-Invitación EntregaFest'],
+                ['nombre' => "{$etapaNombre} - {$eventoNombre}"],
                 [
-                    'asunto' => 'Invitación EntregaFest',
+                    'asunto' => "Invitación {$eventoNombre}",
                     'lista_id' => $lista_id,
                     'plantilla_id' => $plantilla_id,
                     'estado' => 'COMPLETADO'
@@ -94,7 +105,8 @@ class EntregaFestMensajeHistorialController extends Controller
             DB::table('correo_campana_envios')->insert([
                 'campana_id' => $campana->id,
                 'contacto_id' => $correo_contacto->id,
-                'estado' => 'ENVIADO',
+                'estado' => $estadoEmail,
+                'error_mensaje' => ($estadoEmail === 'ERROR') ? ($request->mensaje_error ?? 'Fallo en envío SMTP') : null,
                 'enviado_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -104,12 +116,14 @@ class EntregaFestMensajeHistorialController extends Controller
         // --- HISTORIAL ESPECIALIZADO ENTREGA FEST ---
         // Aquí registramos específicamente la interacción del sistema de eventos
         EntregaFestHistorialComunicacion::create([
+            'entrega_fest_id' => $persona->entrega_fest_id ?? 0,
             'persona_id' => $persona->id,
             'persona_type' => get_class($persona), // Detecta si es App\Models\ProspectoEntregaFest o Copropietario
             'canal' => $canal, // whatsapp o email
-            'etapa' => 'pre-invitacion',
-            'estado' => 'enviado',
-            'fecha_envio' => now()
+            'etapa' => $request->etapa ?? 'pre-invitacion',
+            'estado' => $estadoHistorial,
+            'fecha_envio' => now(),
+            'metadata' => json_encode($request->all()) // Guardamos todo por si acaso
         ]);
 
         return response()->json(['message' => 'Status e Historial registrados correctamente']);
