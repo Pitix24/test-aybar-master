@@ -33,8 +33,9 @@ return new class extends Migration {
                 'DEVOLUCION_DE_APORTES',
                 'CARTA_NOTARIAL',
                 'PLANTON',
-                'RESOLUCION_DE_CONTRATO'
-            ])->default('VIGENTE');
+                'RESOLUCION_DE_CONTRATO',
+                'VENDIDO'
+            ])->default('ADENDA');
 
             // BackOffice
             $table->enum('grupo', [

@@ -59,9 +59,12 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
                 // Detectar las llaves correctas por si tienen espacios o mayúsculas en el Excel
                 $keyLote = collect(array_keys($row->toArray()))->filter(fn($k) => trim(strtolower($k)) == 'lote')->first() ?? 'lote';
                 $keyManzana = collect(array_keys($row->toArray()))->filter(fn($k) => trim(strtolower($k)) == 'manzana')->first() ?? 'manzana';
+                $keyEstado = collect(array_keys($row->toArray()))->filter(fn($k) => str_contains(trim(strtolower($k)), 'estado_cliente'))->first() ?? 'estado_cliente';
 
                 $mza = (string) strtoupper(trim($row[$keyManzana] ?? ''));
                 $lot = (string) strtoupper(trim($row[$keyLote] ?? ''));
+                $estadoExcel = (string) strtoupper(trim($row[$keyEstado] ?? 'ADENDA'));
+
                 $proy = (string) $proyectoId;
                 $llaveFila = $proy . '-' . $mza . '-' . $lot;
 
@@ -69,6 +72,9 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
                     $this->filasRepetidasExcel[] = $index + 2;
                 }
                 $this->llavesProcesadas[$llaveFila] = true;
+
+                $grupoVal = strtoupper(trim($row['grupo'] ?? 'A'));
+                $grupo = in_array($grupoVal, ['A', 'B', 'C', 'D']) ? $grupoVal : 'A';
 
                 $prospecto = ProspectoEntregaFest::updateOrCreate(
                     [
@@ -83,18 +89,19 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
                         'nombres' => $row['nombres'],
                         'email' => $row['email'] ?? '',
                         'celular' => $row['celular'] ?? '',
-                        'grupo' => in_array(strtoupper($row['grupo']), ['A', 'B', 'C', 'D']) ? strtoupper($row['grupo']) : 'A',
-                        'gestor_backoffice_id' => is_numeric($row['gestor_backoffice_id']) ? $row['gestor_backoffice_id'] : null,
-                        'fecha_culminacion_eecc' => $this->transformDate($row['fecha_culminacion_eecc']),
-                        'link_carpeta_eecc' => $row['link_carpeta_eecc'],
-                        'link_eecc_firmado' => $row['link_eecc_firmado'],
-                        'validador_backoffice_id' => is_numeric($row['validador_backoffice_id']) ? $row['validador_backoffice_id'] : null,
-                        'fecha_validacion_eecc' => $this->transformDate($row['fecha_validacion_eecc']),
-                        'estado_backoffice' => $this->limpiarEstado($row['estado_backoffice']),
-                        'estado_contrato_preeliminar_emitido' => $this->limpiarEstado($row['estado_contrato_preeliminar_emitido']),
-                        'estado_firma_contrato_firmado' => $this->limpiarEstado($row['estado_firma_contrato_firmado']),
-                        'fecha_firma' => $this->transformDate($row['fecha_firma']),
-                        'fecha_generacion_contrato' => $this->transformDate($row['fecha_generacion_contrato']),
+                        'estado_cliente' => $estadoExcel,
+                        'grupo' => $grupo,
+                        'gestor_backoffice_id' => is_numeric($row['gestor_backoffice_id'] ?? null) ? $row['gestor_backoffice_id'] : null,
+                        'fecha_culminacion_eecc' => $this->transformDate($row['fecha_culminacion_eecc'] ?? null),
+                        'link_carpeta_eecc' => $row['link_carpeta_eecc'] ?? null,
+                        'link_eecc_firmado' => $row['link_eecc_firmado'] ?? null,
+                        'validador_backoffice_id' => is_numeric($row['validador_backoffice_id'] ?? null) ? $row['validador_backoffice_id'] : null,
+                        'fecha_validacion_eecc' => $this->transformDate($row['fecha_validacion_eecc'] ?? null),
+                        'estado_backoffice' => $this->limpiarEstado($row['estado_backoffice'] ?? 'PENDIENTE'),
+                        'estado_contrato_preeliminar_emitido' => $this->limpiarEstado($row['estado_contrato_preeliminar_emitido'] ?? 'PENDIENTE'),
+                        'estado_firma_contrato_firmado' => $this->limpiarEstado($row['estado_firma_contrato_firmado'] ?? 'PENDIENTE'),
+                        'fecha_firma' => $this->transformDate($row['fecha_firma'] ?? null),
+                        'fecha_generacion_contrato' => $this->transformDate($row['fecha_generacion_contrato'] ?? null),
                     ]
                 );
 
@@ -142,17 +149,26 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
 
     private function limpiarEstado($value)
     {
-        if (empty($value)) return 'PENDIENTE';
+        if (empty($value))
+            return 'PENDIENTE';
 
         $value = strtoupper(trim($value));
 
         // Consolidado de todos tus estados de la migración
         $validos = [
-            'PENDIENTE', 'BANCARIZAR', 'PENALIDAD', 'OBSERVADO', 'CONFORME', // BackOffice
+            'PENDIENTE',
+            'BANCARIZAR',
+            'PENALIDAD',
+            'OBSERVADO',
+            'CONFORME', // BackOffice
             'GENERADO',                                                     // Legal - Preeliminar
             'FIRMADO',                                                       // Legal - Firmado
-            'ADENDA', 'DESISTIMIENTO', 'DEVOLUCION_DE_APORTES',              // Cliente
-            'CARTA_NOTARIAL', 'PLANTON', 'RESOLUCION_DE_CONTRATO', 'VIGENTE'
+            'ADENDA',
+            'DESISTIMIENTO',
+            'DEVOLUCION_DE_APORTES',              // Cliente
+            'CARTA_NOTARIAL',
+            'PLANTON',
+            'RESOLUCION_DE_CONTRATO'
         ];
 
         return in_array($value, $validos) ? $value : 'PENDIENTE';
