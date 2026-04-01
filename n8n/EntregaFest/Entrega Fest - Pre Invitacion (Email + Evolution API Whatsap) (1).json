@@ -7,7 +7,7 @@
         "path": "entregafest-pre-invitacion",
         "options": {}
       },
-      "id": "28df74ef-66a4-41f2-9bd2-4c45aa3315ac",
+      "id": "12305d58-b62a-4b7e-9955-8c8e8331eb56",
       "name": "webhook-laravel",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -21,7 +21,7 @@
       "parameters": {
         "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\nconst contactos = body.contactos ?? [];\nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto predeterminado\nconst asunto = plantilla.titulo ?? 'Invitación al evento';\n\nlet finalItems = [];\n\n// Recorremos cada contacto principal\ncontactos.forEach(c => {\n    \n    // 1. Añadimos al Propietario principal\n    finalItems.push({\n        json: {\n            id: c.id,\n            email: c.email,\n            nombres: c.nombres,\n            celular: c.celular ?? '',\n            dni: c.dni ?? '',\n            link: c.link,\n            html: c.html,\n            tipo: 'Propietario',\n            asunto: asunto,\n            evento: evento,\n            // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n            plantilla_titulo: plantilla.titulo ?? '',\n            plantilla_subtitulo: plantilla.subtitulo ?? '',\n            plantilla_descripcion: plantilla.descripcion ?? '',\n            plantilla_imagen: plantilla.imagen_url ?? '',\n            plantilla_link_boton: plantilla.link_boton ?? ''\n        }\n    });\n\n    // 2. Si tiene copropietarios, los añadimos también\n    if (c.copropietarios && c.copropietarios.length > 0) {\n        c.copropietarios.forEach(cp => {\n            finalItems.push({\n                json: {\n                    id: cp.id,\n                    email: cp.email ?? '',\n                    nombres: cp.nombres,\n                    celular: cp.celular ?? '',\n                    dni: cp.dni ?? '',\n                    link: cp.link,\n                    html: cp.html,\n                    tipo: 'Copropietario',\n                    asunto: asunto,\n                    evento: evento,\n                    // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n                    plantilla_titulo: plantilla.titulo ?? '',\n                    plantilla_subtitulo: plantilla.subtitulo ?? '',\n                    plantilla_descripcion: plantilla.descripcion ?? '',\n                    plantilla_imagen: plantilla.imagen_url ?? '',\n                    plantilla_link_boton: plantilla.link_boton ?? ''\n                }\n            });\n        });\n    }\n});\n\nreturn finalItems;\n"
       },
-      "id": "2ec9b60d-bfef-415c-8606-5f6806460862",
+      "id": "0a94b7a7-14bc-404f-a2ad-e8fe097e9b62",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -48,7 +48,7 @@
           "parameters": [
             {
               "name": "number",
-              "value": "=51{{ $json.celular }}"
+              "value": "={{ $json.celular }}"
             },
             {
               "name": "mediatype",
@@ -56,11 +56,11 @@
             },
             {
               "name": "media",
-              "value": "=https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png"
+              "value": "={{ $json.plantilla_imagen }}"
             },
             {
               "name": "caption",
-              "value": "=*{{ $json.plantilla_titulo }}*  \n\n{{ $json.plantilla_subtitulo }}  \nHola *{{ $json.nombres }}*,  {{ $json.plantilla_descripcion }}  \n\n👉 *Tu link de invitación:* {{ $json.link }}"
+              "value": "=*{{ $json.plantilla_titulo }}*  \n\nHola *{{ $json.nombres }}*.\n{{ $json.plantilla_descripcion }}  \n\n👉 *Link:* {{ $json.link }}\n\n*Este mensaje no es una confirmación de asistencia. \n\nAtentamente,\nEquipo Aybar Corp"
             }
           ]
         },
@@ -72,7 +72,7 @@
         0,
         608
       ],
-      "id": "79bc0f3c-ddb5-4008-b0b5-9f4dc5736d83",
+      "id": "5d858214-d79f-460a-8ac1-4265a36bef7e",
       "name": "enviar-mensaje-wsp",
       "onError": "continueRegularOutput"
     },
@@ -84,7 +84,7 @@
         "html": "={{ $json.html }}",
         "options": {}
       },
-      "id": "fb2ca9e1-f0a3-4f25-a5c7-66408745d328",
+      "id": "677377ac-8025-414a-9ea0-2069f0f814bf",
       "name": "enviar-mensaje-email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
@@ -95,7 +95,7 @@
       "webhookId": "742895cd-5477-46ec-a948-875fa433a61c",
       "credentials": {
         "smtp": {
-          "id": "z4X6l9CLUHgSXEqh",
+          "id": "nFrcmjvGHAuSVgqd",
           "name": "SMTP account"
         }
       },
@@ -104,7 +104,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://host.docker.internal:8000/api/entrega-fest/mensaje-historial",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -118,11 +118,19 @@
             },
             {
               "name": "canal",
-              "value": "email"
+              "value": "whatsapp"
             },
             {
               "name": "mensaje",
               "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.key ? 'enviado' : 'fallido' }}"
             }
           ]
         },
@@ -134,14 +142,14 @@
         288,
         608
       ],
-      "id": "2b2946d8-1320-4356-98d5-526f5ff8ce72",
+      "id": "a4ba60d4-6b13-423e-b0d3-bf386fe25d84",
       "name": "set-laravel-mensaje-1",
       "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "http://host.docker.internal:8000/api/entrega-fest/marcar-enviado",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -160,6 +168,10 @@
             {
               "name": "mensaje",
               "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.accepted?.length > 0 ? 'enviado' : 'invalido' }}"
             }
           ]
         },
@@ -171,7 +183,7 @@
         288,
         176
       ],
-      "id": "d64ef932-5e2e-43e2-9ce1-e4ce57518738",
+      "id": "a88af834-c97a-4411-bf5e-da78ad0c69fa",
       "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
     },
@@ -213,12 +225,12 @@
         0,
         416
       ],
-      "id": "19da7412-7660-49d2-acf9-f696f9867c88",
+      "id": "5b55929b-ac2c-49d1-88a1-464f26c40600",
       "name": "resumen-1"
     },
     {
       "parameters": {
-        "jsCode": "const resultados = $(\"enviar-mensaje-wsp\").all();\nconst datosOriginales = $(\"formatear-contactos\").all();  // Traemos todos los nombres\n\nconst exitosos = resultados.filter(r => r.json.messaging_product || r.json.messages).length;\nconst fallidos = resultados.length - exitosos;\nconst total = resultados.length;\n\nlet logDetallado = \"Resumen de envíos por WhatsApp:\\n\";\nresultados.forEach((r, index) => {\n    const status = (r.json.messaging_product || r.json.messages) ? \"✅ OK\" : \"❌ Error\";\n    // Buscamos el nombre que corresponde a esta vuelta del loop (index)\n    const nombre = datosOriginales[index].json.nombres; \n    logDetallado += `${index + 1}. ${nombre}: ${status}\\n`;\n});\n\nreturn { exitosos, fallidos, total, logDetallado, fecha: new Date().toLocaleString() };\n"
+        "jsCode": "const resultados = $(\"enviar-mensaje-wsp\").all();\nconst datosOriginales = $(\"formatear-contactos\").all(); \n\n// CAMBIO AQUÍ: Evolution API suele devolver un objeto con 'key' si es exitoso\nconst exitosos = resultados.filter(r => r.json.key && r.json.key.remoteJid).length;\nconst fallidos = resultados.length - exitosos;\nconst total = resultados.length;\n\nlet logDetallado = \"Resumen de envíos por WhatsApp:\\n\";\nresultados.forEach((r, index) => {\n    // CAMBIO AQUÍ: Validamos por la existencia de 'key'\n    const status = (r.json.key) ? \"✅ OK\" : \"❌ Error\";\n    \n    // Traemos el nombre y el celular original\n    const nombre = datosOriginales[index].json.nombres;\n    const celular = datosOriginales[index].json.celular; // <--- Añadimos esto\n    \n    logDetallado += `${index + 1}. ${nombre} (${celular}): ${status}\\n`; // <--- Mostramos el celular aquí\n});\n\nreturn { exitosos, fallidos, total, logDetallado, fecha: new Date().toLocaleString() };\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -226,16 +238,18 @@
         288,
         416
       ],
-      "id": "9841c4fc-a8c4-42b3-a874-9f6b02afc022",
+      "id": "de4ffafb-11ce-41e6-b62f-c47aaf9c7bc0",
       "name": "formatear-resultados-1"
     },
     {
       "parameters": {
         "fromEmail": "adm-response@aybarsac.com",
         "toEmail": "adm-response@aybarsac.com",
-        "subject": "=LOG Final: {{ $json.total }} correos enviados",
-        "html": "=<h3>Reporte de Envío - Entrega Fest</h3>\n<p>El proceso ha finalizado con los siguientes resultados:</p>\n\n<ul>\n    <li><b>Total de personas marcadas:</b> {{ $json.total }}</li>\n    <li><b>Envíos exitosos:</b> {{ $json.exitosos }}</li>\n    <li><b>Envíos fallidos:</b> {{ $json.fallidos }}</li>\n    <li><b>Fecha de fin:</b> {{ $json.fecha }}</li>\n</ul>\n\n<hr>\n<h4>Detalle por cada destinatario:</h4>\n<pre style=\"background: #f4f4f4; padding: 10px; border-radius: 5px;\">\n{{ $json.logDetallado }}\n</pre>\n",
-        "options": {}
+        "subject": "=LOG: ENTREGAFEST - PRE INVITACION, {{ $json.total }} whatsaps enviados",
+        "html": "=<h3>Reporte de Envío - Entrega Fest - Pre invitación</h3>\n<p>El proceso ha finalizado con los siguientes resultados:</p>\n\n<ul>\n    <li><b>Total de personas marcadas:</b> {{ $json.total }}</li>\n    <li><b>Envíos exitosos:</b> {{ $json.exitosos }}</li>\n    <li><b>Envíos fallidos:</b> {{ $json.fallidos }}</li>\n    <li><b>Fecha de fin:</b> {{ $json.fecha }}</li>\n</ul>\n\n<hr>\n<h4>Detalle por cada destinatario:</h4>\n<pre style=\"background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace;\">\n{{ $json.logDetallado }}\n</pre>\n",
+        "options": {
+          "ccEmail": "gestiondeprocesos@aybarsac.com,amiragutierrez@aybarsac.com"
+        }
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
@@ -243,12 +257,12 @@
         576,
         416
       ],
-      "id": "5d7d9904-0764-41bc-b529-7b92e3a67beb",
+      "id": "4b160899-1073-460a-81e3-749d680a744a",
       "name": "enviar-email-constancia-1",
       "webhookId": "8607b6fe-6589-43a3-a235-a321adaeb88f",
       "credentials": {
         "smtp": {
-          "id": "z4X6l9CLUHgSXEqh",
+          "id": "nFrcmjvGHAuSVgqd",
           "name": "SMTP account"
         }
       }
@@ -291,7 +305,7 @@
         0,
         0
       ],
-      "id": "6cc85646-1d7a-4245-a424-edce2b19b7be",
+      "id": "aa2c40c4-dc2d-4db0-b595-e20605237fbe",
       "name": "resumen-2"
     },
     {
@@ -304,16 +318,18 @@
         288,
         0
       ],
-      "id": "de085d78-9558-4f01-9334-821e8d9588f5",
+      "id": "d38a9601-0cbf-4ee0-8b3a-10d62dd192a0",
       "name": "formatear-resultados-2"
     },
     {
       "parameters": {
         "fromEmail": "adm-response@aybarsac.com",
         "toEmail": "adm-response@aybarsac.com",
-        "subject": "=LOG Final: {{ $json.total }} correos enviados",
-        "html": "=<h3>Reporte de Envío - Entrega Fest</h3>\n<p>El proceso ha finalizado con los siguientes resultados:</p>\n\n<ul>\n    <li><b>Total de personas marcadas:</b> {{ $json.total }}</li>\n    <li><b>Envíos exitosos:</b> {{ $json.exitosos }}</li>\n    <li><b>Envíos fallidos:</b> {{ $json.fallidos }}</li>\n    <li><b>Fecha de fin:</b> {{ $json.fecha }}</li>\n</ul>\n\n<hr>\n<h4>Detalle por cada destinatario:</h4>\n<pre style=\"background: #f4f4f4; padding: 10px; border-radius: 5px;\">\n{{ $json.logDetallado }}\n</pre>\n",
-        "options": {}
+        "subject": "=LOG: ENTREGAFEST - PRE INVITACION, {{ $json.total }} correos enviados",
+        "html": "=<h3>Reporte de Envío - Entrega Fest - Pre invitación</h3>\n<p>El proceso ha finalizado con los siguientes resultados:</p>\n\n<ul>\n    <li><b>Total de personas marcadas:</b> {{ $json.total }}</li>\n    <li><b>Envíos exitosos:</b> {{ $json.exitosos }}</li>\n    <li><b>Envíos fallidos:</b> {{ $json.fallidos }}</li>\n    <li><b>Fecha de fin:</b> {{ $json.fecha }}</li>\n</ul>\n\n<hr>\n<h4>Detalle por cada destinatario:</h4>\n<pre style=\"background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace;\">\n{{ $json.logDetallado }}\n</pre>\n",
+        "options": {
+          "ccEmail": "gestiondeprocesos@aybarsac.com,amiragutierrez@aybarsac.com"
+        }
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
@@ -321,12 +337,12 @@
         576,
         0
       ],
-      "id": "b789ad53-2b6b-4780-ad62-b0ab3c81c072",
+      "id": "8e46ba2b-c144-4ac9-b749-dd14efe885bc",
       "name": "enviar-email-constancia-2",
       "webhookId": "a93a9b47-ac33-4792-bb05-fda061420417",
       "credentials": {
         "smtp": {
-          "id": "z4X6l9CLUHgSXEqh",
+          "id": "nFrcmjvGHAuSVgqd",
           "name": "SMTP account"
         }
       }
@@ -336,7 +352,7 @@
         "batchSize": 25,
         "options": {}
       },
-      "id": "bc18b934-452b-41e2-a965-d42e24520827",
+      "id": "8550c9ce-3bef-4837-b824-19a5ccb82c20",
       "name": "split-25-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
@@ -349,7 +365,7 @@
       "parameters": {
         "amount": 12
       },
-      "id": "77b05726-70f9-42ac-842e-b323955e6ae6",
+      "id": "73a3e243-b714-4b3c-b754-48f34cf78980",
       "name": "espera-12s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
@@ -364,7 +380,7 @@
         "batchSize": 10,
         "options": {}
       },
-      "id": "e78eff27-7962-4976-816d-2f898eb421a8",
+      "id": "2d0783bc-f182-41ea-923b-36908cfcda9e",
       "name": "split-10-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
@@ -375,10 +391,10 @@
     },
     {
       "parameters": {
-        "amount": 45
+        "amount": 120
       },
-      "id": "a41f7a69-2d39-4828-b59a-3157dde11620",
-      "name": "espera-45s",
+      "id": "b0bc6b9d-31a7-454b-9bd1-bc0616b147e0",
+      "name": "espera-120s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
@@ -443,7 +459,7 @@
       "main": [
         [
           {
-            "node": "espera-45s",
+            "node": "espera-120s",
             "type": "main",
             "index": 0
           }
@@ -552,7 +568,7 @@
         ]
       ]
     },
-    "espera-45s": {
+    "espera-120s": {
       "main": [
         [
           {
@@ -567,14 +583,13 @@
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
+    "binaryMode": "separate"
   },
-  "versionId": "67fd925e-f608-4da5-adc0-8fa39e4f7c93",
+  "versionId": "92597311-e4e6-4f93-a560-636566c16258",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
   },
-  "id": "YP2WGOPSKOys6P4v",
+  "id": "OO7ahuzMhBXi3nl4",
   "tags": []
 }

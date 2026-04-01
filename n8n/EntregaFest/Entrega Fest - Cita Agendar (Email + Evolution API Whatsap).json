@@ -7,13 +7,13 @@
         "path": "entregafest-cita-agendar",
         "options": {}
       },
-      "id": "308b96b1-c536-4606-89c0-de846b3fd464",
+      "id": "2f09b618-2aca-4153-a313-611d36743753",
       "name": "webhook-laravel",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -880,
-        368
+        -816,
+        128
       ],
       "webhookId": "787a023d-4b2e-47ac-b4a3-cd882034499c"
     },
@@ -21,13 +21,13 @@
       "parameters": {
         "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo de Cita Agendar, usamos \"titular\" (que es el Propietario)\nconst contacto = body.titular; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? 'Agenda tu Cita de Firma';\n\nif (!contacto) return []; // Si no hay titular, no procesamos nada\n\nreturn [{\n    json: {\n        ...contacto, // Esto expande: id, nombres, email, celular, dni, tipo, html, link, etc.\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
       },
-      "id": "9956d639-c02c-4a73-bdd8-b0d9b8a0e055",
+      "id": "1f96308f-5251-46e9-8e22-23e583a4ecaa",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        368
+        -368,
+        128
       ]
     },
     {
@@ -56,7 +56,7 @@
             },
             {
               "name": "media",
-              "value": "=https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png"
+              "value": "={{ $json.plantilla_imagen }}"
             },
             {
               "name": "caption",
@@ -69,10 +69,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -304,
-        448
+        0,
+        208
       ],
-      "id": "f3b87dd9-753f-4282-94d0-c060cb950c9c",
+      "id": "af144421-2c3f-4c51-8b40-147eb00d36a9",
       "name": "enviar-mensaje-wsp",
       "onError": "continueRegularOutput"
     },
@@ -106,10 +106,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
-        448
+        304,
+        208
       ],
-      "id": "8a409430-78ea-4fe6-9892-e39fdaab4abc",
+      "id": "226744e5-ddc4-40fc-b5bd-91419b1b0292",
       "name": "set-laravel-mensaje-1",
       "onError": "continueRegularOutput"
     },
@@ -121,18 +121,18 @@
         "html": "={{ $json.html }}",
         "options": {}
       },
-      "id": "c20f47d2-e576-4172-8577-9f30e8d45c83",
+      "id": "5268b362-ce2a-4479-8dcc-da5dcca13584",
       "name": "enviar-mensaje-email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -304,
-        240
+        0,
+        0
       ],
       "webhookId": "d6308e02-6738-4c4b-81e3-3e0427cab3af",
       "credentials": {
         "smtp": {
-          "id": "z4X6l9CLUHgSXEqh",
+          "id": "nFrcmjvGHAuSVgqd",
           "name": "SMTP account"
         }
       },
@@ -168,12 +168,27 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
-        240
+        304,
+        0
       ],
-      "id": "948cbb9e-9379-4997-a9d6-f2d49382194c",
+      "id": "912e23c7-7425-4455-b07a-a363e77dddfe",
       "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -592,
+        128
+      ],
+      "id": "df48e9d2-aabb-4e9c-b28a-97956f4e30dd",
+      "name": "Wait",
+      "webhookId": "9947d5ca-f18c-4a73-95a2-9b45bd5a61f4"
     }
   ],
   "pinData": {},
@@ -182,7 +197,7 @@
       "main": [
         [
           {
-            "node": "formatear-contactos",
+            "node": "Wait",
             "type": "main",
             "index": 0
           }
@@ -216,11 +231,6 @@
         ]
       ]
     },
-    "set-laravel-mensaje-1": {
-      "main": [
-        []
-      ]
-    },
     "enviar-mensaje-email": {
       "main": [
         [
@@ -232,23 +242,28 @@
         ]
       ]
     },
-    "set-laravel-mensaje-2": {
+    "Wait": {
       "main": [
-        []
+        [
+          {
+            "node": "formatear-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
+    "binaryMode": "separate"
   },
-  "versionId": "9e98738b-f81e-4994-b095-a7c14b86b33a",
+  "versionId": "fcbb5ead-b167-4130-b67c-1077613c2663",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
   },
-  "id": "HiR0Qsq3kMHRGpKz",
+  "id": "ikGbCzAnN9UyvmS1",
   "tags": []
 }

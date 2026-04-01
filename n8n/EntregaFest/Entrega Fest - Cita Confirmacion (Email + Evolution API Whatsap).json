@@ -7,13 +7,13 @@
         "path": "entregafest-cita-confirmacion",
         "options": {}
       },
-      "id": "225680b7-171a-48e9-b96c-80bb79539164",
+      "id": "00f6e26b-7d93-4abc-b14a-075d2408061d",
       "name": "webhook-laravel",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -880,
-        368
+        -848,
+        128
       ],
       "webhookId": "aa4a8c27-1ca5-4d93-a33a-c741abaf3845"
     },
@@ -21,13 +21,13 @@
       "parameters": {
         "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo de Cita Confirmación, la clave es \"contacto\"\nconst contacto = body.contacto; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? '¡Cita Agendada con Éxito!';\n\nif (!contacto) return []; // Si no hay contacto, no procesamos nada\n\nreturn [{\n    json: {\n        ...contacto, // id, nombres, email, celular, dni, fecha_firma_formateada, html, etc.\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
       },
-      "id": "1f69d756-02fa-45c3-8870-70ff25b065c9",
+      "id": "34eb15ca-6bbc-4698-9f1f-29c41b04b03b",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        368
+        -368,
+        128
       ]
     },
     {
@@ -69,10 +69,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -304,
-        448
+        0,
+        208
       ],
-      "id": "74235e1e-0f3c-4881-a55d-3601ba19494e",
+      "id": "83398b6f-eef2-495b-903a-6144df11b70f",
       "name": "enviar-mensaje-wsp",
       "onError": "continueRegularOutput"
     },
@@ -106,10 +106,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
-        448
+        304,
+        208
       ],
-      "id": "063c91c8-dffa-4b03-88d3-afd61484db5b",
+      "id": "3a5e10e9-7021-4f74-aecc-dd58c910e5a1",
       "name": "set-laravel-mensaje-1",
       "onError": "continueRegularOutput"
     },
@@ -121,18 +121,18 @@
         "html": "={{ $json.html }}",
         "options": {}
       },
-      "id": "b4a4f313-b843-45da-aa06-cba32862a165",
+      "id": "5176146f-c5b8-4ba3-9caf-8a5729f80261",
       "name": "enviar-mensaje-email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -304,
-        240
+        0,
+        0
       ],
       "webhookId": "6e5759aa-8a62-453c-8574-9b49871395e1",
       "credentials": {
         "smtp": {
-          "id": "z4X6l9CLUHgSXEqh",
+          "id": "nFrcmjvGHAuSVgqd",
           "name": "SMTP account"
         }
       },
@@ -168,12 +168,27 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
-        240
+        304,
+        0
       ],
-      "id": "5057fccd-c3e5-46e2-b9b6-a6e4e18815e9",
+      "id": "656e87d6-eacb-4f62-82a1-d62bef326eeb",
       "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -592,
+        128
+      ],
+      "id": "c2cedadd-01fa-430e-9331-f1c6e46452d0",
+      "name": "Wait",
+      "webhookId": "a7db49ff-0ab5-4036-a492-76c81b6798ed"
     }
   ],
   "pinData": {},
@@ -182,7 +197,7 @@
       "main": [
         [
           {
-            "node": "formatear-contactos",
+            "node": "Wait",
             "type": "main",
             "index": 0
           }
@@ -216,11 +231,6 @@
         ]
       ]
     },
-    "set-laravel-mensaje-1": {
-      "main": [
-        []
-      ]
-    },
     "enviar-mensaje-email": {
       "main": [
         [
@@ -232,23 +242,28 @@
         ]
       ]
     },
-    "set-laravel-mensaje-2": {
+    "Wait": {
       "main": [
-        []
+        [
+          {
+            "node": "formatear-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
+    "binaryMode": "separate"
   },
-  "versionId": "a35236a1-3c40-4298-a7c2-4f48f063906b",
+  "versionId": "3e53eb5a-1366-4c0e-a503-e78f3aa1b1a4",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
   },
-  "id": "VqRhcHWLPdArgJsr",
+  "id": "6JNBZyzBKiJ3O91B",
   "tags": []
 }

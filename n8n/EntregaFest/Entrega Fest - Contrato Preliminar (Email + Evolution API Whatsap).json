@@ -7,13 +7,13 @@
         "path": "entregafest-contrato-preliminar",
         "options": {}
       },
-      "id": "5876103a-31fa-442c-970c-45c7c91d1094",
+      "id": "eaee961d-b6a5-4da6-a407-fa7afddceb64",
       "name": "webhook-laravel",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -880,
-        368
+        -576,
+        128
       ],
       "webhookId": "79e57869-6201-44d3-bdb2-1d70273d750d"
     },
@@ -21,13 +21,13 @@
       "parameters": {
         "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo de Cita Agendar, usamos \"titular\" (que es el Propietario)\nconst contacto = body.titular; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? 'Agenda tu Cita de Firma';\n\nif (!contacto) return []; // Si no hay titular, no procesamos nada\n\nreturn [{\n    json: {\n        ...contacto, // Esto expande: id, nombres, email, celular, dni, tipo, html, link, etc.\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
       },
-      "id": "e0272b16-e268-4c2e-9663-fd7048e00c04",
+      "id": "2f35af84-3230-4a63-8a8b-51f1f958c2dc",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        368
+        -368,
+        128
       ]
     },
     {
@@ -56,7 +56,7 @@
             },
             {
               "name": "media",
-              "value": "=https://partidopoliticocivicoobras.com/wp-content/uploads/2026/03/LIMA-METRPOLITANA-1.pdf"
+              "value": "={{ $json.pdf_url }}"
             },
             {
               "name": "caption",
@@ -73,10 +73,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -304,
-        448
+        0,
+        208
       ],
-      "id": "c43137e9-5e03-4310-b474-97f93d614759",
+      "id": "90081cd5-edd1-48d2-b053-9c1edd21a372",
       "name": "enviar-mensaje-wsp",
       "onError": "continueRegularOutput"
     },
@@ -110,10 +110,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
-        448
+        304,
+        208
       ],
-      "id": "71dd9902-6424-45ef-a643-6e192c5b8227",
+      "id": "f599c800-1eef-485e-aef5-bdbf3e3abd90",
       "name": "set-laravel-mensaje-1",
       "onError": "continueRegularOutput"
     },
@@ -127,18 +127,18 @@
           "attachments": "=data"
         }
       },
-      "id": "f71d9583-8527-495f-952b-bba3db82e90c",
+      "id": "f9364413-ba64-4bd8-8c07-9358c03e2430",
       "name": "enviar-mensaje-email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -16,
-        240
+        288,
+        0
       ],
       "webhookId": "445a452f-0e2e-4857-bfdc-0b3bb412e6a3",
       "credentials": {
         "smtp": {
-          "id": "z4X6l9CLUHgSXEqh",
+          "id": "nFrcmjvGHAuSVgqd",
           "name": "SMTP account"
         }
       },
@@ -174,16 +174,16 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        304,
-        240
+        608,
+        0
       ],
-      "id": "6fb415e1-4be7-458a-8021-bd6ec29257c1",
+      "id": "f45eda14-1640-42b9-bd1e-cfa2a7a7a6c0",
       "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "url": "https://partidopoliticocivicoobras.com/wp-content/uploads/2026/03/LIMA-METRPOLITANA-1.pdf",
+        "url": "={{ $json.pdf_url }}",
         "options": {
           "response": {
             "response": {
@@ -195,10 +195,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -304,
-        240
+        0,
+        0
       ],
-      "id": "36ddfe5f-cfc7-44c7-bcc5-f1f29ad5bdea",
+      "id": "369fa1a1-fab1-4081-9077-58ed2fcc7f86",
       "name": "pdf"
     }
   ],
@@ -242,11 +242,6 @@
         ]
       ]
     },
-    "set-laravel-mensaje-1": {
-      "main": [
-        []
-      ]
-    },
     "enviar-mensaje-email": {
       "main": [
         [
@@ -256,11 +251,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "set-laravel-mensaje-2": {
-      "main": [
-        []
       ]
     },
     "pdf": {
@@ -278,14 +268,13 @@
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
+    "binaryMode": "separate"
   },
-  "versionId": "89c17c1b-c434-4fa6-8cba-262556c50732",
+  "versionId": "665a875c-044d-4c3a-b2f0-dfe8541a91c9",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "c806fd4ba6f3a3286758e12117f71e3bdd8b19e8ca50fa254e1ad2c87e89ae24"
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
   },
-  "id": "tl0BuSPUin8uyuda",
+  "id": "sVUsvmcaWDgMO5k6",
   "tags": []
 }
