@@ -33,8 +33,9 @@ class EntregaFestProspectoEditar extends Component
     public $lote = '', $manzana = '';
 
     // BackOffice
-    public $grupo, $gestor_backoffice_id = '', $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
+    public $grupo, $gestor_backoffice_id = '', $gestor_fecha_asignacion, $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
     public $validador_backoffice_id = '', $fecha_validacion_eecc, $estado_backoffice;
+    public $estado_gestor_backoffice, $observacion_gestor_backoffice;
 
     // Legal
     public $estado_contrato_preeliminar_emitido, $estado_firma_contrato_firmado;
@@ -75,9 +76,12 @@ class EntregaFestProspectoEditar extends Component
             // BackOffice — Asesor
             'grupo' => 'required|in:A,B,C,D',
             'gestor_backoffice_id' => 'nullable|exists:users,id',
+            'gestor_fecha_asignacion' => 'nullable|date',
             'fecha_culminacion_eecc' => 'nullable|date',
             'link_carpeta_eecc' => 'nullable|string|max:255',
             'link_eecc_firmado' => 'nullable|string|max:255',
+            'estado_gestor_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
+            'observacion_gestor_backoffice' => 'nullable|string',
 
             // BackOffice — Supervisor
             'validador_backoffice_id' => 'nullable|exists:users,id',
@@ -131,10 +135,14 @@ class EntregaFestProspectoEditar extends Component
         // BackOffice
         $this->grupo = $this->prospecto->grupo;
         $this->gestor_backoffice_id = $this->prospecto->gestor_backoffice_id;
+        $this->gestor_fecha_asignacion = $this->prospecto->gestor_fecha_asignacion
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->gestor_fecha_asignacion)) : null;
         $this->fecha_culminacion_eecc = $this->prospecto->fecha_culminacion_eecc
             ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_culminacion_eecc)) : null;
         $this->link_carpeta_eecc = $this->prospecto->link_carpeta_eecc;
         $this->link_eecc_firmado = $this->prospecto->link_eecc_firmado;
+        $this->estado_gestor_backoffice = $this->prospecto->estado_gestor_backoffice;
+        $this->observacion_gestor_backoffice = $this->prospecto->observacion_gestor_backoffice;
         $this->validador_backoffice_id = $this->prospecto->validador_backoffice_id;
         $this->fecha_validacion_eecc = $this->prospecto->fecha_validacion_eecc
             ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_eecc)) : null;
@@ -383,16 +391,26 @@ class EntregaFestProspectoEditar extends Component
             'fecha_culminacion_eecc' => 'nullable|date',
             'link_carpeta_eecc' => 'nullable|string|max:255',
             'link_eecc_firmado' => 'nullable|string|max:255',
+            'estado_gestor_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
+            'observacion_gestor_backoffice' => 'nullable|string',
         ];
 
         $this->validate($rules);
 
+        // Si se acaba de asignar un gestor, actualizamos la fecha de asignación
+        if ($this->gestor_backoffice_id && $this->prospecto->gestor_backoffice_id != $this->gestor_backoffice_id) {
+            $this->gestor_fecha_asignacion = now()->format('Y-m-d\TH:i');
+        }
+
         $this->handleUpdate([
             'grupo' => $this->grupo,
             'gestor_backoffice_id' => $this->gestor_backoffice_id ?: null,
+            'gestor_fecha_asignacion' => $this->gestor_fecha_asignacion,
             'fecha_culminacion_eecc' => $this->fecha_culminacion_eecc,
             'link_carpeta_eecc' => $this->link_carpeta_eecc,
             'link_eecc_firmado' => $this->link_eecc_firmado,
+            'estado_gestor_backoffice' => $this->estado_gestor_backoffice,
+            'observacion_gestor_backoffice' => $this->observacion_gestor_backoffice,
         ], 'PROSPECTO EDITAR - BACKOFFICE');
     }
 

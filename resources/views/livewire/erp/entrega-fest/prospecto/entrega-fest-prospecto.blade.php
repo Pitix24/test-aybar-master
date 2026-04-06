@@ -75,7 +75,9 @@
                         <option value="D">Grupo D</option>
                     </select>
                 </div>
+            </div>
 
+            <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Confirmación Pre-invitación</label>
                     <select wire:model.live="filtro_confirmacion">
@@ -83,6 +85,16 @@
                         <option value="1">Aceptó</option>
                         <option value="0">No Aceptó</option>
                         <option value="pendiente">Pendiente</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Gestor BO</label>
+                    <select wire:model.live="gestor_id">
+                        <option value="">Todos los gestores</option>
+                        @foreach ($usuarios as $u)
+                            <option value="{{ $u->id }}">{{ $u->name }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -139,6 +151,7 @@
                         <th>Proyecto</th>
                         <th>Lote/Mz</th>
                         <th class="g_celda_centro">Pre-invitación</th>
+                        <th class="g_celda_centro">Gestor BO</th>
                         <th class="g_celda_centro">Fecha Culminación EECC</th>
                         <th class="g_celda_centro">Enlace Carpeta EECC</th>
                         <th class="g_celda_centro">Enlace EECC Firmado</th>
@@ -173,6 +186,12 @@
                                 @else
                                     <span class="g_badge danger" title="Rechazó">Rechazó</span>
                                 @endif
+                            </td>
+                            <td>
+                                {{ $p->gestor->name ?? '' }}
+                                <div class="g_negrita">
+                                    {{ $p->gestor_fecha_asignacion ? date('d/m/Y', strtotime($p->gestor_fecha_asignacion)) : '' }}
+                                </div>
                             </td>
                             <td class="g_celda_centro">
                                 {{ $p->fecha_culminacion_eecc ? date('d/m/Y', strtotime($p->fecha_culminacion_eecc)) : '' }}

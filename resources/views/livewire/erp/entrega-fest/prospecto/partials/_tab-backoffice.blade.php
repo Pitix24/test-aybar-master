@@ -1,7 +1,7 @@
 <div class="g_gap_pagina">
     <form wire:submit.prevent="updateBackoffice" class="formulario">
         <div class="g_fila">
-            <div class="g_margin_bottom_10 g_columna_4">
+            <div class="g_margin_bottom_10 g_columna_6">
                 <label>Grupo Asignado <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
                 <select wire:model="grupo">
                     <option value="A">Grupo A</option>
@@ -10,7 +10,7 @@
                     <option value="D">Grupo D</option>
                 </select>
             </div>
-            <div class="g_margin_bottom_10 g_columna_4">
+            <div class="g_margin_bottom_10 g_columna_6">
                 <label>Gestor de Cuenta</label>
                 <select wire:model="gestor_backoffice_id">
                     <option value="">Sin asignar</option>
@@ -18,10 +18,12 @@
                         <option value="{{ $u->id }}">{{ $u->name }}</option>
                     @endforeach
                 </select>
-            </div>
-            <div class="g_margin_bottom_10 g_columna_4">
-                <label>Culminación EECC</label>
-                <input type="datetime-local" wire:model="fecha_culminacion_eecc">
+                @if ($gestor_fecha_asignacion)
+                    <p class="leyenda" style="margin-top: 5px;">
+                        <i class="fa-solid fa-clock"></i> Asignado el:
+                        {{ date('d/m/Y H:i', strtotime($gestor_fecha_asignacion)) }}
+                    </p>
+                @endif
             </div>
         </div>
 
@@ -47,6 +49,31 @@
                 @else
                     <span class="g_badge light">Sin enlace registrado</span>
                 @endif
+            </div>
+        </div>
+
+        <div class="g_fila">
+            <div class="g_margin_bottom_10 g_columna_6">
+                <label>Estado Avance Gestor <span class="obligatorio"><i
+                            class="fa-solid fa-asterisk"></i></span></label>
+                <select wire:model="estado_gestor_backoffice">
+                    @foreach (\App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE as $valor => $info)
+                        <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="g_margin_bottom_10 g_columna_6">
+                <label>Culminación EECC</label>
+                <input type="datetime-local" wire:model="fecha_culminacion_eecc">
+            </div>
+        </div>
+
+        <div class="g_fila">
+            <div class="g_margin_bottom_10 g_columna_12">
+                <label>Observación Gestor</label>
+                <textarea wire:model="observacion_gestor_backoffice" rows="4"
+                    placeholder="Escriba aquí las observaciones del gestor..."></textarea>
             </div>
         </div>
 

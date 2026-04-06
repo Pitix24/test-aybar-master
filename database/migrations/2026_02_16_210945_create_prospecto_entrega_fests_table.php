@@ -45,9 +45,18 @@ return new class extends Migration {
                 'D'
             ])->default('A');
             $table->foreignId('gestor_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //gestor backoffice
+            $table->dateTime('gestor_fecha_asignacion')->nullable(); //fecha asignacion gestor
             $table->dateTime('fecha_culminacion_eecc')->nullable(); //fecha culminación estado de cuenta
             $table->string('link_carpeta_eecc')->nullable(); // esto será un link
             $table->string('link_eecc_firmado')->nullable(); // esto será un link
+            $table->enum('estado_gestor_backoffice', [
+                'PENDIENTE',
+                'BANCARIZAR',
+                'PENALIDAD',
+                'OBSERVADO',
+                'CONFORME'
+            ])->default('PENDIENTE');
+            $table->text('observacion_gestor_backoffice')->nullable();
             $table->foreignId('validador_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //validador backoffice
             $table->dateTime('fecha_validacion_eecc')->nullable(); //fecha validación estado de cuenta
             $table->enum('estado_backoffice', [

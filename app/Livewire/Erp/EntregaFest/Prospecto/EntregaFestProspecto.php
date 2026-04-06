@@ -46,26 +46,31 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $perPage = 20;
+    
+    #[Url(keep: true)]
+    public $gestor_id = '';
 
     // Catálogos
     public $proyectos = [];
+    public $usuarios = [];
 
     public function mount($id)
     {
         $this->evento = EntregaFest::with('proyectos')->findOrFail($id);
         $this->proyectos = $this->evento->proyectos;
+        $this->usuarios = \App\Models\User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
     }
 
     public function updated($property)
     {
-        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion'])) {
+        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion', 'gestor_id'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion']);
+        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion', 'gestor_id']);
         $this->resetPage();
     }
 
@@ -123,7 +128,7 @@ class EntregaFestProspecto extends Component
     public function render()
     {
         $items = ProspectoEntregaFest::query()
-            ->with(['proyecto', 'user', 'invitado'])
+            ->with(['proyecto', 'user', 'invitado', 'gestor'])
             ->where('entrega_fest_id', $this->evento->id)
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
@@ -145,6 +150,7 @@ class EntregaFestProspecto extends Component
                     $query->where('preinvitacion_confirmada', $this->filtro_confirmacion);
                 }
             })
+            ->when($this->gestor_id, fn($q) => $q->where('gestor_backoffice_id', $this->gestor_id))
             ->orderBy('id', 'desc')
             ->paginate($this->perPage);
 
