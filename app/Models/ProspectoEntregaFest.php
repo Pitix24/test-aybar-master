@@ -76,6 +76,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'email',
         'celular',
         'preinvitacion_confirmada',
+        'invitacion_confirmada',
         'lote',
         'manzana',
         'estado_cliente',
@@ -95,6 +96,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'fecha_firma',
         'fecha_generacion_contrato',
         'enviado_preinvitacion',
+    ];
+
+    protected $casts = [
+        'preinvitacion_confirmada' => 'boolean',
+        'invitacion_confirmada' => 'boolean',
     ];
 
     // ---------------------------------------------------------------

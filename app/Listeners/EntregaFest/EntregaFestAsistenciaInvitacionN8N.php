@@ -12,15 +12,22 @@ class EntregaFestAsistenciaInvitacionN8N
 {
     public function handle(EntregaFestAsistenciaInvitacion $event): void
     {
-        $prospecto = $event->prospecto->fresh(['invitado', 'copropietarios.invitado', 'entregaFest']);
+        $prospecto = $event->prospecto->fresh(['invitado', 'copropietarios.invitado', 'entregaFest', 'historialComunicaciones', 'copropietarios.historialComunicaciones']);
         $evento = $prospecto->entregaFest;
 
         // 1. Buscamos la plantilla oficial de "confirmacion"
         $plantilla = $evento->plantillas()->where('tipo', 'asistencia-invitacion')->first();
+        $etapa = $plantilla->tipo ?? 'asistencia-invitacion';
 
         // 2. Data del Titular (Propietario)
         $dataPropietario = null;
         if (!$prospecto->invitado) {
+            $yaFueEmail = $prospecto->historialComunicaciones
+                ->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado')->isNotEmpty();
+
+            $yaFueWhatsapp = $prospecto->historialComunicaciones
+                ->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado')->isNotEmpty();
+
             $mailPropietario = new AsistenciaInvitacionPropietarioMail($prospecto);
             $dataPropietario = [
                 'id' => $prospecto->id,
@@ -30,6 +37,8 @@ class EntregaFestAsistenciaInvitacionN8N
                 'dni' => $prospecto->dni,
                 'link' => $mailPropietario->link,
                 'html' => $mailPropietario->render(),
+                'enviar_email' => !$yaFueEmail,
+                'enviar_whatsapp' => !$yaFueWhatsapp,
                 'tipo' => 'Propietario',
             ];
         }
@@ -40,6 +49,12 @@ class EntregaFestAsistenciaInvitacionN8N
             if ($cop->invitado)
                 continue;
 
+            $yaFueEmailCop = $cop->historialComunicaciones
+                ->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado')->isNotEmpty();
+
+            $yaFueWhatsappCop = $cop->historialComunicaciones
+                ->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado')->isNotEmpty();
+
             $mailCopro = new AsistenciaInvitacionCopropietarioMail($cop);
             $dataCopropietarios[] = [
                 'id' => $cop->id,
@@ -49,6 +64,8 @@ class EntregaFestAsistenciaInvitacionN8N
                 'dni' => $cop->dni,
                 'link' => $mailCopro->link,
                 'html' => $mailCopro->render(),
+                'enviar_email' => !$yaFueEmailCop,
+                'enviar_whatsapp' => !$yaFueWhatsappCop,
                 'tipo' => 'Copropietario',
             ];
         }
@@ -59,10 +76,10 @@ class EntregaFestAsistenciaInvitacionN8N
         }
 
         // 5. ENVIAMOS UN SOLO PAQUETE A N8N
-        $this->enviarPaqueteAN8N($dataPropietario, $dataCopropietarios, $evento, $plantilla);
+        $this->enviarPaqueteAN8N($dataPropietario, $dataCopropietarios, $evento, $plantilla, $etapa);
     }
 
-    private function enviarPaqueteAN8N($propietario, $copropietarios, $evento, $plantilla)
+    private function enviarPaqueteAN8N($propietario, $copropietarios, $evento, $plantilla, $etapa)
     {
         try {
             Http::post(config('services.n8n.entregafest.asistencia_invitacion'), [
@@ -76,10 +93,11 @@ class EntregaFestAsistenciaInvitacionN8N
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton' => $plantilla?->link_boton ?? '',
                 ],
-                'etapa' => 'asistencia-invitacion' // Etapa para historial
+                'etapa' => $etapa // Etapa dinámica para historial
             ]);
 
-            Log::channel('entrega-fest')->info("[INVITACION-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$propietario['id']} con " . count($copropietarios) . " copropietarios.");
+            $idPropietario = $propietario['id'] ?? 'N/A';
+            Log::channel('entrega-fest')->info("[INVITACION-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$idPropietario} con " . count($copropietarios) . " copropietarios.");
 
         } catch (\Exception $e) {
             Log::error("[INVITACION-PAQUETE-N8N] Error: " . $e->getMessage());

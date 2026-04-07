@@ -17,6 +17,12 @@ class CopropietarioEntregaFest extends Model
         'celular',
         'enviado_preinvitacion',
         'preinvitacion_confirmada',
+        'invitacion_confirmada',
+    ];
+
+    protected $casts = [
+        'preinvitacion_confirmada' => 'boolean',
+        'invitacion_confirmada' => 'boolean',
     ];
 
     /**

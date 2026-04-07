@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-
+use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
 
 #[Layout('layouts.web.layout-web')]
 #[Title('Formulario de Asistencia - Entrega Fest')]
@@ -49,11 +49,11 @@ class AsistenciaInvitacionCopropietario extends Component
             abort(403, 'Tu evaluación aún no ha sido aprobada.');
         }
 
-        // Si el copropietario ya tiene su propia invitación, no llenar de nuevo
-        if ($this->copropietario->invitado) {
+        // Si ya respondió (confirmó o rechazó), no permitir volver a llenar
+        if (!is_null($this->copropietario->invitacion_confirmada)) {
             $this->enviado = true;
             $this->mensaje_exito = 'Ya hemos registrado tu respuesta anteriormente. ¡Muchas gracias!';
-            $this->codigo_invitado = $this->copropietario->invitado->codigo_invitado;
+            $this->codigo_invitado = $this->copropietario->invitado?->codigo_invitado;
         }
     }
 
@@ -72,7 +72,7 @@ class AsistenciaInvitacionCopropietario extends Component
         $this->validate();
 
         // Doble check: ya respondió
-        if ($this->copropietario->invitado) {
+        if (!is_null($this->copropietario->invitacion_confirmada)) {
             return;
         }
 
@@ -81,28 +81,37 @@ class AsistenciaInvitacionCopropietario extends Component
 
             $confirmado = ($this->asistira === 'si');
 
-            $codigo = $confirmado
-                ? 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . strtoupper(bin2hex(random_bytes(3)))
-                : 'NA-' . uniqid();
-
-            $invitado = InvitadoEntregaFest::create([
-                'entrega_fest_id' => $this->evento->id,
-                'prospecto_entrega_fest_id' => null,                          // no es titular
-                'copropietario_entrega_fest_id' => $this->copropietario->id,     // es copropietario
-                'codigo_invitado' => $codigo,
-                'cantidad_acompanantes_permitidos' => $confirmado ? $this->cantidad_acompanantes : 0,
-                'confirmado' => $confirmado,
-                'transporte' => $confirmado ? ($this->transporte === 'bus' ? InvitadoEntregaFest::TRANSPORTE_BUS : InvitadoEntregaFest::TRANSPORTE_PROPIO) : InvitadoEntregaFest::TRANSPORTE_PROPIO,
-                'observaciones_asistencia' => $this->observaciones,
+            // Actualizamos el copropietario con su respuesta
+            $this->copropietario->update([
+                'invitacion_confirmada' => $confirmado
             ]);
 
-            DB::commit();
+            if ($confirmado) {
+                $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . strtoupper(bin2hex(random_bytes(3)));
 
-            // Despachar evento para notificaciones (Email/WhatsApp)
-            \App\Events\EntregaFestAsistenciaConfirmada::dispatch($invitado);
+                $invitado = InvitadoEntregaFest::create([
+                    'entrega_fest_id' => $this->evento->id,
+                    'prospecto_entrega_fest_id' => null,                          // no es titular
+                    'copropietario_entrega_fest_id' => $this->copropietario->id,     // es copropietario
+                    'codigo_invitado' => $codigo,
+                    'cantidad_acompanantes_permitidos' => $this->cantidad_acompanantes,
+                    'confirmado' => true,
+                    'transporte' => $this->transporte === 'bus' ? InvitadoEntregaFest::TRANSPORTE_BUS : InvitadoEntregaFest::TRANSPORTE_PROPIO,
+                    'observaciones_asistencia' => $this->observaciones,
+                ]);
+
+                DB::commit();
+
+                // Despachar evento para notificaciones (Email/WhatsApp)
+                EntregaFestAsistenciaConfirmacion::dispatch($invitado);
+                
+                $this->codigo_invitado = $codigo;
+            } else {
+                DB::commit();
+                $this->codigo_invitado = null;
+            }
 
             $this->enviado = true;
-            $this->codigo_invitado = $confirmado ? $codigo : null;
             $this->mensaje_exito = $confirmado
                 ? '¡Excelente! Tu asistencia ha sido confirmada. Nos vemos en el evento.'
                 : 'Gracias por informarnos. Lamentamos que no puedas asistir esta vez.';

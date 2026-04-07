@@ -17,50 +17,69 @@ class EntregaFestAsistenciaConfirmacionN8N
      */
     public function handle(EntregaFestAsistenciaConfirmacion $event): void
     {
-        $invitado = $event->invitado->load(['prospecto', 'copropietario', 'entregaFest']);
+        $invitado = $event->invitado->load(['prospecto.historialComunicaciones', 'copropietario.historialComunicaciones', 'entregaFest']);
         $evento = $invitado->entregaFest;
 
-        // Solo procesamos si el invitado confirmó su asistencia
-        if (!$invitado->confirmado) {
-            return;
+        // Definimos la persona (Titular o Copropietario)
+        $persona = $invitado->prospecto ?? $invitado->copropietario;
+
+        // Solo procesamos si la persona confirmó su asistencia (invitacion_confirmada = true)
+        if ($persona?->invitacion_confirmada) {
+            
+            // 1. Obtenemos el link dinámico desde la mailable original de invitación
+            $linkTicket = $invitado->prospecto_entrega_fest_id
+                ? (new AsistenciaInvitacionPropietarioMail($invitado->prospecto))->link
+                : (new AsistenciaInvitacionCopropietarioMail($invitado->copropietario))->link;
+
+            // 2. Generamos el HTML del Ticket (para que n8n lo envíe por email)
+            $mailTicket = new AsistenciaConfirmacionMail($invitado);
+
+            // 3. Verificamos si ya se enviaron comunicaciones para esta etapa
+            $etapa = 'asistencia-confirmacion';
+            $plantillaConf = $evento->plantillas()->where('tipo', $etapa)->first();
+            if ($plantillaConf) {
+                $etapa = $plantillaConf->tipo;
+            }
+
+            $yaFueEmail = $persona->historialComunicaciones
+                ->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado')->isNotEmpty();
+
+            $yaFueWhatsapp = $persona->historialComunicaciones
+                ->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado')->isNotEmpty();
+
+            // 4. Preparamos el contacto base (ID de Persona)
+            $contacto = [
+                'id' => $invitado->prospecto_entrega_fest_id ?? $invitado->copropietario_entrega_fest_id,
+                'nombres' => $invitado->nombre_completo,
+                'email' => $invitado->email,
+                'celular' => $invitado->celular,
+                'dni' => $invitado->dni,
+                'tipo' => $invitado->prospecto_entrega_fest_id ? 'Propietario' : 'Copropietario',
+                'lote' => $invitado->lote,
+                'link' => $linkTicket,
+                'transporte' => $invitado->transporte,
+                'acompanantes' => $invitado->cantidad_acompanantes_permitidos,
+                'observaciones' => $invitado->observaciones_asistencia,
+                'html' => $mailTicket->render(),
+                'enviar_email' => !$yaFueEmail,
+                'enviar_whatsapp' => !$yaFueWhatsapp,
+            ];
+
+            // 5. DISPARO: Confirmación de Asistencia (Ticket) a N8N
+            $this->enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantillaConf, $etapa);
+
+            // 6. EMITIMOS EVENTO HIJO: Instrucciones
+            EntregaFestInstrucciones::dispatch($invitado);
+
+        } else {
+            Log::channel('entrega-fest')->info("[CONFIRMACION] Saltado para {$invitado->nombre_completo} (No confirmó)");
         }
-
-        // 1. Obtenemos el link dinámico desde la mailable original de invitación
-        $linkTicket = $invitado->prospecto_entrega_fest_id
-            ? (new AsistenciaInvitacionPropietarioMail($invitado->prospecto))->link
-            : (new AsistenciaInvitacionCopropietarioMail($invitado->copropietario))->link;
-
-        // 2. Generamos el HTML del Ticket (para que n8n lo envíe por email)
-        $mailTicket = new AsistenciaConfirmacionMail($invitado);
-
-        // 3. Preparamos el contacto base
-        $contacto = [
-            'id' => $invitado->id,
-            'nombres' => $invitado->nombre_completo,
-            'email' => $invitado->email,
-            'celular' => $invitado->celular,
-            'dni' => $invitado->dni,
-            'tipo' => $invitado->tipo,
-            'lote' => $invitado->lote,
-            'link' => $linkTicket,
-            'transporte' => $invitado->transporte,
-            'acompanantes' => $invitado->cantidad_acompanantes_permitidos,
-            'observaciones' => $invitado->observaciones_asistencia,
-            'html' => $mailTicket->render(),
-        ];
-
-        // 4. DISPARO: Confirmación de Asistencia (Ticket) a N8N
-        $plantillaConf = $evento->plantillas()->where('tipo', 'asistencia-confirmacion')->first();
-        $this->enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantillaConf);
-
-        // 5. EMITIMOS EVENTO HIJO: Instrucciones
-        EntregaFestInstrucciones::dispatch($invitado);
     }
 
     /**
      * Envía la notificación de asistencia confirmada (Ticket) a n8n.
      */
-    private function enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantilla)
+    private function enviarAsistenciaConfirmacionAN8N($contacto, $evento, $plantilla, $etapa)
     {
         try {
             Http::post(config('services.n8n.entregafest.asistencia_confirmacion'), [
@@ -73,7 +92,7 @@ class EntregaFestAsistenciaConfirmacionN8N
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton' => $plantilla?->link_boton ?? '',
                 ],
-                'etapa' => 'asistencia-confirmacion'
+                'etapa' => $etapa
             ]);
 
             Log::channel('entrega-fest')->info("[CONFIRMACION-REGISTRO-N8N] Enviada para {$contacto['tipo']} #{$contacto['id']}");

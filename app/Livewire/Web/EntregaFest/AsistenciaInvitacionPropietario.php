@@ -35,7 +35,7 @@ class AsistenciaInvitacionPropietario extends Component
         $this->slug = $slug;
         $this->id = $propietarioId;
 
-        $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
+        $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto', 'invitado'])
             ->findOrFail($propietarioId);
 
         $this->evento = $this->prospecto->entregaFest;
@@ -45,11 +45,11 @@ class AsistenciaInvitacionPropietario extends Component
             abort(404, 'Evento no encontrado o link inválido.');
         }
 
-        // Si ya es invitado, no permitir volver a llenar
-        if ($this->prospecto->invitado) {
+        // Si ya respondió (confirmó o rechazó), no permitir volver a llenar
+        if (!is_null($this->prospecto->invitacion_confirmada)) {
             $this->enviado = true;
             $this->mensaje_exito = 'Ya hemos registrado tu respuesta anteriormente. ¡Muchas gracias!';
-            $this->codigo_invitado = $this->prospecto->invitado->codigo_invitado;
+            $this->codigo_invitado = $this->prospecto->invitado?->codigo_invitado;
         }
 
         // Si no está aprobado en backoffice, no debería estar aquí (opcional)
@@ -72,7 +72,8 @@ class AsistenciaInvitacionPropietario extends Component
     {
         $this->validate();
 
-        if ($this->prospecto->invitado) {
+        // Doble check
+        if (!is_null($this->prospecto->invitacion_confirmada)) {
             return;
         }
 
@@ -81,29 +82,37 @@ class AsistenciaInvitacionPropietario extends Component
 
             $confirmado = ($this->asistira === 'si');
 
-            // Generar código único solo si asiste
-            $codigo = null;
-            if ($confirmado) {
-                $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
-            }
-
-            $invitado = InvitadoEntregaFest::create([
-                'entrega_fest_id' => $this->evento->id,
-                'prospecto_entrega_fest_id' => $this->prospecto->id,
-                'codigo_invitado' => $codigo ?? ('NA-' . uniqid()),
-                'cantidad_acompanantes_permitidos' => $confirmado ? $this->cantidad_acompanantes : 0,
-                'confirmado' => $confirmado,
-                'transporte' => $confirmado ? ($this->transporte === 'bus' ? InvitadoEntregaFest::TRANSPORTE_BUS : InvitadoEntregaFest::TRANSPORTE_PROPIO) : InvitadoEntregaFest::TRANSPORTE_PROPIO,
-                'observaciones_asistencia' => $this->observaciones,
+            // Actualizamos el prospecto con su respuesta
+            $this->prospecto->update([
+                'invitacion_confirmada' => $confirmado
             ]);
 
-            DB::commit();
+            if ($confirmado) {
+                // Generar código único solo si asiste
+                $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
 
-            // Despachar evento para notificaciones (Email/WhatsApp)
-            EntregaFestAsistenciaConfirmacion::dispatch($invitado);
+                $invitado = InvitadoEntregaFest::create([
+                    'entrega_fest_id' => $this->evento->id,
+                    'prospecto_entrega_fest_id' => $this->prospecto->id,
+                    'codigo_invitado' => $codigo,
+                    'cantidad_acompanantes_permitidos' => $this->cantidad_acompanantes,
+                    'confirmado' => true,
+                    'transporte' => $this->transporte === 'bus' ? InvitadoEntregaFest::TRANSPORTE_BUS : InvitadoEntregaFest::TRANSPORTE_PROPIO,
+                    'observaciones_asistencia' => $this->observaciones,
+                ]);
+
+                DB::commit();
+
+                // Despachar evento para notificaciones (Email/WhatsApp)
+                EntregaFestAsistenciaConfirmacion::dispatch($invitado);
+                
+                $this->codigo_invitado = $codigo;
+            } else {
+                DB::commit();
+                $this->codigo_invitado = null;
+            }
 
             $this->enviado = true;
-            $this->codigo_invitado = $codigo;
             $this->mensaje_exito = $confirmado
                 ? '¡Excelente! Tu asistencia ha sido confirmada. Nos vemos en el evento.'
                 : 'Gracias por informarnos. Lamentamos que no puedas asistir esta vez.';
