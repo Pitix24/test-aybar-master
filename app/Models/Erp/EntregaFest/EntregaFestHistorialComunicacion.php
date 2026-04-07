@@ -12,6 +12,7 @@ class EntregaFestHistorialComunicacion extends Model
     protected $table = 'entrega_fest_historial_comunicaciones';
 
     protected $fillable = [
+        'entrega_fest_id',
         'persona_id',
         'persona_type',
         'canal',
@@ -29,5 +30,10 @@ class EntregaFestHistorialComunicacion extends Model
     public function persona()
     {
         return $this->morphTo();
+    }
+
+    public function entregaFest()
+    {
+        return $this->belongsTo(\App\Models\EntregaFest::class);
     }
 }

@@ -25,7 +25,7 @@ class EntregaFestMensajeHistorialController extends Controller
 
         $persona = ($tipo === 'Propietario')
             ? ProspectoEntregaFest::find($id)
-            : CopropietarioEntregaFest::find($id);
+            : CopropietarioEntregaFest::with('prospecto')->find($id);
 
         if (!$persona)
             return response()->json(['error' => 'No encontrado'], 404);
@@ -116,14 +116,14 @@ class EntregaFestMensajeHistorialController extends Controller
         // --- HISTORIAL ESPECIALIZADO ENTREGA FEST ---
         // Aquí registramos específicamente la interacción del sistema de eventos
         EntregaFestHistorialComunicacion::create([
-            'entrega_fest_id' => $persona->entrega_fest_id ?? 0,
+            'entrega_fest_id' => $persona->entrega_fest_id ?? ($persona->prospecto->entrega_fest_id ?? 0),
             'persona_id' => $persona->id,
             'persona_type' => get_class($persona), // Detecta si es App\Models\ProspectoEntregaFest o Copropietario
             'canal' => $canal, // whatsapp o email
             'etapa' => $request->etapa ?? 'pre-invitacion',
             'estado' => $estadoHistorial,
             'fecha_envio' => now(),
-            'metadata' => json_encode($request->all()) // Guardamos todo por si acaso
+            'metadata' => $request->all() // Se guarda como JSON gracias al cast 'array' en el modelo
         ]);
 
         return response()->json(['message' => 'Status e Historial registrados correctamente']);

@@ -26,32 +26,42 @@ class EntregaFestPreInvitacionN8N
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $evento->id)
             ->whereNotIn('estado_cliente', ['PLANTON', 'DESISTIMIENTO', 'DEVOLUCION_DE_APORTES', 'CARTA_NOTARIAL', 'RESOLUCION_DE_CONTRATO'])
             ->where(function ($query) use ($etapa) {
-                // Traelo si le falta el Email EXITOSO...
-                $query->whereDoesntHave('historialComunicaciones', function ($q) use ($etapa) {
-                    $q->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
+                // El titular necesita algo...
+                $query->where(function ($q) use ($etapa) {
+                    $q->whereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                        $h->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
+                    })
+                        ->orWhereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                            $h->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
+                        });
                 })
-                    // ...O si le falta el WhatsApp EXITOSO
-                    ->orWhereDoesntHave('historialComunicaciones', function ($q) use ($etapa) {
-                    $q->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
+                    // ...o algún copropietario necesita algo
+                    ->orWhereHas('copropietarios', function ($cq) use ($etapa) {
+                    $cq->whereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                        $h->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
+                    })
+                        ->orWhereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                            $h->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
+                        });
                 });
             })
-            ->with(['copropietarios', 'entregaFest'])
+            ->with(['copropietarios.historialComunicaciones', 'entregaFest', 'historialComunicaciones'])
             ->get()
             ->map(function (ProspectoEntregaFest $prospecto) use ($plantilla, $etapa) {
 
-                // Cálculo individual por canal para n8n
-                $yaFueEmail = $prospecto->historialComunicaciones()
-                    ->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado')->exists();
+                // Cálculo individual por canal para n8n (Titular)
+                $yaFueEmail = $prospecto->historialComunicaciones
+                    ->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado')->isNotEmpty();
 
-                $yaFueWhatsapp = $prospecto->historialComunicaciones()
-                    ->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado')->exists();
+                $yaFueWhatsapp = $prospecto->historialComunicaciones
+                    ->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado')->isNotEmpty();
 
                 $mailPropietario = new PreInvitacionPropietarioMail($prospecto, $plantilla);
 
                 return [
                     'id' => $prospecto->id,
-                    'email' => $prospecto->email,
                     'nombres' => $prospecto->nombres,
+                    'email' => $prospecto->email,
                     'celular' => $prospecto->celular,
                     'dni' => $prospecto->dni,
                     'link' => $mailPropietario->link,
@@ -60,8 +70,17 @@ class EntregaFestPreInvitacionN8N
                     'enviar_whatsapp' => !$yaFueWhatsapp, // Etiqueta para n8n
                     'tipo' => 'Propietario',
 
-                    'copropietarios' => $prospecto->copropietarios->map(function ($copro) use ($plantilla) {
+                    'copropietarios' => $prospecto->copropietarios->map(function ($copro) use ($plantilla, $etapa) {
+
+                        // Cálculo individual por canal para n8n (Copropietario)
+                        $yaFueEmailCop = $copro->historialComunicaciones
+                            ->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado')->isNotEmpty();
+
+                        $yaFueWhatsappCop = $copro->historialComunicaciones
+                            ->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado')->isNotEmpty();
+
                         $mailCopro = new PreInvitacionCopropietarioMail($copro, $plantilla);
+
                         return [
                             'id' => $copro->id,
                             'nombres' => $copro->nombres,
@@ -70,6 +89,9 @@ class EntregaFestPreInvitacionN8N
                             'dni' => $copro->dni,
                             'link' => $mailCopro->link,
                             'html' => $mailCopro->render(),
+                            'enviar_email' => !$yaFueEmailCop,
+                            'enviar_whatsapp' => !$yaFueWhatsappCop,
+                            'tipo' => 'Copropietario',
                         ];
                     })
                 ];

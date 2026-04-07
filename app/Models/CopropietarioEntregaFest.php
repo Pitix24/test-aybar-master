@@ -35,4 +35,9 @@ class CopropietarioEntregaFest extends Model
     {
         return $this->hasOne(InvitadoEntregaFest::class, 'copropietario_entrega_fest_id');
     }
+
+    public function historialComunicaciones()
+    {
+        return $this->morphMany(\App\Models\Erp\EntregaFest\EntregaFestHistorialComunicacion::class, 'persona');
+    }
 }

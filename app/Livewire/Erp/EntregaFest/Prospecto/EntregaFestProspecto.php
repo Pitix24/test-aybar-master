@@ -128,7 +128,7 @@ class EntregaFestProspecto extends Component
     public function render()
     {
         $items = ProspectoEntregaFest::query()
-            ->with(['proyecto', 'user', 'invitado', 'gestor'])
+            ->with(['proyecto', 'user', 'invitado', 'gestor', 'copropietarios', 'historialComunicaciones', 'copropietarios.historialComunicaciones'])
             ->where('entrega_fest_id', $this->evento->id)
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {

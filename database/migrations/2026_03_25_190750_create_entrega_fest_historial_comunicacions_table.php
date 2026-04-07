@@ -13,6 +13,8 @@ return new class extends Migration {
         Schema::create('entrega_fest_historial_comunicaciones', function (Blueprint $table) {
             $table->id();
 
+            $table->unsignedBigInteger('entrega_fest_id')->default(0)->index();
+
             // Relación Polimórfica: Con el índice acortado para evitar el error de MySQL
             $table->morphs('persona', 'idx_persona_com');
 

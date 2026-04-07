@@ -1,0 +1,49 @@
+/* =========================================================================
+   COMPONENTE: TRACKER COMUNICACIONES
+   ========================================================================= */
+
+.g_tracker_comunicaciones {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #f8fafc;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #edf2f7;
+    width: fit-content;
+}
+
+.g_tracker_fila {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.g_tracker_fila i {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    width: 16px;
+    text-align: center;
+    margin-right: 4px;
+}
+
+.g_tracker_punto {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #e2e8f0;
+    cursor: help;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.g_tracker_punto.activo {
+    background-color: #10b981;
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.4);
+    border-color: #059669;
+}
+
+.g_tracker_punto:hover {
+    transform: scale(1.3);
+}

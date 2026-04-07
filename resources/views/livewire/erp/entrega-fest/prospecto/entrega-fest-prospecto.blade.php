@@ -175,6 +175,66 @@
                                 </div>
                                 <div>{{ $p->email }}</div>
                                 <div>{{ $p->celular }}</div>
+
+                                @php
+                                    $etapas_com = [
+                                        'pre-invitacion' => 'Pre-invitación',
+                                        'asistencia-invitacion' => 'Asist Invitación',
+                                        'asistencia-confirmacion' => 'Asist Confirmación',
+                                        'instrucciones' => 'Instrucciones',
+                                        'contrato-preliminar' => 'Contrato Preliminar',
+                                        'cita-agendar' => 'Agendar Cita',
+                                        'cita-confirmacion' => 'Confirmar Cita',
+                                        'cita-recordatorio' => 'Recordatorio Cita',
+                                    ];
+                                @endphp
+
+                                <div class="g_tracker_comunicaciones">
+                                    <div class="g_tracker_fila">
+                                        <i class="fa-solid fa-envelope" title="Canal Email"></i>
+                                        @foreach ($etapas_com as $slug => $label)
+                                            @php $hist = $p->historialComunicaciones->where('canal', 'email')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
+                                            <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}" title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
+                                        @endforeach
+                                    </div>
+                                    <div class="g_tracker_fila">
+                                        <i class="fa-brands fa-whatsapp" title="Canal WhatsApp"></i>
+                                        @foreach ($etapas_com as $slug => $label)
+                                            @php $hist = $p->historialComunicaciones->where('canal', 'whatsapp')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
+                                            <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}" title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                    <hr>
+                                    @foreach ($p->copropietarios as $c)
+                                        <div class="g_negrita" style="color: #666; font-size: 0.9em;">
+                                            Coprop: {{ $c->nombres }}
+                                        </div>
+                                        <div style="font-size: 0.85em;">{{ $c->email }}</div>
+                                        <div style="font-size: 0.85em;">{{ $c->celular }}</div>
+
+                                        <div class="g_tracker_comunicaciones">
+                                            <div class="g_tracker_fila">
+                                                <i class="fa-solid fa-envelope" title="Canal Email"></i>
+                                                @foreach ($etapas_com as $slug => $label)
+                                                    @php $hist = $c->historialComunicaciones->where('canal', 'email')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
+                                                    <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}" title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
+                                                @endforeach
+                                            </div>
+                                            <div class="g_tracker_fila">
+                                                <i class="fa-brands fa-whatsapp" title="Canal WhatsApp"></i>
+                                                @foreach ($etapas_com as $slug => $label)
+                                                    @php $hist = $c->historialComunicaciones->where('canal', 'whatsapp')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
+                                                    <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}" title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
+                                                @endforeach
+                                            </div>
+                                        </div>
+
+                                    @if (!$loop->last)
+                                        <div style="margin-bottom: 5px; border-bottom: 1px dashed #eee;"></div>
+                                    @endif
+                                @endforeach
                             </td>
                             <td>{{ $p->proyecto->nombre ?? 'N/A' }}</td>
                             <td>{{ $p->lote }}{{ $p->manzana }}</td>
