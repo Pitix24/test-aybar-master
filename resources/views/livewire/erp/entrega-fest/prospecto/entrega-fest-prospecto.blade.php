@@ -46,7 +46,17 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Estado BackOffice</label>
+                    <label>Estado Gestor BO</label>
+                    <select wire:model.live="estado_gestor_backoffice">
+                        <option value="">Todos</option>
+                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_GESTOR_BACKOFFICE as $valor => $info)
+                            <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado Supervisor BO</label>
                     <select wire:model.live="estado_backoffice">
                         <option value="">Todos</option>
                         @foreach (\App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE as $valor => $info)
@@ -64,7 +74,9 @@
                         @endforeach
                     </select>
                 </div>
+            </div>
 
+            <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Grupo</label>
                     <select wire:model.live="grupo">
@@ -75,9 +87,7 @@
                         <option value="D">Grupo D</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Confirmación Pre-invitación</label>
                     <select wire:model.live="filtro_confirmacion">
@@ -152,10 +162,9 @@
                         <th>Lote/Mz</th>
                         <th class="g_celda_centro">Pre-invitación</th>
                         <th class="g_celda_centro">Gestor BO</th>
+                        <th class="g_celda_centro">Estado Gestor BO</th>
                         <th class="g_celda_centro">Fecha Culminación EECC</th>
-                        <th class="g_celda_centro">Enlace Carpeta EECC</th>
-                        <th class="g_celda_centro">Enlace EECC Firmado</th>
-                        <th class="g_celda_centro">BackOffice</th>
+                        <th class="g_celda_centro">Supervisor BO</th>
                         <th class="g_celda_centro">Estado Contrato Preliminar</th>
                         <th class="g_celda_centro">Fecha para Firmar</th>
                         <th class="g_celda_centro">Fecha Firmado</th>
@@ -194,42 +203,46 @@
                                         <i class="fa-solid fa-envelope" title="Canal Email"></i>
                                         @foreach ($etapas_com as $slug => $label)
                                             @php $hist = $p->historialComunicaciones->where('canal', 'email')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
-                                            <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}" title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
+                                            <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}"
+                                                title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
                                         @endforeach
                                     </div>
                                     <div class="g_tracker_fila">
                                         <i class="fa-brands fa-whatsapp" title="Canal WhatsApp"></i>
                                         @foreach ($etapas_com as $slug => $label)
                                             @php $hist = $p->historialComunicaciones->where('canal', 'whatsapp')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
-                                            <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}" title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
+                                            <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}"
+                                                title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
                                         @endforeach
                                     </div>
                                 </div>
 
-                                    <hr>
-                                    @foreach ($p->copropietarios as $c)
-                                        <div class="g_negrita" style="color: #666; font-size: 0.9em;">
-                                            Coprop: {{ $c->nombres }}
-                                        </div>
-                                        <div style="font-size: 0.85em;">{{ $c->email }}</div>
-                                        <div style="font-size: 0.85em;">{{ $c->celular }}</div>
+                                <hr>
+                                @foreach ($p->copropietarios as $c)
+                                    <div class="g_negrita" style="color: #666; font-size: 0.9em;">
+                                        Coprop: {{ $c->nombres }}
+                                    </div>
+                                    <div style="font-size: 0.85em;">{{ $c->email }}</div>
+                                    <div style="font-size: 0.85em;">{{ $c->celular }}</div>
 
-                                        <div class="g_tracker_comunicaciones">
-                                            <div class="g_tracker_fila">
-                                                <i class="fa-solid fa-envelope" title="Canal Email"></i>
-                                                @foreach ($etapas_com as $slug => $label)
-                                                    @php $hist = $c->historialComunicaciones->where('canal', 'email')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
-                                                    <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}" title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
-                                                @endforeach
-                                            </div>
-                                            <div class="g_tracker_fila">
-                                                <i class="fa-brands fa-whatsapp" title="Canal WhatsApp"></i>
-                                                @foreach ($etapas_com as $slug => $label)
-                                                    @php $hist = $c->historialComunicaciones->where('canal', 'whatsapp')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
-                                                    <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}" title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
-                                                @endforeach
-                                            </div>
+                                    <div class="g_tracker_comunicaciones">
+                                        <div class="g_tracker_fila">
+                                            <i class="fa-solid fa-envelope" title="Canal Email"></i>
+                                            @foreach ($etapas_com as $slug => $label)
+                                                @php $hist = $c->historialComunicaciones->where('canal', 'email')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
+                                                <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}"
+                                                    title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
+                                            @endforeach
                                         </div>
+                                        <div class="g_tracker_fila">
+                                            <i class="fa-brands fa-whatsapp" title="Canal WhatsApp"></i>
+                                            @foreach ($etapas_com as $slug => $label)
+                                                @php $hist = $c->historialComunicaciones->where('canal', 'whatsapp')->where('etapa', $slug)->whereIn('estado', ['enviado', 'leido'])->first(); @endphp
+                                                <span class="g_tracker_punto {{ $hist ? 'activo' : '' }}"
+                                                    title="{{ $label }}: {{ $hist ? 'Enviado' : 'Pendiente' }}"></span>
+                                            @endforeach
+                                        </div>
+                                    </div>
 
                                     @if (!$loop->last)
                                         <div style="margin-bottom: 5px; border-bottom: 1px dashed #eee;"></div>
@@ -254,23 +267,27 @@
                                 </div>
                             </td>
                             <td class="g_celda_centro">
+                                <span class="g_badge g_badge_soft" style="color: {{ $p->badgeGestorBackoffice() }}">
+                                    {{ \App\Models\ProspectoEntregaFest::ESTADO_GESTOR_BACKOFFICE[$p->estado_gestor_backoffice]['label'] ?? $p->estado_gestor_backoffice }}
+                                </span>
+                                <div>
+                                    @if ($p->link_carpeta_eecc)
+                                        <a href="{{ $p->link_carpeta_eecc }}" target="_blank" class="g_accion info"
+                                            title="Abrir Carpeta EECC">
+                                            <i class="fa-solid fa-folder-open"></i>
+                                        </a>
+                                    @endif
+
+                                    @if ($p->link_eecc_firmado)
+                                        <a href="{{ $p->link_eecc_firmado }}" target="_blank" class="g_accion ver"
+                                            title="Ver EECC Firmado">
+                                            <i class="fa-solid fa-file-pdf"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="g_celda_centro">
                                 {{ $p->fecha_culminacion_eecc ? date('d/m/Y', strtotime($p->fecha_culminacion_eecc)) : '' }}
-                            </td>
-                            <td class="g_celda_centro">
-                                @if ($p->link_carpeta_eecc)
-                                    <a href="{{ $p->link_carpeta_eecc }}" target="_blank" class="g_accion info"
-                                        title="Abrir Carpeta EECC">
-                                        <i class="fa-solid fa-folder-open"></i>
-                                    </a>
-                                @endif
-                            </td>
-                            <td class="g_celda_centro">
-                                @if ($p->link_eecc_firmado)
-                                    <a href="{{ $p->link_eecc_firmado }}" target="_blank" class="g_accion ver"
-                                        title="Ver EECC Firmado">
-                                        <i class="fa-solid fa-file-pdf"></i>
-                                    </a>
-                                @endif
                             </td>
                             <td class="g_celda_centro">
                                 <span class="g_badge g_badge_soft" style="color: {{ $p->badgeBackoffice() }}">

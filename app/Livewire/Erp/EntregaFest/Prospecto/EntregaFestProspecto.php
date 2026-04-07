@@ -33,6 +33,9 @@ class EntregaFestProspecto extends Component
     public $estado_backoffice = '';
 
     #[Url(keep: true)]
+    public $estado_gestor_backoffice = '';
+
+    #[Url(keep: true)]
     public $estado_contrato_preeliminar_emitido = '';
 
     #[Url(keep: true)]
@@ -63,14 +66,14 @@ class EntregaFestProspecto extends Component
 
     public function updated($property)
     {
-        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion', 'gestor_id'])) {
+        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion', 'gestor_id'])) {
             $this->resetPage();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion', 'gestor_id']);
+        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion', 'gestor_id']);
         $this->resetPage();
     }
 
@@ -140,6 +143,7 @@ class EntregaFestProspecto extends Component
             })
             ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
             ->when($this->estado_backoffice, fn($q) => $q->where('estado_backoffice', $this->estado_backoffice))
+            ->when($this->estado_gestor_backoffice, fn($q) => $q->where('estado_gestor_backoffice', $this->estado_gestor_backoffice))
             ->when($this->estado_contrato_preeliminar_emitido, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $this->estado_contrato_preeliminar_emitido))
             ->when($this->estado_firma_contrato_firmado, fn($q) => $q->where('estado_firma_contrato_firmado', $this->estado_firma_contrato_firmado))
             ->when($this->grupo, fn($q) => $q->where('grupo', $this->grupo))

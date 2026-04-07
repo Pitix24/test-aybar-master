@@ -28,6 +28,14 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'CONFORME' => ['label' => 'Conforme', 'color' => '#10B981'],
     ];
 
+    const ESTADO_GESTOR_BACKOFFICE = [
+        'PENDIENTE' => ['label' => 'Pendiente', 'color' => '#6B7280'],
+        'BANCARIZAR' => ['label' => 'Bancarizar', 'color' => '#3B82F6'],
+        'PENALIDAD' => ['label' => 'Penalidad', 'color' => '#EF4444'],
+        'OBSERVADO' => ['label' => 'Observado', 'color' => '#F59E0B'],
+        'CONFORME' => ['label' => 'Conforme', 'color' => '#10B981'],
+    ];
+
     // ---------------------------------------------------------------
     // ENUMS: Estado Contrato Preliminar
     // ---------------------------------------------------------------
@@ -52,6 +60,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function badgeBackoffice(): string
     {
         return self::ESTADO_BACKOFFICE[$this->estado_backoffice]['color'] ?? '#000000';
+    }
+
+    public function badgeGestorBackoffice(): string
+    {
+        return self::ESTADO_GESTOR_BACKOFFICE[$this->estado_gestor_backoffice]['color'] ?? '#000000';
     }
 
     public function badgeContratoPreeliminar(): string
