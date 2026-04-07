@@ -155,7 +155,7 @@ class EntregaFestProspecto extends Component
                 }
             })
             ->when($this->gestor_id, fn($q) => $q->where('gestor_backoffice_id', $this->gestor_id))
-            ->orderBy('id', 'desc')
+            ->orderBy('nombres', 'asc')
             ->paginate($this->perPage);
 
         return view('livewire.erp.entrega-fest.prospecto.entrega-fest-prospecto', [

@@ -159,7 +159,7 @@
                         <th>DNI</th>
                         <th>Cliente</th>
                         <th>Proyecto</th>
-                        <th>Lote/Mz</th>
+                        <th>Mz-Lt</th>
                         <th class="g_celda_centro">Pre-invitación</th>
                         <th class="g_celda_centro">Gestor BO</th>
                         <th class="g_celda_centro">Estado Gestor BO</th>
@@ -250,7 +250,7 @@
                                 @endforeach
                             </td>
                             <td>{{ $p->proyecto->nombre ?? 'N/A' }}</td>
-                            <td>{{ $p->lote }}{{ $p->manzana }}</td>
+                            <td>{{ $p->manzana }}-{{ $p->lote }}</td>
                             <td class="g_celda_centro">
                                 @if (is_null($p->preinvitacion_confirmada))
                                     <span class="g_badge info" title="Pendiente">Pendiente</span>
