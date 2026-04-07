@@ -11,18 +11,29 @@ class EntregaFestCitaAgendarN8N
 {
     public function handle(EntregaFestCitaAgendar $event): void
     {
-        $prospecto = $event->prospecto->fresh(['entregaFest']);
+        $prospecto = $event->prospecto->load(['entregaFest', 'historialComunicaciones']);
         $evento = $prospecto->entregaFest;
 
         // Solo si aún no tiene fecha de firma agendada
         if ($prospecto->fecha_firma) {
+            Log::channel('entrega-fest')->info("[CITA-AGENDAR] Saltado para #{$prospecto->id} (Ya tiene fecha de firma)");
             return;
         }
 
-        // 1. Buscamos la plantilla oficial de "cita-agendar"
-        $plantilla = $evento->plantillas()->where('tipo', 'cita-agendar')->first();
+        // 1. Verificamos si ya se enviaron comunicaciones para esta etapa
+        $etapa = 'cita-agendar';
+        $plantilla = $evento->plantillas()->where('tipo', $etapa)->first();
+        if ($plantilla) {
+            $etapa = $plantilla->tipo;
+        }
 
-        // 2. Data del Titular (Propietario)
+        $yaFueEmail = $prospecto->historialComunicaciones
+            ->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado')->isNotEmpty();
+
+        $yaFueWhatsapp = $prospecto->historialComunicaciones
+            ->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado')->isNotEmpty();
+
+        // 2. Data del Propietario
         $mail = new CitaAgendarMail($prospecto);
         $dataPropietario = [
             'id' => $prospecto->id,
@@ -33,13 +44,15 @@ class EntregaFestCitaAgendarN8N
             'link' => $mail->link,
             'html' => $mail->render(),
             'tipo' => 'Propietario',
+            'enviar_email' => !$yaFueEmail,
+            'enviar_whatsapp' => !$yaFueWhatsapp,
         ];
 
         // 3. ENVIAMOS UN SOLO PAQUETE A N8N (Sin copropietarios)
-        $this->enviarPaqueteAN8N($dataPropietario, $evento, $plantilla);
+        $this->enviarPaqueteAN8N($dataPropietario, $evento, $plantilla, $etapa);
     }
 
-    private function enviarPaqueteAN8N($propietario, $evento, $plantilla)
+    private function enviarPaqueteAN8N($propietario, $evento, $plantilla, $etapa)
     {
         try {
             Http::post(config('services.n8n.entregafest.cita_agendar'), [
@@ -53,7 +66,7 @@ class EntregaFestCitaAgendarN8N
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton' => $plantilla?->link_boton ?? '',
                 ],
-                'etapa' => 'cita-agendar' // Etapa para historial
+                'etapa' => $etapa
             ]);
 
             Log::channel('entrega-fest')->info("[CITA-AGENDAR-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$propietario['id']}");
