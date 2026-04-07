@@ -12,21 +12,21 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -880,
+        -960,
         368
       ],
       "webhookId": "67ae8c37-d8c0-424c-ad93-7b709dddfcf9"
     },
     {
       "parameters": {
-        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\nconst contactos = body.contactos ?? [];\nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto predeterminado\nconst asunto = plantilla.titulo ?? 'Invitación al evento';\n\nlet finalItems = [];\n\n// Recorremos cada contacto principal\ncontactos.forEach(c => {\n    \n    // 1. Añadimos al Propietario principal\n    finalItems.push({\n        json: {\n            id: c.id,\n            email: c.email,\n            nombres: c.nombres,\n            celular: c.celular ?? '',\n            dni: c.dni ?? '',\n            link: c.link,\n            html: c.html,\n            tipo: 'Propietario',\n            asunto: asunto,\n            evento: evento,\n            // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n            plantilla_titulo: plantilla.titulo ?? '',\n            plantilla_subtitulo: plantilla.subtitulo ?? '',\n            plantilla_descripcion: plantilla.descripcion ?? '',\n            plantilla_imagen: plantilla.imagen_url ?? '',\n            plantilla_link_boton: plantilla.link_boton ?? ''\n        }\n    });\n\n    // 2. Si tiene copropietarios, los añadimos también\n    if (c.copropietarios && c.copropietarios.length > 0) {\n        c.copropietarios.forEach(cp => {\n            finalItems.push({\n                json: {\n                    id: cp.id,\n                    email: cp.email ?? '',\n                    nombres: cp.nombres,\n                    celular: cp.celular ?? '',\n                    dni: cp.dni ?? '',\n                    link: cp.link,\n                    html: cp.html,\n                    tipo: 'Copropietario',\n                    asunto: asunto,\n                    evento: evento,\n                    // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n                    plantilla_titulo: plantilla.titulo ?? '',\n                    plantilla_subtitulo: plantilla.subtitulo ?? '',\n                    plantilla_descripcion: plantilla.descripcion ?? '',\n                    plantilla_imagen: plantilla.imagen_url ?? '',\n                    plantilla_link_boton: plantilla.link_boton ?? ''\n                }\n            });\n        });\n    }\n});\n\nreturn finalItems;\n"
+        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\nconst contactos = body.contactos ?? [];\nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto predeterminado\nconst asunto = plantilla.titulo ?? 'Invitación al evento';\n\nlet finalItems = [];\n\n// Recorremos cada contacto principal (Propietario)\ncontactos.forEach(c => {\n    \n    // 1. Añadimos al Propietario principal\n    // Solo si tiene al menos un canal pendiente por enviar\n    if (c.enviar_email || c.enviar_whatsapp) {\n        finalItems.push({\n            json: {\n                id: c.id,\n                nombres: c.nombres,\n                email: c.email,\n                celular: c.celular ?? '',\n                dni: c.dni ?? '',\n                link: c.link,\n                html: c.html,\n                tipo: c.tipo ?? 'Propietario', // Usamos el tipo enviado por Laravel\n                asunto: asunto,\n                evento: evento,\n                // --- BANDERAS DE ENVÍO ---\n                enviar_email: c.enviar_email,\n                enviar_whatsapp: c.enviar_whatsapp,\n                // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n                plantilla_titulo: plantilla.titulo ?? '',\n                plantilla_subtitulo: plantilla.subtitulo ?? '',\n                plantilla_descripcion: plantilla.descripcion ?? '',\n                plantilla_imagen: plantilla.imagen_url ?? '',\n                plantilla_link_boton: plantilla.link_boton ?? ''\n            }\n        });\n    }\n\n    // 2. Si tiene copropietarios, los recorremos y añadimos\n    if (c.copropietarios && c.copropietarios.length > 0) {\n        c.copropietarios.forEach(cp => {\n            // Solo añadimos al copropietario si tiene al menos un canal por enviar\n            if (cp.enviar_email || cp.enviar_whatsapp) {\n                finalItems.push({\n                    json: {\n                        id: cp.id,\n                        nombres: cp.nombres,\n                        email: cp.email ?? '',\n                        celular: cp.celular ?? '',\n                        dni: cp.dni ?? '',\n                        link: cp.link,\n                        html: cp.html,\n                        tipo: cp.tipo ?? 'Copropietario', // Usamos el tipo enviado por Laravel\n                        asunto: asunto,\n                        evento: evento,\n                        // --- BANDERAS DE ENVÍO ---\n                        enviar_email: cp.enviar_email,\n                        enviar_whatsapp: cp.enviar_whatsapp,\n                        // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n                        plantilla_titulo: plantilla.titulo ?? '',\n                        plantilla_subtitulo: plantilla.subtitulo ?? '',\n                        plantilla_descripcion: plantilla.descripcion ?? '',\n                        plantilla_imagen: plantilla.imagen_url ?? '',\n                        plantilla_link_boton: plantilla.link_boton ?? ''\n                    }\n                });\n            }\n        });\n    }\n});\n\nreturn finalItems;\n"
       },
       "id": "0a94b7a7-14bc-404f-a2ad-e8fe097e9b62",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
+        -720,
         368
       ]
     },
@@ -172,6 +172,10 @@
             {
               "name": "estado",
               "value": "={{ $json.accepted?.length > 0 ? 'enviado' : 'invalido' }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
             }
           ]
         },
@@ -357,7 +361,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -256,
+        -480,
         96
       ]
     },
@@ -385,7 +389,7 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -256,
+        -480,
         512
       ]
     },
@@ -402,6 +406,74 @@
         608
       ],
       "webhookId": "640533c5-89b4-43db-8c02-27051ac13ced"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "52565282-96b1-452c-92d4-b78fdced1ea3",
+              "leftValue": "={{ $json.enviar_whatsapp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -240,
+        608
+      ],
+      "id": "46dd3c44-366d-46b7-922d-1546a5e62e5a",
+      "name": "filtro-1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "52565282-96b1-452c-92d4-b78fdced1ea3",
+              "leftValue": "={{$json.enviar_email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -240,
+        176
+      ],
+      "id": "f3fb5bb9-5392-44c3-b58a-a2e7001f186c",
+      "name": "filtro-2"
     }
   ],
   "pinData": {},
@@ -532,7 +604,7 @@
         ],
         [
           {
-            "node": "enviar-mensaje-email",
+            "node": "filtro-2",
             "type": "main",
             "index": 0
           }
@@ -561,7 +633,7 @@
         ],
         [
           {
-            "node": "enviar-mensaje-wsp",
+            "node": "filtro-1",
             "type": "main",
             "index": 0
           }
@@ -578,6 +650,28 @@
           }
         ]
       ]
+    },
+    "filtro-1": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro-2": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -585,7 +679,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "92597311-e4e6-4f93-a560-636566c16258",
+  "versionId": "f8dc0d77-a3bb-4fcb-83c6-767ddc7d2a74",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"

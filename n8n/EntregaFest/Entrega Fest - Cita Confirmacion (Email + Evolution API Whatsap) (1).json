@@ -19,7 +19,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo de Cita Confirmación, la clave es \"contacto\"\nconst contacto = body.contacto; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? '¡Cita Agendada con Éxito!';\n\nif (!contacto) return []; // Si no hay contacto, no procesamos nada\n\nreturn [{\n    json: {\n        ...contacto, // id, nombres, email, celular, dni, fecha_firma_formateada, html, etc.\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
+        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo de Cita Confirmación, Laravel envía la clave \"contacto\"\nconst contacto = body.contacto; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? '¡Cita de Firma Confirmada!';\n\n// 1. Validamos que exista el contacto\nif (!contacto) return [];\n\n// 2. Solo procesamos si tiene al menos un canal habilitado para envío\nif (!contacto.enviar_email && !contacto.enviar_whatsapp) {\n    return [];\n}\n\nreturn [{\n    json: {\n        ...contacto, // Expande: id, nombres, email, celular, dni, tipo (Propietario), html, fecha_firma_formateada, enviar_email, enviar_whatsapp\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
       },
       "id": "34eb15ca-6bbc-4698-9f1f-29c41b04b03b",
       "name": "formatear-contactos",
@@ -48,7 +48,7 @@
           "parameters": [
             {
               "name": "number",
-              "value": "=51{{ $json.celular }}"
+              "value": "={{ $json.celular }}"
             },
             {
               "name": "mediatype",
@@ -69,8 +69,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
-        208
+        112,
+        256
       ],
       "id": "83398b6f-eef2-495b-903a-6144df11b70f",
       "name": "enviar-mensaje-wsp",
@@ -93,11 +93,19 @@
             },
             {
               "name": "canal",
-              "value": "email"
+              "value": "whatsapp"
             },
             {
               "name": "mensaje",
-              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+              "value": "="
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.key ? 'enviado' : 'fallido' }}"
             }
           ]
         },
@@ -106,8 +114,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        304,
-        208
+        432,
+        256
       ],
       "id": "3a5e10e9-7021-4f74-aecc-dd58c910e5a1",
       "name": "set-laravel-mensaje-1",
@@ -126,8 +134,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        0,
-        0
+        112,
+        16
       ],
       "webhookId": "6e5759aa-8a62-453c-8574-9b49871395e1",
       "credentials": {
@@ -159,7 +167,15 @@
             },
             {
               "name": "mensaje",
-              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+              "value": "="
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.accepted?.length > 0 ? 'enviado' : 'invalido' }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
             }
           ]
         },
@@ -168,8 +184,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        304,
-        0
+        416,
+        16
       ],
       "id": "656e87d6-eacb-4f62-82a1-d62bef326eeb",
       "name": "set-laravel-mensaje-2",
@@ -189,6 +205,74 @@
       "id": "c2cedadd-01fa-430e-9331-f1c6e46452d0",
       "name": "Wait",
       "webhookId": "a7db49ff-0ab5-4036-a492-76c81b6798ed"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ac68dfe5-bc14-4a27-8ff9-b80471aae035",
+              "leftValue": "={{ $json.enviar_whatsapp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -144,
+        256
+      ],
+      "id": "c2f5f15f-dd36-4748-96a0-0e5a001bf298",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ac68dfe5-bc14-4a27-8ff9-b80471aae035",
+              "leftValue": "={{$json.enviar_email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -144,
+        16
+      ],
+      "id": "c82bc893-1ef9-4cc9-9a5c-d32cc7d94aac",
+      "name": "Filter1"
     }
   ],
   "pinData": {},
@@ -208,12 +292,12 @@
       "main": [
         [
           {
-            "node": "enviar-mensaje-wsp",
+            "node": "Filter",
             "type": "main",
             "index": 0
           },
           {
-            "node": "enviar-mensaje-email",
+            "node": "Filter1",
             "type": "main",
             "index": 0
           }
@@ -252,6 +336,28 @@
           }
         ]
       ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -259,7 +365,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "3e53eb5a-1366-4c0e-a503-e78f3aa1b1a4",
+  "versionId": "091283e0-c66a-4ddc-87e2-f9dfbc4dd9aa",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"

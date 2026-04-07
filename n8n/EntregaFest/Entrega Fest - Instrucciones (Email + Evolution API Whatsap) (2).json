@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo siempre recibimos un solo \"contacto\" (ya sea el Titular o el Copropietario)\nconst contacto = body.contacto; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? 'Confirmación de Registro';\n\nif (!contacto) return []; // Si no hay contacto, no procesamos nada\n\nreturn [{\n    json: {\n        ...contacto, // Esto expande: id, nombres, email, celular, dni, tipo, html (ticket), etc.\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
+        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// En este flujo siempre recibimos un solo \"contacto\"\nconst contacto = body.contacto; \nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto\nconst asunto = plantilla.titulo ?? 'Instrucciones para el Evento';\n\n// 1. Validamos que exista el contacto\nif (!contacto) return [];\n\n// 2. Solo procesamos si tiene al menos un canal habilitado para envío\n// Esto evita duplicados si el historial ya dice que se envió Email y WhatsApp\nif (!contacto.enviar_email && !contacto.enviar_whatsapp) {\n    return [];\n}\n\nreturn [{\n    json: {\n        ...contacto, // Incluye automáticamente id, nombres, email, celular, enviar_email, enviar_whatsapp e HTML de instrucciones\n        asunto: asunto,\n        evento: evento,\n        // --- CAMPOS DE LA PLANTILLA ---\n        plantilla_titulo: plantilla.titulo ?? '',\n        plantilla_subtitulo: plantilla.subtitulo ?? '',\n        plantilla_descripcion: plantilla.descripcion ?? '',\n        plantilla_imagen: plantilla.imagen_url ?? '',\n        plantilla_link_boton: plantilla.link_boton ?? ''\n    }\n}];\n"
       },
       "id": "5c056174-ea14-4d25-b91a-a396098cc6bc",
       "name": "formatear-contactos",
@@ -54,8 +54,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -256,
-        512
+        -400,
+        528
       ]
     },
     {
@@ -76,7 +76,7 @@
           "parameters": [
             {
               "name": "number",
-              "value": "=51{{ $json.celular }}"
+              "value": "={{ $json.celular }}"
             },
             {
               "name": "mediatype",
@@ -97,7 +97,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
+        16,
         608
       ],
       "id": "35930475-d54e-41a1-922d-401501a69fe7",
@@ -107,7 +107,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://host.docker.internal:8000/api/entrega-fest/marcar-enviado",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -121,11 +121,18 @@
             },
             {
               "name": "canal",
-              "value": "email"
+              "value": "whatsapp"
             },
             {
-              "name": "mensaje",
-              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+              "name": "mensaje"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.key ? 'enviado' : 'fallido' }}"
             }
           ]
         },
@@ -229,8 +236,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -256,
-        96
+        -448,
+        112
       ]
     },
     {
@@ -238,7 +245,7 @@
         "fromEmail": "adm-response@aybarsac.com",
         "toEmail": "={{ $json.email }}",
         "subject": "={{ $json.asunto }}",
-        "html": "=<div style=\"text-align: center; margin-bottom: 30px;\">\n    <img src=\"{{ $json.plantilla_imagen }}\" alt=\"Entrega Fest\" style=\"max-width: 200px;\">\n</div>\n\n",
+        "html": "={{ $json.html }}",
         "options": {}
       },
       "id": "137fadc4-c7cc-4032-b8bd-524c374d6d04",
@@ -261,7 +268,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://host.docker.internal:8000/api/entrega-fest/marcar-enviado",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -279,7 +286,15 @@
             },
             {
               "name": "mensaje",
-              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+              "value": "="
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.accepted?.length > 0 ? 'enviado' : 'invalido' }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
             }
           ]
         },
@@ -402,6 +417,74 @@
       "id": "47eca6d0-e9ad-4f78-8852-7abc43e4c012",
       "name": "Wait",
       "webhookId": "9f854f55-b471-4922-82f0-aef08674bc32"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "13f5a289-a85e-4351-93c5-4a7e867ad76c",
+              "leftValue": "={{ $json.enviar_whatsapp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -176,
+        608
+      ],
+      "id": "8205ff37-c17b-4bc2-a2ca-0b575dc9e2f5",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "13f5a289-a85e-4351-93c5-4a7e867ad76c",
+              "leftValue": "={{$json.enviar_email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        176
+      ],
+      "id": "3bdb76f7-331d-42d6-8d40-b2acf1ba08b5",
+      "name": "Filter1"
     }
   ],
   "pinData": {},
@@ -455,7 +538,7 @@
         ],
         [
           {
-            "node": "enviar-mensaje-wsp",
+            "node": "Filter",
             "type": "main",
             "index": 0
           }
@@ -517,7 +600,7 @@
         ],
         [
           {
-            "node": "enviar-mensaje-email",
+            "node": "Filter1",
             "type": "main",
             "index": 0
           }
@@ -589,6 +672,28 @@
           }
         ]
       ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -596,7 +701,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "3d3629fe-4b72-4989-a67f-9055d5214a99",
+  "versionId": "b25b7e52-d63f-4c41-b9e7-5e5bec3a106e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
