@@ -253,3 +253,8 @@ php artisan make:model InvitadoEnvioEntregaFest -mfsc
 php artisan make:livewire erp.entrega-fest.invitado-envio-entrega-fest.invitado-envio-entrega-fest-lista --class
 php artisan make:livewire erp.entrega-fest.invitado-envio-entrega-fest.invitado-envio-entrega-fest-crear --class
 php artisan make:livewire erp.entrega-fest.invitado-envio-entrega-fest.invitado-envio-entrega-fest-editar --class
+
+php artisan make:model LibroReclamacion -mfsc
+php artisan make:livewire erp.libro-reclamacion.libro-reclamacion-lista --class
+php artisan make:livewire erp.libro-reclamacion.libro-reclamacion-crear --class
+php artisan make:livewire erp.libro-reclamacion.libro-reclamacion-editar --class

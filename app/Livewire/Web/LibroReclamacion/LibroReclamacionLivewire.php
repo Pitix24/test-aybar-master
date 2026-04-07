@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Web;
+namespace App\Livewire\Web\LibroReclamacion;
 
 use App\Models\LibroReclamacion;
 use App\Models\UnidadNegocio;

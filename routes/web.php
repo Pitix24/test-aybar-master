@@ -3,7 +3,7 @@
 use App\Http\Controllers\CavaliController;
 use App\Http\Controllers\SlinController;
 use App\Livewire\Web\Sesion\ClienteRegistrarLivewire;
-use App\Livewire\Web\LibroReclamacionLivewire;
+use App\Livewire\Web\LibroReclamacion\LibroReclamacionLivewire;
 use App\Http\Controllers\Web\VerificationController;
 use App\Http\Controllers\Web\ConsultaCodigoClienteController;
 use Illuminate\Support\Facades\Route;
@@ -13,7 +13,6 @@ Route::get('/', function () {
 })->middleware(['web', 'redirect.by.role'])->name('home');
 
 Route::get('/registrar', ClienteRegistrarLivewire::class)->name('registrar.cliente');
-Route::get('/libro-de-reclamaciones', LibroReclamacionLivewire::class)->name('libro-reclamaciones');
 
 Route::post('/email/verification-notification', [VerificationController::class, 'send'])
     ->middleware(['auth', 'throttle:6,1'])
