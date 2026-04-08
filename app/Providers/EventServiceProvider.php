@@ -6,7 +6,9 @@ use Illuminate\Auth\Events\Login;
 use App\Listeners\ClienteLoginListener;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Listeners\PasswordResetListener;
+use App\Events\LibroReclamacion\LibroReclamacionRegistrado;
 use App\Events\TicketCreado;
+use App\Listeners\LibroReclamacion\EnviarCorreosLibroReclamacion;
 use App\Listeners\EnviarCorreoTicketCreado;
 use App\Events\UsuarioRegistrado;
 use App\Listeners\EnviarCorreoVerificacionUsuario;
@@ -29,6 +31,10 @@ class EventServiceProvider extends ServiceProvider
 
         UsuarioRegistrado::class => [
             EnviarCorreoVerificacionUsuario::class,
+        ],
+
+        LibroReclamacionRegistrado::class => [
+            EnviarCorreosLibroReclamacion::class,
         ],
 
             // ── EntregaFest ──────────────────────────────────────────────────
@@ -66,6 +72,10 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\EntregaFest\EntregaFestAsistenciaInvitacion::class => [
             \App\Listeners\EntregaFest\EntregaFestAsistenciaInvitacionN8N::class,
+        ],
+
+        TicketCreado::class => [
+            EnviarCorreoTicketCreado::class,
         ],
     ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Web\LibroReclamacion;
 
+use App\Events\LibroReclamacion\LibroReclamacionRegistrado;
 use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
 use Livewire\Component;
@@ -150,6 +151,9 @@ class LibroReclamacionLivewire extends Component
             ]);
 
             DB::commit();
+
+            // El correo se dispara fuera de la transaccion para no afectar el alta del reclamo.
+            LibroReclamacionRegistrado::dispatch($reclamo);
 
             $this->reclamo_registrado = $reclamo;
             $this->success = true;

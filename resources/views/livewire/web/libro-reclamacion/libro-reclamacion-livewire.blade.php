@@ -136,8 +136,7 @@
 
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_8">
-                                <label>Domicilio <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <label>Domicilio</label>
                                 <input type="text" wire:model="domicilio" class="@error('domicilio') input-error @enderror">
                                 @error('domicilio') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
@@ -151,7 +150,8 @@
 
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_4">
-                                <label>Correo electrónico</label>
+                                <label>Correo electrónico <span class="obligatorio"><i
+                                            class="fa-solid fa-asterisk"></i></span></label>
                                 <input type="email" wire:model="email" class="@error('email') input-error @enderror">
                                 @error('email') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
@@ -205,8 +205,7 @@
                         </div>
 
                         <div>
-                            <label>Descripción del producto o servicio <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
+                            <label>Descripción del producto o servicio</label>
                             <textarea wire:model="descripcion" rows="3" class="@error('descripcion') input-error @enderror"
                                 placeholder="Breve descripción del bien o servicio..."></textarea>
                             @error('descripcion') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -238,16 +237,14 @@
                         @error('tipo_pedido') <p class="mensaje_error">{{ $message }}</p> @enderror
 
                         <div class="g_margin_top_20">
-                            <label>Detalle del reclamo o queja <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
+                            <label>Detalle del reclamo o queja</label>
                             <textarea wire:model="detalle" rows="4" class="@error('detalle') input-error @enderror"
                                 placeholder="Explique detalladamente lo ocurrido..."></textarea>
                             @error('detalle') <p class="mensaje_error">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="g_margin_top_20">
-                            <label>Pedido del consumidor <span class="obligatorio"><i
-                                        class="fa-solid fa-asterisk"></i></span></label>
+                            <label>Pedido del consumidor</label>
                             <textarea wire:model="pedido" rows="3" class="@error('pedido') input-error @enderror"
                                 placeholder="¿Qué acción espera por parte de la empresa?"></textarea>
                             @error('pedido') <p class="mensaje_error">{{ $message }}</p> @enderror
