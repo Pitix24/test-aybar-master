@@ -48,7 +48,7 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
     public function collection()
     {
         $query = ProspectoEntregaFest::query()
-            ->with(['proyecto', 'user', 'invitado'])
+            ->with(['proyecto', 'user', 'invitado', 'gestor', 'validador'])
             ->where('entrega_fest_id', $this->entrega_fest_id);
 
         if (!$this->todo) {
@@ -81,23 +81,40 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
         static $index = 0;
         $index++;
 
-        // Obtener etiquetas de estados
-        $estadoBackoffice = ProspectoEntregaFest::ESTADO_BACKOFFICE[$p->estado_backoffice]['label'] ?? $p->estado_backoffice;
-        $estadoContrato = ProspectoEntregaFest::ESTADO_CONTRATO_PRELIMINAR[$p->estado_contrato_preeliminar_emitido]['label'] ?? $p->estado_contrato_preeliminar_emitido;
+        // Helper para booleanos de invitación
+        $formatConfirmacion = function($val) {
+            if (is_null($val)) return 'PENDIENTE';
+            return $val ? 'SÍ' : 'NO';
+        };
 
         return [
             $index,
-            $p->dni,
-            $p->nombre_completo . " (" . $p->email . " / " . $p->celular . ")",
             $p->proyecto->nombre ?? 'N/A',
-            ($p->lote ?? '') . ($p->manzana ?? ''),
+            $p->dni,
+            $p->nombres,
+            $p->email,
+            $p->celular,
+            $p->manzana,
+            $p->lote,
+            $p->estado_cliente,
+            $formatConfirmacion($p->preinvitacion_confirmada),
+            $formatConfirmacion($p->invitacion_confirmada),
+            $p->grupo,
+            $p->gestor->name ?? 'No asignado',
+            $p->gestor_fecha_asignacion ? \Carbon\Carbon::parse($p->gestor_fecha_asignacion)->format('d/m/Y H:i') : '',
             $p->fecha_culminacion_eecc ? \Carbon\Carbon::parse($p->fecha_culminacion_eecc)->format('d/m/Y') : '',
-            $p->link_carpeta_eecc ?? '',
-            $p->link_eecc_firmado ?? '',
-            strtoupper($estadoBackoffice),
-            strtoupper($estadoContrato),
+            $p->link_carpeta_eecc,
+            $p->link_eecc_firmado,
+            $p->estado_gestor_backoffice,
+            $p->observacion_gestor_backoffice,
+            $p->validador->name ?? 'No asignado',
+            $p->fecha_validacion_eecc ? \Carbon\Carbon::parse($p->fecha_validacion_eecc)->format('d/m/Y') : '',
+            $p->estado_backoffice,
+            $p->estado_contrato_preeliminar_emitido,
+            $p->estado_firma_contrato_firmado,
             $p->fecha_firma ? \Carbon\Carbon::parse($p->fecha_firma)->format('d/m/Y') : '',
             $p->fecha_generacion_contrato ? \Carbon\Carbon::parse($p->fecha_generacion_contrato)->format('d/m/Y') : '',
+            $p->user->name ?? 'Sistema',
             $p->invitado ? 'SÍ' : 'NO',
         ];
     }
@@ -106,18 +123,33 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
     {
         return [
             'N°',
-            'DNI',
-            'Cliente',
             'Proyecto',
-            'Lote/Mz',
+            'DNI',
+            'Propietario',
+            'Email',
+            'Celular',
+            'Manzana',
+            'Lote',
+            'Estado Cliente',
+            'Pre-invitación Conf.',
+            'Invitación Conf.',
+            'Grupo',
+            'Gestor BackOffice',
+            'Fecha Asignación Gestor',
             'Fecha Culminación EECC',
-            'Enlace Carpeta EECC',
-            'Enlace EECC Firmado',
-            'BackOffice',
+            'Link Carpeta EECC',
+            'Link EECC Firmado',
+            'Estado Gestor BO',
+            'Observación Gestor BO',
+            'Validador BO (Supervisor)',
+            'Fecha Validación BO',
+            'Estado Supervisor BO',
             'Estado Contrato Preliminar',
-            'Fecha para Firmar',
-            'Fecha Firmado',
-            'Invitado',
+            'Estado Firma Contrato',
+            'Fecha Firma',
+            'Fecha Generación Contrato',
+            'Registrado por',
+            '¿Invitado Confirmado?',
         ];
     }
 }

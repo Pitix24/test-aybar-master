@@ -59,9 +59,12 @@ class PreInvitacionPropietario extends Component
     {
         $this->interes = $respuesta;
 
-        $this->prospecto->update([
-            'preinvitacion_confirmada' => ($respuesta === 'si')
-        ]);
+        // Actualizar todos los lotes asociados al mismo DNI para este evento
+        ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->where('dni', $this->prospecto->dni)
+            ->update([
+                'preinvitacion_confirmada' => ($respuesta === 'si')
+            ]);
 
         $this->enviado = true;
         $this->mensaje_exito = ($respuesta === 'si')
