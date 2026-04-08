@@ -9,6 +9,7 @@ use App\Events\EntregaFest\EntregaFestContratoPreliminar;
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
+use App\Models\EntregaFestEstadoCliente;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -30,7 +31,7 @@ class EntregaFestProspectoEditar extends Component
 
     // Campos del prospecto
     public $proyecto_id = '', $dni = '', $nombres = '', $email = '', $celular = '';
-    public $lote = '', $manzana = '';
+    public $lote = '', $manzana = '', $estado_cliente_id = '';
 
     // BackOffice
     public $grupo, $gestor_backoffice_id = '', $gestor_fecha_asignacion, $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
@@ -45,6 +46,7 @@ class EntregaFestProspectoEditar extends Component
     public $archivo_contrato_preeliminar;
 
     public $proyectos = [];
+    public $estados_cliente = [];
 
     // ── Copropietarios ──────────────────────────────────────────────────
     public $copropietarios = [];
@@ -68,8 +70,8 @@ class EntregaFestProspectoEditar extends Component
             'proyecto_id' => 'required|exists:proyectos,id',
             'dni' => 'required|string|max:15',
             'nombres' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'celular' => 'required|string|max:20',
+            //'email' => 'required|email|max:255',
+            //'celular' => 'required|string|max:20',
             'lote' => 'nullable|string|max:20',
             'manzana' => 'nullable|string|max:20',
 
@@ -131,6 +133,7 @@ class EntregaFestProspectoEditar extends Component
 
         $this->lote = $this->prospecto->lote;
         $this->manzana = $this->prospecto->manzana;
+        $this->estado_cliente_id = $this->prospecto->estado_cliente_id;
 
         // BackOffice
         $this->grupo = $this->prospecto->grupo;
@@ -157,6 +160,9 @@ class EntregaFestProspectoEditar extends Component
             ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_generacion_contrato)) : null;
 
         $this->proyectos = $this->evento->proyectos;
+        $this->estados_cliente = EntregaFestEstadoCliente::where('activo', true)
+            ->orderBy('nombre')
+            ->get();
 
         $this->cargarCopropietarios();
     }
@@ -368,6 +374,7 @@ class EntregaFestProspectoEditar extends Component
             'celular' => 'required|string|max:20',
             'lote' => 'nullable|string|max:20',
             'manzana' => 'nullable|string|max:20',
+            'estado_cliente_id' => 'required|exists:entrega_fest_estado_clientes,id',
         ];
 
         $this->validate($rules);
@@ -380,6 +387,7 @@ class EntregaFestProspectoEditar extends Component
             'celular' => trim($this->celular),
             'lote' => $this->lote,
             'manzana' => $this->manzana,
+            'estado_cliente_id' => $this->estado_cliente_id,
         ], 'PROSPECTO EDITAR - BASICO');
     }
 
@@ -437,7 +445,7 @@ class EntregaFestProspectoEditar extends Component
 
         // Si se acaba de aprobar (CONFORME), disparamos el evento de invitaciones
         if ($this->estado_backoffice === 'CONFORME') {
-            EntregaFestAsistenciaInvitacion::dispatch($this->prospecto);
+            //EntregaFestAsistenciaInvitacion::dispatch($this->prospecto);
         }
     }
 

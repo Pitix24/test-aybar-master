@@ -48,7 +48,7 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
     public function collection()
     {
         $query = ProspectoEntregaFest::query()
-            ->with(['proyecto', 'user', 'invitado', 'gestor', 'validador'])
+            ->with(['proyecto', 'user', 'invitado', 'gestor', 'validador', 'estadoCliente'])
             ->where('entrega_fest_id', $this->entrega_fest_id);
 
         if (!$this->todo) {
@@ -97,7 +97,7 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
             $p->celular,
             $p->manzana,
             $p->lote,
-            $p->estado_cliente,
+            $p->estadoCliente->nombre ?? 'ADENDA',
             $formatConfirmacion($p->preinvitacion_confirmada),
             $formatConfirmacion($p->invitacion_confirmada),
             $p->grupo,

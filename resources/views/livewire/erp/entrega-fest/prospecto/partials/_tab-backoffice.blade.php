@@ -110,12 +110,12 @@
             </div>
         </div>
 
-        {{--<div class="g_tab_form_buttons">
+        <div class="g_tab_form_buttons">
             @can('prospecto.editar')
-            <button type="submit" class="g_boton guardar">
-                <i class="fa-solid fa-save"></i> Validar
-            </button>
+                <button type="submit" class="g_boton guardar">
+                    <i class="fa-solid fa-save"></i> Validar
+                </button>
             @endcan
-        </div>--}}
+        </div>
     </form>
 </div>

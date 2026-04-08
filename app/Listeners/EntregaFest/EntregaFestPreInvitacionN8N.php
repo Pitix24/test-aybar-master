@@ -24,7 +24,9 @@ class EntregaFestPreInvitacionN8N
 
         $etapa = $plantilla->tipo ?? 'pre-invitacion';
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $evento->id)
-            ->whereNotIn('estado_cliente', ['PLANTON', 'DESISTIMIENTO', 'DEVOLUCION_DE_APORTES', 'CARTA_NOTARIAL', 'RESOLUCION_DE_CONTRATO'])
+            ->whereHas('estadoCliente', function ($query) {
+                $query->whereNotIn('nombre', ['PLANTON', 'DESISTIMIENTO', 'DEVOLUCION DE APORTES', 'CARTA NOTARIAL', 'RESOLUCION DE CONTRATO']);
+            })
             ->where(function ($query) use ($etapa) {
                 // El titular necesita algo y NO ha respondido
                 $query->where(function ($q) use ($etapa) {
@@ -40,16 +42,16 @@ class EntregaFestPreInvitacionN8N
                 })
                     // ...o algún copropietario necesita algo y NO ha respondido
                     ->orWhereHas('copropietarios', function ($cq) use ($etapa) {
-                        $cq->whereNull('preinvitacion_confirmada')
-                            ->where(function ($qq) use ($etapa) {
-                                $qq->whereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
-                                    $h->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
-                                })
-                                    ->orWhereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
-                                        $h->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
-                                    });
-                            });
-                    });
+                    $cq->whereNull('preinvitacion_confirmada')
+                        ->where(function ($qq) use ($etapa) {
+                            $qq->whereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                                $h->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
+                            })
+                                ->orWhereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                                    $h->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
+                                });
+                        });
+                });
             })
             ->with(['copropietarios.historialComunicaciones', 'entregaFest', 'historialComunicaciones'])
             ->get()
