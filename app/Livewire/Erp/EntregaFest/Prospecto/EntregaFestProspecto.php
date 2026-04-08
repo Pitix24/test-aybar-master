@@ -48,10 +48,15 @@ class EntregaFestProspecto extends Component
     public $filtro_confirmacion = '';
 
     #[Url(keep: true)]
+    public $filtro_invitacion = '';
+
+    #[Url(keep: true)]
     public $perPage = 20;
     
     #[Url(keep: true)]
     public $gestor_id = '';
+
+    public $stats = [];
 
     // Catálogos
     public $proyectos = [];
@@ -62,18 +67,35 @@ class EntregaFestProspecto extends Component
         $this->evento = EntregaFest::with('proyectos')->findOrFail($id);
         $this->proyectos = $this->evento->proyectos;
         $this->usuarios = \App\Models\User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
+        
+        $this->cargarStats();
+    }
+
+    public function cargarStats()
+    {
+        $baseQuery = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id));
+
+        $this->stats = [
+            'total' => (clone $baseQuery)->count(),
+            'preinvitacion' => (clone $baseQuery)->where('preinvitacion_confirmada', 1)->count(),
+            'backoffice' => (clone $baseQuery)->where('estado_backoffice', 'CONFORME')->count(),
+            'contrato' => (clone $baseQuery)->where('estado_contrato_preeliminar_emitido', 'CONFORME')->count(),
+            'firmados' => (clone $baseQuery)->whereNotNull('fecha_firma')->count(),
+        ];
     }
 
     public function updated($property)
     {
-        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion', 'gestor_id'])) {
+        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion', 'filtro_invitacion', 'gestor_id'])) {
             $this->resetPage();
+            $this->cargarStats();
         }
     }
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion', 'gestor_id']);
+        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion', 'filtro_invitacion', 'gestor_id']);
         $this->resetPage();
     }
 
@@ -152,6 +174,13 @@ class EntregaFestProspecto extends Component
                     $query->whereNull('preinvitacion_confirmada');
                 } else {
                     $query->where('preinvitacion_confirmada', $this->filtro_confirmacion);
+                }
+            })
+            ->when($this->filtro_invitacion !== '', function ($query) {
+                if ($this->filtro_invitacion === 'pendiente') {
+                    $query->whereNull('invitacion_confirmada');
+                } else {
+                    $query->where('invitacion_confirmada', $this->filtro_invitacion);
                 }
             })
             ->when($this->gestor_id, fn($q) => $q->where('gestor_backoffice_id', $this->gestor_id))

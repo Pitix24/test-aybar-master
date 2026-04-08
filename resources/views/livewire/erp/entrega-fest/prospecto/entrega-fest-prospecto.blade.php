@@ -27,11 +27,66 @@
         </div>
     </div>
 
+    <div class="g_fila">
+        <div class="g_panel_dashboard_grid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; width: 100%;">
+            <div class="g_panel" title="Total de lotes en este evento">
+                <div class="g_panel_dashboard">
+                    <div class="g_panel_dashboard_1">
+                        <h2>Total Lotes</h2>
+                        <p class="g_negrita">{{ number_format($stats['total']) }}</p>
+                    </div>
+                    <i class="fa-solid fa-layer-group" style="color: var(--color-primario);"></i>
+                </div>
+            </div>
+
+            <div class="g_panel" title="Clientes que aceptaron la pre-invitación">
+                <div class="g_panel_dashboard">
+                    <div class="g_panel_dashboard_1">
+                        <h2>Pre-Invit. SI</h2>
+                        <p class="g_negrita">{{ number_format($stats['preinvitacion']) }}</p>
+                    </div>
+                    <i class="fa-solid fa-envelope-circle-check" style="color: #3B82F6;"></i>
+                </div>
+            </div>
+
+            <div class="g_panel" title="Lotes con estado BO CONFORME (Supervisor)">
+                <div class="g_panel_dashboard">
+                    <div class="g_panel_dashboard_1">
+                        <h2>BO Conforme</h2>
+                        <p class="g_negrita">{{ number_format($stats['backoffice']) }}</p>
+                    </div>
+                    <i class="fa-solid fa-user-check" style="color: #10B981;"></i>
+                </div>
+            </div>
+
+            <div class="g_panel" title="Contratos preliminares emitidos CONFORME">
+                <div class="g_panel_dashboard">
+                    <div class="g_panel_dashboard_1">
+                        <h2>Contratos OK</h2>
+                        <p class="g_negrita">{{ number_format($stats['contrato']) }}</p>
+                    </div>
+                    <i class="fa-solid fa-file-signature" style="color: #F59E0B;"></i>
+                </div>
+            </div>
+
+            <div class="g_panel" title="Lotes que ya cuentan con fecha de firma">
+                <div class="g_panel_dashboard">
+                    <div class="g_panel_dashboard_1">
+                        <h2>Firmados</h2>
+                        <p class="g_negrita">{{ number_format($stats['firmados']) }}</p>
+                    </div>
+                    <i class="fa-solid fa-pen-fancy" style="color: #8B5CF6;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Buscar (Nombres, Celular o Email)</label>
+                    <label>Buscar (DNI, Nombres, Celular o Email)</label>
                     <input type="text" wire:model.live.debounce.400ms="buscar">
                 </div>
 
@@ -89,8 +144,18 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Confirmación Pre-invitación</label>
+                    <label>Pre-invitación</label>
                     <select wire:model.live="filtro_confirmacion">
+                        <option value="">Todas</option>
+                        <option value="1">Aceptó</option>
+                        <option value="0">No Aceptó</option>
+                        <option value="pendiente">Pendiente</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Invitación</label>
+                    <select wire:model.live="filtro_invitacion">
                         <option value="">Todas</option>
                         <option value="1">Aceptó</option>
                         <option value="0">No Aceptó</option>
@@ -161,6 +226,7 @@
                         <th>Proyecto</th>
                         <th>Mz-Lt</th>
                         <th class="g_celda_centro">Pre-invitación</th>
+                        <th class="g_celda_centro">Invitación</th>
                         <th class="g_celda_centro">Gestor BO</th>
                         <th class="g_celda_centro">Estado Gestor BO</th>
                         <th class="g_celda_centro">Fecha Culminación EECC</th>
@@ -255,6 +321,15 @@
                                 @if (is_null($p->preinvitacion_confirmada))
                                     <span class="g_badge info" title="Pendiente">Pendiente</span>
                                 @elseif($p->preinvitacion_confirmada)
+                                    <span class="g_badge success" title="Aceptó">Aceptó</span>
+                                @else
+                                    <span class="g_badge danger" title="Rechazó">Rechazó</span>
+                                @endif
+                            </td>
+                            <td class="g_celda_centro">
+                                @if (is_null($p->invitacion_confirmada))
+                                    <span class="g_badge info" title="Pendiente">Pendiente</span>
+                                @elseif($p->invitacion_confirmada)
                                     <span class="g_badge success" title="Aceptó">Aceptó</span>
                                 @else
                                     <span class="g_badge danger" title="Rechazó">Rechazó</span>
