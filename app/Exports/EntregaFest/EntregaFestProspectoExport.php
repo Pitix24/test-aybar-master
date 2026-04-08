@@ -89,6 +89,7 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
 
         return [
             $index,
+            $p->id,
             $p->proyecto->nombre ?? 'N/A',
             $p->dni,
             $p->nombres,
@@ -123,6 +124,7 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
     {
         return [
             'N°',
+            'ID Prospecto',
             'Proyecto',
             'DNI',
             'Propietario',
