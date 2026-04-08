@@ -27,6 +27,10 @@
                                     class="informacion_resumen_valor">{{ $reclamo_registrado->serie }}-{{ str_pad($reclamo_registrado->ticket, 6, '0', STR_PAD_LEFT) }}</span>
                             </div>
                             <div class="informacion_resumen_item">
+                                <span class="informacion_resumen_label">Código de ticket</span>
+                                <span class="informacion_resumen_valor">{{ $reclamo_registrado->codigo_ticket }}</span>
+                            </div>
+                            <div class="informacion_resumen_item">
                                 <span class="informacion_resumen_label">Fecha de envío</span>
                                 <span
                                     class="informacion_resumen_valor">{{ $reclamo_registrado->created_at->format('d/m/Y H:i') }}</span>
