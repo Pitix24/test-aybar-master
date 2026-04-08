@@ -80,24 +80,10 @@
                             <h2><i class="fa-solid fa-building"></i> 1.- Identificación del Proveedor</h2>
                         </div>
                         <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label>Unidad de Negocio <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
-                                <select wire:model.live="unidad_negocio_id"
-                                    class="@error('unidad_negocio_id') input-error @enderror">
-                                    <option value="">-- Seleccionar --</option>
-                                    @foreach($unidades_negocio as $un)
-                                        <option value="{{ $un->id }}">{{ $un->nombre }}</option>
-                                    @endforeach
-                                </select>
-                                @error('unidad_negocio_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div class="g_margin_bottom_10 g_columna_6">
+                            <div class="g_margin_bottom_10 g_columna_12">
                                 <label>Proyecto <span class="obligatorio"><i
                                             class="fa-solid fa-asterisk"></i></span></label>
-                                <select wire:model="proyecto_id" class="@error('proyecto_id') input-error @enderror"
-                                    @if(empty($lista_proyectos)) disabled @endif>
+                                <select wire:model.live="proyecto_id" class="@error('proyecto_id') input-error @enderror">
                                     <option value="">-- Seleccionar --</option>
                                     @foreach($lista_proyectos as $pr)
                                         <option value="{{ $pr->id }}">{{ $pr->nombre }}</option>
@@ -111,18 +97,9 @@
                             <div class="g_margin_top_20 g_panel"
                                 style="background-color: rgba(0,0,0,0.02); border-style: dashed;">
                                 <div class="informacion_resumen_grid">
-                                    <div class="informacion_resumen_item">
+                                    <div class="informacion_resumen_item" style="grid-column: span 2;">
                                         <span class="informacion_resumen_label">Razón Social</span>
                                         <span class="informacion_resumen_valor">{{ $unidad_razon_social }}</span>
-                                    </div>
-                                    <div class="informacion_resumen_item">
-                                        <span class="informacion_resumen_label">RUC</span>
-                                        <span class="informacion_resumen_valor">{{ $unidad_ruc }}</span>
-                                    </div>
-                                    <div class="informacion_resumen_item" style="grid-column: span 2;">
-                                        <span class="informacion_resumen_label">Dirección</span>
-                                        <span
-                                            class="informacion_resumen_valor">{{ $unidad_direccion ?? 'No especificada' }}</span>
                                     </div>
                                 </div>
                             </div>

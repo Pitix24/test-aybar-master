@@ -3,7 +3,6 @@
 namespace App\Livewire\Web\LibroReclamacion;
 
 use App\Models\LibroReclamacion;
-use App\Models\UnidadNegocio;
 use App\Models\Proyecto;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -37,11 +36,8 @@ class LibroReclamacionLivewire extends Component
 
     // Campos de información de la unidad (solo lectura en el formulario)
     public $unidad_razon_social;
-    public $unidad_ruc;
-    public $unidad_direccion;
 
     // Catálogos
-    public $unidades_negocio = [];
     public $lista_proyectos = [];
 
     public $success = false;
@@ -50,8 +46,7 @@ class LibroReclamacionLivewire extends Component
     protected function rules()
     {
         return [
-            'unidad_negocio_id' => 'nullable|exists:unidad_negocios,id',
-            'proyecto_id' => 'nullable|exists:proyectos,id',
+            'proyecto_id' => 'required|exists:proyectos,id',
             'nombre' => 'required|string|max:255',
             'apellido_paterno' => 'required|string|max:255',
             'apellido_materno' => 'required|string|max:255',
@@ -73,7 +68,6 @@ class LibroReclamacionLivewire extends Component
     public function validationAttributes()
     {
         return [
-            'unidad_negocio_id' => 'unidad de negocio',
             'proyecto_id' => 'proyecto',
             'nombre' => 'nombres',
             'apellido_paterno' => 'apellido paterno',
@@ -92,24 +86,23 @@ class LibroReclamacionLivewire extends Component
 
     public function mount()
     {
-        $this->unidades_negocio = UnidadNegocio::where('activo', true)->get();
+        $this->lista_proyectos = Proyecto::with('unidadNegocio')
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get();
     }
 
-    public function updatedUnidadNegocioId($id)
+    public function updatedProyectoId($id)
     {
-        $this->proyecto_id = null;
-        $this->lista_proyectos = [];
+        $this->unidad_negocio_id = null;
         $this->unidad_razon_social = '';
-        $this->unidad_ruc = '';
-        $this->unidad_direccion = '';
 
         if ($id) {
-            $unidad = UnidadNegocio::find($id);
-            if ($unidad) {
-                $this->unidad_razon_social = $unidad->razon_social;
-                $this->unidad_ruc = $unidad->ruc;
-                $this->unidad_direccion = $unidad->direccion;
-                $this->lista_proyectos = Proyecto::where('unidad_negocio_id', $id)->where('activo', true)->get();
+            $proyecto = Proyecto::with('unidadNegocio')->find($id);
+
+            if ($proyecto && $proyecto->unidadNegocio) {
+                $this->unidad_negocio_id = $proyecto->unidadNegocio->id;
+                $this->unidad_razon_social = $proyecto->unidadNegocio->razon_social;
             }
         }
     }
@@ -130,9 +123,17 @@ class LibroReclamacionLivewire extends Component
         try {
             DB::beginTransaction();
 
+            $proyecto = Proyecto::with('unidadNegocio')->find($this->proyecto_id);
+
+            if (! $proyecto || ! $proyecto->unidadNegocio) {
+                throw new \RuntimeException('No se pudo resolver la unidad de negocio asociada al proyecto seleccionado.');
+            }
+
+            $this->unidad_negocio_id = $proyecto->unidadNegocio->id;
+
             $reclamo = LibroReclamacion::create([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
-                'proyecto_id' => $this->proyecto_id,
+                'proyecto_id' => $proyecto->id,
                 'nombre' => $this->nombre,
                 'apellido_paterno' => $this->apellido_paterno,
                 'apellido_materno' => $this->apellido_materno,
@@ -182,6 +183,6 @@ class LibroReclamacionLivewire extends Component
 
     public function render()
     {
-        return view('livewire.web.libro-reclamacion-livewire');
+        return view('livewire.web.libro-reclamacion.libro-reclamacion-livewire');
     }
 }
