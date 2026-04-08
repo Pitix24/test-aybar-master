@@ -3,15 +3,22 @@
 namespace App\Services\LibroReclamacion;
 
 use App\Models\LibroReclamacion\LibroReclamacionContador;
+use App\Models\UnidadNegocio;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class LibroReclamacionNumeroService
 {
-    public function generar(int $unidadNegocioId, string $razonSocial): array
+    public function generar(int $unidadNegocioId): array
     {
-        return DB::transaction(function () use ($unidadNegocioId, $razonSocial) {
-            $this->asegurarContador($unidadNegocioId, $razonSocial);
+        return DB::transaction(function () use ($unidadNegocioId) {
+            $unidad = UnidadNegocio::query()->find($unidadNegocioId);
+
+            if (! $unidad) {
+                throw new RuntimeException('No se encontro la unidad de negocio para generar el ticket.');
+            }
+
+            $this->asegurarContador($unidadNegocioId, $unidad->nombre ?? '');
 
             $contador = LibroReclamacionContador::query()
                 ->where('unidad_negocio_id', $unidadNegocioId)
@@ -22,16 +29,16 @@ class LibroReclamacionNumeroService
                 throw new RuntimeException('No se pudo crear o recuperar el contador del libro de reclamaciones.');
             }
 
-            $contador->ultimo_numero = $contador->ultimo_numero + 1;
+            $contador->siguiente_numero = $contador->siguiente_numero + 1;
             $contador->save();
 
             $serie = $this->resolverSerie();
-            $numeroReclamo = $contador->ultimo_numero;
+            $numeroReclamo = $contador->siguiente_numero;
 
             return [
                 'serie' => $serie,
                 'numero_reclamo' => $numeroReclamo,
-                'codigo_ticket' => $this->formatearCodigoTicket($serie, $unidadNegocioId, $numeroReclamo),
+                'codigo_ticket' => $this->formatearCodigoTicket((string) ($unidad->nombre ?? ''), $numeroReclamo),
             ];
         });
     }
@@ -42,7 +49,7 @@ class LibroReclamacionNumeroService
 
         LibroReclamacionContador::query()->insertOrIgnore([
             'unidad_negocio_id' => $unidadNegocioId,
-            'ultimo_numero' => $inicio,
+            'siguiente_numero' => $inicio,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -65,9 +72,11 @@ class LibroReclamacionNumeroService
         return (string) data_get(config('libro_reclamacion', []), 'serie', 'TCK');
     }
 
-    protected function formatearCodigoTicket(string $serie, int $unidadNegocioId, int $numeroReclamo): string
+    protected function formatearCodigoTicket(string $unidadNombre, int $numeroReclamo): string
     {
-        return sprintf('%s-%d-%06d', $serie, $unidadNegocioId, $numeroReclamo);
+        $unidadCodigo = $this->formatearNombreUnidad($unidadNombre);
+
+        return sprintf('%s-%06d', $unidadCodigo, $numeroReclamo);
     }
 
     protected function normalizarTexto(string $valor): string
@@ -76,5 +85,14 @@ class LibroReclamacionNumeroService
         $valor = preg_replace('/\s+/', ' ', $valor);
 
         return $valor ?? '';
+    }
+
+    protected function formatearNombreUnidad(string $nombre): string
+    {
+        $nombre = mb_strtoupper(trim($nombre));
+        $nombre = preg_replace('/\s+/', '_', $nombre);
+        $nombre = preg_replace('/[^A-Z0-9_.]/', '', $nombre);
+
+        return $nombre ?: 'UNIDAD';
     }
 }

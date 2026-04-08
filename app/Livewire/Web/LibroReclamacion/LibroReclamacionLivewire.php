@@ -130,10 +130,7 @@ class LibroReclamacionLivewire extends Component
             }
 
             $this->unidad_negocio_id = $proyecto->unidadNegocio->id;
-            $ticket = LibroReclamacion::generarTicket(
-                $this->unidad_negocio_id,
-                (string) $proyecto->unidadNegocio->razon_social
-            );
+            $ticket = LibroReclamacion::generarTicket($this->unidad_negocio_id);
 
             $reclamo = LibroReclamacion::create([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
@@ -144,19 +141,20 @@ class LibroReclamacionLivewire extends Component
                 'nombre' => $this->nombre,
                 'apellido_paterno' => $this->apellido_paterno,
                 'apellido_materno' => $this->apellido_materno,
-                'domicilio' => $this->domicilio,
+                // Evita NULL en columnas no-null cuando el navegador envia cadena vacia.
+                'domicilio' => $this->domicilio ?? '',
                 'telefono' => $this->telefono,
                 'email' => $this->email,
-                'tipo_documento' => $this->tipo_documento,
-                'numero_documento' => $this->numero_documento,
-                'tipo_bien_contratado' => $this->tipo_bien_contratado,
+                'tipo_documento' => mb_strtoupper($this->tipo_documento ?: 'DNI'),
+                'numero_documento' => $this->numero_documento ?? '',
+                'tipo_bien_contratado' => mb_strtoupper($this->tipo_bien_contratado ?: 'PRODUCTO'),
                 'monto_reclamado' => $this->monto_reclamado,
                 'descripcion' => $this->descripcion,
-                'tipo_pedido' => $this->tipo_pedido,
+                'tipo_pedido' => mb_strtoupper($this->tipo_pedido ?: 'RECLAMO'),
                 'detalle' => $this->detalle,
                 'pedido' => $this->pedido,
                 'conformidad' => $this->conformidad,
-                'estado' => 'nuevo',
+                'estado' => 'NUEVO',
             ]);
 
             DB::commit();
@@ -174,7 +172,7 @@ class LibroReclamacionLivewire extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::channel('reclamacion')->error('[RECLAMACION] Error al registrar: ' . $e->getMessage(), [
+            Log::error('[RECLAMACION] Error al registrar: ' . $e->getMessage(), [
                 'data' => $this->all(),
                 'trace' => $e->getTraceAsString()
             ]);

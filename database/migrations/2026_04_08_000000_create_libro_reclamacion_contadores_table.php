@@ -10,13 +10,17 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        if (Schema::hasTable('libro_reclamacion_contadores')) {
+            return;
+        }
+
         Schema::create('libro_reclamacion_contadores', function (Blueprint $table) {
             $table->id();
             $table->foreignId('unidad_negocio_id')
                 ->unique()
                 ->constrained('unidad_negocios')
                 ->cascadeOnDelete();
-            $table->unsignedBigInteger('ultimo_numero')->default(0);
+            $table->unsignedBigInteger('siguiente_numero')->default(0);
             $table->timestamps();
         });
     }

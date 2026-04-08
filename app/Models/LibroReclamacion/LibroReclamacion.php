@@ -76,8 +76,8 @@ class LibroReclamacion extends Model
         return $this->belongsTo(User::class, 'gestor_id');
     }
 
-    public static function generarTicket(int $unidadNegocioId, string $razonSocial): array
+    public static function generarTicket(int $unidadNegocioId): array
     {
-        return app(LibroReclamacionNumeroService::class)->generar($unidadNegocioId, $razonSocial);
+        return app(LibroReclamacionNumeroService::class)->generar($unidadNegocioId);
     }
 }

@@ -14,11 +14,11 @@ class LibroReclamacionContador extends Model
 
     protected $fillable = [
         'unidad_negocio_id',
-        'ultimo_numero',
+        'siguiente_numero',
     ];
 
     protected $casts = [
-        'ultimo_numero' => 'integer',
+        'siguiente_numero' => 'integer',
     ];
 
     public function unidadNegocio()
