@@ -1,7 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\LibroReclamacion;
 
+use App\Models\Proyecto;
+use App\Models\UnidadNegocio;
+use App\Models\User;
+use App\Services\LibroReclamacion\LibroReclamacionNumeroService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -18,6 +22,8 @@ class LibroReclamacion extends Model
         'cliente_id',
         'gestor_id',
         'serie',
+        'numero_reclamo',
+        'codigo_ticket',
         'nombre',
         'apellido_paterno',
         'apellido_materno',
@@ -68,5 +74,10 @@ class LibroReclamacion extends Model
     public function gestor()
     {
         return $this->belongsTo(User::class, 'gestor_id');
+    }
+
+    public static function generarTicket(int $unidadNegocioId, string $razonSocial): array
+    {
+        return app(LibroReclamacionNumeroService::class)->generar($unidadNegocioId, $razonSocial);
     }
 }

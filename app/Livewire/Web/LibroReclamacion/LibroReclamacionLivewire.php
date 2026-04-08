@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Web\LibroReclamacion;
 
-use App\Models\LibroReclamacion;
+use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -130,10 +130,17 @@ class LibroReclamacionLivewire extends Component
             }
 
             $this->unidad_negocio_id = $proyecto->unidadNegocio->id;
+            $ticket = LibroReclamacion::generarTicket(
+                $this->unidad_negocio_id,
+                (string) $proyecto->unidadNegocio->razon_social
+            );
 
             $reclamo = LibroReclamacion::create([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'proyecto_id' => $proyecto->id,
+                'serie' => $ticket['serie'],
+                'numero_reclamo' => $ticket['numero_reclamo'],
+                'codigo_ticket' => $ticket['codigo_ticket'],
                 'nombre' => $this->nombre,
                 'apellido_paterno' => $this->apellido_paterno,
                 'apellido_materno' => $this->apellido_materno,
@@ -150,7 +157,6 @@ class LibroReclamacionLivewire extends Component
                 'pedido' => $this->pedido,
                 'conformidad' => $this->conformidad,
                 'estado' => 'nuevo',
-                'serie' => 'TCK',
             ]);
 
             DB::commit();
