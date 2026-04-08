@@ -15,7 +15,6 @@ class LibroReclamacionLivewire extends Component
 {
     use WithFileUploads;
 
-    // Campos del formulario
     public $unidad_negocio_id;
     public $proyecto_id;
     public $nombre;
@@ -33,16 +32,10 @@ class LibroReclamacionLivewire extends Component
     public $detalle;
     public $pedido;
     public $conformidad = false;
-
-    // Campos de información de la unidad (solo lectura en el formulario)
     public $unidad_razon_social;
-
-    // Catálogos
     public $lista_proyectos = [];
-
     public $success = false;
     public $reclamo_registrado;
-
     protected function rules()
     {
         return [
@@ -141,7 +134,6 @@ class LibroReclamacionLivewire extends Component
                 'nombre' => $this->nombre,
                 'apellido_paterno' => $this->apellido_paterno,
                 'apellido_materno' => $this->apellido_materno,
-                // Evita NULL en columnas no-null cuando el navegador envia cadena vacia.
                 'domicilio' => $this->domicilio ?? '',
                 'telefono' => $this->telefono,
                 'email' => $this->email,
