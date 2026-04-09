@@ -26,6 +26,8 @@ class TicketEditar extends Component
     public $email;
     public $celular;
     public $estado_ticket_id;
+    public $asunto_respuesta;
+    public $descripcion_respuesta;
 
     // Catálogos y datos para UI
     public $mapEstados = [];
@@ -33,9 +35,11 @@ class TicketEditar extends Component
     protected function rules()
     {
         return [
-            'email' => 'nullable|email|max:150',
-            'celular' => 'nullable|string|max:50',
-            'estado_ticket_id' => 'required|exists:estado_tickets,id',
+            'email'                => 'nullable|email|max:150',
+            'celular'              => 'nullable|string|max:50',
+            'estado_ticket_id'     => 'required|exists:estado_tickets,id',
+            'asunto_respuesta'     => 'nullable|string|max:255',
+            'descripcion_respuesta'=> 'nullable|string',
         ];
     }
 
@@ -43,9 +47,11 @@ class TicketEditar extends Component
     {
         $this->ticket = Ticket::with(['hijos', 'padre.gestor', 'usuariosParticipantes', 'userCliente'])->findOrFail($id);
 
-        $this->email = $this->ticket->email;
-        $this->celular = $this->ticket->celular;
-        $this->estado_ticket_id = $this->ticket->estado_ticket_id;
+        $this->email                = $this->ticket->email;
+        $this->celular              = $this->ticket->celular;
+        $this->estado_ticket_id     = $this->ticket->estado_ticket_id;
+        $this->asunto_respuesta     = $this->ticket->asunto_respuesta;
+        $this->descripcion_respuesta= $this->ticket->descripcion_respuesta;
 
         $this->mapEstados = EstadoTicket::pluck('nombre', 'id')->toArray();
     }
@@ -53,9 +59,11 @@ class TicketEditar extends Component
     public function validationAttributes()
     {
         return [
-            'email' => 'Correo Electrónico',
-            'celular' => 'Número de Celular',
-            'estado_ticket_id' => 'Estado del Ticket',
+            'email'                => 'Correo Electrónico',
+            'celular'              => 'Número de Celular',
+            'estado_ticket_id'     => 'Estado del Ticket',
+            'asunto_respuesta'     => 'Asunto de Respuesta',
+            'descripcion_respuesta'=> 'Descripción de Respuesta',
         ];
     }
 
@@ -94,11 +102,21 @@ class TicketEditar extends Component
                 $cambios[] = "Celular actualizado de '" . ($old->celular ?? 'vacío') . "' a '{$this->celular}'";
             }
 
+            if (trim($this->asunto_respuesta ?? '') !== trim($old->asunto_respuesta ?? '')) {
+                $cambios[] = "Asunto respuesta: " . ($this->asunto_respuesta ?? '(vacío)');
+            }
+
+            if (trim($this->descripcion_respuesta ?? '') !== trim($old->descripcion_respuesta ?? '')) {
+                $cambios[] = "Descripción respuesta: " . ($this->descripcion_respuesta ?? '(vacío)');
+            }
+
             $this->ticket->update([
-                'email' => $this->email,
-                'celular' => $this->celular,
-                'estado_ticket_id' => $this->estado_ticket_id,
-                'updated_by' => auth()->id(),
+                'email'                => $this->email,
+                'celular'              => $this->celular,
+                'estado_ticket_id'     => $this->estado_ticket_id,
+                'asunto_respuesta'     => $this->asunto_respuesta,
+                'descripcion_respuesta'=> $this->descripcion_respuesta,
+                'updated_by'           => auth()->id(),
             ]);
 
             // Registrar al usuario que edita como participante
