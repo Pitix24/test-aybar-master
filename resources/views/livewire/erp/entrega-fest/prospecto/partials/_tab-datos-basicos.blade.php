@@ -46,6 +46,19 @@
         </div>
     </div>
 
+    <div class="g_fila">
+        <div class="g_margin_bottom_10 g_columna_12">
+            <label>Estado del Cliente <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
+            <select wire:model="estado_cliente_id" class="@error('estado_cliente_id') select-error @enderror">
+                <option value="">Seleccione...</option>
+                @foreach ($estados_cliente as $ec)
+                    <option value="{{ $ec->id }}">{{ $ec->nombre }}</option>
+                @endforeach
+            </select>
+            @error('estado_cliente_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+        </div>
+    </div>
+
     <div class="g_tab_form_buttons">
         @can('prospecto.editar')
             <button type="submit" class="g_boton guardar">

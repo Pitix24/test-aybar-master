@@ -38,6 +38,10 @@ use App\Livewire\Erp\EntregaFest\Proveedor\StaffProveedoresEditar;
 use App\Livewire\Erp\EntregaFest\Recurso\StaffRecursos;
 use App\Livewire\Erp\EntregaFest\Recurso\StaffRecursosCrear;
 use App\Livewire\Erp\EntregaFest\Recurso\StaffRecursosEditar;
+use App\Livewire\Erp\EntregaFest\EstadoCliente\EntregaFestEstadoClienteLista;
+use App\Livewire\Erp\EntregaFest\EstadoCliente\EntregaFestEstadoClienteCrear;
+use App\Livewire\Erp\EntregaFest\EstadoCliente\EntregaFestEstadoClienteEditar;
+use App\Livewire\Erp\EntregaFest\EstadoCliente\EntregaFestEstadoClienteVer;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function () {
@@ -163,6 +167,15 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
                 Route::get('/editar/{id}/{recursoId}', StaffRecursosEditar::class)->middleware('permission:recurso.editar')->name('editar');
             });
     });
+
+    Route::prefix('entrega-fest/estado-cliente')
+        ->name('entrega-fest.estado-cliente.')
+        ->group(function () {
+            Route::get('/', EntregaFestEstadoClienteLista::class)->name('todo');
+            Route::get('/crear', EntregaFestEstadoClienteCrear::class)->name('crear');
+            Route::get('/editar/{id}', EntregaFestEstadoClienteEditar::class)->name('editar');
+            Route::get('/ver/{id}', EntregaFestEstadoClienteVer::class)->name('ver');
+        });
 });
 
 

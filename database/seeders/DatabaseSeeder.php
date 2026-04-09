@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             SedesYAreasSeeder::class,
             GrupoProyectoSeeder::class,
             ProyectoSeeder::class,
+            EntregaFestEstadoClienteSeeder::class,
             EntregaFestSeeder::class,
             /*TipoSolicitudSeeder::class,
             EstadoTicketSeeder::class,

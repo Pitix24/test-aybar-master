@@ -89,7 +89,7 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
                         'nombres' => $row['nombres'],
                         'email' => $row['email'] ?? '',
                         'celular' => $row['celular'] ?? '',
-                        'estado_cliente' => $estadoExcel,
+                        'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
                         'grupo' => $grupo,
                         'gestor_backoffice_id' => is_numeric($row['gestor_backoffice_id'] ?? null) ? $row['gestor_backoffice_id'] : null,
                         'fecha_culminacion_eecc' => $this->transformDate($row['fecha_culminacion_eecc'] ?? null),

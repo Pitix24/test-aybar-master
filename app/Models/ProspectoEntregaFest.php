@@ -92,7 +92,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'invitacion_confirmada',
         'lote',
         'manzana',
-        'estado_cliente',
+        'estado_cliente_id',
         'grupo',
         'gestor_backoffice_id',
         'gestor_fecha_asignacion',
@@ -162,6 +162,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function historialComunicaciones()
     {
         return $this->morphMany(\App\Models\Erp\EntregaFest\EntregaFestHistorialComunicacion::class, 'persona');
+    }
+
+    public function estadoCliente()
+    {
+        return $this->belongsTo(EntregaFestEstadoCliente::class, 'estado_cliente_id');
     }
 
     // ---------------------------------------------------------------

@@ -28,15 +28,7 @@ return new class extends Migration {
             $table->string('lote')->nullable()->collation('utf8mb4_bin');
             $table->string('manzana')->nullable()->collation('utf8mb4_bin');
 
-            $table->enum('estado_cliente', [
-                'ADENDA',
-                'DESISTIMIENTO',
-                'DEVOLUCION_DE_APORTES',
-                'CARTA_NOTARIAL',
-                'PLANTON',
-                'RESOLUCION_DE_CONTRATO',
-                'VENDIDO'
-            ])->default('ADENDA');
+            $table->foreignId('estado_cliente_id')->nullable()->constrained('entrega_fest_estado_clientes')->nullOnDelete();
 
             // BackOffice
             $table->enum('grupo', [
