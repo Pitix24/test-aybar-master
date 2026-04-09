@@ -172,6 +172,16 @@
                         @endforeach
                     </select>
                 </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado del Cliente</label>
+                    <select wire:model.live="estado_cliente_id">
+                        <option value="">Todos</option>
+                        @foreach ($estados_cliente as $ec)
+                            <option value="{{ $ec->id }}">{{ $ec->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -221,6 +231,7 @@
                 <thead>
                     <tr>
                         <th>N°</th>
+                        <th>Estado Cliente</th>
                         <th>DNI</th>
                         <th>Cliente</th>
                         <th>Proyecto</th>
@@ -243,6 +254,16 @@
                     @foreach ($items as $index => $p)
                         <tr wire:key="prospecto-{{ $p->id }}">
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                            <td>
+                                @if ($p->estadoCliente)
+                                    <span class="g_badge g_badge_soft"
+                                        style="color: {{ $p->estadoCliente->color ?? '#64748b' }};">
+                                        {{ $p->estadoCliente->nombre }}
+                                    </span>
+                                @else
+                                    <span class="g_badge light">N/A</span>
+                                @endif
+                            </td>
                             <td>{{ $p->dni }}</td>
                             <td>
                                 <div class="g_negrita">

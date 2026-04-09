@@ -56,17 +56,22 @@ class EntregaFestProspecto extends Component
     #[Url(keep: true)]
     public $gestor_id = '';
 
+    #[Url(keep: true)]
+    public $estado_cliente_id = '';
+
     public $stats = [];
 
     // Catálogos
     public $proyectos = [];
     public $usuarios = [];
+    public $estados_cliente = [];
 
     public function mount($id)
     {
         $this->evento = EntregaFest::with('proyectos')->findOrFail($id);
         $this->proyectos = $this->evento->proyectos;
         $this->usuarios = \App\Models\User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
+        $this->estados_cliente = \App\Models\EntregaFestEstadoCliente::where('activo', true)->orderBy('nombre')->get();
         
         $this->cargarStats();
     }
@@ -74,7 +79,8 @@ class EntregaFestProspecto extends Component
     public function cargarStats()
     {
         $baseQuery = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id));
+            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
+            ->when($this->estado_cliente_id, fn($q) => $q->where('estado_cliente_id', $this->estado_cliente_id));
 
         $this->stats = [
             'total' => (clone $baseQuery)->count(),
@@ -87,7 +93,7 @@ class EntregaFestProspecto extends Component
 
     public function updated($property)
     {
-        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion', 'filtro_invitacion', 'gestor_id'])) {
+        if (in_array($property, ['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'perPage', 'filtro_confirmacion', 'filtro_invitacion', 'gestor_id', 'estado_cliente_id'])) {
             $this->resetPage();
             $this->cargarStats();
         }
@@ -95,7 +101,7 @@ class EntregaFestProspecto extends Component
 
     public function resetFiltros()
     {
-        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion', 'filtro_invitacion', 'gestor_id']);
+        $this->reset(['buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice', 'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado', 'grupo', 'filtro_confirmacion', 'filtro_invitacion', 'gestor_id', 'estado_cliente_id']);
         $this->resetPage();
     }
 
@@ -153,7 +159,7 @@ class EntregaFestProspecto extends Component
     public function render()
     {
         $items = ProspectoEntregaFest::query()
-            ->with(['proyecto', 'user', 'invitado', 'gestor', 'copropietarios', 'historialComunicaciones', 'copropietarios.historialComunicaciones'])
+            ->with(['proyecto', 'user', 'invitado', 'gestor', 'copropietarios', 'historialComunicaciones', 'copropietarios.historialComunicaciones', 'estadoCliente'])
             ->where('entrega_fest_id', $this->evento->id)
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
@@ -184,6 +190,7 @@ class EntregaFestProspecto extends Component
                 }
             })
             ->when($this->gestor_id, fn($q) => $q->where('gestor_backoffice_id', $this->gestor_id))
+            ->when($this->estado_cliente_id, fn($q) => $q->where('estado_cliente_id', $this->estado_cliente_id))
             ->orderBy('nombres', 'asc')
             ->paginate($this->perPage);
 
