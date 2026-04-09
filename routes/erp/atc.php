@@ -24,6 +24,7 @@ use App\Livewire\Erp\Atc\Ticket\TicketVer;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudCrear;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudEditar;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudLista;
+use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudUser;
 use App\Livewire\Erp\Atc\TipoSolicitud\TipoSolicitudVer;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,7 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
                 Route::get('/ver/{id}', TipoSolicitudVer::class)->middleware('permission:tipo-solicitud.ver')->name('ver');
                 Route::get('/crear', TipoSolicitudCrear::class)->middleware('permission:tipo-solicitud.crear')->name('crear');
                 Route::get('/editar/{id}', TipoSolicitudEditar::class)->middleware('permission:tipo-solicitud.editar')->name('editar');
+                Route::get('/usuarios/{id}', TipoSolicitudUser::class)->middleware('permission:tipo-solicitud.agregar-usuarios')->name('usuarios');
             });
     });
 

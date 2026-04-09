@@ -74,6 +74,13 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function tiposSolicitud()
+    {
+        return $this->belongsToMany(TipoSolicitud::class, 'tipo_solicitud_user')
+            ->withPivot('is_principal')
+            ->withTimestamps();
+    }
+
     /**
      * Get the attributes that should be cast.
      *
