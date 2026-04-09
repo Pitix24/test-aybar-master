@@ -175,6 +175,27 @@
                             </div>
                         </div>
                     @endif
+
+                    <div>
+                        <h4 class="g_panel_titulo"><i class="fa-solid fa-reply"></i> Respuesta</h4>
+
+                        <div class="g_margin_bottom_10">
+                            <label>Asunto respuesta</label>
+                            <textarea wire:model="asunto_respuesta"
+                                class="@error('asunto_respuesta') input-error @enderror"
+                                placeholder="Escribe el asunto de la respuesta...">{{ old('asunto_respuesta', $asunto_respuesta) }}</textarea>
+                            @error('asunto_respuesta') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="g_margin_bottom_10">
+                            <label>Descripción respuesta</label>
+                            <textarea wire:model="descripcion_respuesta"
+                                class="@error('descripcion_respuesta') input-error @enderror"
+                                rows="6"
+                                placeholder="Escribe la descripción de la respuesta...">{{ old('descripcion_respuesta', $descripcion_respuesta) }}</textarea>
+                            @error('descripcion_respuesta') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
                 </div>
 
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">

@@ -8,6 +8,8 @@
 
         <div class="cabecera_titulo_botones">
             @can('ticket.crear')
+                <a href="{{ route('erp.ticket.vista.importar') }}" class="g_boton secondary">
+                    Importar <i class="fa-solid fa-file-excel"></i></a>
                 <a href="{{ route('erp.ticket.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
