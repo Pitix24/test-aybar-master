@@ -5,6 +5,7 @@ namespace App\Livewire\Web\LibroReclamacion;
 use App\Events\LibroReclamacion\LibroReclamacionRegistrado;
 use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
+use App\Models\UnidadNegocio;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
@@ -40,22 +41,22 @@ class LibroReclamacionLivewire extends Component
     protected function rules()
     {
         return [
-            'proyecto_id' => 'required|exists:proyectos,id',
-            'nombre' => 'required|string|max:255',
-            'apellido_paterno' => 'required|string|max:255',
-            'apellido_materno' => 'required|string|max:255',
+            'proyecto_id' => 'nullable|exists:proyectos,id',
+            'nombre' => 'nullable|string|max:255',
+            'apellido_paterno' => 'nullable|string|max:255',
+            'apellido_materno' => 'nullable|string|max:255',
             'domicilio' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:20',
-            'email' => 'required|email|max:255',
-            'tipo_documento' => 'required|in:dni,ruc,ce',
-            'numero_documento' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'tipo_documento' => 'nullable|in:dni,ruc,ce',
+            'numero_documento' => 'nullable|string|max:20',
             'tipo_bien_contratado' => 'nullable|in:producto,servicio',
             'monto_reclamado' => 'nullable|numeric|min:0',
             'descripcion' => 'nullable|string',
             'tipo_pedido' => 'nullable|in:reclamo,queja',
             'detalle' => 'nullable|string',
             'pedido' => 'nullable|string',
-            'conformidad' => 'accepted',
+            'conformidad' => 'nullable|boolean',
         ];
     }
 
@@ -108,8 +109,8 @@ class LibroReclamacionLivewire extends Component
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
-                'title' => 'Casi listo',
-                'text' => 'Por favor verifique los campos obligatorios del formulario.'
+                'title' => 'Revise los datos',
+                'text' => 'Se detectaron formatos invalidos. Corrija los campos resaltados para continuar.'
             ]);
             throw $e;
         }
@@ -117,35 +118,46 @@ class LibroReclamacionLivewire extends Component
         try {
             DB::beginTransaction();
 
-            $proyecto = Proyecto::with('unidadNegocio')->find($this->proyecto_id);
+            $proyecto = null;
+            $unidadNegocio = null;
 
-            if (! $proyecto || ! $proyecto->unidadNegocio) {
-                throw new \RuntimeException('No se pudo resolver la unidad de negocio asociada al proyecto seleccionado.');
+            if (! empty($this->proyecto_id)) {
+                $proyecto = Proyecto::with('unidadNegocio')->find($this->proyecto_id);
+                $unidadNegocio = $proyecto?->unidadNegocio;
             }
 
-            $this->unidad_negocio_id = $proyecto->unidadNegocio->id;
+            if (! $unidadNegocio) {
+                $unidadNegocio = $this->resolverUnidadNegocioPorDefecto();
+            }
+
+            if (! $unidadNegocio) {
+                throw new \RuntimeException('No se encontro unidad de negocio para generar el ticket. Configure LIBRO_RECLAMACION_UNIDAD_DEFAULT_ID o seleccione un proyecto valido.');
+            }
+
+            $this->unidad_negocio_id = $unidadNegocio->id;
+            $this->unidad_razon_social = $unidadNegocio->razon_social ?? $unidadNegocio->nombre;
             $ticket = LibroReclamacion::generarTicket($this->unidad_negocio_id);
 
             $reclamo = LibroReclamacion::create([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
-                'proyecto_id' => $proyecto->id,
+                'proyecto_id' => $proyecto?->id,
                 'serie' => $ticket['serie'],
                 'numero_reclamo' => $ticket['numero_reclamo'],
                 'codigo_ticket' => $ticket['codigo_ticket'],
-                'nombre' => $this->nombre,
-                'apellido_paterno' => $this->apellido_paterno,
-                'apellido_materno' => $this->apellido_materno,
-                'domicilio' => $this->domicilio ?? '',
-                'telefono' => $this->telefono,
-                'email' => $this->email,
+                'nombre' => $this->textoNoNulo($this->nombre),
+                'apellido_paterno' => $this->textoNoNulo($this->apellido_paterno),
+                'apellido_materno' => $this->textoNoNulo($this->apellido_materno),
+                'domicilio' => $this->textoNoNulo($this->domicilio),
+                'telefono' => $this->textoNullable($this->telefono),
+                'email' => $this->textoNullable($this->email),
                 'tipo_documento' => mb_strtoupper($this->tipo_documento ?: 'DNI'),
-                'numero_documento' => $this->numero_documento ?? '',
+                'numero_documento' => $this->textoNoNulo($this->numero_documento),
                 'tipo_bien_contratado' => mb_strtoupper($this->tipo_bien_contratado ?: 'PRODUCTO'),
                 'monto_reclamado' => $this->monto_reclamado,
-                'descripcion' => $this->descripcion,
+                'descripcion' => $this->textoNullable($this->descripcion),
                 'tipo_pedido' => mb_strtoupper($this->tipo_pedido ?: 'RECLAMO'),
-                'detalle' => $this->detalle,
-                'pedido' => $this->pedido,
+                'detalle' => $this->textoNullable($this->detalle),
+                'pedido' => $this->textoNullable($this->pedido),
                 'conformidad' => $this->conformidad,
                 'estado' => 'NUEVO',
             ]);
@@ -179,6 +191,49 @@ class LibroReclamacionLivewire extends Component
                 'text' => 'No se pudo registrar su reclamo. Por favor, intente nuevamente más tarde.'
             ]);
         }
+    }
+
+    protected function resolverUnidadNegocioPorDefecto(): ?UnidadNegocio
+    {
+        $unidadDefaultId = (int) config('libro_reclamacion.unidad_default_id', 0);
+
+        if ($unidadDefaultId > 0) {
+            $unidad = UnidadNegocio::query()->find($unidadDefaultId);
+
+            if ($unidad) {
+                return $unidad;
+            }
+
+            Log::warning('[RECLAMACION] No existe la unidad por defecto configurada.', [
+                'unidad_default_id' => $unidadDefaultId,
+            ]);
+        }
+
+        // Fallback operativo para no bloquear formulario vacio.
+        $unidadActiva = UnidadNegocio::query()
+            ->where('activo', true)
+            ->orderBy('id')
+            ->first();
+
+        if ($unidadActiva instanceof UnidadNegocio) {
+            return $unidadActiva;
+        }
+
+        $unidad = UnidadNegocio::query()->orderBy('id')->first();
+
+        return $unidad instanceof UnidadNegocio ? $unidad : null;
+    }
+
+    protected function textoNoNulo(?string $valor): string
+    {
+        return trim((string) $valor);
+    }
+
+    protected function textoNullable(?string $valor): ?string
+    {
+        $texto = trim((string) $valor);
+
+        return $texto === '' ? null : $texto;
     }
 
     public function render()

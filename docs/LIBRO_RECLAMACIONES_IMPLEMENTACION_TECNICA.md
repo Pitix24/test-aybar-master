@@ -27,8 +27,9 @@ El modulo queda compuesto por estos bloques:
 Responsabilidades:
 
 - Mostrar el formulario.
-- Validar campos obligatorios.
+- Validar formato de campos opcionales (sin bloqueo por faltantes).
 - Resolver la unidad de negocio desde el proyecto.
+- Resolver unidad por defecto cuando no hay proyecto.
 - Crear el reclamo.
 - Disparar el evento de notificacion al finalizar el registro.
 
@@ -60,10 +61,11 @@ Responsabilidades:
 
 ## Flujo tecnico de registro
 
-1. El usuario selecciona un `Proyecto`.
-2. El sistema resuelve la `Unidad de Negocio` asociada a ese proyecto.
-3. El servicio de numeracion reserva el siguiente correlativo disponible.
-4. Se guarda el reclamo con:
+1. El usuario puede seleccionar o no un `Proyecto`.
+2. Si hay proyecto, el sistema resuelve la `Unidad de Negocio` asociada.
+3. Si no hay proyecto, se usa la unidad por defecto configurada en `.env`.
+4. El servicio de numeracion reserva el siguiente correlativo disponible por unidad.
+5. Se guarda el reclamo con:
    - `unidad_negocio_id`
    - `proyecto_id`
    - `serie`
@@ -72,24 +74,21 @@ Responsabilidades:
    - datos del consumidor
    - detalle del reclamo
    - estado inicial
-5. Se hace `commit` de la transaccion.
-6. Se dispara `LibroReclamacionRegistrado`.
-7. El listener envia los correos al cliente y al equipo legal.
+6. Se hace `commit` de la transaccion.
+7. Se dispara `LibroReclamacionRegistrado`.
+8. El listener envia correo legal siempre y correo cliente solo si hay email valido.
 
-## Campos obligatorios del formulario
+## Politica de validacion del formulario
 
-Los campos que deben ser obligatorios en la UI y en validacion son:
+No hay campos obligatorios para enviar el formulario. El sistema aplica solo validacion de formato cuando el usuario decide completar un campo.
 
-- Proyecto
-- Nombres
-- Apellido paterno
-- Apellido materno
-- Correo electronico
-- Tipo de documento
-- Numero de documento
-- Aceptacion de terminos y condiciones
+Ejemplos de validacion de formato:
 
-Campos solo informativos o de soporte visual:
+- `email` solo se valida si se completa.
+- `monto_reclamado` debe ser numerico si se completa.
+- `tipo_documento`, `tipo_pedido` y `tipo_bien_contratado` se validan por catalogo cuando tengan valor.
+
+Campos opcionales disponibles:
 
 - Domicilio
 - Telefono
@@ -134,7 +133,7 @@ El envio de correo se resolvio con el patron Events + Listeners para evitar que 
 
 ### Correo al cliente
 
-- Destino: el correo ingresado en el formulario.
+- Destino: el correo ingresado en el formulario (solo si es valido y no vacio).
 - Finalidad: confirmar el registro y mostrar el ticket emitido.
 
 ### Correo al equipo legal
@@ -153,6 +152,8 @@ Variables a tener en cuenta para este modulo:
   - Destinatario principal del equipo legal.
 - `LIBRO_RECLAMACION_SERIE`
   - Serie comercial del ticket.
+- `LIBRO_RECLAMACION_UNIDAD_DEFAULT_ID`
+  - ID de unidad de negocio por defecto para generar ticket cuando no se selecciona proyecto.
 - `LIBRO_RECLAMACION_AYBAR_RAZON_SOCIAL`
   - Razon social usada por defecto para AYBAR.
 - `LIBRO_RECLAMACION_AYBAR_NUMERO_INICIAL`
@@ -182,14 +183,14 @@ El modulo se ordeno por dominio:
 - El correo debe enviarse fuera de la transaccion.
 - El `codigo_ticket` se construye con el nombre de la unidad de negocio y el correlativo.
 - El formulario publico no debe exponer `ruc` ni `direccion` como campos editables.
-- La unidad de negocio se deriva desde el proyecto seleccionado.
-- La validacion visual debe coincidir con la validacion del componente Livewire.
+- La unidad de negocio se deriva desde proyecto o desde la unidad por defecto configurada.
+- La validacion visual debe coincidir con la politica no bloqueante del componente Livewire.
 
 ## Verificacion recomendada
 
-1. Crear un reclamo de prueba con una unidad de negocio.
+1. Crear un reclamo sin proyecto y confirmar que se usa `LIBRO_RECLAMACION_UNIDAD_DEFAULT_ID`.
 2. Confirmar que el ticket se genera y se guarda en BD.
-3. Revisar que el correo al cliente llega al email capturado.
+3. Revisar que el correo al cliente llega solo cuando hay email valido.
 4. Revisar que el correo legal llega al destinatario configurado.
 5. Probar otro proyecto de la misma o de otra unidad y confirmar correlativo independiente por unidad.
 6. Verificar logs ante un fallo SMTP sin perder el reclamo guardado.

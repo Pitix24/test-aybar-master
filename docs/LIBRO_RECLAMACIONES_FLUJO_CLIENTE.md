@@ -2,37 +2,25 @@
 
 ## Objetivo
 
-Este documento explica el recorrido que seguira el cliente para completar el formulario de Libro de Reclamaciones, que datos son obligatorios, que campos solo sirven para visualizar el documento final y que correos recibira al finalizar el envio.
+Este documento explica el recorrido que seguira el cliente para completar el formulario de Libro de Reclamaciones, que datos puede completar de forma opcional, y que correos se envian al finalizar el registro.
 
 ## Flujo del cliente
 
 1. El cliente ingresa al formulario publico de Libro de Reclamaciones.
-2. Selecciona el `Proyecto` correspondiente.
-3. El sistema muestra la razon social asociada al proyecto.
-4. El cliente completa sus datos personales obligatorios.
-5. El cliente completa los datos del documento de identidad.
-6. El cliente acepta terminos y condiciones.
+2. Puede seleccionar un `Proyecto` (opcional).
+3. Si selecciona proyecto, el sistema muestra la razon social asociada.
+4. El cliente completa los datos que considere necesarios (todos opcionales).
+5. El cliente puede aceptar terminos y condiciones (opcional).
 7. El cliente envia el formulario.
 8. El sistema registra el reclamo y genera el ticket.
 9. El cliente ve la constancia/resumen del envio.
-10. El sistema envia correos de confirmacion al cliente y al equipo legal.
+10. El sistema envia correo legal siempre y correo cliente solo si dejo un email valido.
 
-## Datos obligatorios
+## Datos del formulario
 
-Los campos que el cliente debe completar obligatoriamente son:
+No hay campos obligatorios para enviar el formulario.
 
-- Proyecto
-- Nombres
-- Apellido paterno
-- Apellido materno
-- Correo electronico
-- Tipo de documento
-- Numero de documento
-- Aceptar terminos y condiciones
-
-## Datos no obligatorios
-
-Los siguientes campos no son obligatorios. Se muestran para completar la informacion del documento, pero el formulario puede enviarse sin ellos:
+Campos disponibles (todos opcionales):
 
 - Domicilio
 - Telefono
@@ -67,7 +55,7 @@ Colocar aqui las capturas del formulario para documentar el flujo visual.
 
 ### Correo al cliente
 
-Una vez registrado el reclamo, el cliente recibe un correo de confirmacion con:
+Una vez registrado el reclamo, el cliente recibe un correo de confirmacion solo si completo un email valido. El correo incluye:
 
 - Numero de ticket emitido.
 - Fecha de registro.
@@ -136,10 +124,10 @@ El formulario incluye la referencia informativa para el usuario:
 
 ## Observaciones para el cliente
 
-- El campo `Correo electronico` si es obligatorio.
-- El campo `Domicilio` no es obligatorio.
+- El campo `Correo electronico` es opcional, pero recomendado para seguimiento.
+- El campo `Proyecto` es opcional.
 - Solo se muestra un ticket visible al finalizar.
-- La razon social del proveedor se asocia al proyecto seleccionado.
+- Si no se elige proyecto, el sistema usa una unidad interna por defecto para emitir el ticket.
 - El usuario no necesita conocer la unidad de negocio interna.
 
 ## Resultado final esperado
@@ -148,5 +136,5 @@ Al terminar el proceso, el cliente debe tener:
 
 1. El formulario enviado correctamente.
 2. Una constancia visual de su registro.
-3. Un correo de confirmacion en su bandeja.
+3. Un correo de confirmacion en su bandeja, solo si ingresó un email valido.
 4. La seguridad de que el equipo legal tambien recibio la notificacion.

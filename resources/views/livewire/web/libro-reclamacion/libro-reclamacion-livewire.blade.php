@@ -32,13 +32,12 @@
                             </div>
                             <div class="informacion_resumen_item">
                                 <span class="informacion_resumen_label">Tipo de solicitud</span>
-                                <span class="informacion_resumen_valor">{{ ucfirst($reclamo_registrado->tipo_pedido) }}</span>
+                                <span
+                                    class="informacion_resumen_valor">{{ $reclamo_registrado->tipo_pedido ? ucfirst($reclamo_registrado->tipo_pedido) : 'N/D' }}</span>
                             </div>
                             <div class="informacion_resumen_item" style="grid-column: span 2;">
                                 <span class="informacion_resumen_label">Nombre completo</span>
-                                <span class="informacion_resumen_valor">{{ $reclamo_registrado->nombre }}
-                                    {{ $reclamo_registrado->apellido_paterno }}
-                                    {{ $reclamo_registrado->apellido_materno }}</span>
+                                <span class="informacion_resumen_valor">{{ trim(($reclamo_registrado->nombre ?? '') . ' ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno ?? '')) !== '' ? trim(($reclamo_registrado->nombre ?? '') . ' ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno ?? '')) : 'N/D' }}</span>
                             </div>
                         </div>
 
@@ -47,7 +46,7 @@
                         <div class="informacion_resumen_item">
                             <span class="informacion_resumen_label">Descripción</span>
                             <span class="informacion_resumen_valor"
-                                style="font-weight: normal; font-style: italic;">{{ $reclamo_registrado->descripcion }}</span>
+                                style="font-weight: normal; font-style: italic;">{{ $reclamo_registrado->descripcion ?: 'N/D' }}</span>
                         </div>
 
                         <div class="g_margin_top_20">
@@ -74,14 +73,21 @@
 
                 <form wire:submit.prevent="enviar" class="g_gap_pagina formulario">
 
+                    <div class="g_resaltado_caja info">
+                        <span class="g_resaltado_caja_titulo">Información importante</span>
+                        <div class="g_margin_top_10" style="font-size: 0.9em; opacity: 0.95; line-height: 1.5;">
+                            <p><i class="fa-solid fa-circle-info"></i> Ningún campo es obligatorio para registrar su reclamo.</p>
+                            <p><i class="fa-solid fa-address-card"></i> Si completa sus datos de contacto, podremos realizar un mejor seguimiento.</p>
+                        </div>
+                    </div>
+
                     <div class="g_panel">
                         <div class="g_panel_titulo">
                             <h2><i class="fa-solid fa-building"></i> 1.- Identificación del Proveedor</h2>
                         </div>
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_12">
-                                <label>Proyecto <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <label>Proyecto</label>
                                 <select wire:model.live="proyecto_id" class="@error('proyecto_id') input-error @enderror">
                                     <option value="">-- Seleccionar --</option>
                                     @foreach($lista_proyectos as $pr)
@@ -112,22 +118,20 @@
 
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_4">
-                                <label>Nombres <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
+                                <label>Nombres</label>
                                 <input type="text" wire:model="nombre" class="@error('nombre') input-error @enderror">
                                 @error('nombre') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="g_margin_bottom_10 g_columna_4">
-                                <label>Apellido paterno <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <label>Apellido paterno</label>
                                 <input type="text" wire:model="apellido_paterno"
                                     class="@error('apellido_paterno') input-error @enderror">
                                 @error('apellido_paterno') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="g_margin_bottom_10 g_columna_4">
-                                <label>Apellido materno <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <label>Apellido materno</label>
                                 <input type="text" wire:model="apellido_materno"
                                     class="@error('apellido_materno') input-error @enderror">
                                 @error('apellido_materno') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -150,15 +154,13 @@
 
                         <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_4">
-                                <label>Correo electrónico <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <label>Correo electrónico</label>
                                 <input type="email" wire:model="email" class="@error('email') input-error @enderror">
                                 @error('email') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="g_margin_bottom_10 g_columna_4">
-                                <label>Tipo de documento <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <label>Tipo de documento</label>
                                 <select wire:model="tipo_documento" class="@error('tipo_documento') input-error @enderror">
                                     <option value="dni">DNI</option>
                                     <option value="ruc">RUC</option>
@@ -168,8 +170,7 @@
                             </div>
 
                             <div class="g_margin_bottom_10 g_columna_4">
-                                <label>Número Documento <span class="obligatorio"><i
-                                            class="fa-solid fa-asterisk"></i></span></label>
+                                <label>Número Documento</label>
                                 <input type="text" wire:model="numero_documento"
                                     class="@error('numero_documento') input-error @enderror">
                                 @error('numero_documento') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -256,7 +257,7 @@
                                 <input type="checkbox" wire:model="conformidad"
                                     style="width: 20px; height: 20px; margin-top: 2px;">
                                 <label style="font-weight: 600; cursor: pointer; color: inherit;">
-                                    Me encuentro conforme con los términos de mi reclamo o queja.
+                                    Me encuentro conforme con los términos de mi reclamo o queja (opcional).
                                 </label>
                             </div>
                             @error('conformidad') <p class="mensaje_error">{{ $message }}</p> @enderror
