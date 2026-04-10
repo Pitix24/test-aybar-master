@@ -93,6 +93,10 @@
 									<span style="display:inline-block;margin-left:8px;">{{ $marca($tipoBien === 'SERVICIO') }} Servicio</span>
 								</td>
 							</tr>
+							<tr>
+								<td style="width:50%;padding:8px 10px;border-top:1px solid #cbd5e1;border-right:1px solid #cbd5e1;font-size:12px;"><strong>Manzana:</strong> {{ $reclamo->manzana ?: 'N/D' }}</td>
+								<td style="width:50%;padding:8px 10px;border-top:1px solid #cbd5e1;font-size:12px;"><strong>Lote:</strong> {{ $reclamo->lote ?: 'N/D' }}</td>
+							</tr>
 						</table>
 					</td>
 				</tr>

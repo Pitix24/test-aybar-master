@@ -19,6 +19,8 @@ class LibroReclamacionLivewire extends Component
 
     public $unidad_negocio_id;
     public $proyecto_id;
+    public $manzana;
+    public $lote;
     public $nombre;
     public $apellido_paterno;
     public $apellido_materno;
@@ -42,6 +44,8 @@ class LibroReclamacionLivewire extends Component
     {
         return [
             'proyecto_id' => 'nullable|exists:proyectos,id',
+            'manzana' => 'nullable|string|max:5',
+            'lote' => ['nullable', 'regex:/^[0-9]{1,5}$/'],
             'nombre' => 'nullable|string|max:255',
             'apellido_paterno' => 'nullable|string|max:255',
             'apellido_materno' => 'nullable|string|max:255',
@@ -64,6 +68,8 @@ class LibroReclamacionLivewire extends Component
     {
         return [
             'proyecto_id' => 'proyecto',
+            'manzana' => 'manzana',
+            'lote' => 'lote',
             'nombre' => 'nombres',
             'apellido_paterno' => 'apellido paterno',
             'apellido_materno' => 'apellido materno',
@@ -141,6 +147,8 @@ class LibroReclamacionLivewire extends Component
             $reclamo = LibroReclamacion::create([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'proyecto_id' => $proyecto?->id,
+                'manzana' => $this->textoNullable($this->manzana),
+                'lote' => $this->textoNullable($this->lote),
                 'serie' => $ticket['serie'],
                 'numero_reclamo' => $ticket['numero_reclamo'],
                 'codigo_ticket' => $ticket['codigo_ticket'],

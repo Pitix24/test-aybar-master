@@ -19,6 +19,8 @@ class LibroReclamacion extends Model
     protected $fillable = [
         'unidad_negocio_id',
         'proyecto_id',
+        'manzana',
+        'lote',
         'cliente_id',
         'gestor_id',
         'serie',

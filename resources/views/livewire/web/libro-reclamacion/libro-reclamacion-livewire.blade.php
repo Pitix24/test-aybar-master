@@ -39,6 +39,14 @@
                                 <span class="informacion_resumen_label">Nombre completo</span>
                                 <span class="informacion_resumen_valor">{{ trim(($reclamo_registrado->nombre ?? '') . ' ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno ?? '')) !== '' ? trim(($reclamo_registrado->nombre ?? '') . ' ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno ?? '')) : 'N/D' }}</span>
                             </div>
+                            <div class="informacion_resumen_item">
+                                <span class="informacion_resumen_label">Manzana</span>
+                                <span class="informacion_resumen_valor">{{ $reclamo_registrado->manzana ?: 'N/D' }}</span>
+                            </div>
+                            <div class="informacion_resumen_item">
+                                <span class="informacion_resumen_label">Lote</span>
+                                <span class="informacion_resumen_valor">{{ $reclamo_registrado->lote ?: 'N/D' }}</span>
+                            </div>
                         </div>
 
                         <hr style="opacity: 0.1; margin: 15px 0;">
@@ -47,6 +55,13 @@
                             <span class="informacion_resumen_label">Descripción</span>
                             <span class="informacion_resumen_valor"
                                 style="font-weight: normal; font-style: italic;">{{ $reclamo_registrado->descripcion ?: 'N/D' }}</span>
+                        </div>
+
+                        <div class="g_margin_top_20 g_resaltado_caja info">
+                            <span class="g_resaltado_caja_titulo">Importante</span>
+                            <div class="g_margin_top_10" style="font-size: 0.9em; opacity: 0.95; line-height: 1.6;">
+                                <p><i class="fa-solid fa-calendar-check"></i> <strong>Plazo de respuesta:</strong> Nuestro equipo dará respuesta a su reclamo en un plazo no mayor a <strong>15 días hábiles</strong>.</p>
+                            </div>
                         </div>
 
                         <div class="g_margin_top_20">
@@ -109,6 +124,24 @@
                                 </div>
                             </div>
                         @endif
+
+                        <div class="g_fila g_margin_top_20">
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Manzana</label>
+                                <input type="text" wire:model="manzana" maxlength="5"
+                                    class="@error('manzana') input-error @enderror"
+                                    placeholder="Ej: A1">
+                                @error('manzana') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Lote</label>
+                                <input type="text" wire:model="lote" inputmode="numeric" pattern="[0-9]*" maxlength="5"
+                                    class="@error('lote') input-error @enderror"
+                                    placeholder="Ej: 00125">
+                                @error('lote') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
                     </div>
 
                     <div class="g_panel">
