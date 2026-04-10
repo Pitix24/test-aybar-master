@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="searchAgregados,searchDisponibles,perPageAsignados,perPageDisponibles,resetFiltrosAgregados,resetFiltrosDisponibles,agregarUsuario,quitarUsuario,marcarPrincipal,gotoPage,nextPage,previousPage"
+        wire:target="searchAgregados,searchDisponibles,perPageAsignados,perPageDisponibles,areaAgregados,areaDisponibles,resetFiltrosAgregados,resetFiltrosDisponibles,agregarUsuario,quitarUsuario,marcarPrincipal,gotoPage,nextPage,previousPage"
         message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -42,6 +42,15 @@
                             <label>Admin (Nombre o Email)</label>
                             <input type="text" wire:model.live.debounce.800ms="searchAgregados">
                         </div>
+                        <div>
+                            <label>Área</label>
+                            <select wire:model.live="areaAgregados">
+                                <option value="">Todas</option>
+                                @foreach($areas as $a)
+                                    <option value="{{ $a->id }}">{{ $a->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="g_margin_right_10">
                             <label>Mostrar</label>
                             <select wire:model.live="perPageAsignados">
@@ -60,6 +69,7 @@
                                 <th class="g_celda_centro">N°</th>
                                 <th>Usuario</th>
                                 <th>Correo</th>
+                                <th>Áreas</th>
                                 <th class="g_celda_centro" title="Responsable Principal">Resp.</th>
                                 <th class="g_celda_centro">Acción</th>
                             </tr>
@@ -70,6 +80,15 @@
                                     <td class="g_celda_centro">{{ $usuariosAgregados->firstItem() + $index }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
+                                    <td>
+                                        @forelse($user->areas as $area)
+                                            <span class="g_badge g_badge_soft" style="color: {{ $area->color }};">
+                                                {{ $area->nombre }}
+                                            </span>
+                                        @empty
+                                            <span class="g_badge light">Sin área</span>
+                                        @endforelse
+                                    </td>
                                     <td class="g_celda_centro">
                                         @can('tipo-solicitud.marcar-principal-usuario')
                                             <input type="radio" name="principal_radio"
@@ -123,6 +142,15 @@
                             <label>Admin (Nombre o Email)</label>
                             <input type="text" wire:model.live.debounce.800ms="searchDisponibles">
                         </div>
+                        <div>
+                            <label>Área</label>
+                            <select wire:model.live="areaDisponibles">
+                                <option value="">Todas</option>
+                                @foreach($areas as $a)
+                                    <option value="{{ $a->id }}">{{ $a->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="g_margin_right_10">
                             <label>Mostrar</label>
                             <select wire:model.live="perPageDisponibles">
@@ -141,6 +169,7 @@
                                 <th class="g_celda_centro">N°</th>
                                 <th>Usuario</th>
                                 <th>Correo</th>
+                                <th>Áreas</th>
                                 <th class="g_celda_centro">Acción</th>
                             </tr>
                         </thead>
@@ -150,6 +179,15 @@
                                     <td class="g_celda_centro">{{ $usuariosDisponibles->firstItem() + $index }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
+                                    <td>
+                                        @forelse($user->areas as $area)
+                                            <span class="g_badge g_badge_soft" style="color: {{ $area->color }};">
+                                                {{ $area->nombre }}
+                                            </span>
+                                        @empty
+                                            <span class="g_badge light">Sin área</span>
+                                        @endforelse
+                                    </td>
                                     <td class="g_celda_acciones g_celda_centro centro">
                                         @can('tipo-solicitud.agregar-usuarios')
                                             <button wire:click="agregarUsuario({{ $user->id }})"

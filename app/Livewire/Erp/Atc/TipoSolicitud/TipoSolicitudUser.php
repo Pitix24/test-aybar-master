@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Erp\Atc\TipoSolicitud;
 
+use App\Models\Area;
 use App\Models\TipoSolicitud;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -24,37 +25,44 @@ class TipoSolicitudUser extends Component
 
     #[Url(as: 'ua')]
     public $searchAgregados = '';
+    #[Url(as: 'aag')]
+    public $areaAgregados = '';
 
     #[Url(as: 'ud')]
     public $searchDisponibles = '';
+    #[Url(as: 'adp')]
+    public $areaDisponibles = '';
 
-    public $perPageAsignados  = 15;
+    public $perPageAsignados   = 15;
     public $perPageDisponibles = 15;
+
+    public $areas = [];
 
     public function mount($id)
     {
         $this->tipoSolicitud = TipoSolicitud::findOrFail($id);
+        $this->areas = Area::orderBy('nombre')->get(['id', 'nombre', 'color']);
     }
 
     public function updated($property)
     {
-        if ($property === 'searchAgregados' || $property === 'perPageAsignados') {
+        if (in_array($property, ['searchAgregados', 'perPageAsignados', 'areaAgregados'])) {
             $this->resetPage('pageAsignados');
         }
-        if ($property === 'searchDisponibles' || $property === 'perPageDisponibles') {
+        if (in_array($property, ['searchDisponibles', 'perPageDisponibles', 'areaDisponibles'])) {
             $this->resetPage('pageDisponibles');
         }
     }
 
     public function resetFiltrosAgregados()
     {
-        $this->reset('searchAgregados');
+        $this->reset(['searchAgregados', 'areaAgregados']);
         $this->resetPage('pageAsignados');
     }
 
     public function resetFiltrosDisponibles()
     {
-        $this->reset('searchDisponibles');
+        $this->reset(['searchDisponibles', 'areaDisponibles']);
         $this->resetPage('pageDisponibles');
     }
 
@@ -160,19 +168,23 @@ class TipoSolicitudUser extends Component
 
     public function render()
     {
-        // Usuarios ya asignados
+        // Usuarios ya asignados al tipo de solicitud
         $usuariosAgregados = $this->tipoSolicitud->users()
             ->where('rol', 'admin')
             ->where(function ($q) {
                 $q->where('name', 'like', '%' . $this->searchAgregados . '%')
                     ->orWhere('email', 'like', '%' . $this->searchAgregados . '%');
             })
+            ->when($this->areaAgregados, fn($q) =>
+                $q->whereHas('areas', fn($qa) => $qa->where('areas.id', $this->areaAgregados))
+            )
+            ->with(['areas' => fn($q) => $q->select('areas.id', 'areas.nombre', 'areas.color')])
             ->orderBy('name')
             ->paginate($this->perPageAsignados, ['*'], 'pageAsignados');
 
         $idsAgregados = $this->tipoSolicitud->users()->pluck('users.id')->toArray();
 
-        // Usuarios disponibles (no asignados)
+        // Usuarios disponibles (no asignados al tipo de solicitud)
         $usuariosDisponibles = User::whereNotIn('id', $idsAgregados)
             ->where('rol', 'admin')
             ->where('activo', true)
@@ -180,6 +192,10 @@ class TipoSolicitudUser extends Component
                 $q->where('name', 'like', '%' . $this->searchDisponibles . '%')
                     ->orWhere('email', 'like', '%' . $this->searchDisponibles . '%');
             })
+            ->when($this->areaDisponibles, fn($q) =>
+                $q->whereHas('areas', fn($qa) => $qa->where('areas.id', $this->areaDisponibles))
+            )
+            ->with(['areas' => fn($q) => $q->select('areas.id', 'areas.nombre', 'areas.color')])
             ->orderBy('name')
             ->paginate($this->perPageDisponibles, ['*'], 'pageDisponibles');
 
