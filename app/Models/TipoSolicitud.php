@@ -22,6 +22,20 @@ class TipoSolicitud extends Model
         return $this->belongsToMany(Area::class, 'area_tipo_solicitud');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'tipo_solicitud_user')
+            ->withPivot('is_principal')
+            ->withTimestamps();
+    }
+
+    public function usuarioPrincipal()
+    {
+        return $this->belongsToMany(User::class, 'tipo_solicitud_user')
+            ->withPivot('is_principal')
+            ->wherePivot('is_principal', true);
+    }
+
     public function subTipos()
     {
         return $this->hasMany(SubTipoSolicitud::class);

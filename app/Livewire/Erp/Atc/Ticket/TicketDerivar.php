@@ -69,7 +69,31 @@ class TicketDerivar extends Component
             return;
         }
 
+        // 1. Obtener IDs de usuarios asignados al área
+        $idsDeArea = $area->users()
+            ->where('activo', true)
+            ->pluck('users.id')
+            ->toArray();
+
+        // 2. Si el ticket tiene tipo_solicitud, hacer intersección con tipo_solicitud_user
+        $tipoSolicitudId = $this->ticket->tipo_solicitud_id;
+
+        if ($tipoSolicitudId && !empty($idsDeArea)) {
+            $idsDeTipoSolicitud = DB::table('tipo_solicitud_user')
+                ->where('tipo_solicitud_id', $tipoSolicitudId)
+                ->whereIn('user_id', $idsDeArea)
+                ->pluck('user_id')
+                ->toArray();
+
+            // Si hay coincidencia, usar solo esos; si no hay ninguno, caer de nuevo a todos los del área
+            $idsFinales = !empty($idsDeTipoSolicitud) ? $idsDeTipoSolicitud : $idsDeArea;
+        } else {
+            $idsFinales = $idsDeArea;
+        }
+
+        // 3. Cargar gestores con el pivot de area para saber el principal del área
         $this->gestores = $area->users()
+            ->whereIn('users.id', $idsFinales)
             ->where('activo', true)
             ->withPivot('is_principal')
             ->orderByDesc('area_user.is_principal')
@@ -80,9 +104,22 @@ class TicketDerivar extends Component
             return;
         }
 
-        $principal = $this->gestores
-            ->first(fn($u) => (bool) $u->pivot->is_principal);
+        // 4. Preseleccionar: primero buscar principal de tipo_solicitud_user, luego principal de área
+        if ($tipoSolicitudId) {
+            $principalTipo = DB::table('tipo_solicitud_user')
+                ->where('tipo_solicitud_id', $tipoSolicitudId)
+                ->where('is_principal', true)
+                ->whereIn('user_id', $idsFinales)
+                ->value('user_id');
 
+            if ($principalTipo) {
+                $this->gestor_id = $principalTipo;
+                return;
+            }
+        }
+
+        // Fallback: principal del área
+        $principal = $this->gestores->first(fn($u) => (bool) $u->pivot->is_principal);
         $this->gestor_id = $principal
             ? $principal->id
             : $this->gestores->first()->id;

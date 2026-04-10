@@ -15,6 +15,12 @@
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
+            @can('tipo-solicitud.agregar-usuarios')
+                <a href="{{ route('erp.tipo-solicitud.vista.usuarios', $tipo_model->id) }}" class="g_boton info">
+                    Usuarios <i class="fa-solid fa-users"></i>
+                </a>
+            @endcan
+
             @can('tipo-solicitud.eliminar')
                 <button type="button" class="g_boton danger" onclick="confirmarEliminarTipoSolicitud()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
