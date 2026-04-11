@@ -9,15 +9,35 @@
 	$tipoPedidoMap = [
 		'RECLAMO' => 'Reclamo',
 		'QUEJA' => 'Queja',
+		'NO_DEFINIDO' => 'No definido',
 	];
 
 	$tipoBienMap = [
 		'PRODUCTO' => 'Producto',
 		'SERVICIO' => 'Servicio',
+		'NO_DEFINIDO' => 'No definido',
+	];
+
+	$tipoDocumentoMap = [
+		'DNI' => 'DNI',
+		'RUC' => 'RUC',
+		'CE' => 'Carné de Extranjería',
+		'NO_DEFINIDO' => 'No definido',
 	];
 
 	$tipoPedido = strtoupper((string) $reclamo->tipo_pedido);
 	$tipoBien = strtoupper((string) $reclamo->tipo_bien_contratado);
+	$tipoDocumento = strtoupper((string) $reclamo->tipo_documento);
+
+	$formatear = static function (string $valor): string {
+		$texto = trim($valor);
+
+		if ($texto === '') {
+			return 'N/D';
+		}
+
+		return ucwords(strtolower(str_replace('_', ' ', $texto)));
+	};
 
 	$marca = static fn (bool $activo): string => $activo ? '[X]' : '[ ]';
 @endphp
@@ -71,7 +91,7 @@
 								<td style="width:50%;padding:8px 10px;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Telefono:</strong> {{ $reclamo->telefono ?: 'N/D' }}</td>
 							</tr>
 							<tr>
-								<td style="padding:8px 10px;border-right:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Tipo y Nro Documento:</strong> {{ $reclamo->tipo_documento ?: 'N/D' }} {{ $reclamo->numero_documento ?: '' }}</td>
+								<td style="padding:8px 10px;border-right:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Tipo y Nro Documento:</strong> {{ $tipoDocumentoMap[$tipoDocumento] ?? $formatear($tipoDocumento) }} {{ $reclamo->numero_documento ?: '' }}</td>
 								<td style="padding:8px 10px;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Email:</strong> {{ $reclamo->email ?: 'N/D' }}</td>
 							</tr>
 							<tr>
@@ -91,6 +111,7 @@
 									<strong>Tipo de bien:</strong>
 									<span style="display:inline-block;margin-left:6px;">{{ $marca($tipoBien === 'PRODUCTO') }} Producto</span>
 									<span style="display:inline-block;margin-left:8px;">{{ $marca($tipoBien === 'SERVICIO') }} Servicio</span>
+									<span style="display:inline-block;margin-left:8px;">{{ $marca($tipoBien === 'NO_DEFINIDO') }} No definido</span>
 								</td>
 							</tr>
 							<tr>
@@ -110,6 +131,7 @@
 									<strong>Tipo:</strong>
 									<span style="display:inline-block;margin-left:6px;">{{ $marca($tipoPedido === 'RECLAMO') }} Reclamo</span>
 									<span style="display:inline-block;margin-left:8px;">{{ $marca($tipoPedido === 'QUEJA') }} Queja</span>
+									<span style="display:inline-block;margin-left:8px;">{{ $marca($tipoPedido === 'NO_DEFINIDO') }} No definido</span>
 								</td>
 							</tr>
 							<tr>

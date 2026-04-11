@@ -33,7 +33,7 @@
                             <div class="informacion_resumen_item">
                                 <span class="informacion_resumen_label">Tipo de solicitud</span>
                                 <span
-                                    class="informacion_resumen_valor">{{ $reclamo_registrado->tipo_pedido ? ucfirst($reclamo_registrado->tipo_pedido) : 'N/D' }}</span>
+                                    class="informacion_resumen_valor">{{ $reclamo_registrado->tipo_pedido ? ucwords(strtolower(str_replace('_', ' ', $reclamo_registrado->tipo_pedido))) : 'N/D' }}</span>
                             </div>
                             <div class="informacion_resumen_item" style="grid-column: span 2;">
                                 <span class="informacion_resumen_label">Nombre completo</span>
@@ -60,7 +60,7 @@
                         <div class="g_margin_top_20 g_resaltado_caja info">
                             <span class="g_resaltado_caja_titulo">Importante</span>
                             <div class="g_margin_top_10" style="font-size: 0.9em; opacity: 0.95; line-height: 1.6;">
-                                <p><i class="fa-solid fa-calendar-check"></i> <strong>Plazo de respuesta:</strong> Nuestro equipo dará respuesta a su reclamo en un plazo no mayor a <strong>15 días hábiles</strong>.</p>
+                                <p><i class="fa-solid fa-calendar-check"></i> La empresa dispone de <strong>quince (15) días hábiles improrrogables</strong> para atender y responder a su reclamo o queja, contados desde la fecha de recepción. La respuesta será escrita y se enviará por el medio que usted indique.</p>
                             </div>
                         </div>
 
@@ -195,6 +195,7 @@
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Tipo de documento</label>
                                 <select wire:model="tipo_documento" class="@error('tipo_documento') input-error @enderror">
+                                    <option value="">- Seleccione -</option>
                                     <option value="dni">DNI</option>
                                     <option value="ruc">RUC</option>
                                     <option value="ce">Carné de Extranjería</option>
