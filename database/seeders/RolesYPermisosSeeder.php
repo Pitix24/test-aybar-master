@@ -592,10 +592,14 @@ class RolesYPermisosSeeder extends Seeder
         // Legal
         $supervisor_legal = Role::findByName('supervisor-legal');
         $supervisor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
+        $supervisor_legal->givePermissionTo(Permission::where('module', 'Módulo Libro Reclamación Legal')->get());
+        $supervisor_legal->givePermissionTo('modulo-libro-reclamacion.ver');
         $this->command->info("✓ Supervisor Legal: Configurado");
 
         $asesor_legal = Role::findByName('asesor-legal');
         $asesor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
+        $asesor_legal->givePermissionTo(Permission::where('module', 'Módulo Libro Reclamación Legal')->get());
+        $asesor_legal->givePermissionTo('modulo-libro-reclamacion.ver');
         $this->command->info("✓ Asesor Legal: Configurado");
 
         // Staff Operativo (supervisor-entrega-fest)

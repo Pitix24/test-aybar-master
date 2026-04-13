@@ -533,6 +533,35 @@
                         "submenus": []
                     }
                 ]
+            },
+            {
+                "id": 47,
+                "nombre": "Libro Reclamación",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-book-open",
+                "nivel": 2,
+                "permiso": "ticket-libro-reclamacion.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.libro-reclamacion.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "ticket-libro-reclamacion.lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.libro-reclamacion.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "ticket-libro-reclamacion.crear",
+                        "submenus": []
+                    }
+                ]
             }
         ]
     },
