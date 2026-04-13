@@ -2,7 +2,8 @@
 
 namespace App\Livewire\Erp\LibroReclamacion;
 
-use App\Models\LibroReclamacion\TicketLibroReclamacion;
+use App\Models\LibroReclamacion\EstadoLibroReclamacion;
+use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
@@ -24,7 +25,7 @@ class LibroReclamacionLista extends Component
     public $buscar = '';
 
     #[Url]
-    public $estado_legal = '';
+    public $estado_libro_reclamaciones_id = '';
 
     #[Url]
     public $clasificacion = '';
@@ -50,6 +51,7 @@ class LibroReclamacionLista extends Component
     public $gestores = [];
     public $unidades = [];
     public $proyectos = [];
+    public $estados = [];
 
     public function mount(): void
     {
@@ -69,13 +71,17 @@ class LibroReclamacionLista extends Component
             ->where('activo', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
+
+        $this->estados = EstadoLibroReclamacion::query()
+            ->orderBy('orden')
+            ->get(['id', 'nombre']);
     }
 
     public function updated($property): void
     {
         if (in_array($property, [
             'buscar',
-            'estado_legal',
+            'estado_libro_reclamaciones_id',
             'clasificacion',
             'gestor_id',
             'unidad_negocio_id',
@@ -92,7 +98,7 @@ class LibroReclamacionLista extends Component
     {
         $this->reset([
             'buscar',
-            'estado_legal',
+            'estado_libro_reclamaciones_id',
             'clasificacion',
             'gestor_id',
             'unidad_negocio_id',
@@ -106,12 +112,11 @@ class LibroReclamacionLista extends Component
 
     public function render()
     {
-        $items = TicketLibroReclamacion::query()
-            ->with(['proyecto', 'unidadNegocio', 'gestor', 'cliente'])
+        $items = LibroReclamacion::query()
+            ->with(['proyecto', 'unidadNegocio', 'gestor', 'cliente', 'estadoLibroReclamacion'])
             ->when($this->buscar !== '', function ($q): void {
                 $q->where(function ($sub): void {
                     $sub->where('codigo', 'like', "%{$this->buscar}%")
-                        ->orWhere('libro_reclamacion_ticket', 'like', "%{$this->buscar}%")
                         ->orWhere('cliente_documento', 'like', "%{$this->buscar}%")
                         ->orWhere('cliente_nombre', 'like', "%{$this->buscar}%")
                         ->orWhere('cliente_email', 'like', "%{$this->buscar}%")
@@ -126,14 +131,14 @@ class LibroReclamacionLista extends Component
                         });
                 });
             })
-            ->when($this->estado_legal !== '', fn($q) => $q->where('estado_legal', $this->estado_legal))
+            ->when($this->estado_libro_reclamaciones_id !== '', fn($q) => $q->where('estado_libro_reclamaciones_id', $this->estado_libro_reclamaciones_id))
             ->when($this->clasificacion !== '', fn($q) => $q->where('clasificacion', $this->clasificacion))
             ->when($this->gestor_id !== '', fn($q) => $q->where('gestor_id', $this->gestor_id))
             ->when($this->unidad_negocio_id !== '', fn($q) => $q->where('unidad_negocio_id', $this->unidad_negocio_id))
             ->when($this->proyecto_id !== '', fn($q) => $q->where('proyecto_id', $this->proyecto_id))
             ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
             ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
-            ->orderByDesc('id')
+            ->orderByDesc('ticket')
             ->paginate($this->perPage);
 
         return view('livewire.erp.libro-reclamacion.libro-reclamacion-lista', compact('items'));

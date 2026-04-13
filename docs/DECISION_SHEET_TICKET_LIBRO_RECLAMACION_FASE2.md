@@ -1,5 +1,8 @@
 # Decision Sheet - Ticket Libro Reclamacion (Fase 2)
 
+> Documento historico (supersedido).  
+> Estado vigente del modulo: ver `docs/CONSOLIDACION_TICKET_LIBRO_RECLAMACIONS.md`.
+
 ## Proposito
 Alinear decisiones de negocio y tecnica antes de implementar la automatizacion del flujo legal de Libro Reclamaciones.
 

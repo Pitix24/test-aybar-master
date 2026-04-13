@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, estado_legal, clasificacion, gestor_id, unidad_negocio_id, proyecto_id, desde, hasta, perPage, resetFiltros, gotoPage, nextPage, previousPage"
+        wire:target="buscar, estado_libro_reclamaciones_id, clasificacion, gestor_id, unidad_negocio_id, proyecto_id, desde, hasta, perPage, resetFiltros, gotoPage, nextPage, previousPage"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -24,14 +24,11 @@
 
             <div class="g_columna_2">
                 <label>Estado legal</label>
-                <select wire:model.live="estado_legal">
+                <select wire:model.live="estado_libro_reclamaciones_id">
                     <option value="">Todos</option>
-                    <option value="NUEVO">Nuevo</option>
-                    <option value="EN_GESTION">En gestion</option>
-                    <option value="OBSERVADO">Observado</option>
-                    <option value="RESUELTO">Resuelto</option>
-                    <option value="NO_PROCEDE">No procede</option>
-                    <option value="CERRADO">Cerrado</option>
+                    @foreach ($estados as $estado)
+                        <option value="{{ $estado->id }}">{{ str_replace('_', ' ', $estado->nombre) }}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -120,13 +117,13 @@
                 </thead>
                 <tbody>
                     @forelse($items as $index => $item)
-                        <tr wire:key="libro-ticket-{{ $item->id }}">
+                        <tr wire:key="libro-ticket-{{ $item->ticket }}">
                             <td>{{ $items->firstItem() + $index }}</td>
                             <td class="g_resaltar">{{ $item->codigo }}</td>
                             <td>{{ $item->cliente_nombre ?: $item->cliente?->name ?: 'N/D' }}</td>
                             <td>{{ $item->proyecto?->nombre ?: 'N/D' }}</td>
                             <td>
-                                <span class="g_badge info">{{ str_replace('_', ' ', $item->estado_legal) }}</span>
+                                <span class="g_badge info">{{ str_replace('_', ' ', $item->estadoLibroReclamacion?->nombre ?? 'N/D') }}</span>
                             </td>
                             <td>
                                 @if ($item->clasificacion === 'NO_PROCEDE')
@@ -141,13 +138,13 @@
                             <td>{{ optional($item->created_at)->format('d/m/Y H:i') }}</td>
                             <td class="g_celda_acciones g_celda_centro centro">
                                 @can('ticket-libro-reclamacion.ver')
-                                    <a href="{{ route('erp.libro-reclamacion.vista.ver', $item->id) }}" class="g_accion ver" title="Ver">
+                                    <a href="{{ route('erp.libro-reclamacion.vista.ver', $item->ticket) }}" class="g_accion ver" title="Ver">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 @endcan
 
                                 @can('ticket-libro-reclamacion.editar')
-                                    <a href="{{ route('erp.libro-reclamacion.vista.editar', $item->id) }}" class="g_accion editar" title="Editar">
+                                    <a href="{{ route('erp.libro-reclamacion.vista.editar', $item->ticket) }}" class="g_accion editar" title="Editar">
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>
                                 @endcan

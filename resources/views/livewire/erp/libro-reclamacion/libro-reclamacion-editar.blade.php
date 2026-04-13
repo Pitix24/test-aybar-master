@@ -6,7 +6,7 @@
 
         <div class="cabecera_titulo_botones">
             @can('ticket-libro-reclamacion.ver')
-                <a href="{{ route('erp.libro-reclamacion.vista.ver', $ticket_model->id) }}" class="g_boton warning">
+                <a href="{{ route('erp.libro-reclamacion.vista.ver', $ticket_model->ticket) }}" class="g_boton warning">
                     Ver <i class="fa-solid fa-eye"></i>
                 </a>
             @endcan
@@ -73,15 +73,13 @@
             <div class="g_fila">
                 <div class="g_columna_4 g_margin_bottom_10">
                     <label>Estado Legal</label>
-                    <select wire:model.live="estado_legal" class="@error('estado_legal') input-error @enderror">
-                        <option value="NUEVO">Nuevo</option>
-                        <option value="EN_GESTION">En gestion</option>
-                        <option value="OBSERVADO">Observado</option>
-                        <option value="RESUELTO">Resuelto</option>
-                        <option value="NO_PROCEDE">No procede</option>
-                        <option value="CERRADO">Cerrado</option>
+                    <select wire:model.live="estado_libro_reclamaciones_id" class="@error('estado_libro_reclamaciones_id') input-error @enderror">
+                        <option value="">Seleccione...</option>
+                        @foreach ($estados as $estado)
+                            <option value="{{ $estado->id }}">{{ str_replace('_', ' ', $estado->nombre) }}</option>
+                        @endforeach
                     </select>
-                    @error('estado_legal') <p class="mensaje_error">{{ $message }}</p> @enderror
+                    @error('estado_libro_reclamaciones_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="g_columna_4 g_margin_bottom_10">
@@ -126,7 +124,7 @@
 
             <div class="g_fila">
                 <div class="g_columna_8 g_margin_bottom_10">
-                    <label>DNI / CE / RUC <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
+                    <label>DNI / CE / RUC (opcional)</label>
                     <input type="text" wire:model.live="dni" x-on:input="$el.value = $el.value.replace(/[^0-9]/g, '')"
                         class="@error('dni') input-error @enderror">
                     @error('dni') <p class="mensaje_error">{{ $message }}</p> @enderror

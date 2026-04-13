@@ -10,7 +10,7 @@
             @endcan
 
             @can('ticket-libro-reclamacion.editar')
-                <a href="{{ route('erp.libro-reclamacion.vista.editar', $ticket->id) }}" class="g_boton primary">
+                <a href="{{ route('erp.libro-reclamacion.vista.editar', $ticket->ticket) }}" class="g_boton primary">
                     Editar <i class="fa-solid fa-pencil"></i>
                 </a>
             @endcan
@@ -28,7 +28,7 @@
                     </div>
                     <div class="g_columna_6">
                         <label>Estado legal</label>
-                        <input type="text" value="{{ str_replace('_', ' ', $ticket->estado_legal) }}" disabled>
+                        <input type="text" value="{{ str_replace('_', ' ', $ticket->estadoLibroReclamacion?->nombre ?? 'N/D') }}" disabled>
                     </div>
                     <div class="g_columna_6">
                         <label>Clasificacion</label>
@@ -36,7 +36,7 @@
                     </div>
                     <div class="g_columna_6">
                         <label>Libro ticket origen</label>
-                        <input type="text" value="{{ $ticket->libro_reclamacion_ticket ?: 'N/D' }}" disabled>
+                        <input type="text" value="{{ $ticket->ticket ?: 'N/D' }}" disabled>
                     </div>
                     <div class="g_columna_6">
                         <label>Unidad de negocio</label>
@@ -116,7 +116,7 @@
 
             <div class="g_panel formulario">
                 <h4 class="g_panel_titulo">Nota fuente</h4>
-                <textarea rows="8" disabled>{{ $ticket->nota_fuente ?: 'Sin nota fuente.' }}</textarea>
+                <textarea rows="8" disabled>{{ $ticket->nota_fuente_titulo ?: 'Sin nota fuente.' }}</textarea>
 
                 <div class="g_fila g_margin_top_10">
                     <div class="g_columna_6">

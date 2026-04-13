@@ -3,8 +3,8 @@
 namespace App\Livewire\Erp\LibroReclamacion;
 
 use App\Models\Cliente;
+use App\Models\LibroReclamacion\EstadoLibroReclamacion;
 use App\Models\LibroReclamacion\LibroReclamacion;
-use App\Models\LibroReclamacion\TicketLibroReclamacion;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
@@ -25,7 +25,6 @@ use Livewire\Component;
 class LibroReclamacionCrear extends Component
 {
     public $codigo = '';
-    public $libro_reclamacion_ticket = '';
     public $unidad_negocio_id = '';
     public $proyecto_id = '';
     public $cliente_id = '';
@@ -37,9 +36,8 @@ class LibroReclamacionCrear extends Component
     public $cliente_direccion = '';
     public $asunto = '';
     public $gestor_id = '';
-    public $estado_legal = 'NUEVO';
+    public $estado_libro_reclamaciones_id = '';
     public $clasificacion = 'PENDIENTE_REVISION';
-    public $nota_fuente = '';
     public $nota_fuente_titulo = 'Formulario web';
     public $nota_fuente_fecha = '';
     public $observaciones_internas = '';
@@ -48,6 +46,7 @@ class LibroReclamacionCrear extends Component
     public $proyectos = [];
     public $usuarios = [];
     public $gestores = [];
+    public $estados = [];
 
     public $dni = '';
     public $lote_id = '';
@@ -59,12 +58,13 @@ class LibroReclamacionCrear extends Component
     {
         $this->authorize('ticket-libro-reclamacion.crear');
 
-        $this->codigo = TicketLibroReclamacion::generarCodigo();
         $this->nota_fuente_fecha = now()->format('Y-m-d H:i:s');
         $this->unidades = UnidadNegocio::query()->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
         $this->proyectos = collect();
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
         $this->gestores = $this->usuarios;
+        $this->estados = EstadoLibroReclamacion::query()->orderBy('orden')->get(['id', 'nombre']);
+        $this->estado_libro_reclamaciones_id = (string) optional($this->estados->firstWhere('nombre', 'NUEVO'))->id;
         $this->informaciones = collect();
     }
 
@@ -73,14 +73,14 @@ class LibroReclamacionCrear extends Component
         return [
             'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
             'proyecto_id' => 'required|exists:proyectos,id',
-            'cliente_documento' => 'required|string|max:20',
+            'cliente_documento' => 'nullable|string|max:20',
             'cliente_nombre' => 'required|string|max:255',
             'cliente_email' => 'nullable|email|max:255',
             'cliente_celular' => 'nullable|string|max:30',
             'cliente_direccion' => 'nullable|string',
             'asunto' => 'required|string|max:255',
             'gestor_id' => 'nullable|exists:users,id',
-            'estado_legal' => 'required|in:NUEVO,EN_GESTION,OBSERVADO,RESUELTO,NO_PROCEDE,CERRADO',
+            'estado_libro_reclamaciones_id' => 'required|exists:estado_libro_reclamaciones,id',
             'observaciones_internas' => 'nullable|string',
         ];
     }
@@ -97,7 +97,7 @@ class LibroReclamacionCrear extends Component
             'cliente_direccion' => 'Dirección',
             'asunto' => 'Asunto',
             'gestor_id' => 'Gestor',
-            'estado_legal' => 'Estado legal',
+            'estado_libro_reclamaciones_id' => 'Estado legal',
             'observaciones_internas' => 'Observaciones internas',
         ];
     }
@@ -106,6 +106,10 @@ class LibroReclamacionCrear extends Component
     {
         if ($propertyName === 'unidad_negocio_id') {
             $this->updatedUnidadNegocioId($this->unidad_negocio_id);
+        }
+
+        if ($propertyName === 'dni') {
+            $this->updatedDni($this->dni);
         }
 
         if (in_array($propertyName, [
@@ -118,7 +122,7 @@ class LibroReclamacionCrear extends Component
             'cliente_direccion',
             'asunto',
             'gestor_id',
-            'estado_legal',
+            'estado_libro_reclamaciones_id',
             'observaciones_internas',
         ], true)) {
             $this->validateOnly($propertyName);
@@ -131,6 +135,7 @@ class LibroReclamacionCrear extends Component
 
         if (! $value) {
             $this->proyectos = collect();
+            $this->codigo = '';
 
             return;
         }
@@ -140,6 +145,9 @@ class LibroReclamacionCrear extends Component
             ->where('activo', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
+
+        $ticket = LibroReclamacion::generarTicket((int) $value);
+        $this->codigo = (string) ($ticket['codigo_ticket'] ?? '');
     }
 
     public function buscarCliente(ConsultaClienteService $service): void
@@ -176,6 +184,26 @@ class LibroReclamacionCrear extends Component
                 session()->flash('error', $resultado['mensaje']);
                 break;
         }
+    }
+
+    public function updatedDni($value): void
+    {
+        $this->sincronizarDocumentoDesdeDni((string) $value);
+    }
+
+    protected function sincronizarDocumentoDesdeDni(?string $valor = null): void
+    {
+        $documento = trim((string) ($valor ?? $this->dni));
+
+        $this->cliente_documento = $documento;
+
+        if ($documento === '') {
+            $this->cliente_tipo_documento = '';
+
+            return;
+        }
+
+        $this->cliente_tipo_documento = $this->resolverTipoDocumento($documento);
     }
 
     protected function hidratarClienteDesdeResultado(array $resultado): void
@@ -259,10 +287,14 @@ class LibroReclamacionCrear extends Component
         try {
             $this->validate();
         } catch (ValidationException $e) {
+            $primerError = collect($e->validator->errors()->all())->first();
+
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => 'Advertencia',
-                'text' => 'Verifique los errores de los campos resaltados.'
+                'text' => $primerError
+                    ? 'Validacion: ' . $primerError
+                    : 'Verifique los errores de los campos resaltados.'
             ]);
             throw $e;
         }
@@ -270,11 +302,12 @@ class LibroReclamacionCrear extends Component
         try {
             DB::beginTransaction();
 
+            $this->sincronizarDocumentoDesdeDni();
+
             $this->clasificacion = $this->resolverClasificacion();
 
-            TicketLibroReclamacion::create([
+            LibroReclamacion::create([
                 'codigo' => trim($this->codigo),
-                'libro_reclamacion_ticket' => $this->libro_reclamacion_ticket ?: null,
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'proyecto_id' => $this->proyecto_id,
                 'cliente_id' => $this->cliente_id ?: null,
@@ -287,9 +320,8 @@ class LibroReclamacionCrear extends Component
                 'asunto' => $this->asunto,
                 'lotes' => $this->lotes_agregados,
                 'gestor_id' => $this->gestor_id ?: null,
-                'estado_legal' => $this->estado_legal,
+                'estado_libro_reclamaciones_id' => $this->estado_libro_reclamaciones_id,
                 'clasificacion' => $this->clasificacion,
-                'nota_fuente' => $this->construirNotaFuente(),
                 'nota_fuente_titulo' => $this->nota_fuente_titulo,
                 'nota_fuente_fecha' => Carbon::parse($this->nota_fuente_fecha),
                 'observaciones_internas' => $this->textoNullable($this->observaciones_internas),
@@ -324,7 +356,8 @@ class LibroReclamacionCrear extends Component
 
     protected function resolverClasificacion(): string
     {
-        if (blank($this->cliente_documento) || blank($this->cliente_nombre) || blank($this->asunto)) {
+        // DNI can be optional for potential clients; name and subject remain mandatory.
+        if (blank($this->cliente_nombre) || blank($this->asunto)) {
             return 'NO_PROCEDE';
         }
 

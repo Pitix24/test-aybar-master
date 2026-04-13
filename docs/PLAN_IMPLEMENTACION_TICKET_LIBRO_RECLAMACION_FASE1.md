@@ -1,5 +1,8 @@
 # Plan de Implementacion - Ticket Libro Reclamacion (Fase 1)
 
+> Documento historico (supersedido).  
+> Estado vigente del modulo: ver `docs/CONSOLIDACION_TICKET_LIBRO_RECLAMACIONS.md`.
+
 ## Objetivo
 Implementar un modulo ERP separado para gestion legal de reclamos, sin relacion con la tabla `tickets` de ATC.
 

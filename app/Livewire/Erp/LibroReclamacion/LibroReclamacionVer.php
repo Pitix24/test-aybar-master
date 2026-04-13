@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Erp\LibroReclamacion;
 
-use App\Models\LibroReclamacion\TicketLibroReclamacion;
+use App\Models\LibroReclamacion\LibroReclamacion;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
@@ -13,14 +13,14 @@ use Livewire\Component;
 #[Title('Ver Ticket Libro Reclamacion')]
 class LibroReclamacionVer extends Component
 {
-    public TicketLibroReclamacion $ticket;
+    public LibroReclamacion $ticket;
 
     public function mount($id): void
     {
         $this->authorize('ticket-libro-reclamacion.ver');
 
-        $this->ticket = TicketLibroReclamacion::with([
-            'libroReclamacion',
+        $this->ticket = LibroReclamacion::with([
+            'estadoLibroReclamacion',
             'unidadNegocio',
             'proyecto',
             'cliente',

@@ -3,7 +3,8 @@
 namespace App\Livewire\Erp\LibroReclamacion;
 
 use App\Models\Cliente;
-use App\Models\LibroReclamacion\TicketLibroReclamacion;
+use App\Models\LibroReclamacion\EstadoLibroReclamacion;
+use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
@@ -24,10 +25,9 @@ use Livewire\Component;
 #[Title('Editar Ticket Libro Reclamacion')]
 class LibroReclamacionEditar extends Component
 {
-    public TicketLibroReclamacion $ticket_model;
+    public LibroReclamacion $ticket_model;
 
     public $codigo = '';
-    public $libro_reclamacion_ticket = '';
     public $unidad_negocio_id = '';
     public $proyecto_id = '';
     public $cliente_id = '';
@@ -39,7 +39,7 @@ class LibroReclamacionEditar extends Component
     public $cliente_direccion = '';
     public $asunto = '';
     public $gestor_id = '';
-    public $estado_legal = 'NUEVO';
+    public $estado_libro_reclamaciones_id = '';
     public $clasificacion = 'PENDIENTE_REVISION';
     public $nota_fuente = '';
     public $nota_fuente_titulo = '';
@@ -50,6 +50,7 @@ class LibroReclamacionEditar extends Component
     public $proyectos = [];
     public $usuarios = [];
     public $gestores = [];
+    public $estados = [];
 
     public $dni = '';
     public $lote_id = '';
@@ -61,17 +62,15 @@ class LibroReclamacionEditar extends Component
     {
         $this->authorize('ticket-libro-reclamacion.editar');
 
-        $this->ticket_model = TicketLibroReclamacion::findOrFail($id);
+        $this->ticket_model = LibroReclamacion::findOrFail($id);
 
         $this->codigo = $this->ticket_model->codigo;
-        $this->libro_reclamacion_ticket = $this->ticket_model->libro_reclamacion_ticket;
         $this->unidad_negocio_id = $this->ticket_model->unidad_negocio_id;
         $this->proyecto_id = $this->ticket_model->proyecto_id;
         $this->cliente_id = $this->ticket_model->cliente_id;
         $this->gestor_id = $this->ticket_model->gestor_id;
-        $this->estado_legal = $this->ticket_model->estado_legal;
+        $this->estado_libro_reclamaciones_id = $this->ticket_model->estado_libro_reclamaciones_id;
         $this->clasificacion = $this->ticket_model->clasificacion;
-        $this->nota_fuente = $this->ticket_model->nota_fuente;
         $this->nota_fuente_titulo = $this->ticket_model->nota_fuente_titulo ?: 'Formulario web';
         $this->nota_fuente_fecha = optional($this->ticket_model->nota_fuente_fecha)->format('Y-m-d H:i:s') ?: now()->format('Y-m-d H:i:s');
         $this->observaciones_internas = $this->ticket_model->observaciones_internas;
@@ -89,6 +88,7 @@ class LibroReclamacionEditar extends Component
         $this->proyectos = Proyecto::query()->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
         $this->gestores = $this->usuarios;
+        $this->estados = EstadoLibroReclamacion::query()->orderBy('orden')->get(['id', 'nombre']);
         $this->informaciones = collect();
     }
 
@@ -97,7 +97,7 @@ class LibroReclamacionEditar extends Component
         return [
             'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
             'proyecto_id' => 'required|exists:proyectos,id',
-            'cliente_documento' => 'required|string|max:20',
+            'cliente_documento' => 'nullable|string|max:20',
             'cliente_nombre' => 'required|string|max:255',
             'cliente_email' => 'nullable|email|max:255',
             'cliente_celular' => 'nullable|string|max:30',
@@ -105,7 +105,7 @@ class LibroReclamacionEditar extends Component
             'asunto' => 'required|string|max:255',
             'cliente_id' => 'nullable|exists:users,id',
             'gestor_id' => 'nullable|exists:users,id',
-            'estado_legal' => 'required|in:NUEVO,EN_GESTION,OBSERVADO,RESUELTO,NO_PROCEDE,CERRADO',
+            'estado_libro_reclamaciones_id' => 'required|exists:estado_libro_reclamaciones,id',
             'observaciones_internas' => 'nullable|string',
         ];
     }
@@ -122,7 +122,7 @@ class LibroReclamacionEditar extends Component
             'cliente_direccion' => 'Dirección',
             'asunto' => 'Asunto',
             'gestor_id' => 'Gestor',
-            'estado_legal' => 'Estado legal',
+            'estado_libro_reclamaciones_id' => 'Estado legal',
             'observaciones_internas' => 'Observaciones internas',
         ];
     }
@@ -143,7 +143,7 @@ class LibroReclamacionEditar extends Component
             'cliente_direccion',
             'asunto',
             'gestor_id',
-            'estado_legal',
+            'estado_libro_reclamaciones_id',
             'observaciones_internas',
         ], true)) {
             $this->validateOnly($propertyName);
@@ -306,7 +306,7 @@ class LibroReclamacionEditar extends Component
                 'asunto' => $this->asunto,
                 'lotes' => $this->lotes_agregados,
                 'gestor_id' => $asignadoNuevo,
-                'estado_legal' => $this->estado_legal,
+                'estado_libro_reclamaciones_id' => $this->estado_libro_reclamaciones_id,
                 'clasificacion' => $clasificacion,
                 'observaciones_internas' => $this->textoNullable($this->observaciones_internas),
                 'assigned_at' => $this->resolverAssignedAt($asignadoAntes, $asignadoNuevo),
@@ -323,7 +323,7 @@ class LibroReclamacionEditar extends Component
             DB::rollBack();
             Log::error('[TICKET-LIBRO] Error al actualizar: ' . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
-                'target_id' => $this->ticket_model->id,
+                'target_id' => $this->ticket_model->ticket,
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -338,7 +338,7 @@ class LibroReclamacionEditar extends Component
 
     protected function resolverClasificacion(): string
     {
-        if (blank($this->cliente_documento) || blank($this->cliente_nombre) || blank($this->asunto)) {
+        if (blank($this->cliente_nombre) || blank($this->asunto)) {
             return 'NO_PROCEDE';
         }
 
@@ -384,7 +384,7 @@ class LibroReclamacionEditar extends Component
             DB::rollBack();
             Log::error('[TICKET-LIBRO] Error al eliminar: ' . $e->getMessage(), [
                 'usuario_id' => auth()->id(),
-                'target_id' => $this->ticket_model->id ?? null,
+                'target_id' => $this->ticket_model->ticket ?? null,
                 'trace' => $e->getTraceAsString()
             ]);
 

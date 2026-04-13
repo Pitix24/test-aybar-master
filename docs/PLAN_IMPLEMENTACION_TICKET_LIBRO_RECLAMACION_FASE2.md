@@ -1,5 +1,8 @@
 # Plan de Implementacion - Ticket Libro Reclamacion (Fase 2)
 
+> Documento historico (supersedido).  
+> Estado vigente del modulo: ver `docs/CONSOLIDACION_TICKET_LIBRO_RECLAMACIONS.md`.
+
 ## Objetivo
 Implementar la automatizacion y preclasificacion desde libro_reclamacions hacia ticket_libro_reclamacions, manteniendo flujo separado de ATC y dejando control final al equipo legal.
 
