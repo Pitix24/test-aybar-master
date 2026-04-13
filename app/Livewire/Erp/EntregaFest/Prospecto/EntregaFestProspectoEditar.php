@@ -445,7 +445,7 @@ class EntregaFestProspectoEditar extends Component
 
         // Si se acaba de aprobar (CONFORME), disparamos el evento de invitaciones
         if ($this->estado_backoffice === 'CONFORME') {
-            //EntregaFestAsistenciaInvitacion::dispatch($this->prospecto);
+            EntregaFestAsistenciaInvitacion::dispatch($this->prospecto);
         }
     }
 

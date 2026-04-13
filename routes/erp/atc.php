@@ -37,7 +37,7 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
                 Route::get('/ver/{id}', TipoSolicitudVer::class)->middleware('permission:tipo-solicitud.ver')->name('ver');
                 Route::get('/crear', TipoSolicitudCrear::class)->middleware('permission:tipo-solicitud.crear')->name('crear');
                 Route::get('/editar/{id}', TipoSolicitudEditar::class)->middleware('permission:tipo-solicitud.editar')->name('editar');
-                Route::get('/usuarios/{id}', TipoSolicitudUser::class)->middleware('permission:tipo-solicitud.agregar-usuarios')->name('usuarios');
+                Route::get('/usuarios/{id}', TipoSolicitudUser::class)->middleware('permission:tipo-solicitud.ver-agregar-usuario')->name('usuarios');
             });
     });
 
@@ -94,7 +94,7 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
                 Route::get('/crear/{ticketPadre?}', TicketCrear::class)->middleware('permission:ticket.crear')->name('crear');
                 Route::get('/editar/{id}', TicketEditar::class)->middleware('permission:ticket.editar')->name('editar');
                 Route::get('/derivado/{id}', TicketDerivar::class)->middleware('permission:ticket.derivar')->name('derivar');
-                Route::get('/importar', TicketImportar::class)->middleware('permission:ticket.crear')->name('importar');
+                Route::get('/importar', TicketImportar::class)->middleware('permission:ticket.ver-importar-tickets')->name('importar');
             });
     });
 });
