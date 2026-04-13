@@ -41,6 +41,7 @@ class LibroReclamacionEditar extends Component
     public $gestor_id = '';
     public $estado_libro_reclamaciones_id = '';
     public $clasificacion = 'PENDIENTE_REVISION';
+    public $tipo_pedido = '';
     public $nota_fuente = '';
     public $nota_fuente_titulo = '';
     public $nota_fuente_fecha = '';
@@ -71,7 +72,9 @@ class LibroReclamacionEditar extends Component
         $this->gestor_id = $this->ticket_model->gestor_id;
         $this->estado_libro_reclamaciones_id = $this->ticket_model->estado_libro_reclamaciones_id;
         $this->clasificacion = $this->ticket_model->clasificacion;
-        $this->nota_fuente_titulo = $this->ticket_model->nota_fuente_titulo ?: 'Formulario web';
+        $this->tipo_pedido = $this->ticket_model->tipo_pedido ?: '';
+        $this->nota_fuente_titulo = $this->ticket_model->tituloNotaFuenteResuelto();
+        $this->nota_fuente = $this->ticket_model->contenidoNotaFuenteResuelto();
         $this->nota_fuente_fecha = optional($this->ticket_model->nota_fuente_fecha)->format('Y-m-d H:i:s') ?: now()->format('Y-m-d H:i:s');
         $this->observaciones_internas = $this->ticket_model->observaciones_internas;
         $this->cliente_tipo_documento = $this->ticket_model->cliente_tipo_documento;
@@ -106,6 +109,7 @@ class LibroReclamacionEditar extends Component
             'cliente_id' => 'nullable|exists:users,id',
             'gestor_id' => 'nullable|exists:users,id',
             'estado_libro_reclamaciones_id' => 'required|exists:estado_libro_reclamaciones,id',
+            'tipo_pedido' => 'required|in:RECLAMO,QUEJA',
             'observaciones_internas' => 'nullable|string',
         ];
     }
@@ -115,7 +119,7 @@ class LibroReclamacionEditar extends Component
         return [
             'unidad_negocio_id' => 'Unidad de negocio',
             'proyecto_id' => 'Proyecto',
-            'cliente_documento' => 'DNI/CE/RUC',
+            'cliente_documento' => 'DNI / CE / RUC (opcional)',
             'cliente_nombre' => 'Nombre del cliente',
             'cliente_email' => 'Correo electrónico',
             'cliente_celular' => 'Celular',
@@ -123,6 +127,7 @@ class LibroReclamacionEditar extends Component
             'asunto' => 'Asunto',
             'gestor_id' => 'Gestor',
             'estado_libro_reclamaciones_id' => 'Estado legal',
+            'tipo_pedido' => 'Subtipo',
             'observaciones_internas' => 'Observaciones internas',
         ];
     }
@@ -131,6 +136,10 @@ class LibroReclamacionEditar extends Component
     {
         if ($propertyName === 'unidad_negocio_id') {
             $this->updatedUnidadNegocioId($this->unidad_negocio_id);
+        }
+
+        if ($propertyName === 'dni') {
+            $this->updatedDni($this->dni);
         }
 
         if (in_array($propertyName, [
@@ -144,6 +153,7 @@ class LibroReclamacionEditar extends Component
             'asunto',
             'gestor_id',
             'estado_libro_reclamaciones_id',
+            'tipo_pedido',
             'observaciones_internas',
         ], true)) {
             $this->validateOnly($propertyName);
@@ -198,6 +208,26 @@ class LibroReclamacionEditar extends Component
                 session()->flash('error', $resultado['mensaje']);
                 break;
         }
+    }
+
+    public function updatedDni($value): void
+    {
+        $this->sincronizarDocumentoDesdeDni((string) $value);
+    }
+
+    protected function sincronizarDocumentoDesdeDni(?string $valor = null): void
+    {
+        $documento = trim((string) ($valor ?? $this->dni));
+
+        $this->cliente_documento = $documento;
+
+        if ($documento === '') {
+            $this->cliente_tipo_documento = '';
+
+            return;
+        }
+
+        $this->cliente_tipo_documento = $this->resolverTipoDocumento($documento);
     }
 
     protected function hidratarClienteDesdeResultado(array $resultado): void
@@ -278,16 +308,22 @@ class LibroReclamacionEditar extends Component
         try {
             $this->validate();
         } catch (ValidationException $e) {
+            $primerError = collect($e->validator->errors()->all())->first();
+
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => 'Advertencia',
-                'text' => 'Verifique los errores de los campos resaltados.'
+                'text' => $primerError
+                    ? 'Validacion: ' . $primerError
+                    : 'Verifique los errores de los campos resaltados.'
             ]);
             throw $e;
         }
 
         try {
             DB::beginTransaction();
+
+            $this->sincronizarDocumentoDesdeDni();
 
             $asignadoAntes = $this->ticket_model->gestor_id;
             $asignadoNuevo = $this->gestor_id ?: null;
@@ -307,7 +343,10 @@ class LibroReclamacionEditar extends Component
                 'lotes' => $this->lotes_agregados,
                 'gestor_id' => $asignadoNuevo,
                 'estado_libro_reclamaciones_id' => $this->estado_libro_reclamaciones_id,
+                'tipo_pedido' => $this->resolverTipoPedido(),
                 'clasificacion' => $clasificacion,
+                'nota_fuente_titulo' => $this->nota_fuente_titulo,
+                'nota_fuente_fecha' => Carbon::parse($this->nota_fuente_fecha),
                 'observaciones_internas' => $this->textoNullable($this->observaciones_internas),
                 'assigned_at' => $this->resolverAssignedAt($asignadoAntes, $asignadoNuevo),
             ]);
@@ -347,6 +386,13 @@ class LibroReclamacionEditar extends Component
         }
 
         return 'PROCEDE';
+    }
+
+    protected function resolverTipoPedido(): string
+    {
+        $tipoPedido = strtoupper(trim((string) $this->tipo_pedido));
+
+        return in_array($tipoPedido, ['RECLAMO', 'QUEJA'], true) ? $tipoPedido : 'RECLAMO';
     }
 
     protected function resolverTipoDocumento(string $documento): string

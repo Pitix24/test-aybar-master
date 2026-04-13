@@ -119,6 +119,25 @@ class LibroReclamacion extends Model
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
+    public function esOrigenErp(): bool
+    {
+        return ! is_null($this->created_by);
+    }
+
+    public function tituloNotaFuenteResuelto(): string
+    {
+        if ($this->esOrigenErp()) {
+            return 'ERP - Registro Interno';
+        }
+
+        return trim((string) $this->nota_fuente_titulo) ?: 'Formulario web';
+    }
+
+    public function contenidoNotaFuenteResuelto(): string
+    {
+        return $this->esOrigenErp() ? '' : $this->tituloNotaFuenteResuelto();
+    }
+
     protected static function booted()
     {
         static::creating(function ($reclamacion) {

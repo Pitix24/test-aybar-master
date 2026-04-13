@@ -180,12 +180,12 @@ Commit sugerido:
 
 ## Checklist de Aceptacion Final
 
-- [ ] Se puede crear registro sin Buscar y con DNI manual persistido.
-- [ ] Se puede editar DNI sin Buscar y se guarda correctamente.
-- [ ] Ver muestra Documento correcto (no N/D cuando existe dato).
-- [ ] Buscar sigue funcionando como autocompletado opcional.
-- [ ] Crear/Editar/Ver mantienen estructura equivalente a Ticket.
-- [ ] No hay errores de sintaxis o runtime en archivos modificados.
+- [x] Se puede crear registro sin Buscar y con DNI manual persistido.
+- [x] Se puede editar DNI sin Buscar y se guarda correctamente.
+- [x] Ver muestra Documento correcto (no N/D cuando existe dato).
+- [x] Buscar sigue funcionando como autocompletado opcional.
+- [x] Crear/Editar/Ver mantienen estructura equivalente a Ticket.
+- [x] No hay errores de sintaxis o runtime en archivos modificados.
 
 ---
 

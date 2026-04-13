@@ -85,6 +85,13 @@ Validado:
 - Seeder de estados ejecutado
 - `get_errors()` en archivos modificados: sin errores
 - Busqueda de referencias activas a `TicketLibroReclamacion` en codigo del modulo: sin resultados
+- Validacion tecnica FASE DNI/PARIDAD (Crear, Editar, Ver): sin errores de sintaxis/runtime reportados
+
+Reglas funcionales finales consolidadas:
+- `buscarCliente` es opcional y se mantiene como autocompletado
+- El DNI/CE/RUC digitado manualmente se sincroniza y persiste en guardar/actualizar
+- `cliente_documento` se mantiene opcional para soportar cliente potencial
+- Flujo y estructura de `Crear`, `Editar` y `Ver` homologados al patron operativo de Ticket
 
 Nota:
 - Se ejecuto `php artisan test --filter=LibroReclamacion`
@@ -108,6 +115,12 @@ Pendientes funcionales sugeridos:
 - Prueba manual E2E en UI (crear, editar, listar, ver, eliminar logico)
 - Confirmar rutas/permisos con un usuario legal real
 - Registrar evidencia de QA en documento de pruebas
+
+Checklist de cierre FASE 5:
+- [x] Chequeo tecnico en archivos tocados (`get_errors`) sin hallazgos
+- [x] Regla de negocio documentada: Buscar opcional + DNI manual persistente
+- [x] Regla de paridad documentada: Crear/Editar/Ver homologados
+- [ ] Evidencia manual funcional en UI (pendiente de ejecucion por usuario de negocio)
 
 ## 6. Documentos historicos
 

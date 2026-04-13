@@ -83,13 +83,18 @@
                 </div>
 
                 <div class="g_columna_4 g_margin_bottom_10">
-                    <label>Asignado desde</label>
-                    <input type="text" value="{{ optional($ticket_model->assigned_at)->format('d/m/Y H:i') ?: 'Sin asignación' }}" disabled>
+                    <label>Subtipo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
+                    <select wire:model.live="tipo_pedido" class="@error('tipo_pedido') input-error @enderror">
+                        <option value="">Seleccione...</option>
+                        <option value="RECLAMO">RECLAMO</option>
+                        <option value="QUEJA">QUEJA</option>
+                    </select>
+                    @error('tipo_pedido') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="g_columna_4 g_margin_bottom_10">
-                    <label>Estado interno</label>
-                    <input type="text" value="Nuevo" disabled>
+                    <label>Asignado desde</label>
+                    <input type="text" value="{{ optional($ticket_model->assigned_at)->format('d/m/Y H:i') ?: 'Sin asignación' }}" disabled>
                 </div>
             </div>
 

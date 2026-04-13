@@ -38,7 +38,9 @@ class LibroReclamacionCrear extends Component
     public $gestor_id = '';
     public $estado_libro_reclamaciones_id = '';
     public $clasificacion = 'PENDIENTE_REVISION';
-    public $nota_fuente_titulo = 'Formulario web';
+    public $tipo_pedido = '';
+    public $nota_fuente = '';
+    public $nota_fuente_titulo = 'ERP - Registro Interno';
     public $nota_fuente_fecha = '';
     public $observaciones_internas = '';
 
@@ -81,6 +83,7 @@ class LibroReclamacionCrear extends Component
             'asunto' => 'required|string|max:255',
             'gestor_id' => 'nullable|exists:users,id',
             'estado_libro_reclamaciones_id' => 'required|exists:estado_libro_reclamaciones,id',
+            'tipo_pedido' => 'required|in:RECLAMO,QUEJA',
             'observaciones_internas' => 'nullable|string',
         ];
     }
@@ -90,7 +93,7 @@ class LibroReclamacionCrear extends Component
         return [
             'unidad_negocio_id' => 'Unidad de negocio',
             'proyecto_id' => 'Proyecto',
-            'cliente_documento' => 'DNI/CE/RUC',
+            'cliente_documento' => 'DNI / CE / RUC (opcional)',
             'cliente_nombre' => 'Nombre del cliente',
             'cliente_email' => 'Correo electrónico',
             'cliente_celular' => 'Celular',
@@ -98,6 +101,7 @@ class LibroReclamacionCrear extends Component
             'asunto' => 'Asunto',
             'gestor_id' => 'Gestor',
             'estado_libro_reclamaciones_id' => 'Estado legal',
+            'tipo_pedido' => 'Subtipo',
             'observaciones_internas' => 'Observaciones internas',
         ];
     }
@@ -123,6 +127,7 @@ class LibroReclamacionCrear extends Component
             'asunto',
             'gestor_id',
             'estado_libro_reclamaciones_id',
+            'tipo_pedido',
             'observaciones_internas',
         ], true)) {
             $this->validateOnly($propertyName);
@@ -321,6 +326,7 @@ class LibroReclamacionCrear extends Component
                 'lotes' => $this->lotes_agregados,
                 'gestor_id' => $this->gestor_id ?: null,
                 'estado_libro_reclamaciones_id' => $this->estado_libro_reclamaciones_id,
+                'tipo_pedido' => $this->resolverTipoPedido(),
                 'clasificacion' => $this->clasificacion,
                 'nota_fuente_titulo' => $this->nota_fuente_titulo,
                 'nota_fuente_fecha' => Carbon::parse($this->nota_fuente_fecha),
@@ -366,6 +372,13 @@ class LibroReclamacionCrear extends Component
         }
 
         return 'PROCEDE';
+    }
+
+    protected function resolverTipoPedido(): string
+    {
+        $tipoPedido = strtoupper(trim((string) $this->tipo_pedido));
+
+        return in_array($tipoPedido, ['RECLAMO', 'QUEJA'], true) ? $tipoPedido : 'RECLAMO';
     }
 
     protected function resolverTipoDocumento(string $documento): string
