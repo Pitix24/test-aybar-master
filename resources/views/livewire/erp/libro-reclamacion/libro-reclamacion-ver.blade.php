@@ -38,12 +38,6 @@
                         <label>Libro ticket origen</label>
                         <input type="text" value="{{ $ticket->libro_reclamacion_ticket ?: 'N/D' }}" disabled>
                     </div>
-                </div>
-            </div>
-
-            <div class="g_panel">
-                <h4 class="g_panel_titulo">Contexto</h4>
-                <div class="g_fila formulario">
                     <div class="g_columna_6">
                         <label>Unidad de negocio</label>
                         <input type="text" value="{{ $ticket->unidadNegocio?->nombre ?: 'N/D' }}" disabled>
@@ -52,20 +46,88 @@
                         <label>Proyecto</label>
                         <input type="text" value="{{ $ticket->proyecto?->nombre ?: 'N/D' }}" disabled>
                     </div>
+                </div>
+            </div>
+
+            <div class="g_panel">
+                <h4 class="g_panel_titulo">Cliente</h4>
+                <div class="g_fila formulario">
                     <div class="g_columna_6">
-                        <label>Cliente</label>
-                        <input type="text" value="{{ $ticket->cliente?->name ?: 'N/D' }}" disabled>
+                        <label>Documento</label>
+                        <input type="text" value="{{ $ticket->cliente_documento ?: 'N/D' }}" disabled>
+                    </div>
+                    <div class="g_columna_6">
+                        <label>Tipo documento</label>
+                        <input type="text" value="{{ $ticket->cliente_tipo_documento ?: 'N/D' }}" disabled>
+                    </div>
+                    <div class="g_columna_6">
+                        <label>Nombre cliente</label>
+                        <input type="text" value="{{ $ticket->cliente_nombre ?: ($ticket->cliente?->name ?: 'N/D') }}" disabled>
+                    </div>
+                    <div class="g_columna_6">
+                        <label>Email</label>
+                        <input type="text" value="{{ $ticket->cliente_email ?: 'N/D' }}" disabled>
+                    </div>
+                    <div class="g_columna_6">
+                        <label>Celular</label>
+                        <input type="text" value="{{ $ticket->cliente_celular ?: 'N/D' }}" disabled>
                     </div>
                     <div class="g_columna_6">
                         <label>Gestor</label>
                         <input type="text" value="{{ $ticket->gestor?->name ?: 'N/D' }}" disabled>
                     </div>
+                    <div class="g_columna_12">
+                        <label>Dirección</label>
+                        <textarea rows="3" disabled>{{ $ticket->cliente_direccion ?: 'N/D' }}</textarea>
+                    </div>
                 </div>
+            </div>
+
+            <div class="g_panel formulario">
+                <h4 class="g_panel_titulo">Asunto</h4>
+                <textarea rows="5" disabled>{{ $ticket->asunto ?: 'Sin asunto.' }}</textarea>
+
+                @if (! empty($ticket->lotes))
+                    <h4 class="g_panel_titulo g_margin_top_20">Lotes</h4>
+                    <div class="g_contenedor_tabla">
+                        <table class="g_tabla">
+                            <thead>
+                                <tr>
+                                    <th>Razón Social</th>
+                                    <th>Proyecto</th>
+                                    <th>Mz./Lt.</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ticket->lotes as $lote)
+                                    <tr>
+                                        <td>{{ $lote['razon_social'] ?? 'N/D' }}</td>
+                                        <td>{{ $lote['proyecto'] ?? 'N/D' }}</td>
+                                        <td>{{ $lote['numero_lote'] ?? 'N/D' }}</td>
+                                        <td>{{ $lote['estado_lote'] ?? 'N/D' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
 
             <div class="g_panel formulario">
                 <h4 class="g_panel_titulo">Nota fuente</h4>
                 <textarea rows="8" disabled>{{ $ticket->nota_fuente ?: 'Sin nota fuente.' }}</textarea>
+
+                <div class="g_fila g_margin_top_10">
+                    <div class="g_columna_6">
+                        <label>Titulo de nota</label>
+                        <input type="text" value="{{ $ticket->nota_fuente_titulo ?: 'N/D' }}" disabled>
+                    </div>
+                    <div class="g_columna_6">
+                        <label>Fecha de nota</label>
+                        <input type="text" value="{{ optional($ticket->nota_fuente_fecha)->format('d/m/Y H:i') ?: 'N/D' }}" disabled>
+                    </div>
+                </div>
 
                 <h4 class="g_panel_titulo g_margin_top_20">Observaciones internas</h4>
                 <textarea rows="5" disabled>{{ $ticket->observaciones_internas ?: 'Sin observaciones.' }}</textarea>

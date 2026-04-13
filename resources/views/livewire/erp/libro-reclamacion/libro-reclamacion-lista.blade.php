@@ -19,7 +19,7 @@
         <div class="g_fila">
             <div class="g_columna_3">
                 <label>Buscar</label>
-                <input type="text" wire:model.live.debounce.1000ms="buscar" placeholder="Codigo, ticket origen o cliente">
+                <input type="text" wire:model.live.debounce.1000ms="buscar" placeholder="Codigo, documento, cliente o correo">
             </div>
 
             <div class="g_columna_2">
@@ -123,7 +123,7 @@
                         <tr wire:key="libro-ticket-{{ $item->id }}">
                             <td>{{ $items->firstItem() + $index }}</td>
                             <td class="g_resaltar">{{ $item->codigo }}</td>
-                            <td>{{ $item->cliente?->name ?: 'N/D' }}</td>
+                            <td>{{ $item->cliente_nombre ?: $item->cliente?->name ?: 'N/D' }}</td>
                             <td>{{ $item->proyecto?->nombre ?: 'N/D' }}</td>
                             <td>
                                 <span class="g_badge info">{{ str_replace('_', ' ', $item->estado_legal) }}</span>

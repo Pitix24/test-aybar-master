@@ -38,7 +38,7 @@ class LibroReclamacionNumeroService
             return [
                 'serie' => $serie,
                 'numero_reclamo' => $numeroReclamo,
-                'codigo_ticket' => $this->formatearCodigoTicket((string) ($unidad->nombre ?? ''), $numeroReclamo),
+                'codigo_ticket' => $this->formatearCodigoTicket($this->resolverCodigoUnidad($unidad), $numeroReclamo),
             ];
         });
     }
@@ -72,11 +72,28 @@ class LibroReclamacionNumeroService
         return (string) data_get(config('libro_reclamacion', []), 'serie', 'TCK');
     }
 
-    protected function formatearCodigoTicket(string $unidadNombre, int $numeroReclamo): string
+    protected function formatearCodigoTicket(string $unidadCodigo, int $numeroReclamo): string
     {
-        $unidadCodigo = $this->formatearNombreUnidad($unidadNombre);
-
         return sprintf('%s-%06d', $unidadCodigo, $numeroReclamo);
+    }
+
+    protected function resolverCodigoUnidad(?UnidadNegocio $unidad): string
+    {
+        if (! $unidad) {
+            throw new RuntimeException('No se encontro la unidad de negocio para generar el ticket.');
+        }
+
+        $codigo = strtoupper(trim((string) $unidad->codigo));
+
+        if (preg_match('/^[A-Z]{3}$/', $codigo)) {
+            return $codigo;
+        }
+
+        if ($unidad->id) {
+            return UnidadNegocio::generarCodigoSecuencial((int) $unidad->id);
+        }
+
+        return 'UNI';
     }
 
     protected function normalizarTexto(string $valor): string
@@ -87,12 +104,4 @@ class LibroReclamacionNumeroService
         return $valor ?? '';
     }
 
-    protected function formatearNombreUnidad(string $nombre): string
-    {
-        $nombre = mb_strtoupper(trim($nombre));
-        $nombre = preg_replace('/\s+/', '_', $nombre);
-        $nombre = preg_replace('/[^A-Z0-9_.]/', '', $nombre);
-
-        return $nombre ?: 'UNIDAD';
-    }
 }

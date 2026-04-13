@@ -2,13 +2,17 @@
 
 namespace App\Livewire\Erp\LibroReclamacion;
 
+use App\Models\Cliente;
 use App\Models\LibroReclamacion\TicketLibroReclamacion;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
+use App\Services\ConsultaClienteService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\On;
@@ -27,15 +31,31 @@ class LibroReclamacionEditar extends Component
     public $unidad_negocio_id = '';
     public $proyecto_id = '';
     public $cliente_id = '';
+    public $cliente_tipo_documento = '';
+    public $cliente_documento = '';
+    public $cliente_nombre = '';
+    public $cliente_email = '';
+    public $cliente_celular = '';
+    public $cliente_direccion = '';
+    public $asunto = '';
     public $gestor_id = '';
     public $estado_legal = 'NUEVO';
     public $clasificacion = 'PENDIENTE_REVISION';
     public $nota_fuente = '';
+    public $nota_fuente_titulo = '';
+    public $nota_fuente_fecha = '';
     public $observaciones_internas = '';
 
     public $unidades = [];
     public $proyectos = [];
     public $usuarios = [];
+    public $gestores = [];
+
+    public $dni = '';
+    public $lote_id = '';
+    public $lotes_agregados = [];
+
+    public Collection $informaciones;
 
     public function mount($id): void
     {
@@ -52,30 +72,203 @@ class LibroReclamacionEditar extends Component
         $this->estado_legal = $this->ticket_model->estado_legal;
         $this->clasificacion = $this->ticket_model->clasificacion;
         $this->nota_fuente = $this->ticket_model->nota_fuente;
+        $this->nota_fuente_titulo = $this->ticket_model->nota_fuente_titulo ?: 'Formulario web';
+        $this->nota_fuente_fecha = optional($this->ticket_model->nota_fuente_fecha)->format('Y-m-d H:i:s') ?: now()->format('Y-m-d H:i:s');
         $this->observaciones_internas = $this->ticket_model->observaciones_internas;
+        $this->cliente_tipo_documento = $this->ticket_model->cliente_tipo_documento;
+        $this->cliente_documento = $this->ticket_model->cliente_documento;
+        $this->cliente_nombre = $this->ticket_model->cliente_nombre;
+        $this->cliente_email = $this->ticket_model->cliente_email;
+        $this->cliente_celular = $this->ticket_model->cliente_celular;
+        $this->cliente_direccion = $this->ticket_model->cliente_direccion;
+        $this->asunto = $this->ticket_model->asunto;
+        $this->lotes_agregados = $this->ticket_model->lotes ?? [];
+        $this->dni = $this->ticket_model->cliente_documento ?? '';
 
         $this->unidades = UnidadNegocio::query()->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
         $this->proyectos = Proyecto::query()->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
+        $this->gestores = $this->usuarios;
+        $this->informaciones = collect();
     }
 
     protected function rules(): array
     {
         return [
-            'unidad_negocio_id' => 'nullable|exists:unidad_negocios,id',
-            'proyecto_id' => 'nullable|exists:proyectos,id',
+            'unidad_negocio_id' => 'required|exists:unidad_negocios,id',
+            'proyecto_id' => 'required|exists:proyectos,id',
+            'cliente_documento' => 'required|string|max:20',
+            'cliente_nombre' => 'required|string|max:255',
+            'cliente_email' => 'nullable|email|max:255',
+            'cliente_celular' => 'nullable|string|max:30',
+            'cliente_direccion' => 'nullable|string',
+            'asunto' => 'required|string|max:255',
             'cliente_id' => 'nullable|exists:users,id',
             'gestor_id' => 'nullable|exists:users,id',
             'estado_legal' => 'required|in:NUEVO,EN_GESTION,OBSERVADO,RESUELTO,NO_PROCEDE,CERRADO',
-            'clasificacion' => 'required|in:PROCEDE,NO_PROCEDE,PENDIENTE_REVISION',
-            'nota_fuente' => 'nullable|string',
             'observaciones_internas' => 'nullable|string',
+        ];
+    }
+
+    public function validationAttributes(): array
+    {
+        return [
+            'unidad_negocio_id' => 'Unidad de negocio',
+            'proyecto_id' => 'Proyecto',
+            'cliente_documento' => 'DNI/CE/RUC',
+            'cliente_nombre' => 'Nombre del cliente',
+            'cliente_email' => 'Correo electrónico',
+            'cliente_celular' => 'Celular',
+            'cliente_direccion' => 'Dirección',
+            'asunto' => 'Asunto',
+            'gestor_id' => 'Gestor',
+            'estado_legal' => 'Estado legal',
+            'observaciones_internas' => 'Observaciones internas',
         ];
     }
 
     public function updated($propertyName): void
     {
-        $this->validateOnly($propertyName);
+        if ($propertyName === 'unidad_negocio_id') {
+            $this->updatedUnidadNegocioId($this->unidad_negocio_id);
+        }
+
+        if (in_array($propertyName, [
+            'unidad_negocio_id',
+            'proyecto_id',
+            'cliente_documento',
+            'cliente_nombre',
+            'cliente_email',
+            'cliente_celular',
+            'cliente_direccion',
+            'asunto',
+            'gestor_id',
+            'estado_legal',
+            'observaciones_internas',
+        ], true)) {
+            $this->validateOnly($propertyName);
+        }
+    }
+
+    public function updatedUnidadNegocioId($value): void
+    {
+        $this->proyecto_id = '';
+
+        if (! $value) {
+            $this->proyectos = collect();
+
+            return;
+        }
+
+        $this->proyectos = Proyecto::query()
+            ->where('unidad_negocio_id', $value)
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get(['id', 'nombre']);
+    }
+
+    public function buscarCliente(ConsultaClienteService $service): void
+    {
+        $this->validate([
+            'dni' => 'required|string|max:20',
+        ]);
+
+        $this->cliente_documento = trim((string) $this->dni);
+        $this->cliente_tipo_documento = $this->resolverTipoDocumento($this->cliente_documento);
+
+        $resultado = $service->consultar($this->dni);
+
+        switch ($resultado['estado']) {
+            case 'ok':
+                $this->informaciones = collect($resultado['data']);
+                $this->hidratarClienteDesdeResultado($resultado);
+                session()->flash('success', $resultado['mensaje']);
+                break;
+
+            case 'cliente_sin_lotes':
+                $this->informaciones = collect();
+                $this->hidratarClienteDesdeResultado($resultado);
+                session()->flash('info', $resultado['mensaje']);
+                break;
+
+            case 'no_cliente':
+            case 'error':
+            default:
+                $this->informaciones = collect();
+                session()->flash('error', $resultado['mensaje']);
+                break;
+        }
+    }
+
+    protected function hidratarClienteDesdeResultado(array $resultado): void
+    {
+        $this->cliente_documento = trim((string) $this->dni);
+        $this->cliente_tipo_documento = $this->resolverTipoDocumento($this->cliente_documento);
+
+        if (($resultado['origen'] ?? '') === 'antiguo') {
+            $cliente = DB::table('clientes_2')->where('dni', $this->dni)->first();
+
+            $this->cliente_id = null;
+            $this->cliente_nombre = (string) data_get($cliente, 'nombre', $this->cliente_nombre);
+            $this->cliente_email = (string) data_get($cliente, 'email', $this->cliente_email);
+            $this->cliente_celular = (string) (data_get($cliente, 'celular') ?? data_get($cliente, 'telefono') ?? $this->cliente_celular);
+            $this->cliente_direccion = (string) (data_get($cliente, 'direccion') ?? data_get($cliente, 'domicilio') ?? $this->cliente_direccion);
+
+            return;
+        }
+
+        $cliente = Cliente::query()->where('dni', $this->dni)->with('user')->first();
+
+        if ($cliente && $cliente->user) {
+            $this->cliente_id = $cliente->user->id;
+            $this->cliente_nombre = (string) $cliente->user->name;
+            $this->cliente_email = (string) ($cliente->user->email ?? $cliente->email ?? '');
+            $this->cliente_celular = (string) ($cliente->telefono_principal ?? $cliente->telefono_alternativo ?? '');
+            return;
+        }
+
+        $firstLot = collect($resultado['data'] ?? [])->first();
+
+        $this->cliente_id = null;
+        $this->cliente_nombre = (string) data_get($firstLot, 'nombre', $this->cliente_nombre);
+        $this->cliente_email = (string) data_get($firstLot, 'email', $this->cliente_email);
+        $this->cliente_celular = (string) data_get($firstLot, 'celular', $this->cliente_celular);
+    }
+
+    public function agregarLote(): void
+    {
+        if (! $this->lote_id) {
+            return;
+        }
+
+        $lote = $this->informaciones->firstWhere('id', $this->lote_id);
+
+        if (! $lote) {
+            return;
+        }
+
+        if (collect($this->lotes_agregados)->firstWhere('id', $lote->id)) {
+            return;
+        }
+
+        $this->lotes_agregados[] = [
+            'id' => $lote->id,
+            'razon_social' => $lote->razon_social,
+            'codigo_cliente' => $lote->codigo_cliente,
+            'proyecto' => $lote->proyecto,
+            'numero_lote' => $lote->numero_lote,
+            'estado_lote' => $lote->estado_lote,
+        ];
+
+        $this->lote_id = '';
+    }
+
+    public function quitarLote(string $id): void
+    {
+        $this->lotes_agregados = collect($this->lotes_agregados)
+            ->reject(fn ($l) => (string) ($l['id'] ?? '') === $id)
+            ->values()
+            ->toArray();
     }
 
     public function update(): void
@@ -98,15 +291,23 @@ class LibroReclamacionEditar extends Component
 
             $asignadoAntes = $this->ticket_model->gestor_id;
             $asignadoNuevo = $this->gestor_id ?: null;
+            $clasificacion = $this->resolverClasificacion();
 
             $this->ticket_model->update([
-                'unidad_negocio_id' => $this->unidad_negocio_id ?: null,
-                'proyecto_id' => $this->proyecto_id ?: null,
+                'unidad_negocio_id' => $this->unidad_negocio_id,
+                'proyecto_id' => $this->proyecto_id,
                 'cliente_id' => $this->cliente_id ?: null,
+                'cliente_tipo_documento' => $this->cliente_tipo_documento ?: null,
+                'cliente_documento' => $this->cliente_documento,
+                'cliente_nombre' => $this->cliente_nombre,
+                'cliente_email' => $this->cliente_email ?: null,
+                'cliente_celular' => $this->cliente_celular ?: null,
+                'cliente_direccion' => $this->cliente_direccion ?: null,
+                'asunto' => $this->asunto,
+                'lotes' => $this->lotes_agregados,
                 'gestor_id' => $asignadoNuevo,
                 'estado_legal' => $this->estado_legal,
-                'clasificacion' => $this->clasificacion,
-                'nota_fuente' => $this->textoNullable($this->nota_fuente),
+                'clasificacion' => $clasificacion,
                 'observaciones_internas' => $this->textoNullable($this->observaciones_internas),
                 'assigned_at' => $this->resolverAssignedAt($asignadoAntes, $asignadoNuevo),
             ]);
@@ -133,6 +334,30 @@ class LibroReclamacionEditar extends Component
                 'text' => 'No se pudo actualizar el ticket de libro de reclamacion.'
             ]);
         }
+    }
+
+    protected function resolverClasificacion(): string
+    {
+        if (blank($this->cliente_documento) || blank($this->cliente_nombre) || blank($this->asunto)) {
+            return 'NO_PROCEDE';
+        }
+
+        if (empty($this->lotes_agregados)) {
+            return 'PENDIENTE_REVISION';
+        }
+
+        return 'PROCEDE';
+    }
+
+    protected function resolverTipoDocumento(string $documento): string
+    {
+        $longitud = strlen(preg_replace('/\D+/', '', $documento));
+
+        return match (true) {
+            $longitud >= 11 => 'RUC',
+            $longitud === 8 => 'DNI',
+            default => 'CE',
+        };
     }
 
     #[On('eliminarLibroTicketOn')]

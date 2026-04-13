@@ -112,6 +112,10 @@ class LibroReclamacionLista extends Component
                 $q->where(function ($sub): void {
                     $sub->where('codigo', 'like', "%{$this->buscar}%")
                         ->orWhere('libro_reclamacion_ticket', 'like', "%{$this->buscar}%")
+                        ->orWhere('cliente_documento', 'like', "%{$this->buscar}%")
+                        ->orWhere('cliente_nombre', 'like', "%{$this->buscar}%")
+                        ->orWhere('cliente_email', 'like', "%{$this->buscar}%")
+                        ->orWhere('cliente_celular', 'like', "%{$this->buscar}%")
                         ->orWhereHas('cliente', function ($cliente): void {
                             $cliente->where('name', 'like', "%{$this->buscar}%")
                                 ->orWhere('email', 'like', "%{$this->buscar}%")

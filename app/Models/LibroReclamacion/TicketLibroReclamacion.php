@@ -20,16 +20,28 @@ class TicketLibroReclamacion extends Model
         'unidad_negocio_id',
         'proyecto_id',
         'cliente_id',
+        'cliente_tipo_documento',
+        'cliente_documento',
+        'cliente_nombre',
+        'cliente_email',
+        'cliente_celular',
+        'cliente_direccion',
+        'asunto',
+        'lotes',
         'gestor_id',
         'estado_legal',
         'clasificacion',
         'nota_fuente',
+        'nota_fuente_titulo',
+        'nota_fuente_fecha',
         'observaciones_internas',
         'assigned_at',
     ];
 
     protected $casts = [
         'assigned_at' => 'datetime',
+        'nota_fuente_fecha' => 'datetime',
+        'lotes' => 'array',
     ];
 
     public function libroReclamacion()
