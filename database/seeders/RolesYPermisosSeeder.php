@@ -198,6 +198,17 @@ class RolesYPermisosSeeder extends Seeder
                 'ticket.enviar-correo',//ok
                 'ticket.chat',//ok
             ],
+            'Módulo Libro Reclamación Legal' => [
+                'modulo-libro-reclamacion.ver',
+                'ticket-libro-reclamacion.navegacion',
+                'ticket-libro-reclamacion.lista',
+                'ticket-libro-reclamacion.ver',
+                'ticket-libro-reclamacion.crear',
+                'ticket-libro-reclamacion.editar',
+                'ticket-libro-reclamacion.eliminar',
+                'ticket-libro-reclamacion.exportar-filtro',
+                'ticket-libro-reclamacion.exportar-todo',
+            ],
             'Módulo Cita' => [//ok
                 'modulo-cita.ver',//ok
                 'estado-cita.navegacion',//ok

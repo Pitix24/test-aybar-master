@@ -114,9 +114,7 @@ TIPO SOLICITUD
 4. tipo-solicitud.crear
 5. tipo-solicitud.editar
 6. tipo-solicitud.eliminar
-7. tipo-solicitud.exportar-filtro
-8. tipo-solicitud.exportar-todo
-
+7. tipo-solicitud.exportar-filtroZ
 SUB TIPO SOLICITUD
 1. sub-tipo-solicitud.navegacion
 2. sub-tipo-solicitud.lista
