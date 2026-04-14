@@ -20,10 +20,12 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Crear Ticket Libro Reclamacion')]
 class LibroReclamacionCrear extends Component
 {
+    private const AREA_LEGAL_ID = 3;
+
     public $codigo = '';
     public $unidad_negocio_id = '';
     public $proyecto_id = '';
@@ -64,10 +66,27 @@ class LibroReclamacionCrear extends Component
         $this->unidades = UnidadNegocio::query()->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
         $this->proyectos = collect();
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
-        $this->gestores = $this->usuarios;
+        $this->cargarGestoresDisponibles();
         $this->estados = EstadoLibroReclamacion::query()->orderBy('orden')->get(['id', 'nombre']);
         $this->estado_libro_reclamaciones_id = (string) optional($this->estados->firstWhere('nombre', 'NUEVO'))->id;
         $this->informaciones = collect();
+    }
+
+    protected function cargarGestoresDisponibles(): void
+    {
+        $gestoresLegales = User::query()
+            ->where('activo', true)
+            ->whereHas('areas', function ($query) {
+                $query->where('areas.id', self::AREA_LEGAL_ID);
+            })
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        $this->gestores = $gestoresLegales->isNotEmpty() ? $gestoresLegales : $this->usuarios;
+
+        if ($this->gestor_id !== '' && ! $this->gestores->contains('id', (int) $this->gestor_id)) {
+            $this->gestor_id = '';
+        }
     }
 
     protected function rules(): array
@@ -218,11 +237,28 @@ class LibroReclamacionCrear extends Component
 
         if (($resultado['origen'] ?? '') === 'antiguo') {
             $cliente = DB::table('clientes_2')->where('dni', $this->dni)->first();
+            $clienteLocal = Cliente::query()->where('dni', $this->dni)->with('user')->first();
 
-            $this->cliente_id = null;
-            $this->cliente_nombre = (string) data_get($cliente, 'nombre', $this->cliente_nombre);
-            $this->cliente_email = (string) data_get($cliente, 'email', $this->cliente_email);
-            $this->cliente_celular = (string) (data_get($cliente, 'celular') ?? data_get($cliente, 'telefono') ?? $this->cliente_celular);
+            $email = (string) (data_get($cliente, 'email')
+                ?? data_get($cliente, 'correo')
+                ?? data_get($clienteLocal, 'user.email')
+                ?? data_get($clienteLocal, 'email')
+                ?? $this->cliente_email);
+
+            $celular = (string) (data_get($cliente, 'celular')
+                ?? data_get($cliente, 'telefono')
+                ?? data_get($cliente, 'telefono_principal')
+                ?? data_get($clienteLocal, 'telefono_principal')
+                ?? data_get($clienteLocal, 'telefono_alternativo')
+                ?? $this->cliente_celular);
+
+            $this->cliente_id = data_get($clienteLocal, 'user.id');
+            $this->cliente_nombre = (string) (data_get($cliente, 'nombre')
+                ?? data_get($clienteLocal, 'user.name')
+                ?? data_get($clienteLocal, 'nombre')
+                ?? $this->cliente_nombre);
+            $this->cliente_email = $email;
+            $this->cliente_celular = $celular;
             $this->cliente_direccion = (string) (data_get($cliente, 'direccion') ?? data_get($cliente, 'domicilio') ?? $this->cliente_direccion);
 
             return;
