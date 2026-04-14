@@ -13,6 +13,7 @@ use App\Livewire\Erp\EntregaFest\Invitado\EntregaFestInvitadoEditar;
 use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspecto;
 use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspectoCrear;
 use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspectoEditar;
+use App\Livewire\Erp\EntregaFest\Prospecto\EntregaFestProspectoBancarizacionLista;
 use App\Livewire\Erp\EntregaFest\Incidencia\StaffIncidencias;
 use App\Livewire\Erp\EntregaFest\Incidencia\StaffIncidenciasCrear;
 use App\Livewire\Erp\EntregaFest\Incidencia\StaffIncidenciasEditar;
@@ -66,6 +67,7 @@ Route::group(['middleware' => ['permission:modulo-entrega-fest.ver']], function 
                 Route::get('/{id}', EntregaFestProspecto::class)->middleware('permission:prospecto.lista')->name('todo');
                 Route::get('/crear/{id}', EntregaFestProspectoCrear::class)->middleware('permission:prospecto.crear')->name('crear');
                 Route::get('/editar/{id}/{prospectoId}', EntregaFestProspectoEditar::class)->middleware('permission:prospecto.editar')->name('editar');
+                Route::get('/bancarizacion/{id}', EntregaFestProspectoBancarizacionLista::class)->middleware('permission:prospecto.bancarizacion')->name('bancarizacion');
             });
     });
 

@@ -16,7 +16,6 @@
                     <i class="fa-solid fa-grip"></i> Panel de Gestión
                 </a>
             @endcan
-
             @can('prospecto.eliminar')
                 <button type="button" class="g_boton danger" onclick="confirmarEliminarProspecto()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
@@ -110,6 +109,8 @@
 
                 <div x-show="activeTab === 'prospecto'" x-transition class="g_tab_content">
                     @include('livewire.erp.entrega-fest.prospecto.partials._tab-datos-basicos')
+
+                    @livewire('erp.entrega-fest.prospecto.entrega-fest-prospecto-bancarizacion', ['prospectoId' => $prospecto->id])
                 </div>
 
                 <div x-show="activeTab === 'backoffice'" x-transition class="g_tab_content">
