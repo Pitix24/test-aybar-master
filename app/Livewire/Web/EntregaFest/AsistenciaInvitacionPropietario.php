@@ -26,6 +26,12 @@ class AsistenciaInvitacionPropietario extends Component
     public $transporte = 'bus';
     public $observaciones = '';
 
+    // Datos del acompañante
+    public $acompanante_dni = '';
+    public $acompanante_nombres = '';
+    public $acompanante_email = '';
+    public $acompanante_celular = '';
+
     public $enviado = false;
     public $mensaje_exito = '';
     public $codigo_invitado = '';
@@ -65,6 +71,12 @@ class AsistenciaInvitacionPropietario extends Component
             'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:1',
             'transporte' => 'required_if:asistira,si|in:bus,propio',
             'observaciones' => 'nullable|string|max:500',
+            
+            // Validación para el acompañante
+            'acompanante_dni' => 'required_if:cantidad_acompanantes,1|nullable|string|max:15',
+            'acompanante_nombres' => 'required_if:cantidad_acompanantes,1|nullable|string|max:255',
+            'acompanante_email' => 'nullable|email|max:255',
+            'acompanante_celular' => 'nullable|string|max:20',
         ];
     }
 
@@ -100,6 +112,18 @@ class AsistenciaInvitacionPropietario extends Component
                     'transporte' => $this->transporte === 'bus' ? InvitadoEntregaFest::TRANSPORTE_BUS : InvitadoEntregaFest::TRANSPORTE_PROPIO,
                     'observaciones_asistencia' => $this->observaciones,
                 ]);
+
+                // Si tiene acompañante, lo registramos
+                if ($this->cantidad_acompanantes == 1) {
+                    \App\Models\AcompananteEntregaFest::create([
+                        'dni' => $this->acompanante_dni,
+                        'nombres' => $this->acompanante_nombres,
+                        'email' => $this->acompanante_email,
+                        'celular' => $this->acompanante_celular,
+                        'prospecto_entrega_fest_id' => $this->prospecto->id,
+                        'invitado_entrega_fest_id' => $invitado->id,
+                    ]);
+                }
 
                 DB::commit();
 

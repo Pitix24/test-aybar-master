@@ -61,7 +61,7 @@
                         <div class="ef_form_grid">
                             <div class="ef_input_group">
                                 <label>Nº de acompañantes (máx. 1)</label>
-                                <select wire:model="cantidad_acompanantes" class="ef_input">
+                                <select wire:model.live="cantidad_acompanantes" class="ef_input">
                                     <option value="0">Sin acompañantes</option>
                                     <option value="1">1 acompañante</option>
                                 </select>
@@ -75,6 +75,37 @@
                                 </select>
                             </div>
                         </div>
+
+                        @if ($cantidad_acompanantes == 1)
+                            <div class="ef_companion_section"
+                                style="margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.2);">
+                                <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-user-plus"></i> Datos del acompañante
+                                </h3>
+                                <div class="ef_form_grid">
+                                    <div class="ef_input_group">
+                                        <label>DNI del acompañante</label>
+                                        <input type="text" wire:model="acompanante_dni" class="ef_input" placeholder="Ingrese DNI">
+                                        @error('acompanante_dni') <span class="error-msg" style="color: #f87171; font-size: 0.8rem;">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="ef_input_group">
+                                        <label>Nombres completos</label>
+                                        <input type="text" wire:model="acompanante_nombres" class="ef_input" placeholder="Ingrese nombres">
+                                        @error('acompanante_nombres') <span class="error-msg" style="color: #f87171; font-size: 0.8rem;">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="ef_input_group">
+                                        <label>Email (opcional)</label>
+                                        <input type="email" wire:model="acompanante_email" class="ef_input" placeholder="correo@ejemplo.com">
+                                        @error('acompanante_email') <span class="error-msg" style="color: #f87171; font-size: 0.8rem;">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="ef_input_group">
+                                        <label>Celular (opcional)</label>
+                                        <input type="text" wire:model="acompanante_celular" class="ef_input" placeholder="999 999 999">
+                                        @error('acompanante_celular') <span class="error-msg" style="color: #f87171; font-size: 0.8rem;">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     @endif
 
                     <div class="ef_input_group">
