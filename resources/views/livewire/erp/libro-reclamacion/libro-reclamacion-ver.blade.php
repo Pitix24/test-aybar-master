@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Detalle Ticket Libro Reclamacion {{ $ticket->codigo }}</h2>
+        <h2>Detalle Ticket Reclamacion #{{ $ticket->ticket }}</h2>
 
         <div class="cabecera_titulo_botones">
             @can('ticket-libro-reclamacion.lista')

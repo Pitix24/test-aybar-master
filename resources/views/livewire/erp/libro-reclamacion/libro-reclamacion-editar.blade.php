@@ -2,7 +2,7 @@
     <x-loading-overlay wire:loading wire:target="buscarCliente,agregarLote,quitarLote,update,eliminarLibroTicketOn" message="Guardando cambios..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Editar Ticket Libro Reclamacion</h2>
+        <h2>Editar Ticket Reclamacion #{{ $ticket_model->ticket }}</h2>
 
         <div class="cabecera_titulo_botones">
             @can('ticket-libro-reclamacion.ver')
@@ -31,11 +31,54 @@
                     :class="activeTab === 'cliente' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
                     <i class="fa-solid fa-user"></i> Cliente
                 </button>
+
+                <button type="button" @click="activeTab = 'asunto'"
+                    :class="activeTab === 'asunto' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                    <i class="fa-solid fa-comment-dots"></i> Asunto y Lotes
+                </button>
+
+                <button type="button" @click="activeTab = 'nota'"
+                    :class="activeTab === 'nota' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                    <i class="fa-solid fa-note-sticky"></i> Nota y Observaciones
+                </button>
+
+                <button type="button" @click="activeTab = 'auditoria'"
+                    :class="activeTab === 'auditoria' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                    <i class="fa-solid fa-shield-halved"></i> Auditoría
+                </button>
             </div>
         </div>
 
         <div x-show="activeTab === 'general'" x-transition class="g_tab_content">
             <div class="g_fila">
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Código</label>
+                    <input type="text" value="{{ $ticket_model->codigo }}" disabled>
+                </div>
+
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Estado Legal <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
+                    <select wire:model.live="estado_libro_reclamaciones_id" class="@error('estado_libro_reclamaciones_id') input-error @enderror">
+                        <option value="">Seleccione...</option>
+                        @foreach ($estados as $estado)
+                            <option value="{{ $estado->id }}">{{ str_replace('_', ' ', $estado->nombre) }}</option>
+                        @endforeach
+                    </select>
+                    @error('estado_libro_reclamaciones_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Clasificación</label>
+                    <input type="text" value="{{ str_replace('_', ' ', $clasificacion) }}" disabled>
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Ticket</label>
+                    <input type="text" value="{{ $ticket_model->ticket ?: 'N/D' }}" disabled>
+                </div>
+
                 <div class="g_columna_4 g_margin_bottom_10">
                     <label>Unidad de negocio <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
                     <select wire:model.live="unidad_negocio_id" class="@error('unidad_negocio_id') input-error @enderror">
@@ -57,6 +100,13 @@
                     </select>
                     @error('proyecto_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Origen</label>
+                    <input type="text" value="{{ $ticket_model->esOrigenErp() ? 'ERP - Registro Interno' : 'Formulario web' }}" disabled>
+                </div>
 
                 <div class="g_columna_4 g_margin_bottom_10">
                     <label>Gestor</label>
@@ -68,19 +118,6 @@
                     </select>
                     @error('gestor_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
-            </div>
-
-            <div class="g_fila">
-                <div class="g_columna_4 g_margin_bottom_10">
-                    <label>Estado Legal</label>
-                    <select wire:model.live="estado_libro_reclamaciones_id" class="@error('estado_libro_reclamaciones_id') input-error @enderror">
-                        <option value="">Seleccione...</option>
-                        @foreach ($estados as $estado)
-                            <option value="{{ $estado->id }}">{{ str_replace('_', ' ', $estado->nombre) }}</option>
-                        @endforeach
-                    </select>
-                    @error('estado_libro_reclamaciones_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
 
                 <div class="g_columna_4 g_margin_bottom_10">
                     <label>Subtipo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
@@ -91,17 +128,13 @@
                     </select>
                     @error('tipo_pedido') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
+            </div>
 
-                <div class="g_columna_4 g_margin_bottom_10">
+            <div class="g_fila">
+                <div class="g_columna_12 g_margin_bottom_10">
                     <label>Asignado desde</label>
                     <input type="text" value="{{ optional($ticket_model->assigned_at)->format('d/m/Y H:i') ?: 'Sin asignación' }}" disabled>
                 </div>
-            </div>
-
-            <div class="g_margin_bottom_10">
-                <label>Observaciones internas</label>
-                <textarea wire:model.blur="observaciones_internas" rows="5" class="@error('observaciones_internas') input-error @enderror"></textarea>
-                @error('observaciones_internas') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
         </div>
 
@@ -172,9 +205,23 @@
                 </div>
             </div>
 
+            <div class="g_fila">
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label>Tipo de documento</label>
+                    <input type="text" value="{{ $cliente_tipo_documento ?: 'N/D' }}" disabled>
+                </div>
+
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label>Documento del cliente</label>
+                    <input type="text" value="{{ $cliente_documento ?: 'N/D' }}" disabled>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="activeTab === 'asunto'" x-transition class="g_tab_content">
             <div class="g_margin_bottom_10">
                 <label>Asunto <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
-                <textarea wire:model.blur="asunto" rows="4" class="@error('asunto') input-error @enderror"></textarea>
+                <textarea wire:model.blur="asunto" rows="5" class="@error('asunto') input-error @enderror"></textarea>
                 @error('asunto') <p class="mensaje_error">{{ $message }}</p> @enderror
             </div>
 
@@ -238,6 +285,69 @@
                     </div>
                 </div>
             @endif
+        </div>
+
+        <div x-show="activeTab === 'nota'" x-transition class="g_tab_content">
+            <div class="g_margin_bottom_10">
+                <label>Observaciones internas</label>
+                <textarea wire:model.blur="observaciones_internas" rows="5" class="@error('observaciones_internas') input-error @enderror"></textarea>
+                @error('observaciones_internas') <p class="mensaje_error">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="g_fila">
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label>Titulo de nota</label>
+                    <input type="text" wire:model.blur="nota_fuente_titulo" class="@error('nota_fuente_titulo') input-error @enderror">
+                    @error('nota_fuente_titulo') <p class="mensaje_error">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label>Fecha de nota</label>
+                    <input type="text" wire:model.blur="nota_fuente_fecha" class="@error('nota_fuente_fecha') input-error @enderror">
+                    @error('nota_fuente_fecha') <p class="mensaje_error">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="g_margin_bottom_10">
+                <label>Nota fuente</label>
+                <textarea rows="8" disabled>{{ $nota_fuente ?: 'Sin nota fuente.' }}</textarea>
+            </div>
+        </div>
+
+        <div x-show="activeTab === 'auditoria'" x-transition class="g_tab_content">
+            <div class="g_fila">
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Creado</label>
+                    <input type="text" value="{{ optional($ticket_model->created_at)->format('d/m/Y H:i') ?: 'N/D' }}" disabled>
+                </div>
+
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Actualizado</label>
+                    <input type="text" value="{{ optional($ticket_model->updated_at)->format('d/m/Y H:i') ?: 'N/D' }}" disabled>
+                </div>
+
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Asignado</label>
+                    <input type="text" value="{{ optional($ticket_model->assigned_at)->format('d/m/Y H:i') ?: 'N/D' }}" disabled>
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Creado por</label>
+                    <input type="text" value="{{ $ticket_model->creador?->name ?: 'N/D' }}" disabled>
+                </div>
+
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Actualizado por</label>
+                    <input type="text" value="{{ $ticket_model->actualizador?->name ?: 'N/D' }}" disabled>
+                </div>
+
+                <div class="g_columna_4 g_margin_bottom_10">
+                    <label>Eliminado por</label>
+                    <input type="text" value="{{ $ticket_model->eliminador?->name ?: 'N/D' }}" disabled>
+                </div>
+            </div>
         </div>
 
         <div class="formulario_botones">

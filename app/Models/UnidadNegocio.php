@@ -15,7 +15,6 @@ class UnidadNegocio extends Model
     protected $table = 'unidad_negocios';
 
     protected $fillable = [
-        'codigo',
         'nombre',
         'razon_social',
         'ruc',
@@ -33,20 +32,6 @@ class UnidadNegocio extends Model
     protected $casts = [
         'activo' => 'boolean',
     ];
-
-    protected static function booted(): void
-    {
-        static::creating(function (self $unidad): void {
-            if (! empty($unidad->codigo)) {
-                $unidad->codigo = strtoupper(trim((string) $unidad->codigo));
-                return;
-            }
-
-            $unidad->codigo = static::generarCodigoSecuencial(
-                (int) static::withTrashed()->max('id') + 1
-            );
-        });
-    }
 
     public static function generarCodigoSecuencial(int $indice): string
     {

@@ -63,7 +63,16 @@ class LibroReclamacionEditar extends Component
     {
         $this->authorize('ticket-libro-reclamacion.editar');
 
-        $this->ticket_model = LibroReclamacion::findOrFail($id);
+        $this->ticket_model = LibroReclamacion::with([
+            'estadoLibroReclamacion',
+            'unidadNegocio',
+            'proyecto',
+            'cliente',
+            'gestor',
+            'creador',
+            'actualizador',
+            'eliminador',
+        ])->findOrFail($id);
 
         $this->codigo = $this->ticket_model->codigo;
         $this->unidad_negocio_id = $this->ticket_model->unidad_negocio_id;

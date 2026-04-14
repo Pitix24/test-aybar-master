@@ -83,10 +83,9 @@ class LibroReclamacionNumeroService
             throw new RuntimeException('No se encontro la unidad de negocio para generar el ticket.');
         }
 
-        $codigo = strtoupper(trim((string) $unidad->codigo));
-
-        if (preg_match('/^[A-Z]{3}$/', $codigo)) {
-            return $codigo;
+        $codigoConfigurado = $this->resolverCodigoConfigurado($unidad);
+        if ($codigoConfigurado !== null) {
+            return $codigoConfigurado;
         }
 
         if ($unidad->id) {
@@ -94,6 +93,37 @@ class LibroReclamacionNumeroService
         }
 
         return 'UNI';
+    }
+
+    protected function resolverCodigoConfigurado(UnidadNegocio $unidad): ?string
+    {
+        $config = (array) data_get(config('libro_reclamacion', []), 'codigos_unidad_negocio', []);
+        $porId = (array) data_get($config, 'por_id', []);
+        $porNombre = (array) data_get($config, 'por_nombre', []);
+
+        $id = (int) ($unidad->id ?? 0);
+        if ($id > 0 && array_key_exists($id, $porId)) {
+            $codigo = strtoupper(trim((string) $porId[$id]));
+            if (preg_match('/^[A-Z]{3}$/', $codigo)) {
+                return $codigo;
+            }
+        }
+
+        $nombreNormalizado = $this->normalizarTexto((string) ($unidad->nombre ?? ''));
+        $razonSocialNormalizada = $this->normalizarTexto((string) ($unidad->razon_social ?? ''));
+
+        foreach ($porNombre as $nombre => $codigo) {
+            $clave = $this->normalizarTexto((string) $nombre);
+
+            if ($clave === $nombreNormalizado || $clave === $razonSocialNormalizada) {
+                $codigo = strtoupper(trim((string) $codigo));
+                if (preg_match('/^[A-Z]{3}$/', $codigo)) {
+                    return $codigo;
+                }
+            }
+        }
+
+        return null;
     }
 
     protected function normalizarTexto(string $valor): string
