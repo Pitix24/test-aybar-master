@@ -50,7 +50,7 @@ class CanalLista extends Component
 
     public function exportExcelFiltro()
     {
-        $this->authorize('canal.exportar-filtro');
+        $this->authorize('canal.accion-exportar-filtro');
 
         return Excel::download(
             new CanalExport(
@@ -68,7 +68,7 @@ class CanalLista extends Component
 
     public function exportExcelTodo()
     {
-        $this->authorize('canal.exportar-todo');
+        $this->authorize('canal.accion-exportar-todo');
 
         return Excel::download(
             new CanalExport(

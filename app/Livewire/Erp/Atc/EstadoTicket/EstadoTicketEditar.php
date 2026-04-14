@@ -61,7 +61,7 @@ class EstadoTicketEditar extends Component
 
     public function update()
     {
-        $this->authorize('estado-ticket.editar');
+        $this->authorize('estado-ticket.accion-editar');
 
         try {
             $this->validate();
@@ -112,7 +112,7 @@ class EstadoTicketEditar extends Component
     #[On('eliminarEstadoTicketOn')]
     public function eliminarEstadoTicketOn()
     {
-        $this->authorize('estado-ticket.eliminar');
+        $this->authorize('estado-ticket.accion-eliminar');
 
         try {
             DB::beginTransaction();

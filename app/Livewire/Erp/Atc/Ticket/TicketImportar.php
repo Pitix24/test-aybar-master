@@ -18,8 +18,8 @@ class TicketImportar extends Component
 
     public $archivo_excel;
     public $registrosImportados = [];
-    public $erroresImportacion  = [];
-    public $columnasDetectadas  = [];
+    public $erroresImportacion = [];
+    public $columnasDetectadas = [];
 
     public function descargarPlantilla()
     {
@@ -33,6 +33,8 @@ class TicketImportar extends Component
 
     public function importarTickets()
     {
+        $this->authorize('ticket.accion-importar-tickets');
+
         if (!$this->archivo_excel) {
             $this->dispatch('alertaLivewire', ['type' => 'warning', 'title' => 'Advertencia', 'text' => 'Debe seleccionar un archivo Excel.']);
             return;
@@ -45,35 +47,35 @@ class TicketImportar extends Component
             Excel::import($import, $this->archivo_excel->getRealPath());
 
             $this->registrosImportados = $import->filasImportadasData;
-            $this->erroresImportacion  = $import->errores;
-            $this->columnasDetectadas  = $import->columnasExcel;
+            $this->erroresImportacion = $import->errores;
+            $this->columnasDetectadas = $import->columnasExcel;
 
             $this->reset('archivo_excel');
 
             if ($import->importados === 0 && count($import->errores) > 0) {
                 $this->dispatch('alertaLivewire', [
-                    'type'              => 'error',
-                    'title'             => 'Error en Importación',
-                    'text'              => 'No se pudo importar ningún registro. Revisa los errores detallados abajo.',
-                    'showConfirmButton'  => true,
+                    'type' => 'error',
+                    'title' => 'Error en Importación',
+                    'text' => 'No se pudo importar ningún registro. Revisa los errores detallados abajo.',
+                    'showConfirmButton' => true,
                 ]);
                 return;
             }
 
-            $type  = 'success';
+            $type = 'success';
             $title = '¡Importación Exitosa!';
-            $text  = "Se registraron {$import->importados} tickets correctamente.";
+            $text = "Se registraron {$import->importados} tickets correctamente.";
 
             if (count($import->errores) > 0) {
-                $type  = 'warning';
+                $type = 'warning';
                 $title = 'Importación Parcial';
-                $text  = "Se registraron {$import->importados} tickets. " . count($import->errores) . " filas tuvieron errores.";
+                $text = "Se registraron {$import->importados} tickets. " . count($import->errores) . " filas tuvieron errores.";
             }
 
             $this->dispatch('alertaLivewire', [
-                'type'             => $type,
-                'title'            => $title,
-                'text'             => $text,
+                'type' => $type,
+                'title' => $title,
+                'text' => $text,
                 'showConfirmButton' => true,
             ]);
 

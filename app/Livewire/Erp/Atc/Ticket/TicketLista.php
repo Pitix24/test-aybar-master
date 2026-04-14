@@ -93,7 +93,7 @@ class TicketLista extends Component
         $this->areas = Area::all();
         $this->solicitudes = TipoSolicitud::all();
         $this->canales = Canal::all();
-        $this->usuarios_admin = User::permission('ticket.gestor')->get();
+        $this->usuarios_admin = User::permission('atc.gestor')->get();
         $this->prioridades = PrioridadTicket::all();
         // Aplicamos filtros por defecto solo si NO están presentes en la URL
         // Esto permite que si regresas con ?desde=&hasta= (vacíos), se respeten.
@@ -209,7 +209,7 @@ class TicketLista extends Component
 
     public function exportExcelFiltro()
     {
-        $this->authorize('ticket.exportar-filtro');
+        $this->authorize('ticket.accion-exportar-filtro');
 
         return Excel::download(
             new TicketExport(
@@ -238,7 +238,7 @@ class TicketLista extends Component
 
     public function exportExcelTodo()
     {
-        $this->authorize('ticket.exportar-todo');
+        $this->authorize('ticket.accion-exportar-todo');
 
         return Excel::download(
             new TicketExport(

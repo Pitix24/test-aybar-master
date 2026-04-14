@@ -5,7 +5,7 @@
         <h2>Crear Tipo de Solicitud</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('tipo-solicitud.lista')
+            @can('tipo-solicitud.vista-lista')
                 <a href="{{ route('erp.tipo-solicitud.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -88,7 +88,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('tipo-solicitud.crear')
+                        @can('tipo-solicitud.accion-crear')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
                                 <span wire:loading.remove wire:target="store">
                                     <i class="fa-solid fa-save"></i> Crear

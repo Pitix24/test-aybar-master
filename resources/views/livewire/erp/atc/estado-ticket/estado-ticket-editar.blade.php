@@ -5,17 +5,17 @@
         <h2>Editar Estado de Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('estado-ticket.lista')
+            @can('estado-ticket.vista-lista')
                 <a href="{{ route('erp.estado-ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('estado-ticket.crear')
+            @can('estado-ticket.vista-crear')
                 <a href="{{ route('erp.estado-ticket.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
-            @can('estado-ticket.eliminar')
+            @can('estado-ticket.accion-eliminar')
                 <button type="button" class="g_boton danger" onclick="confirmarEliminarEstadoTicket()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
                 </button>
@@ -90,7 +90,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('estado-ticket.editar')
+                        @can('estado-ticket.accion-editar')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                                 <span wire:loading.remove wire:target="update">
                                     <i class="fa-solid fa-save"></i> Actualizar

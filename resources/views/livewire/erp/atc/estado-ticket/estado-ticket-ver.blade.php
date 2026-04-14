@@ -3,12 +3,12 @@
         <h2>Detalle de Estado de Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('estado-ticket.lista')
+            @can('estado-ticket.vista-lista')
                 <a href="{{ route('erp.estado-ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('estado-ticket.editar')
+            @can('estado-ticket.vista-editar')
                 <a href="{{ route('erp.estado-ticket.vista.editar', $estado->id) }}" class="g_boton primary">
                     Editar <i class="fa-solid fa-pencil"></i></a>
             @endcan

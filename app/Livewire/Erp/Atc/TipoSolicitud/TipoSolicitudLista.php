@@ -50,7 +50,7 @@ class TipoSolicitudLista extends Component
 
     public function exportExcelFiltro()
     {
-        $this->authorize('tipo-solicitud.exportar-filtro');
+        $this->authorize('tipo-solicitud.accion-exportar-filtro');
 
         return Excel::download(
             new TipoSolicitudExport(
@@ -68,7 +68,7 @@ class TipoSolicitudLista extends Component
 
     public function exportExcelTodo()
     {
-        $this->authorize('tipo-solicitud.exportar-todo');
+        $this->authorize('tipo-solicitud.accion-exportar-todo');
 
         return Excel::download(
             new TipoSolicitudExport(

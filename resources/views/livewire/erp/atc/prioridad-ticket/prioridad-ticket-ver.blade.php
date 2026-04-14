@@ -3,12 +3,12 @@
         <h2>Detalle de Prioridad de Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('prioridad-ticket.lista')
+            @can('prioridad-ticket.vista-lista')
                 <a href="{{ route('erp.prioridad-ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('prioridad-ticket.editar')
+            @can('prioridad-ticket.vista-editar')
                 <a href="{{ route('erp.prioridad-ticket.vista.editar', $prioridad->id) }}" class="g_boton primary">
                     Editar <i class="fa-solid fa-pencil"></i></a>
             @endcan

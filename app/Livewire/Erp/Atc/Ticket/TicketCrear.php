@@ -345,7 +345,7 @@ class TicketCrear extends Component
 
     public function store($confirmado = false)
     {
-        $this->authorize('ticket.crear');
+        $this->authorize('ticket.accion-crear');
 
         try {
             $this->validate();

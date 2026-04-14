@@ -53,7 +53,7 @@ class CanalEditar extends Component
 
     public function update()
     {
-        $this->authorize('canal.editar');
+        $this->authorize('canal.accion-editar');
 
         try {
             $this->validate();
@@ -102,7 +102,7 @@ class CanalEditar extends Component
     #[On('eliminarCanalOn')]
     public function eliminarCanalOn()
     {
-        $this->authorize('canal.eliminar');
+        $this->authorize('canal.accion-eliminar');
 
         try {
             DB::beginTransaction();

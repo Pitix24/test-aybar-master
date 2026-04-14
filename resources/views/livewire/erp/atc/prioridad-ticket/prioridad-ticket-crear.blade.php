@@ -5,7 +5,7 @@
         <h2>Crear Prioridad de Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('prioridad-ticket.lista')
+            @can('prioridad-ticket.vista-lista')
                 <a href="{{ route('erp.prioridad-ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -93,7 +93,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('prioridad-ticket.crear')
+                        @can('prioridad-ticket.accion-crear')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
                                 <span wire:loading.remove wire:target="store">
                                     <i class="fa-solid fa-save"></i> Crear

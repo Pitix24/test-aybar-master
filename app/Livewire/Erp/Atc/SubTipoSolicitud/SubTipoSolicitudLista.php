@@ -61,7 +61,7 @@ class SubTipoSolicitudLista extends Component
 
     public function exportExcelFiltro()
     {
-        $this->authorize('sub-tipo-solicitud.exportar-filtro');
+        $this->authorize('sub-tipo-solicitud.accion-exportar-filtro');
 
         return Excel::download(
             new SubTipoSolicitudExport(
@@ -80,7 +80,7 @@ class SubTipoSolicitudLista extends Component
 
     public function exportExcelTodo()
     {
-        $this->authorize('sub-tipo-solicitud.exportar-todo');
+        $this->authorize('sub-tipo-solicitud.accion-exportar-todo');
 
         return Excel::download(
             new SubTipoSolicitudExport(

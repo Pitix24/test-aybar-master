@@ -5,7 +5,7 @@
         <h2>Crear Canal de Atención</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('canal.lista')
+            @can('canal.vista-lista')
                 <a href="{{ route('erp.canal.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -54,7 +54,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('canal.crear')
+                        @can('canal.accion-crear')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
                                 <span wire:loading.remove wire:target="store">
                                     <i class="fa-solid fa-save"></i> Crear

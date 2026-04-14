@@ -5,17 +5,17 @@
         <h2>Editar Prioridad de Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('prioridad-ticket.lista')
+            @can('prioridad-ticket.vista-lista')
                 <a href="{{ route('erp.prioridad-ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('prioridad-ticket.crear')
+            @can('prioridad-ticket.vista-crear')
                 <a href="{{ route('erp.prioridad-ticket.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
-            @can('prioridad-ticket.eliminar')
+            @can('prioridad-ticket.accion-eliminar')
                 <button type="button" class="g_boton danger" onclick="confirmarEliminarPrioridadTicket()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
                 </button>
@@ -104,7 +104,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('prioridad-ticket.editar')
+                        @can('prioridad-ticket.accion-editar')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                                 <span wire:loading.remove wire:target="update">
                                     <i class="fa-solid fa-save"></i> Actualizar

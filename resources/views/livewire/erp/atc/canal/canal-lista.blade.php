@@ -7,7 +7,7 @@
         <h2>Canales de Atención</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('canal.crear')
+            @can('canal.vista-crear')
                 <a href="{{ route('erp.canal.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
@@ -47,7 +47,7 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                @can('canal.exportar-filtro')
+                @can('canal.accion-exportar-filtro')
                     <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
                         wire:target="exportExcelFiltro">
                         <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
@@ -57,7 +57,7 @@
                     </button>
                 @endcan
 
-                @can('canal.exportar-todo')
+                @can('canal.accion-exportar-todo')
                     <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
                         wire:target="exportExcelTodo">
                         <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
@@ -109,14 +109,14 @@
                             </td>
 
                             <td class="g_celda_acciones g_celda_centro centro">
-                                @can('canal.ver')
+                                @can('canal.vista-ver')
                                     <a href="{{ route('erp.canal.vista.ver', $item->id) }}" class="g_accion ver"
                                         title="Ver detalle">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 @endcan
 
-                                @can('canal.editar')
+                                @can('canal.vista-editar')
                                     <a href="{{ route('erp.canal.vista.editar', $item->id) }}" class="g_accion editar"
                                         title="Editar">
                                         <i class="fa-solid fa-pencil"></i>

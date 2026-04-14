@@ -5,7 +5,7 @@
         <h2>Crear Estado de Ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('estado-ticket.lista')
+            @can('estado-ticket.vista-lista')
                 <a href="{{ route('erp.estado-ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -79,7 +79,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('estado-ticket.crear')
+                        @can('estado-ticket.accion-crear')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
                                 <span wire:loading.remove wire:target="store">
                                     <i class="fa-solid fa-save"></i> Crear

@@ -3,12 +3,12 @@
         <h2>Detalle del Sub Tipo de Solicitud</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('sub-tipo-solicitud.lista')
+            @can('sub-tipo-solicitud.vista-lista')
                 <a href="{{ route('erp.sub-tipo-solicitud.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('sub-tipo-solicitud.editar')
+            @can('sub-tipo-solicitud.vista-editar')
                 <a href="{{ route('erp.sub-tipo-solicitud.vista.editar', $sub_tipo->id) }}" class="g_boton primary">
                     Editar <i class="fa-solid fa-pencil"></i></a>
             @endcan

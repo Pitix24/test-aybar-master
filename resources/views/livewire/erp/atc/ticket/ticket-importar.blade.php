@@ -1,16 +1,19 @@
 <div style="padding: 20px;">
-    <x-loading-overlay wire:loading wire:target="importarTickets" message="Procesando importación, por favor espere..." />
+    <x-loading-overlay wire:loading wire:target="importarTickets"
+        message="Procesando importación, por favor espere..." />
 
     {{-- Panel de subida --}}
     <div class="g_panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-file-excel"></i> Importación Masiva de Tickets</h4>
+            <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-file-excel"></i> Importación Masiva de
+                Tickets</h4>
             <button wire:click="descargarPlantilla" class="g_boton info">
                 <i class="fa-solid fa-download"></i> Descargar Plantilla Excel
             </button>
         </div>
 
-        <p class="leyenda">Sube el archivo Excel con los datos de los Tickets que deseas importar al sistema de Atención al Cliente (ATC).</p>
+        <p class="leyenda">Sube el archivo Excel con los datos de los Tickets que deseas importar al sistema de Atención
+            al Cliente (ATC).</p>
 
         <div class="g_margin_top_20 formulario">
             <div class="g_margin_bottom_20">
@@ -25,14 +28,20 @@
             </div>
 
             <div class="formulario_botones">
-                <button wire:click="importarTickets" class="g_boton dark" style="width: 100%;"
-                    wire:loading.attr="disabled" wire:target="importarTickets, archivo_excel">
-                    <span wire:loading.remove wire:target="importarTickets">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Iniciar Importación
-                    </span>
-                    <span wire:loading wire:target="importarTickets">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Procesando...
-                    </span>
+                @can('ticket.accion-importar-tickets')
+                    <button wire:click="importarTickets" class="g_boton dark" style="width: 100%;"
+                        wire:loading.attr="disabled" wire:target="importarTickets, archivo_excel">
+                        <span wire:loading.remove wire:target="importarTickets">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Iniciar Importación
+                        </span>
+                        <span wire:loading wire:target="importarTickets">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Procesando...
+                        </span>
+                    </button>
+                @endcan
+
+                <button type="button" class="g_boton cancelar" onclick="history.back()">
+                    <i class="fa-solid fa-times"></i> Cancelar
                 </button>
             </div>
         </div>
@@ -58,7 +67,8 @@
             </h4>
             <div style="max-height: 250px; overflow-y: auto; margin-top: 10px;">
                 @foreach($erroresImportacion as $error)
-                    <p style="font-size: 0.82em; margin: 4px 0; padding: 4px 8px; background: rgba(239,68,68,0.07); border-radius: 4px;">
+                    <p
+                        style="font-size: 0.82em; margin: 4px 0; padding: 4px 8px; background: rgba(239,68,68,0.07); border-radius: 4px;">
                         <i class="fa-solid fa-xmark" style="color: #ef4444;"></i> {{ $error }}
                     </p>
                 @endforeach
@@ -93,7 +103,8 @@
                                 <td>{{ $reg['dni'] }}</td>
                                 <td>{{ $reg['fecha'] }}</td>
                                 <td class="g_celda_acciones g_celda_centro">
-                                    <a href="{{ route('erp.ticket.vista.ver', $reg['id']) }}" class="g_accion ver" target="_blank">
+                                    <a href="{{ route('erp.ticket.vista.ver', $reg['id']) }}" class="g_accion ver"
+                                        target="_blank">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 </td>

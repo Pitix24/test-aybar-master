@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="formulario_botones">
-                    @can('ticket.enviar-correo')
+                    @can('ticket.accion-enviar-correo')
                         <button class="g_boton guardar" wire:click="store" wire:loading.attr="disabled" @if(!$ticket->email)
                         disabled @endif>
                             <span wire:loading.remove wire:target="store">

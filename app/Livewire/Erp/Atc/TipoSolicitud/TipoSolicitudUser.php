@@ -33,7 +33,7 @@ class TipoSolicitudUser extends Component
     #[Url(as: 'adp')]
     public $areaDisponibles = '';
 
-    public $perPageAsignados   = 15;
+    public $perPageAsignados = 15;
     public $perPageDisponibles = 15;
 
     public $areas = [];
@@ -68,7 +68,7 @@ class TipoSolicitudUser extends Component
 
     public function agregarUsuario($userId)
     {
-        $this->authorize('tipo-solicitud.agregar-usuarios');
+        $this->authorize('tipo-solicitud.accion-agregar-usuario');
 
         try {
             DB::beginTransaction();
@@ -78,28 +78,28 @@ class TipoSolicitudUser extends Component
             DB::commit();
 
             $this->dispatch('alertaLivewire', [
-                'type'  => 'success',
+                'type' => 'success',
                 'title' => 'Agregado',
-                'text'  => 'Usuario asignado al tipo de solicitud correctamente.',
+                'text' => 'Usuario asignado al tipo de solicitud correctamente.',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("[TIPO-SOLICITUD USER] Error al agregar usuario: " . $e->getMessage(), [
-                'usuario_id'     => auth()->id(),
+                'usuario_id' => auth()->id(),
                 'tipo_solicitud_id' => $this->tipoSolicitud->id,
                 'target_user_id' => $userId,
             ]);
             $this->dispatch('alertaLivewire', [
-                'type'  => 'error',
+                'type' => 'error',
                 'title' => 'Error',
-                'text'  => 'No se pudo asignar el usuario.',
+                'text' => 'No se pudo asignar el usuario.',
             ]);
         }
     }
 
     public function quitarUsuario($userId)
     {
-        $this->authorize('tipo-solicitud.eliminar-usuarios');
+        $this->authorize('tipo-solicitud.accion-quitar-usuario');
 
         try {
             DB::beginTransaction();
@@ -109,28 +109,28 @@ class TipoSolicitudUser extends Component
             DB::commit();
 
             $this->dispatch('alertaLivewire', [
-                'type'  => 'success',
+                'type' => 'success',
                 'title' => 'Quitado',
-                'text'  => 'Usuario retirado del tipo de solicitud.',
+                'text' => 'Usuario retirado del tipo de solicitud.',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("[TIPO-SOLICITUD USER] Error al quitar usuario: " . $e->getMessage(), [
-                'usuario_id'        => auth()->id(),
+                'usuario_id' => auth()->id(),
                 'tipo_solicitud_id' => $this->tipoSolicitud->id,
-                'target_user_id'    => $userId,
+                'target_user_id' => $userId,
             ]);
             $this->dispatch('alertaLivewire', [
-                'type'  => 'error',
+                'type' => 'error',
                 'title' => 'Error',
-                'text'  => 'No se pudo retirar al usuario.',
+                'text' => 'No se pudo retirar al usuario.',
             ]);
         }
     }
 
     public function marcarPrincipal($userId)
     {
-        $this->authorize('tipo-solicitud.marcar-principal-usuario');
+        $this->authorize('tipo-solicitud.accion-marcar-principal-usuario');
 
         try {
             DB::beginTransaction();
@@ -147,21 +147,21 @@ class TipoSolicitudUser extends Component
             DB::commit();
 
             $this->dispatch('alertaLivewire', [
-                'type'  => 'success',
+                'type' => 'success',
                 'title' => 'Actualizado',
-                'text'  => 'Se ha asignado el nuevo responsable del tipo de solicitud.',
+                'text' => 'Se ha asignado el nuevo responsable del tipo de solicitud.',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("[TIPO-SOLICITUD USER] Error al marcar principal: " . $e->getMessage(), [
-                'usuario_id'        => auth()->id(),
+                'usuario_id' => auth()->id(),
                 'tipo_solicitud_id' => $this->tipoSolicitud->id,
-                'target_user_id'    => $userId,
+                'target_user_id' => $userId,
             ]);
             $this->dispatch('alertaLivewire', [
-                'type'  => 'error',
+                'type' => 'error',
                 'title' => 'Error',
-                'text'  => 'No se pudo actualizar el responsable.',
+                'text' => 'No se pudo actualizar el responsable.',
             ]);
         }
     }
@@ -175,7 +175,9 @@ class TipoSolicitudUser extends Component
                 $q->where('name', 'like', '%' . $this->searchAgregados . '%')
                     ->orWhere('email', 'like', '%' . $this->searchAgregados . '%');
             })
-            ->when($this->areaAgregados, fn($q) =>
+            ->when(
+                $this->areaAgregados,
+                fn($q) =>
                 $q->whereHas('areas', fn($qa) => $qa->where('areas.id', $this->areaAgregados))
             )
             ->with(['areas' => fn($q) => $q->select('areas.id', 'areas.nombre', 'areas.color')])
@@ -192,7 +194,9 @@ class TipoSolicitudUser extends Component
                 $q->where('name', 'like', '%' . $this->searchDisponibles . '%')
                     ->orWhere('email', 'like', '%' . $this->searchDisponibles . '%');
             })
-            ->when($this->areaDisponibles, fn($q) =>
+            ->when(
+                $this->areaDisponibles,
+                fn($q) =>
                 $q->whereHas('areas', fn($qa) => $qa->where('areas.id', $this->areaDisponibles))
             )
             ->with(['areas' => fn($q) => $q->select('areas.id', 'areas.nombre', 'areas.color')])
@@ -200,7 +204,7 @@ class TipoSolicitudUser extends Component
             ->paginate($this->perPageDisponibles, ['*'], 'pageDisponibles');
 
         return view('livewire.erp.atc.tipo-solicitud.tipo-solicitud-user', [
-            'usuariosAgregados'   => $usuariosAgregados,
+            'usuariosAgregados' => $usuariosAgregados,
             'usuariosDisponibles' => $usuariosDisponibles,
         ]);
     }

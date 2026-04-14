@@ -5,23 +5,23 @@
         <h2>Editar Tipo de Solicitud</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('tipo-solicitud.lista')
+            @can('tipo-solicitud.vista-lista')
                 <a href="{{ route('erp.tipo-solicitud.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('tipo-solicitud.crear')
+            @can('tipo-solicitud.vista-crear')
                 <a href="{{ route('erp.tipo-solicitud.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
-            @can('tipo-solicitud.agregar-usuarios')
+            @can('tipo-solicitud.vista-agregar-usuario')
                 <a href="{{ route('erp.tipo-solicitud.vista.usuarios', $tipo_model->id) }}" class="g_boton info">
                     Usuarios <i class="fa-solid fa-users"></i>
                 </a>
             @endcan
 
-            @can('tipo-solicitud.eliminar')
+            @can('tipo-solicitud.accion-eliminar')
                 <button type="button" class="g_boton danger" onclick="confirmarEliminarTipoSolicitud()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
                 </button>
@@ -105,7 +105,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('tipo-solicitud.editar')
+                        @can('tipo-solicitud.accion-editar')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                                 <span wire:loading.remove wire:target="update">
                                     <i class="fa-solid fa-save"></i> Actualizar

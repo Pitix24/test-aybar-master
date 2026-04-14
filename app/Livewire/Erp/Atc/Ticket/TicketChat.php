@@ -34,7 +34,7 @@ class TicketChat extends Component
 
     public function enviar()
     {
-        $this->authorize('ticket.chat');
+        $this->authorize('ticket.accion-enviar-chat');
 
         if (trim($this->mensaje) == '') {
             return;

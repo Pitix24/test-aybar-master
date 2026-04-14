@@ -4,7 +4,7 @@
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Derivar Ticket</h2>
 
-        @can('ticket.editar')
+        @can('ticket.vista-editar')
             <div class="cabecera_titulo_botones">
                 <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton dark">
                     <i class="fa-solid fa-arrow-left"></i> Regresar al ticket
@@ -87,7 +87,7 @@
                         </div>
 
                         <div class="formulario_botones">
-                            @can('ticket.derivar')
+                            @can('ticket.accion-derivar')
                                 <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
                                     <span wire:loading.remove wire:target="store">
                                         <i class="fa-solid fa-route"></i> Derivar
@@ -116,13 +116,13 @@
                 <h4 class="g_panel_titulo">Ticket padre</h4>
 
                 <div class="g_margin_bottom_10">
-                    @can('ticket.ver')
+                    @can('ticket.vista-ver')
                         <a href="{{ route('erp.ticket.vista.ver', $ticket->id) }}" class="g_boton warning">
                             <i class="fa-solid fa-eye"></i> Ver ticket
                         </a>
                     @endcan
 
-                    @can('ticket.editar')
+                    @can('ticket.vista-editar')
                         <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton info">
                             <i class="fa-solid fa-pencil"></i> Editar ticket
                         </a>

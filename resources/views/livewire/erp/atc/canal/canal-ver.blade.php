@@ -3,12 +3,12 @@
         <h2>Detalle de Canal de Atención</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('canal.lista')
+            @can('canal.vista-lista')
                 <a href="{{ route('erp.canal.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('canal.editar')
+            @can('canal.vista-editar')
                 <a href="{{ route('erp.canal.vista.editar', $canal->id) }}" class="g_boton primary">
                     Editar <i class="fa-solid fa-pencil"></i></a>
             @endcan

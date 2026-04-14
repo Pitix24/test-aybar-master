@@ -38,7 +38,7 @@ class TicketArchivo extends Component
 
     public function adjuntar()
     {
-        $this->authorize('ticket.agregar-archivo');
+        $this->authorize('ticket.accion-agregar-archivo');
 
         try {
             $this->validate([
@@ -109,7 +109,7 @@ class TicketArchivo extends Component
     #[On('eliminarArchivoOn')]
     public function eliminarArchivo($archivoId)
     {
-        $this->authorize('ticket.eliminar-archivo');
+        $this->authorize('ticket.accion-eliminar-archivo');
 
         try {
             DB::beginTransaction();

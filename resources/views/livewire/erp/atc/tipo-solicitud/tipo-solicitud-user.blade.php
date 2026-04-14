@@ -9,12 +9,12 @@
         </h2>
 
         <div class="cabecera_titulo_botones">
-            @can('tipo-solicitud.lista')
+            @can('tipo-solicitud.vista-lista')
                 <a href="{{ route('erp.tipo-solicitud.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('tipo-solicitud.editar')
+            @can('tipo-solicitud.vista-editar')
                 <a href="{{ route('erp.tipo-solicitud.vista.editar', $tipoSolicitud->id) }}" class="g_boton secondary">
                     Editar <i class="fa-solid fa-pencil"></i></a>
             @endcan
@@ -90,7 +90,7 @@
                                         @endforelse
                                     </td>
                                     <td class="g_celda_centro">
-                                        @can('tipo-solicitud.marcar-principal-usuario')
+                                        @can('tipo-solicitud.accion-marcar-principal-usuario')
                                             <input type="radio" name="principal_radio"
                                                 wire:click="marcarPrincipal({{ $user->id }})"
                                                 {{ $user->pivot->is_principal ? 'checked' : '' }}
@@ -98,7 +98,7 @@
                                         @endcan
                                     </td>
                                     <td class="g_celda_acciones g_celda_centro centro">
-                                        @can('tipo-solicitud.eliminar-usuarios')
+                                        @can('tipo-solicitud.accion-quitar-usuario')
                                             <button wire:click="quitarUsuario({{ $user->id }})"
                                                 class="g_boton danger" title="Quitar del tipo de solicitud">
                                                 <i class="fa-solid fa-user-minus"></i>
@@ -189,7 +189,7 @@
                                         @endforelse
                                     </td>
                                     <td class="g_celda_acciones g_celda_centro centro">
-                                        @can('tipo-solicitud.agregar-usuarios')
+                                        @can('tipo-solicitud.accion-agregar-usuario')
                                             <button wire:click="agregarUsuario({{ $user->id }})"
                                                 class="g_boton success">
                                                 <i class="fa-solid fa-user-plus"></i>

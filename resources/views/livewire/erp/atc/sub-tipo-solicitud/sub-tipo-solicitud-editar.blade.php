@@ -5,17 +5,17 @@
         <h2>Editar Sub Tipo de Solicitud</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('sub-tipo-solicitud.lista')
+            @can('sub-tipo-solicitud.vista-lista')
                 <a href="{{ route('erp.sub-tipo-solicitud.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('sub-tipo-solicitud.crear')
+            @can('sub-tipo-solicitud.vista-crear')
                 <a href="{{ route('erp.sub-tipo-solicitud.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
-            @can('sub-tipo-solicitud.eliminar')
+            @can('sub-tipo-solicitud.accion-eliminar')
                 <button type="button" class="g_boton danger" onclick="confirmarEliminarSubTipoSolicitud()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
                 </button>
@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('sub-tipo-solicitud.editar')
+                        @can('sub-tipo-solicitud.accion-editar')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                                 <span wire:loading.remove wire:target="update">
                                     <i class="fa-solid fa-save"></i> Actualizar

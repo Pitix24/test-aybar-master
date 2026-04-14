@@ -127,7 +127,7 @@ class TicketDerivar extends Component
 
     public function store()
     {
-        $this->authorize('ticket.derivar');
+        $this->authorize('ticket.accion-derivar');
 
         try {
             $this->validate();

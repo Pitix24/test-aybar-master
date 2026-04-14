@@ -50,7 +50,7 @@ class TipoSolicitudCrear extends Component
 
     public function store()
     {
-        $this->authorize('tipo-solicitud.crear');
+        $this->authorize('tipo-solicitud.accion-crear');
 
         try {
             $this->validate();

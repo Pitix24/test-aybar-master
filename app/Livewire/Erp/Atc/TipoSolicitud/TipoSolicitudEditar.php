@@ -63,7 +63,7 @@ class TipoSolicitudEditar extends Component
 
     public function update()
     {
-        $this->authorize('tipo-solicitud.editar');
+        $this->authorize('tipo-solicitud.accion-editar');
 
         try {
             $this->validate();
@@ -115,7 +115,7 @@ class TipoSolicitudEditar extends Component
     #[On('eliminarTipoSolicitudOn')]
     public function eliminarTipoSolicitudOn()
     {
-        $this->authorize('tipo-solicitud.eliminar');
+        $this->authorize('tipo-solicitud.accion-eliminar');
 
         try {
             DB::beginTransaction();

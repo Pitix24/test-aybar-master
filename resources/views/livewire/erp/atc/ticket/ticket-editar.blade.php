@@ -6,35 +6,35 @@
         <h2>Editar ticket</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('ticket.lista')
+            @can('ticket.vista-lista')
                 <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i>
                 </a>
             @endcan
 
-            @can('ticket.crear')
+            @can('ticket.vista-crear')
                 <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton primary">
                     Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
-            @can('ticket.derivar')
+            @can('ticket.vista-derivar')
                 <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton success">
                     Derivar <i class="fa-solid fa-route"></i>
                 </a>
             @endcan
 
-            @can('cita.crear')
+            @can('ticket.vista-crear-cita')
                 <a href="{{ route('erp.cita.vista.crear', $ticket->id) }}" class="g_boton cancelar">
                     Crear cita <i class="fa-solid fa-calendar-days"></i></a>
             @endcan
 
-            @can('ticket.eliminar')
+            @can('ticket.accion-eliminar')
                 <button type="button" class="g_boton danger" onclick="alertaEliminarTicket()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
                 </button>
             @endcan
 
-            @can('ticket.chat')
+            @can('ticket.vista-chat')
                 <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
                     Chat <i class="fa-solid fa-comments"></i>
                 </button>
@@ -190,8 +190,7 @@
                         <div class="g_margin_bottom_10">
                             <label>Descripción respuesta</label>
                             <textarea wire:model="descripcion_respuesta"
-                                class="@error('descripcion_respuesta') input-error @enderror"
-                                rows="6"
+                                class="@error('descripcion_respuesta') input-error @enderror" rows="6"
                                 placeholder="Escribe la descripción de la respuesta...">{{ old('descripcion_respuesta', $descripcion_respuesta) }}</textarea>
                             @error('descripcion_respuesta') <p class="mensaje_error">{{ $message }}</p> @enderror
                         </div>
@@ -200,13 +199,13 @@
 
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
                     <div class="g_margin_bottom_10">
-                        @can('cliente.consultar')
+                        @can('ticket.vista-portal-cliente')
                             <a href="{{ route('erp.cliente.vista.consultar', $ticket->dni) }}" class="g_boton primary">
                                 <i class="fa-solid fa-border-all"></i> Portal cliente
                             </a>
                         @endcan
 
-                        @can('cliente.ver')
+                        @can('ticket.vista-ver-cliente')
                             @if(isset($ticket->userCliente))
                                 <a href="{{ route('erp.cliente.vista.ver', $ticket->userCliente->id) }}" class="g_boton info">
                                     <i class="fa-solid fa-circle-user"></i> Perfil
@@ -252,7 +251,7 @@
                 </div>
 
                 <div class="formulario_botones">
-                    @can('ticket.editar')
+                    @can('ticket.accion-editar')
                         <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                             <span wire:loading.remove wire:target="update">
                                 <i class="fa-solid fa-pencil"></i> Actualizar
@@ -294,14 +293,14 @@
                                     <td class="g_negrita">#{{ $ticket->padre->id }}</td>
                                     <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
                                     <td class="g_celda_centro">
-                                        @can('ticket.ver')
+                                        @can('ticket.vista-ver')
                                             <a href="{{ route('erp.ticket.vista.ver', $ticket->padre->id) }}"
                                                 class="g_accion ver" title="Ver detalle">
                                                 <i class="fa-solid fa-eye"></i>
                                             </a>
                                         @endcan
 
-                                        @can('ticket.editar')
+                                        @can('ticket.vista-editar')
                                             <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}"
                                                 class="g_accion editar" title="Editar">
                                                 <i class="fa-solid fa-pencil"></i>
@@ -333,14 +332,14 @@
                                         <td class="g_negrita">#{{ $hijo->id }}</td>
                                         <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
                                         <td class="g_celda_centro">
-                                            @can('ticket.ver')
+                                            @can('ticket.vista-ver')
                                                 <a href="{{ route('erp.ticket.vista.ver', $hijo->id) }}" class="g_accion ver"
                                                     title="Ver Ticket Hijo">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </a>
                                             @endcan
 
-                                            @can('ticket.editar')
+                                            @can('ticket.vista-editar')
                                                 <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion editar"
                                                     title="Editar Ticket Hijo">
                                                     <i class="fa-solid fa-pencil"></i>

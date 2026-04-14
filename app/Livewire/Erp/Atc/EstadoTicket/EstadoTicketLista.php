@@ -50,7 +50,7 @@ class EstadoTicketLista extends Component
 
     public function exportExcelFiltro()
     {
-        $this->authorize('estado-ticket.exportar-filtro');
+        $this->authorize('estado-ticket.accion-exportar-filtro');
 
         return Excel::download(
             new EstadoTicketExport(
@@ -68,7 +68,7 @@ class EstadoTicketLista extends Component
 
     public function exportExcelTodo()
     {
-        $this->authorize('estado-ticket.exportar-todo');
+        $this->authorize('estado-ticket.accion-exportar-todo');
 
         return Excel::download(
             new EstadoTicketExport(

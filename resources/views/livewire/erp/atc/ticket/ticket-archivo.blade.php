@@ -2,7 +2,7 @@
     <x-loading-overlay wire:loading wire:target="archivo, adjuntar, eliminarArchivo" message="Procesando archivo..." />
 
     @if(!$soloLectura)
-        @can('ticket.agregar-archivo')
+        @can('ticket.accion-agregar-archivo')
             <h4 class="g_panel_titulo"><i class="fa-solid fa-cloud-arrow-up"></i> Nuevo Adjunto</h4>
 
             <div class="formulario">
@@ -89,14 +89,14 @@
                             <div>{{ $file->nombre_original }}</div>
                         </td>
                         <td class="g_celda_acciones g_celda_centro">
-                            @can('ticket.ver-archivo')
+                            @can('ticket.accion-ver-archivo')
                                 <a href="{{ $file->url }}" target="_blank" class="g_accion ver" title="Ver">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
                             @endcan
 
                             @if(!$soloLectura)
-                                @can('ticket.eliminar-archivo')
+                                @can('ticket.accion-eliminar-archivo')
                                     <button type="button" onclick="alertaEliminarArchivo({{ $file->id }})" class="g_accion eliminar"
                                         title="Eliminar">
                                         <i class="fa-solid fa-trash"></i>

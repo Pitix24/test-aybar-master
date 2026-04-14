@@ -33,11 +33,11 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('tipo-solicitud')
             ->name('tipo-solicitud.vista.')
             ->group(function () {
-                Route::get('/', TipoSolicitudLista::class)->middleware('permission:tipo-solicitud.lista')->name('todo');
-                Route::get('/ver/{id}', TipoSolicitudVer::class)->middleware('permission:tipo-solicitud.ver')->name('ver');
-                Route::get('/crear', TipoSolicitudCrear::class)->middleware('permission:tipo-solicitud.crear')->name('crear');
-                Route::get('/editar/{id}', TipoSolicitudEditar::class)->middleware('permission:tipo-solicitud.editar')->name('editar');
-                Route::get('/usuarios/{id}', TipoSolicitudUser::class)->middleware('permission:tipo-solicitud.ver-agregar-usuario')->name('usuarios');
+                Route::get('/', TipoSolicitudLista::class)->middleware('permission:tipo-solicitud.vista-lista')->name('todo');
+                Route::get('/ver/{id}', TipoSolicitudVer::class)->middleware('permission:tipo-solicitud.vista-ver')->name('ver');
+                Route::get('/crear', TipoSolicitudCrear::class)->middleware('permission:tipo-solicitud.vista-crear')->name('crear');
+                Route::get('/editar/{id}', TipoSolicitudEditar::class)->middleware('permission:tipo-solicitud.vista-editar')->name('editar');
+                Route::get('/usuarios/{id}', TipoSolicitudUser::class)->middleware('permission:tipo-solicitud.vista-agregar-usuario')->name('usuarios');
             });
     });
 
@@ -45,10 +45,10 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('sub-tipo-solicitud')
             ->name('sub-tipo-solicitud.vista.')
             ->group(function () {
-                Route::get('/', SubTipoSolicitudLista::class)->middleware('permission:sub-tipo-solicitud.lista')->name('todo');
-                Route::get('/ver/{id}', SubTipoSolicitudVer::class)->middleware('permission:sub-tipo-solicitud.ver')->name('ver');
-                Route::get('/crear', SubTipoSolicitudCrear::class)->middleware('permission:sub-tipo-solicitud.crear')->name('crear');
-                Route::get('/editar/{id}', SubTipoSolicitudEditar::class)->middleware('permission:sub-tipo-solicitud.editar')->name('editar');
+                Route::get('/', SubTipoSolicitudLista::class)->middleware('permission:sub-tipo-solicitud.vista-lista')->name('todo');
+                Route::get('/ver/{id}', SubTipoSolicitudVer::class)->middleware('permission:sub-tipo-solicitud.vista-ver')->name('ver');
+                Route::get('/crear', SubTipoSolicitudCrear::class)->middleware('permission:sub-tipo-solicitud.vista-crear')->name('crear');
+                Route::get('/editar/{id}', SubTipoSolicitudEditar::class)->middleware('permission:sub-tipo-solicitud.vista-editar')->name('editar');
             });
     });
 
@@ -56,10 +56,10 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('estado-ticket')
             ->name('estado-ticket.vista.')
             ->group(function () {
-                Route::get('/', EstadoTicketLista::class)->middleware('permission:estado-ticket.lista')->name('todo');
-                Route::get('/ver/{id}', EstadoTicketVer::class)->middleware('permission:estado-ticket.ver')->name('ver');
-                Route::get('/crear', EstadoTicketCrear::class)->middleware('permission:estado-ticket.crear')->name('crear');
-                Route::get('/editar/{id}', EstadoTicketEditar::class)->middleware('permission:estado-ticket.editar')->name('editar');
+                Route::get('/', EstadoTicketLista::class)->middleware('permission:estado-ticket.vista-lista')->name('todo');
+                Route::get('/ver/{id}', EstadoTicketVer::class)->middleware('permission:estado-ticket.vista-ver')->name('ver');
+                Route::get('/crear', EstadoTicketCrear::class)->middleware('permission:estado-ticket.vista-crear')->name('crear');
+                Route::get('/editar/{id}', EstadoTicketEditar::class)->middleware('permission:estado-ticket.vista-editar')->name('editar');
             });
     });
 
@@ -67,10 +67,10 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('prioridad-ticket')
             ->name('prioridad-ticket.vista.')
             ->group(function () {
-                Route::get('/', PrioridadTicketLista::class)->middleware('permission:prioridad-ticket.lista')->name('todo');
-                Route::get('/ver/{id}', PrioridadTicketVer::class)->middleware('permission:prioridad-ticket.ver')->name('ver');
-                Route::get('/crear', PrioridadTicketCrear::class)->middleware('permission:prioridad-ticket.crear')->name('crear');
-                Route::get('/editar/{id}', PrioridadTicketEditar::class)->middleware('permission:prioridad-ticket.editar')->name('editar');
+                Route::get('/', PrioridadTicketLista::class)->middleware('permission:prioridad-ticket.vista-lista')->name('todo');
+                Route::get('/ver/{id}', PrioridadTicketVer::class)->middleware('permission:prioridad-ticket.vista-ver')->name('ver');
+                Route::get('/crear', PrioridadTicketCrear::class)->middleware('permission:prioridad-ticket.vista-crear')->name('crear');
+                Route::get('/editar/{id}', PrioridadTicketEditar::class)->middleware('permission:prioridad-ticket.vista-editar')->name('editar');
             });
     });
 
@@ -78,10 +78,10 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('canal')
             ->name('canal.vista.')
             ->group(function () {
-                Route::get('/', CanalLista::class)->middleware('permission:canal.lista')->name('todo');
-                Route::get('/ver/{id}', CanalVer::class)->middleware('permission:canal.ver')->name('ver');
-                Route::get('/crear', CanalCrear::class)->middleware('permission:canal.crear')->name('crear');
-                Route::get('/editar/{id}', CanalEditar::class)->middleware('permission:canal.editar')->name('editar');
+                Route::get('/', CanalLista::class)->middleware('permission:canal.vista-lista')->name('todo');
+                Route::get('/ver/{id}', CanalVer::class)->middleware('permission:canal.vista-ver')->name('ver');
+                Route::get('/crear', CanalCrear::class)->middleware('permission:canal.vista-crear')->name('crear');
+                Route::get('/editar/{id}', CanalEditar::class)->middleware('permission:canal.vista-editar')->name('editar');
             });
     });
 
@@ -89,12 +89,12 @@ Route::group(['middleware' => ['permission:modulo-atc.ver']], function () {
         Route::prefix('ticket')
             ->name('ticket.vista.')
             ->group(function () {
-                Route::get('/', TicketLista::class)->middleware('permission:ticket.lista')->name('todo');
-                Route::get('/ver/{id}', TicketVer::class)->middleware('permission:ticket.ver')->name('ver');
-                Route::get('/crear/{ticketPadre?}', TicketCrear::class)->middleware('permission:ticket.crear')->name('crear');
-                Route::get('/editar/{id}', TicketEditar::class)->middleware('permission:ticket.editar')->name('editar');
-                Route::get('/derivado/{id}', TicketDerivar::class)->middleware('permission:ticket.derivar')->name('derivar');
-                Route::get('/importar', TicketImportar::class)->middleware('permission:ticket.ver-importar-tickets')->name('importar');
+                Route::get('/', TicketLista::class)->middleware('permission:ticket.vista-lista')->name('todo');
+                Route::get('/ver/{id}', TicketVer::class)->middleware('permission:ticket.vista-ver')->name('ver');
+                Route::get('/crear/{ticketPadre?}', TicketCrear::class)->middleware('permission:ticket.vista-crear')->name('crear');
+                Route::get('/editar/{id}', TicketEditar::class)->middleware('permission:ticket.vista-editar')->name('editar');
+                Route::get('/derivado/{id}', TicketDerivar::class)->middleware('permission:ticket.vista-derivar')->name('derivar');
+                Route::get('/importar', TicketImportar::class)->middleware('permission:ticket.vista-importar-tickets')->name('importar');
             });
     });
 });

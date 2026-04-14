@@ -56,7 +56,7 @@ class SubTipoSolicitudCrear extends Component
 
     public function store()
     {
-        $this->authorize('sub-tipo-solicitud.crear');
+        $this->authorize('sub-tipo-solicitud.accion-crear');
 
         try {
             $this->validate();

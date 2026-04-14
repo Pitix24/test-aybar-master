@@ -50,7 +50,7 @@ class PrioridadTicketLista extends Component
 
     public function exportExcelFiltro()
     {
-        $this->authorize('prioridad-ticket.exportar-filtro');
+        $this->authorize('prioridad-ticket.accion-exportar-filtro');
 
         return Excel::download(
             new PrioridadTicketExport(
@@ -68,7 +68,7 @@ class PrioridadTicketLista extends Component
 
     public function exportExcelTodo()
     {
-        $this->authorize('prioridad-ticket.exportar-todo');
+        $this->authorize('prioridad-ticket.accion-exportar-todo');
 
         return Excel::download(
             new PrioridadTicketExport(

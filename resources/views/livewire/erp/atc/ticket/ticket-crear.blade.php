@@ -4,7 +4,7 @@
         message="Guardando cambios..." />
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Crear ticket
-            @can('ticket.ver')
+            @can('ticket.vista-ver')
                 @if ($ticket_padre_id)
                     <span>Asociado al ticket: <a href="{{ route('erp.ticket.vista.editar', $ticket_padre_id) }}" target="_blank"
                             class="g_negrita">#{{ $ticket_padre_id }}</a></span>
@@ -13,7 +13,7 @@
         </h2>
 
         <div class="cabecera_titulo_botones">
-            @can('ticket.lista')
+            @can('ticket.vista-lista')
                 <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -227,7 +227,7 @@
                 </div>
 
                 <div class="formulario_botones">
-                    @can('ticket.crear')
+                    @can('ticket.accion-crear')
                         <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="store">
                                 <i class="fa-solid fa-save"></i> Crear
@@ -251,13 +251,13 @@
                     <h4 class="g_panel_titulo">Ticket padre</h4>
 
                     <div class="g_margin_bottom_10">
-                        @can('ticket.ver')
+                        @can('ticket.vista-ver')
                             <a href="{{ route('erp.ticket.vista.ver', $ticketPadre->id) }}" class="g_boton warning">
                                 <i class="fa-solid fa-eye"></i> Ver ticket
                             </a>
                         @endcan
 
-                        @can('ticket.editar')
+                        @can('ticket.vista-editar')
                             <a href="{{ route('erp.ticket.vista.editar', $ticketPadre->id) }}" class="g_boton info">
                                 <i class="fa-solid fa-pencil"></i> Editar ticket
                             </a>
