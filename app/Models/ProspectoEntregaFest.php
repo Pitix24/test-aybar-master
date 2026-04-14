@@ -144,6 +144,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
         return $this->hasMany(AcompananteEntregaFest::class, 'prospecto_entrega_fest_id');
     }
 
+    public function bancarizaciones()
+    {
+        return $this->hasMany(ProspectoBancarizacionEntregaFest::class, 'prospecto_entrega_fest_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
