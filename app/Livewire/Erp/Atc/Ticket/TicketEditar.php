@@ -28,6 +28,8 @@ class TicketEditar extends Component
     public $estado_ticket_id;
     public $asunto_respuesta;
     public $descripcion_respuesta;
+    
+    public $modalHijosMasivos = false;
 
     // Catálogos y datos para UI
     public $mapEstados = [];
@@ -184,6 +186,23 @@ class TicketEditar extends Component
                 'text' => 'No se pudo eliminar el ticket.'
             ]);
         }
+    }
+
+    public function abrirHijosMasivos()
+    {
+        $this->modalHijosMasivos = true;
+    }
+
+    #[On('cerrarModalHijosMasivos')]
+    public function cerrarHijosMasivos()
+    {
+        $this->modalHijosMasivos = false;
+    }
+
+    #[On('refreshHijos')]
+    public function refreshHijos()
+    {
+        $this->ticket->load('hijos');
     }
 
     public function render()

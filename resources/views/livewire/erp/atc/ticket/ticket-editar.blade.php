@@ -23,6 +23,12 @@
                 </a>
             @endcan
 
+            @can('ticket.vista-crear')
+                <button type="button" class="g_boton secondary" wire:click="abrirHijosMasivos">
+                    Hijos múltiples <i class="fa-solid fa-layer-group"></i>
+                </button>
+            @endcan
+
             @can('ticket.vista-crear-cita')
                 <a href="{{ route('erp.cita.vista.crear', $ticket->id) }}" class="g_boton cancelar">
                     Crear cita <i class="fa-solid fa-calendar-days"></i></a>
@@ -387,4 +393,10 @@
     @endscript
 
     @livewire('erp.atc.ticket.ticket-chat', ['ticket' => $ticket])
+
+    @if ($modalHijosMasivos)
+        <x-modal title="Crear Tickets Hijos (Masivo)" wireClose="cerrarHijosMasivos" maxWidth="1200px">
+            @livewire('erp.atc.ticket.ticket-hijos-masivos', ['ticket' => $ticket])
+        </x-modal>
+    @endif
 </div>
