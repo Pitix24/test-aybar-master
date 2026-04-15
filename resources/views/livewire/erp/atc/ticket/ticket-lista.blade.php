@@ -158,6 +158,18 @@
                     <input type="date" wire:model.live="hasta">
                 </div>
             </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Creado por </label>
+                    <select wire:model.live="creado_por_id">
+                        <option value="">Todos</option>
+                        @foreach ($usuarios_admin as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 

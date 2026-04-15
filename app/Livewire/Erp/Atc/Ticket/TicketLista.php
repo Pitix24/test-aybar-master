@@ -77,6 +77,9 @@ class TicketLista extends Component
     #[Url(keep: true)]
     public $perPage = 20;
 
+    #[Url(keep: true)]
+    public $creado_por_id = '';
+
     public $estados = [];
     public $areas = [];
     public $solicitudes = [];
@@ -174,6 +177,7 @@ class TicketLista extends Component
                 'con_citas',
                 'con_hijos',
                 'perPage',
+                'creado_por_id',
             ])
         ) {
             $this->resetPage();
@@ -195,6 +199,7 @@ class TicketLista extends Component
             'con_derivados',
             'con_citas',
             'con_hijos',
+            'creado_por_id',
         ]);
 
         // Seteamos a string vacío en lugar de null (reset default) 
@@ -230,7 +235,8 @@ class TicketLista extends Component
                 $this->con_hijos,
                 false,
                 $this->perPage,
-                $this->getPage()
+                $this->getPage(),
+                $this->creado_por_id
             ),
             'tickets_filtrados.xlsx'
         );
@@ -281,6 +287,7 @@ class TicketLista extends Component
             ->when($this->sub_tipo_solicitud_id, fn($q) => $q->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id))
             ->when($this->canal_id, fn($q) => $q->where('canal_id', $this->canal_id))
             ->when($this->usuario_admin_id, fn($q) => $q->where('gestor_id', $this->usuario_admin_id))
+            ->when($this->creado_por_id, fn($q) => $q->where('created_by', $this->creado_por_id))
             ->when(
                 $this->desde,
                 fn($q) =>

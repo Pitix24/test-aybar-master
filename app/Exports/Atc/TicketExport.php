@@ -24,7 +24,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
     protected $con_derivados;
     protected $con_citas;
     protected $con_hijos;
-    protected $todo;
+    protected $creado_por_id;
     protected $perPage;
     protected $page;
 
@@ -46,7 +46,8 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
         $con_hijos = '',
         $todo = false,
         $perPage = null,
-        $page = null
+        $page = null,
+        $creado_por_id = ''
     ) {
         $this->buscar = $buscar;
         $this->unidad_negocio_id = $unidad_negocio_id;
@@ -66,6 +67,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
         $this->todo = $todo;
         $this->perPage = $perPage;
         $this->page = $page;
+        $this->creado_por_id = $creado_por_id;
     }
 
     public function collection()
@@ -90,6 +92,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
                 ->when($this->sub_tipo_solicitud_id, fn($q) => $q->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id))
                 ->when($this->canal_id, fn($q) => $q->where('canal_id', $this->canal_id))
                 ->when($this->usuario_admin_id, fn($q) => $q->where('gestor_id', $this->usuario_admin_id))
+                ->when($this->creado_por_id, fn($q) => $q->where('created_by', $this->creado_por_id))
                 ->when($this->prioridad_id, fn($q) => $q->where('prioridad_ticket_id', $this->prioridad_id))
                 ->when($this->con_derivados === '1', fn($q) => $q->whereHas('derivados'))
                 ->when($this->con_derivados === '0', fn($q) => $q->whereDoesntHave('derivados'))
