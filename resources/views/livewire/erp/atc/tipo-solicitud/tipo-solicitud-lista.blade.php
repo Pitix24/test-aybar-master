@@ -124,6 +124,13 @@
                                         <i class="fa-solid fa-pencil"></i>
                                     </a>
                                 @endcan
+
+                                @can('tipo-solicitud.vista-flujo')
+                                    <a href="{{ route('erp.tipo-solicitud.vista.flujo', $item->id) }}" class="g_accion info"
+                                        title="Configurar Flujo">
+                                        <i class="fa-solid fa-diagram-project"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

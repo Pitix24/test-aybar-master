@@ -171,6 +171,11 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
+    public function pasos()
+    {
+        return $this->hasMany(TicketPaso::class);
+    }
+
     public function getTieneDerivadosAttribute()
     {
         return $this->derivados()->exists();

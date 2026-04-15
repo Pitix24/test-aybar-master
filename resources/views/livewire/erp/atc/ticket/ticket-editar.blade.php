@@ -76,6 +76,11 @@
                             :class="activeTab === 'historial' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
                             <i class="fa-solid fa-clock-rotate-left"></i> Historial
                         </button>
+
+                        <button type="button" @click="activeTab = 'pasos'"
+                            :class="activeTab === 'pasos' ? 'g_tab_active' : 'g_tab_inactive'" class="g_tab_boton">
+                            <i class="fa-solid fa-check-double"></i> Pasos / Proceso
+                        </button>
                     </div>
                 </div>
 
@@ -248,6 +253,10 @@
 
                 <div x-show="activeTab === 'historial'" x-transition class="g_tab_content g_margin_bottom_10">
                     @livewire('erp.atc.ticket.ticket-historial', ['ticket' => $ticket])
+                </div>
+
+                <div x-show="activeTab === 'pasos'" x-transition class="g_tab_content g_margin_bottom_10">
+                    @livewire('erp.atc.ticket.ticket-pasos', ['ticket' => $ticket])
                 </div>
 
                 <div class="formulario_botones">

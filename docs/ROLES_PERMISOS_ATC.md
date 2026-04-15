@@ -20,6 +20,9 @@ tipo-solicitud.accion-quitar-usuario
 tipo-solicitud.accion-marcar-principal-usuario
 tipo-solicitud.accion-exportar-filtro
 tipo-solicitud.accion-exportar-todo
+tipo-solicitud.vista-flujo
+tipo-solicitud.accion-agregar-flujo
+tipo-solicitud.accion-quitar-flujo
 
 SUB TIPO SOLICITUD
 sub-tipo-solicitud.navegacion
@@ -93,3 +96,4 @@ ticket.accion-importar-tickets
 ticket.vista-crear-cita
 ticket.vista-portal-cliente
 ticket.vista-ver-cliente
+ticket.accion-editar-pasos

@@ -46,4 +46,8 @@ class TipoSolicitud extends Model
         return $this->hasMany(Ticket::class);
     }
 
+    public function flujoPasos()
+    {
+        return $this->hasMany(FlujoPaso::class)->orderBy('orden');
+    }
 }
