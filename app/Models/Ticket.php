@@ -188,6 +188,45 @@ class Ticket extends Model
         return $this->archivos()->exists();
     }
 
+    public function getSlaStatusAttribute()
+    {
+        if (!$this->fecha_vencimiento || $this->estado_ticket_id == 4) { // 4 assumed as 'Cerrado'
+            return null;
+        }
+
+        $ahora = now();
+        $vencido = $ahora->gt($this->fecha_vencimiento);
+        $diferencia = $ahora->diffForHumans($this->fecha_vencimiento, [
+            'parts' => 2,
+            'short' => true,
+            'join' => true,
+        ]);
+
+        if ($vencido) {
+            return [
+                'texto' => "Vencido hace $diferencia",
+                'color' => '#ef4444', // Rojo
+                'clase' => 'danger'
+            ];
+        }
+
+        // Si falta menos de 4 horas, poner en naranja
+        $horasRestantes = $ahora->diffInHours($this->fecha_vencimiento);
+        if ($horasRestantes <= 4) {
+            return [
+                'texto' => "Vence en $diferencia",
+                'color' => '#f59e0b', // Naranja
+                'clase' => 'warning'
+            ];
+        }
+
+        return [
+            'texto' => "Vence en $diferencia",
+            'color' => '#10b981', // Verde
+            'clase' => 'success'
+        ];
+    }
+
     protected static function booted()
     {
         static::creating(function ($ticket) {

@@ -225,7 +225,8 @@
                         <th class="g_celda_centro">Estado</th>
                         <th>Gestor</th>
                         <th>Prioridad</th>
-                        <th>Fecha</th>
+                        <th>Creado</th>
+                        <th>Vencimiento</th>
                         <th>Derivado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
@@ -259,7 +260,23 @@
                                     <i class="{{ $item->prioridad?->icono }}"></i> {{ $item->prioridad?->nombre }}
                                 </span>
                             </td>
-                            <td class="g_inferior g_celda_centro">{{ $item->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="g_inferior g_celda_centro">
+                                {{ $item->created_at->format('d/m/Y H:i') }}
+                            </td>
+                            <td>
+                                @if($item->sla_status)
+                                    <div style="font-size: 0.8rem; line-height: 1;">
+                                        <span class="g_badge g_badge_soft" style="color: {{ $item->sla_status['color'] }};">
+                                            <i class="fa-solid fa-clock"></i> {{ $item->sla_status['texto'] }}
+                                        </span>
+                                        <div class="g_inferior" style="margin-top: 2px;">
+                                            {{ $item->fecha_vencimiento->format('d/m H:i') }}
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="g_badge light">-</span>
+                                @endif
+                            </td>
                             <td class="g_celda_centro">
                                 <span class="g_badge {{ $item->tiene_derivados ? 'success' : 'light' }}">
                                     {{ $item->tiene_derivados ? 'SI' : 'NO' }}

@@ -91,6 +91,27 @@
                 </div>
 
                 <div x-show="activeTab === 'general'" x-transition class="g_tab_content">
+                    <div class="g_margin_bottom_20" style="padding: 15px; border-radius: 10px; background-color: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.05);">
+                        <div class="g_fila_flex g_centro_vertical" style="justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-calendar-check" style="color: #6366f1; font-size: 1.2rem;"></i>
+                                <div>
+                                    <div class="g_negrita" style="font-size: 0.95rem; color: #374151;">Fecha Límite de Solución (SLA)</div>
+                                    <div class="g_inferior" style="font-size: 0.85rem; opacity: 0.8;">
+                                        {{ $ticket->fecha_vencimiento ? $ticket->fecha_vencimiento->format('d/m/Y - h:i A') : 'No establecida' }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @if($ticket->sla_status)
+                                <span class="g_badge g_badge_soft" style="color: {{ $ticket->sla_status['color'] }}; font-size: 0.9rem; padding: 6px 15px; border: 1px solid {{ $ticket->sla_status['color'] }}44;">
+                                    <i class="fa-solid fa-clock"></i> {{ $ticket->sla_status['texto'] }}
+                                </span>
+                            @else
+                                <span class="g_badge light" style="font-size: 0.85rem;">Sin tiempo de solución</span>
+                            @endif
+                        </div>
+                    </div>
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_4">
                             <label>Empresa</label>
