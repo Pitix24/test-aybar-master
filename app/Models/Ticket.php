@@ -30,6 +30,7 @@ class Ticket extends Model
         'lotes',
         'asunto_respuesta',
         'descripcion_respuesta',
+        'fecha_vencimiento',
 
         //DB ANTIGUO
         'dni',
@@ -51,6 +52,7 @@ class Ticket extends Model
 
     protected $casts = [
         'fecha_validacion' => 'datetime',
+        'fecha_vencimiento' => 'datetime',
         'lotes' => 'array',
     ];
 
@@ -191,6 +193,17 @@ class Ticket extends Model
         static::creating(function ($ticket) {
             if (auth()->check()) {
                 $ticket->created_by = auth()->id();
+            }
+
+            // Calcular fecha de vencimiento solo si no se ha definido una manualmente
+            if (!$ticket->fecha_vencimiento && $ticket->tipo_solicitud_id) {
+                $tipoSolicitud = \App\Models\TipoSolicitud::find($ticket->tipo_solicitud_id);
+                if ($tipoSolicitud && $tipoSolicitud->tiempo_solucion) {
+                    $ticket->fecha_vencimiento = \App\Services\TicketService::calcularFechaVencimiento(
+                        now(),
+                        $tipoSolicitud->tiempo_solucion
+                    );
+                }
             }
         });
 

@@ -45,6 +45,7 @@ return new class extends Migration {
             //SUPERVISOR
             $table->foreignId('usuario_valida_id')->nullable()->constrained('users')->nullOnDelete(); //CERRADO POR
             $table->dateTime('fecha_validacion')->nullable(); //FECHA CIERRE
+            $table->dateTime('fecha_vencimiento')->nullable();
 
             //AUDITORIA
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete(); //CREADO POR

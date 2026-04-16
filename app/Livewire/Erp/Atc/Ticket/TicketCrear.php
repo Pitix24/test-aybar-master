@@ -430,7 +430,7 @@ class TicketCrear extends Component
 
             event(new TicketCreado($ticket));
 
-            return redirect()->route('erp.ticket.vista.todo');
+            return redirect()->route('erp.ticket.vista.editar', $ticket->id);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('ticket')->error('[TICKET] Error en Creación: ' . $e->getMessage(), [
