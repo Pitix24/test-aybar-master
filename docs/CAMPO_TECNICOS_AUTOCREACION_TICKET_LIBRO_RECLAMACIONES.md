@@ -1,7 +1,7 @@
 # Campos Tecnicos para Autocreacion de Ticket - Libro Reclamaciones
 
 Fecha: 17-04-2026  
-Estado: Borrador funcional para implementacion con decisiones cerradas
+Estado: Implementado (con hotfixes de estabilizacion)
 
 ## Proposito
 
@@ -22,7 +22,7 @@ El Ticket automatico sera el contenedor operativo para el equipo legal. Libro Re
 | Campo Ticket | Origen | Regla | Estado |
 |---|---|---|---|
 | `area_id` | Fijo tecnico | Area Legal (id 3) | Confirmado |
-| `canal_id` | Catalogo existente | Canal Formulario Web | Confirmado |
+| `canal_id` | Catalogo existente | Canal Libro Reclamacion (id 4) | Confirmado |
 | `estado_ticket_id` | Catalogo estados | Estado inicial Nuevo | Confirmado |
 | `prioridad_ticket_id` | Catalogo prioridades | Prioridad Alta (id 3) | Confirmado |
 | `ticket_padre_id` | Nulo | Solo aplica si existe derivacion manual futura | Nulo por defecto |
@@ -96,7 +96,7 @@ Estos datos no deben solicitarse como creación manual en ERP para el nuevo fluj
 ## Reglas funcionales acordadas
 
 1. El Ticket automatico debe nacer en Area Legal.
-2. El Ticket automatico debe usar el canal de Formulario Web.
+2. El Ticket automatico debe usar el canal Libro Reclamacion (id 4).
 3. El Ticket debe crearse dentro de transaccion.
 4. El Libro Reclamaciones se crea despues y queda vinculado por `ticket_id`.
 5. Si falla Ticket o Libro, no debe quedar ningun registro intermedio.
@@ -109,9 +109,15 @@ Estos datos no deben solicitarse como creación manual en ERP para el nuevo fluj
 12. `asunto_inicial` se arma predefinido como `RECLAMO/QUEJA - DNI del Cliente`.
 13. `descripcion_inicial` se arma desde `detalle` + `pedido` con texto guiado. Si `detalle` o `pedido` no existen, su sección se salta a la otra.
 
-## Campos que siguen pendientes de cerrar antes de codificar
+## Campos que siguen pendientes de cerrar
 
 1. Regla exacta de `gestor_id` inicial: asignado, nulo o autoseleccionado.
+
+## Ajustes aplicados en implementacion
+
+1. Se corrigio default tecnico de `canal_nombre` a `Libro Reclamacion` para resolver `canal_id = 4` por catalogo.
+2. Se agrego migracion correctiva para entornos donde faltaba la columna `ticket_id` en `libro_reclamacions`.
+3. Se agrego tolerancia visual en Lista de Tickets para registros historicos con `canal_id` nulo (solo compatibilidad, no regla del flujo nuevo).
 
 ## Criterio de cierre de esta fase
 

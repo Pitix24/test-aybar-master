@@ -32,7 +32,7 @@ return [
         'habilitado' => filter_var(env('LIBRO_RECLAMACION_TICKET_AUTOCREACION_HABILITADO', true), FILTER_VALIDATE_BOOL),
         'area_legal_id' => (int) env('LIBRO_RECLAMACION_TICKET_AREA_ID', 3),
         'canal_id' => env('LIBRO_RECLAMACION_TICKET_CANAL_ID'),
-        'canal_nombre' => env('LIBRO_RECLAMACION_TICKET_CANAL_NOMBRE', 'FORMULARIO WEB'),
+        'canal_nombre' => env('LIBRO_RECLAMACION_TICKET_CANAL_NOMBRE', 'Libro Reclamación'),
         'tipo_solicitud_id' => (int) env('LIBRO_RECLAMACION_TICKET_TIPO_SOLICITUD_ID', 28),
         'tipo_solicitud_nombre' => env('LIBRO_RECLAMACION_TICKET_TIPO_SOLICITUD_NOMBRE', 'LIBRO DE RECLAMACIONES'),
         'prioridad_ticket_id' => (int) env('LIBRO_RECLAMACION_TICKET_PRIORIDAD_ID', 3),

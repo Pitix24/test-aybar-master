@@ -1,7 +1,7 @@
 # Plan: Simplificacion Libro Reclamaciones (Web -> Ticket -> Libro)
 
 Fecha: 17-04-2026  
-Estado: Planeado para ejecucion por fases
+Estado: En ejecucion por fases (Fase 0, 1, 2 y 3 implementadas)
 
 ## Objetivo
 
@@ -20,8 +20,31 @@ El objetivo operativo es que el equipo legal gestione el caso en Tickets, manten
 5. El Ticket y el Libro son listas distintas, pero vinculadas.
 6. Para el Ticket automatico:
    - Area destino: Legal (id 3).
-   - Canal: canal existente de Formulario Web.
+   - Canal: Libro Reclamacion (id 4 en catalogo `canals`).
 7. En Libro ERP se mantiene edicion de datos de cliente y datos del caso (decision vigente).
+
+## Avance ejecutado al 17-04-2026
+
+1. Fase 0 completada:
+   - Se deshabilito creacion ERP por feature flag.
+   - Se condiciono el registro de ruta de crear.
+   - Se aplico hardening del menu ERP para no romper cuando la ruta no existe.
+2. Fase 1 completada:
+   - Se implemento contrato tecnico en `config/libro_reclamacion.php`.
+   - Se definieron defaults operativos para area, tipo, subtipo, prioridad y canal.
+3. Fase 2 completada:
+   - Se implemento creacion transaccional Ticket + Libro vinculado por `ticket_id`.
+   - Se mantiene rollback total ante error.
+4. Hotfix de esquema aplicado:
+   - Se agrego migracion correctiva para crear `ticket_id` en `libro_reclamacions` cuando falta en bases historicas.
+5. Hotfix de canal aplicado:
+   - Se corrigio default tecnico de canal a `Libro Reclamacion`, resolviendo `canal_id = 4`.
+6. Hotfix de visualizacion ERP aplicado:
+   - En lista de Tickets se agrego tolerancia para registros historicos con `canal_id` nulo (render seguro con `-`).
+7. Fase 3 completada:
+   - Se agrego columna `Ticket ATC` y acceso rapido en Lista de Libro.
+   - Se agrego boton `Ver Ticket` en Ver y Editar de Libro.
+   - Se agrego campo informativo de ticket vinculado en vista general de Ver/Editar.
 
 ## Fases y tareas
 
@@ -76,14 +99,16 @@ Criterio de aceptacion:
 Objetivo: alinear ERP Libro a una operacion legal simplificada y trazable.
 
 Tareas:
-1. Reforzar vista Lista para mostrar vinculacion con Ticket.
-2. Reforzar vista Ver para navegar al Ticket vinculado.
+1. Reforzar vista Lista para mostrar vinculacion con Ticket con un botón parecido a Lista Citas.
+2. Reforzar vista Ver y Editar para navegar al Ticket vinculado con un Botón 'Ver Ticket'.
 3. Mantener/ajustar edicion legal de cliente y caso segun reglas aprobadas.
 4. Retirar dependencias de captura manual para creacion.
 
 Criterio de aceptacion:
 1. Legal visualiza caso + datos cliente + acceso al Ticket vinculado.
 2. No hay rutas de creacion manual visibles/funcionales.
+
+Estado: Implementada.
 
 ## Fase 4 - Modelo, relaciones y consultas
 
@@ -158,7 +183,7 @@ Criterio de aceptacion:
 ## Checklist de inicio de implementacion
 
 1. Confirmar IDs de tipo_solicitud/sub_tipo para RECLAMO y QUEJA.
-2. Confirmar ID del canal Formulario Web en catalogo actual.
+2. Confirmar ID del canal Formulario Web en catalogo actual. Resultado: confirmado `Libro Reclamacion` id `4`.
 3. Definir mecanismo de bloqueo crear ERP (permiso, feature flag, o ambos).
 4. Definir si correos deben salir antes o despues de persistir Ticket+Libro (recomendado: despues de persistir).
 5. Acordar estrategia de despliegue: gradual con feature flag en produccion.

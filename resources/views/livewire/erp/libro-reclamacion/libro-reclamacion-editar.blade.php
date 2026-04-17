@@ -16,6 +16,14 @@
                     Lista <i class="fa-solid fa-list"></i>
                 </a>
             @endcan
+
+            @can('ticket.ver')
+                @if ($ticket_model->ticket_id)
+                    <a href="{{ route('erp.ticket.vista.ver', $ticket_model->ticket_id) }}" class="g_boton warning">
+                        Ver Ticket <i class="fa-solid fa-ticket"></i>
+                    </a>
+                @endif
+            @endcan
         </div>
     </div>
 
@@ -134,6 +142,13 @@
                 <div class="g_columna_12 g_margin_bottom_10">
                     <label>Asignado desde</label>
                     <input type="text" value="{{ optional($ticket_model->assigned_at)->format('d/m/Y H:i') ?: 'Sin asignación' }}" disabled>
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_columna_12 g_margin_bottom_10">
+                    <label>Ticket ATC vinculado</label>
+                    <input type="text" value="{{ $ticket_model->ticket_id ? ('#' . $ticket_model->ticket_id) : 'Sin vincular' }}" disabled>
                 </div>
             </div>
         </div>

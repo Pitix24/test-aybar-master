@@ -130,6 +130,7 @@
                         <th class="g_celda_centro">Estado</th>
                         <th class="g_celda_centro">Clasif.</th>
                         <th>Gestor</th>
+                        <th class="g_celda_centro">Ticket ATC</th>
                         <th class="g_celda_centro">Fecha</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
@@ -154,6 +155,19 @@
                                 @endif
                             </td>
                             <td class="g_negrita g_resumir">{{ $item->gestor?->name ?: 'N/D' }}</td>
+                            <td class="g_celda_centro">
+                                @can('ticket.ver')
+                                    @if ($item->ticket_id)
+                                        <a href="{{ route('erp.ticket.vista.ver', $item->ticket_id) }}" class="g_accion ver" title="Ver Ticket">
+                                            <i class="fa-solid fa-ticket"></i>
+                                        </a>
+                                    @else
+                                        <span class="g_badge light">-</span>
+                                    @endif
+                                @else
+                                    <span class="g_badge light">{{ $item->ticket_id ?: '-' }}</span>
+                                @endcan
+                            </td>
                             <td class="g_inferior g_celda_centro">{{ optional($item->created_at)->format('d/m/Y H:i') }}</td>
                             <td class="g_celda_acciones g_celda_centro centro">
                                 @can('ticket-libro-reclamacion.ver')
@@ -171,7 +185,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="g_celda_centro">No hay registros para mostrar.</td>
+                            <td colspan="10" class="g_celda_centro">No hay registros para mostrar.</td>
                         </tr>
                     @endforelse
                 </tbody>

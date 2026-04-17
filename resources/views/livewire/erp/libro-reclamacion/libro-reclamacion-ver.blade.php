@@ -14,6 +14,14 @@
                     Editar <i class="fa-solid fa-pencil"></i>
                 </a>
             @endcan
+
+            @can('ticket.ver')
+                @if ($ticket->ticket_id)
+                    <a href="{{ route('erp.ticket.vista.ver', $ticket->ticket_id) }}" class="g_boton warning">
+                        Ver Ticket <i class="fa-solid fa-ticket"></i>
+                    </a>
+                @endif
+            @endcan
         </div>
     </div>
 
@@ -93,6 +101,13 @@
                 <div class="g_margin_bottom_10 g_columna_12">
                     <label>Subtipo</label>
                     <input type="text" value="{{ $ticket->tipo_pedido ? ucwords(strtolower(str_replace('_', ' ', $ticket->tipo_pedido))) : 'N/D' }}" disabled>
+                </div>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_12">
+                    <label>Ticket ATC vinculado</label>
+                    <input type="text" value="{{ $ticket->ticket_id ? ('#' . $ticket->ticket_id) : 'Sin vincular' }}" disabled>
                 </div>
             </div>
         </div>
