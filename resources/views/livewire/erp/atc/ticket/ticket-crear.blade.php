@@ -96,12 +96,14 @@
 
                         <div class="g_margin_bottom_10 g_columna_4">
                             <label>Subtipo</label>
-                            <select wire:model.live="sub_tipo_solicitud_id">
+                            <select wire:model.live="sub_tipo_solicitud_id"
+                                class="@error('sub_tipo_solicitud_id') input-error @enderror">
                                 <option value="">Seleccione...</option>
                                 @foreach($sub_tipos_solicitudes as $st)
                                     <option value="{{ $st->id }}">{{ $st->nombre }}</option>
                                 @endforeach
                             </select>
+                            @error('sub_tipo_solicitud_id') <p class="mensaje_error">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_4">
@@ -185,10 +187,12 @@
                                                 <td>{{ $l['proyecto'] }}</td>
                                                 <td>{{ $l['numero_lote'] }}</td>
                                                 <td class="g_celda_acciones g_celda_centro">
-                                                    <button type="button" wire:click="quitarLote('{{ $l['id'] }}')"
-                                                        class="g_boton danger" title="Quitar">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
+                                                    @if (!$ticket_padre_id)
+                                                        <button type="button" wire:click="quitarLote('{{ $l['id'] }}')"
+                                                            class="g_boton danger" title="Quitar">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -426,6 +430,8 @@
                             </button>
                         </div>
                     @endif
+
+                    @error('lotes_agregados') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
             @endif
         </div>

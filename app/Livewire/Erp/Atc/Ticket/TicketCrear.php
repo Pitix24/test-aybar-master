@@ -67,7 +67,7 @@ class TicketCrear extends Component
             'proyecto_id' => 'required|exists:proyectos,id',
             'area_id' => 'required|exists:areas,id',
             'tipo_solicitud_id' => 'required',
-            'sub_tipo_solicitud_id' => 'nullable',
+            'sub_tipo_solicitud_id' => 'required',
             'canal_id' => 'required|exists:canals,id',
             'gestor_id' => 'nullable',
             'asunto_inicial' => 'required|min:5|max:255',
@@ -76,6 +76,7 @@ class TicketCrear extends Component
             'ticket_padre_id' => 'nullable|exists:tickets,id',
             'selectedParticipants' => 'nullable|array',
             'selectedParticipants.*' => 'exists:users,id',
+            'lotes_agregados' => 'required|array|min:1',
         ];
 
         if (!$this->ticket_padre_id) {
@@ -93,6 +94,7 @@ class TicketCrear extends Component
             'proyecto_id' => 'Proyecto',
             'area_id' => 'Área Destino',
             'tipo_solicitud_id' => 'Tipo de Solicitud',
+            'sub_tipo_solicitud_id' => 'Subtipo de Solicitud',
             'canal_id' => 'Canal',
             'asunto_inicial' => 'Asunto',
             'descripcion_inicial' => 'Descripción',
@@ -101,6 +103,7 @@ class TicketCrear extends Component
             'nombres' => 'Nombre del Cliente',
             'email' => 'Correo Electrónico',
             'celular' => 'Número de Celular',
+            'lotes_agregados' => 'Lotes vinculados',
         ];
     }
 
@@ -130,6 +133,7 @@ class TicketCrear extends Component
             $this->email = $this->ticketPadre->email;
             $this->celular = $this->ticketPadre->celular;
             $this->origen = $this->ticketPadre->origen;
+            $this->lotes_agregados = $this->ticketPadre->lotes ?? [];
             $this->loadProyectos();
         }
 
