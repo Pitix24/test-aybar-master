@@ -157,8 +157,8 @@
                             <td class="g_negrita g_resumir">{{ $item->gestor?->name ?: 'N/D' }}</td>
                             <td class="g_celda_centro">
                                 @can('ticket.ver')
-                                    @if ($item->ticket_id)
-                                        <a href="{{ route('erp.ticket.vista.ver', $item->ticket_id) }}" class="g_accion ver" title="Ver Ticket">
+                                    @if ($item->ticketRelacionado)
+                                        <a href="{{ route('erp.ticket.vista.ver', $item->ticketRelacionado->id) }}" class="g_accion ver" title="Ver Ticket">
                                             <i class="fa-solid fa-ticket"></i>
                                         </a>
                                     @else

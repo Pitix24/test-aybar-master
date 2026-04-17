@@ -2,6 +2,7 @@
 
 namespace App\Models\LibroReclamacion;
 
+use App\Models\Ticket;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
@@ -72,6 +73,7 @@ class LibroReclamacion extends Model
     ];
 
     protected $casts = [
+        'ticket_id' => 'integer',
         'conformidad' => 'boolean',
         'leido' => 'boolean',
         'fecha_respuesta' => 'datetime',
@@ -89,6 +91,11 @@ class LibroReclamacion extends Model
     public function proyecto()
     {
         return $this->belongsTo(Proyecto::class);
+    }
+
+    public function ticketRelacionado()
+    {
+        return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 
     public function cliente()

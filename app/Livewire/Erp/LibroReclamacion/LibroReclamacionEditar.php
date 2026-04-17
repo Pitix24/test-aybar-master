@@ -10,6 +10,7 @@ use App\Models\UnidadNegocio;
 use App\Models\User;
 use App\Services\ConsultaClienteService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -64,6 +65,7 @@ class LibroReclamacionEditar extends Component
         $this->authorize('ticket-libro-reclamacion.editar');
 
         $this->ticket_model = LibroReclamacion::with([
+            'ticketRelacionado',
             'estadoLibroReclamacion',
             'unidadNegocio',
             'proyecto',
@@ -370,7 +372,7 @@ class LibroReclamacionEditar extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('[TICKET-LIBRO] Error al actualizar: ' . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'target_id' => $this->ticket_model->ticket,
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()
@@ -438,7 +440,7 @@ class LibroReclamacionEditar extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('[TICKET-LIBRO] Error al eliminar: ' . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'target_id' => $this->ticket_model->ticket ?? null,
                 'trace' => $e->getTraceAsString()
             ]);

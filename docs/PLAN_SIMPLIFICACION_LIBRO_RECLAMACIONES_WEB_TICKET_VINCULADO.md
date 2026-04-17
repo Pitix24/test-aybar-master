@@ -1,7 +1,7 @@
 # Plan: Simplificacion Libro Reclamaciones (Web -> Ticket -> Libro)
 
 Fecha: 17-04-2026  
-Estado: En ejecucion por fases (Fase 0, 1, 2 y 3 implementadas)
+Estado: En ejecucion por fases (Fase 0, 1, 2, 3 y 4 implementadas)
 
 ## Objetivo
 
@@ -45,6 +45,11 @@ El objetivo operativo es que el equipo legal gestione el caso en Tickets, manten
    - Se agrego columna `Ticket ATC` y acceso rapido en Lista de Libro.
    - Se agrego boton `Ver Ticket` en Ver y Editar de Libro.
    - Se agrego campo informativo de ticket vinculado en vista general de Ver/Editar.
+8. Fase 4 completada:
+   - Se agrego relacion Eloquent al Ticket vinculado como `ticketRelacionado`.
+   - Se evito colision con la PK historica `ticket` del modelo `libro_reclamacions`.
+   - Se ajustaron consultas de Lista, Ver y Editar para cargar la relacion y reducir N+1.
+   - Se adiciono cast entero a `ticket_id` para lectura consistente.
 
 ## Fases y tareas
 
@@ -115,7 +120,7 @@ Estado: Implementada.
 Objetivo: dejar el dominio consistente y mantenible.
 
 Tareas:
-1. Agregar/validar relacion `ticket()` en modelo `LibroReclamacion`.
+1. Agregar/validar relacion al Ticket vinculado en modelo `LibroReclamacion`.
 2. Ajustar `with()` y consultas de Lista/Ver/Editar para evitar N+1.
 3. Revisar fillable/casts usados realmente por flujo simplificado.
 4. Preparar limpieza progresiva de campos legacy no usados (sin borrado abrupto).
@@ -123,6 +128,8 @@ Tareas:
 Criterio de aceptacion:
 1. Consultas optimizadas y sin regresiones funcionales.
 2. Modelo con relacion clara Libro -> Ticket.
+
+Estado: Implementada.
 
 ## Fase 5 - Pruebas y hardening
 

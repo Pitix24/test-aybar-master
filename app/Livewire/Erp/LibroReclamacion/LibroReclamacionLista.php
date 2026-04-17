@@ -113,7 +113,7 @@ class LibroReclamacionLista extends Component
     public function render()
     {
         $items = LibroReclamacion::query()
-            ->with(['proyecto', 'unidadNegocio', 'gestor', 'cliente', 'estadoLibroReclamacion'])
+            ->with(['ticketRelacionado', 'proyecto', 'unidadNegocio', 'gestor', 'cliente', 'estadoLibroReclamacion'])
             ->when($this->buscar !== '', function ($q): void {
                 $q->where(function ($sub): void {
                     $sub->where('codigo', 'like', "%{$this->buscar}%")

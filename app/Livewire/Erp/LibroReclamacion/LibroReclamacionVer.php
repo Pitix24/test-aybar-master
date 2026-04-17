@@ -20,6 +20,7 @@ class LibroReclamacionVer extends Component
         $this->authorize('ticket-libro-reclamacion.ver');
 
         $this->ticket = LibroReclamacion::with([
+            'ticketRelacionado',
             'estadoLibroReclamacion',
             'unidadNegocio',
             'proyecto',

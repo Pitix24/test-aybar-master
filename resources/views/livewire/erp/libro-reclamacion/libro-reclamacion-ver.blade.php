@@ -16,8 +16,8 @@
             @endcan
 
             @can('ticket.ver')
-                @if ($ticket->ticket_id)
-                    <a href="{{ route('erp.ticket.vista.ver', $ticket->ticket_id) }}" class="g_boton warning">
+                @if ($ticket->ticketRelacionado)
+                    <a href="{{ route('erp.ticket.vista.ver', $ticket->ticketRelacionado->id) }}" class="g_boton warning">
                         Ver Ticket <i class="fa-solid fa-ticket"></i>
                     </a>
                 @endif
@@ -107,7 +107,7 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_12">
                     <label>Ticket ATC vinculado</label>
-                    <input type="text" value="{{ $ticket->ticket_id ? ('#' . $ticket->ticket_id) : 'Sin vincular' }}" disabled>
+                    <input type="text" value="{{ $ticket->ticketRelacionado ? ('#' . $ticket->ticketRelacionado->id) : 'Sin vincular' }}" disabled>
                 </div>
             </div>
         </div>
