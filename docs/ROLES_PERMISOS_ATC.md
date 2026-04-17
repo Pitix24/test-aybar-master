@@ -97,3 +97,5 @@ ticket.vista-crear-cita
 ticket.vista-portal-cliente
 ticket.vista-ver-cliente
 ticket.accion-editar-pasos
+ticket.vista-hijos-masivos
+ticket.accion-crear-hijos-masivos
