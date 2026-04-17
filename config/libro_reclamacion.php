@@ -2,6 +2,7 @@
 
 return [
     'serie' => env('LIBRO_RECLAMACION_SERIE', 'TCK'),
+    'crear_erp_habilitado' => filter_var(env('LIBRO_RECLAMACION_CREAR_ERP_HABILITADO', false), FILTER_VALIDATE_BOOL),
 
     // Prefijos de 3 letras para codigo de ticket por unidad (sin depender de columna en BD).
     // Si una unidad no esta mapeada, se genera automaticamente por id (AAA, AAB, ...).

@@ -10,6 +10,7 @@ use App\Models\UnidadNegocio;
 use App\Models\User;
 use App\Services\ConsultaClienteService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -60,6 +61,10 @@ class LibroReclamacionCrear extends Component
 
     public function mount(): void
     {
+        if (! config('libro_reclamacion.crear_erp_habilitado')) {
+            abort(404);
+        }
+
         $this->authorize('ticket-libro-reclamacion.crear');
 
         $this->nota_fuente_fecha = now()->format('Y-m-d H:i:s');
@@ -68,7 +73,9 @@ class LibroReclamacionCrear extends Component
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
         $this->cargarGestoresDisponibles();
         $this->estados = EstadoLibroReclamacion::query()->orderBy('orden')->get(['id', 'nombre']);
-        $this->estado_libro_reclamaciones_id = (string) optional($this->estados->firstWhere('nombre', 'NUEVO'))->id;
+        $this->estado_libro_reclamaciones_id = (string) EstadoLibroReclamacion::query()
+            ->where('nombre', 'NUEVO')
+            ->value('id');
         $this->informaciones = collect();
     }
 
@@ -84,7 +91,9 @@ class LibroReclamacionCrear extends Component
 
         $this->gestores = $gestoresLegales->isNotEmpty() ? $gestoresLegales : $this->usuarios;
 
-        if ($this->gestor_id !== '' && ! $this->gestores->contains('id', (int) $this->gestor_id)) {
+        if ($this->gestor_id !== '' && ! collect($this->gestores)->contains(function ($gestor) {
+            return (int) data_get($gestor, 'id') === (int) $this->gestor_id;
+        })) {
             $this->gestor_id = '';
         }
     }
@@ -323,6 +332,10 @@ class LibroReclamacionCrear extends Component
 
     public function store()
     {
+        if (! config('libro_reclamacion.crear_erp_habilitado')) {
+            abort(404);
+        }
+
         $this->authorize('ticket-libro-reclamacion.crear');
 
         try {
@@ -383,7 +396,7 @@ class LibroReclamacionCrear extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('[TICKET-LIBRO] Error al crear: ' . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()
             ]);

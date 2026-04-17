@@ -13,7 +13,11 @@ Route::group(['middleware' => ['permission:modulo-libro-reclamacion.ver']], func
             ->group(function () {
                 Route::get('/', LibroReclamacionLista::class)->middleware('permission:ticket-libro-reclamacion.lista')->name('todo');
                 Route::get('/ver/{id}', LibroReclamacionVer::class)->middleware('permission:ticket-libro-reclamacion.ver')->name('ver');
-                Route::get('/crear', LibroReclamacionCrear::class)->middleware('permission:ticket-libro-reclamacion.crear')->name('crear');
+
+                if (config('libro_reclamacion.crear_erp_habilitado')) {
+                    Route::get('/crear', LibroReclamacionCrear::class)->middleware('permission:ticket-libro-reclamacion.crear')->name('crear');
+                }
+
                 Route::get('/editar/{id}', LibroReclamacionEditar::class)->middleware('permission:ticket-libro-reclamacion.editar')->name('editar');
             });
     });

@@ -7,11 +7,13 @@
         <h2>Listado de Tickets Libro Reclamacion</h2>
 
         <div class="cabecera_titulo_botones">
+            @if (config('libro_reclamacion.crear_erp_habilitado'))
             @can('ticket-libro-reclamacion.crear')
                 <a href="{{ route('erp.libro-reclamacion.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i>
                 </a>
             @endcan
+            @endif
         </div>
     </div>
 
