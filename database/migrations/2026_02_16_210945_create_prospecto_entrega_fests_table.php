@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -10,7 +11,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('prospecto_entrega_fests', function (Blueprint $table) {
+        $esSqlite = DB::getDriverName() === 'sqlite';
+
+        Schema::create('prospecto_entrega_fests', function (Blueprint $table) use ($esSqlite) {
             $table->id();
 
             $table->foreignId('entrega_fest_id')->constrained();
@@ -25,8 +28,13 @@ return new class extends Migration {
             $table->boolean('preinvitacion_confirmada')->nullable();
             $table->boolean('invitacion_confirmada')->nullable();
 
-            $table->string('lote')->nullable()->collation('utf8mb4_bin');
-            $table->string('manzana')->nullable()->collation('utf8mb4_bin');
+            if ($esSqlite) {
+                $table->string('lote')->nullable();
+                $table->string('manzana')->nullable();
+            } else {
+                $table->string('lote')->nullable()->collation('utf8mb4_bin');
+                $table->string('manzana')->nullable()->collation('utf8mb4_bin');
+            }
 
             $table->foreignId('estado_cliente_id')->nullable()->constrained('entrega_fest_estado_clientes')->nullOnDelete();
 

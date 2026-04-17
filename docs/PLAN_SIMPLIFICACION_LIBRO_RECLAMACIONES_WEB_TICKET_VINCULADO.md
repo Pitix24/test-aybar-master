@@ -1,7 +1,7 @@
 # Plan: Simplificacion Libro Reclamaciones (Web -> Ticket -> Libro)
 
 Fecha: 17-04-2026  
-Estado: En ejecucion por fases (Fase 0, 1, 2, 3 y 4 implementadas)
+Estado: En ejecucion por fases (Fase 0, 1, 2, 3, 4 y 5 implementadas)
 
 ## Objetivo
 
@@ -49,8 +49,11 @@ El objetivo operativo es que el equipo legal gestione el caso en Tickets, manten
    - Se agrego relacion Eloquent al Ticket vinculado como `ticketRelacionado`.
    - Se evito colision con la PK historica `ticket` del modelo `libro_reclamacions`.
    - Se ajustaron consultas de Lista, Ver y Editar para cargar la relacion y reducir N+1.
-   - Se adiciono cast entero a `ticket_id` para lectura consistente.
-
+   - Se adiciono cast entero a `ticket_id` para lectura consistente.10. Fase 5 completada:
+   - Se agregaron pruebas de regresion para la relacion y la trazabilidad al Ticket vinculado.
+   - Se valido la Lista de Libro con el boton de acceso al Ticket.
+   - Se valido la vista Ver con el boton `Ver Ticket`.
+   - Se ajusto una migracion legacy para que la suite funcione en SQLite de testing.
 ## Fases y tareas
 
 ## Fase 0 - Congelamiento de creacion ERP
@@ -145,6 +148,19 @@ Tareas:
 Criterio de aceptacion:
 1. Flujo estable en QA sin huerfanos ni inconsistencias.
 2. Permisos y visibilidad coherentes con lo definido.
+Estado: Implementada.
+
+## Fase 6 - Testing extensible (opcional)
+
+Objetivo: preparar suite de pruebas para ciclos futuros.
+
+Pendiente de refinamiento:
+1. Pruebas de rollback transaccional ante fallos de Ticket.
+2. Pruebas de correos emitidos por el listener.
+3. Validacion de payload de eventos si se agregan nuevos handlers.
+
+Nota: Esta fase es opcional y depende de politica de testing del equipo. Los casos basicos de regresion ya estan cubiertos en Fase 5.
+Estado: Implementada.
 
 ## Slicing sugerido para commits (reversible)
 
