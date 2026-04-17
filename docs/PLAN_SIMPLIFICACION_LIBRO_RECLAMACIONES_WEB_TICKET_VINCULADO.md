@@ -1,230 +1,190 @@
-# Plan: Simplificacion Libro Reclamaciones (Web -> Ticket -> Libro)
+# Documento Unico de Avance y Evidencia
 
-Fecha: 17-04-2026  
-Estado: En ejecucion por fases (Fase 0, 1, 2, 3, 4 y 5 implementadas)
+Proyecto: Simplificacion Libro Reclamaciones (Web -> Ticket -> Libro)
+Fecha: 17-04-2026
+Estado general: Implementado hasta Fase 5
+Owner funcional: Legal / ATC
+Owner tecnico: Equipo ERP
 
-## Objetivo
+## 1. Objetivo del trabajo de hoy
 
-Simplificar el modulo de Libro de Reclamaciones para que su canal de entrada sea solo el formulario web, y convertir el flujo en:
+Consolidar la simplificacion del flujo de Libro Reclamaciones para que la creacion se origine en web, exista trazabilidad completa hacia Ticket ATC, y el modulo ERP legal opere sin regresiones en Lista, Ver y Editar.
 
-Cliente envia formulario web -> Correo cliente -> Correo legal -> Crear Ticket -> Crear Libro Reclamacion vinculado al Ticket.
+Flujo objetivo implementado:
+Cliente envia formulario web -> Se crea Ticket -> Se crea Libro Reclamacion vinculado por ticket_id -> Legal gestiona con trazabilidad desde ERP.
 
-El objetivo operativo es que el equipo legal gestione el caso en Tickets, manteniendo Libro Reclamaciones como registro legal y de validacion.
+## 2. Resumen ejecutivo de resultados
 
-## Alcance y reglas definidas
+1. Se completo el plan tecnico por fases 0, 1, 2, 3, 4 y 5.
+2. Se deshabilito la creacion manual ERP (reversible por feature flag).
+3. Se implemento contrato tecnico de autocreacion de Ticket desde el formulario web.
+4. Se implemento creacion transaccional Ticket + Libro con rollback total.
+5. Se implemento trazabilidad visible al Ticket en Lista, Ver y Editar del modulo legal.
+6. Se agrego relacion Eloquent segura y eager loading para evitar N+1.
+7. Se agrego suite de pruebas de regresion para relacion, visibilidad y acceso.
+8. Se resolvio compatibilidad de migraciones para testing en SQLite sin afectar MySQL productivo.
 
-1. Se deshabilita la creacion de Libro desde ERP por ahora.
-2. No se eliminan componentes ni vistas de Crear ERP; solo se ocultan/bloquean accesos.
-3. El formulario web sigue siendo el unico punto de creacion.
-4. Se utilizara `ticket_id` en `libro_reclamacions` para vincular con `tickets.id`.
-5. El Ticket y el Libro son listas distintas, pero vinculadas.
-6. Para el Ticket automatico:
-   - Area destino: Legal (id 3).
-   - Canal: Libro Reclamacion (id 4 en catalogo `canals`).
-7. En Libro ERP se mantiene edicion de datos de cliente y datos del caso (decision vigente).
-
-## Avance ejecutado al 17-04-2026
-
-1. Fase 0 completada:
-   - Se deshabilito creacion ERP por feature flag.
-   - Se condiciono el registro de ruta de crear.
-   - Se aplico hardening del menu ERP para no romper cuando la ruta no existe.
-2. Fase 1 completada:
-   - Se implemento contrato tecnico en `config/libro_reclamacion.php`.
-   - Se definieron defaults operativos para area, tipo, subtipo, prioridad y canal.
-3. Fase 2 completada:
-   - Se implemento creacion transaccional Ticket + Libro vinculado por `ticket_id`.
-   - Se mantiene rollback total ante error.
-4. Hotfix de esquema aplicado:
-   - Se agrego migracion correctiva para crear `ticket_id` en `libro_reclamacions` cuando falta en bases historicas.
-5. Hotfix de canal aplicado:
-   - Se corrigio default tecnico de canal a `Libro Reclamacion`, resolviendo `canal_id = 4`.
-6. Hotfix de visualizacion ERP aplicado:
-   - En lista de Tickets se agrego tolerancia para registros historicos con `canal_id` nulo (render seguro con `-`).
-7. Fase 3 completada:
-   - Se agrego columna `Ticket ATC` y acceso rapido en Lista de Libro.
-   - Se agrego boton `Ver Ticket` en Ver y Editar de Libro.
-   - Se agrego campo informativo de ticket vinculado en vista general de Ver/Editar.
-8. Fase 4 completada:
-   - Se agrego relacion Eloquent al Ticket vinculado como `ticketRelacionado`.
-   - Se evito colision con la PK historica `ticket` del modelo `libro_reclamacions`.
-   - Se ajustaron consultas de Lista, Ver y Editar para cargar la relacion y reducir N+1.
-   - Se adiciono cast entero a `ticket_id` para lectura consistente.10. Fase 5 completada:
-   - Se agregaron pruebas de regresion para la relacion y la trazabilidad al Ticket vinculado.
-   - Se valido la Lista de Libro con el boton de acceso al Ticket.
-   - Se valido la vista Ver con el boton `Ver Ticket`.
-   - Se ajusto una migracion legacy para que la suite funcione en SQLite de testing.
-## Fases y tareas
+## 3. Avance por fase (estado y evidencia)
 
 ## Fase 0 - Congelamiento de creacion ERP
 
-Objetivo: impedir nuevas creaciones manuales desde ERP sin borrar codigo existente.
+Estado: Implementada
 
-Tareas:
-1. Ocultar boton Crear de la lista ERP de Libro.
-2. Bloquear ruta de creacion ERP (`/erp/libro-reclamacion/crear`) con estrategia reversible:
-   - opcion recomendada: feature flag,
-   - y/o revocacion de permiso `ticket-libro-reclamacion.crear`.
-3. Mantener Ver/Editar/Lista operativos.
-4. Limpiar cache de permisos despues del ajuste.
+Implementado:
+1. Feature flag `libro_reclamacion.crear_erp_habilitado` por defecto deshabilitado.
+2. Bloqueo de ruta de crear ERP cuando el flag esta apagado.
+3. Ocultamiento del boton Crear en la Lista ERP.
+4. Guard adicional en componente Crear para rutas cacheadas/antiguas.
 
-Criterio de aceptacion:
-1. Usuario legal no ve boton Crear.
-2. Acceso directo por URL de crear devuelve 403 o redireccion controlada.
-3. No hay impacto en lista, ver y editar.
+Evidencia documental:
+1. docs/COMMIT_FASE_0_LIBRO_RECLAMACIONES.md
 
 ## Fase 1 - Contrato de mapeo Web -> Ticket
 
-Objetivo: cerrar el contrato de datos antes de tocar logica transaccional.
+Estado: Implementada
 
-Tareas:
-1. Definir mapeo exacto de campos del formulario web hacia Ticket.
-2. Definir mapeo de `tipo_pedido` (RECLAMO/QUEJA) a `tipo_solicitud_id` y `sub_tipo_solicitud_id`.
-3. Registrar IDs oficiales de catalogos para area, canal, estado inicial y prioridad.
-4. Documentar defaults cuando datos del formulario lleguen vacios (formulario permite campos opcionales).
+Implementado:
+1. Bloque `ticket_autocreacion` en configuracion del modulo.
+2. Defaults de area, tipo, prioridad, canal y created_by para autocreacion.
+3. Plantillas para `asunto_inicial` y `descripcion_inicial`.
+4. Metodos de resolucion/normalizacion de payload tecnico.
 
-Criterio de aceptacion:
-1. Tabla de mapeo aprobada por negocio y tecnica.
-2. Sin valores hardcodeados ambiguos pendientes de definicion.
+Evidencia documental:
+1. docs/COMMIT_FASE_1_LIBRO_RECLAMACIONES.md
+2. docs/CAMPO_TECNICOS_AUTOCREACION_TICKET_LIBRO_RECLAMACIONES.md
 
 ## Fase 2 - Flujo transaccional Ticket + Libro vinculado
 
-Objetivo: implementar la nueva secuencia atomica en el envio web.
+Estado: Implementada
 
-Tareas:
-1. En el submit web, crear Ticket dentro de transaccion.
-2. Crear Libro Reclamacion en la misma transaccion.
-3. Guardar `ticket_id` en Libro con el ID del Ticket recien creado.
-4. Si falla cualquier paso, rollback total.
-5. Confirmar que el evento/correos usan datos persistidos consistentes.
+Implementado:
+1. Creacion automatica de Ticket dentro de transaccion.
+2. Creacion de Libro en la misma transaccion.
+3. Enlace por `ticket_id` al Ticket recien creado.
+4. Rollback total ante falla de cualquiera de los dos registros.
+5. Flag de control operativo para habilitar/deshabilitar autocreacion.
+6. Migracion correctiva para entornos historicos sin `ticket_id`.
 
-Criterio de aceptacion:
-1. Cada nuevo Libro web queda vinculado a un Ticket (`ticket_id` no nulo).
-2. No existen registros huerfanos en errores (ni ticket solo, ni libro solo).
+Evidencia documental:
+1. docs/COMMIT_FASE_2_LIBRO_RECLAMACIONES.md
 
-## Fase 3 - Ajuste del modulo legal ERP
+## Fase 3 - Trazabilidad ERP en Lista, Ver y Editar
 
-Objetivo: alinear ERP Libro a una operacion legal simplificada y trazable.
+Estado: Implementada
 
-Tareas:
-1. Reforzar vista Lista para mostrar vinculacion con Ticket con un botón parecido a Lista Citas.
-2. Reforzar vista Ver y Editar para navegar al Ticket vinculado con un Botón 'Ver Ticket'.
-3. Mantener/ajustar edicion legal de cliente y caso segun reglas aprobadas.
-4. Retirar dependencias de captura manual para creacion.
+Implementado:
+1. Columna `Ticket ATC` en Lista de Libro Reclamacion.
+2. Accion para abrir Ticket vinculado en Lista.
+3. Boton `Ver Ticket` en vistas Ver y Editar.
+4. Campo informativo `Ticket ATC vinculado` en Ver y Editar.
+5. Compatibilidad segura para historicos sin `ticket_id` (`-` / `Sin vincular`).
 
-Criterio de aceptacion:
-1. Legal visualiza caso + datos cliente + acceso al Ticket vinculado.
-2. No hay rutas de creacion manual visibles/funcionales.
+Evidencia documental:
+1. docs/COMMIT_FASE_3_LIBRO_RECLAMACIONES.md
 
-Estado: Implementada.
+## Fase 4 - Modelo, relacion y consultas
 
-## Fase 4 - Modelo, relaciones y consultas
+Estado: Implementada
 
-Objetivo: dejar el dominio consistente y mantenible.
+Implementado:
+1. Relacion Eloquent `ticketRelacionado` en modelo LibroReclamacion.
+2. Cast entero de `ticket_id`.
+3. Eager loading en Lista, Ver y Editar para reducir N+1.
+4. Evitar colision con PK historica `ticket` del modelo.
 
-Tareas:
-1. Agregar/validar relacion al Ticket vinculado en modelo `LibroReclamacion`.
-2. Ajustar `with()` y consultas de Lista/Ver/Editar para evitar N+1.
-3. Revisar fillable/casts usados realmente por flujo simplificado.
-4. Preparar limpieza progresiva de campos legacy no usados (sin borrado abrupto).
+Evidencia documental:
+1. docs/COMMIT_FASE_4_LIBRO_RECLAMACIONES.md
 
-Criterio de aceptacion:
-1. Consultas optimizadas y sin regresiones funcionales.
-2. Modelo con relacion clara Libro -> Ticket.
+## Fase 5 - Testing y hardening
 
-Estado: Implementada.
+Estado: Implementada
 
-## Fase 5 - Pruebas y hardening
+Implementado:
+1. Pruebas de regresion para la relacion `ticketRelacionado`.
+2. Pruebas de visibilidad en Lista y navegacion a Ticket.
+3. Prueba de boton `Ver Ticket` en vista Ver.
+4. Validacion de ausencia de boton Crear sin permiso.
+5. Ajuste de migracion legacy para compatibilidad de suite en SQLite.
 
-Objetivo: asegurar estabilidad antes de despliegue.
+Resultado validado:
+1. Ejecucion: `php artisan test tests/Feature/Livewire/LibroReclamacionFase5Test.php`
+2. Estado: 3 pruebas aprobadas, 0 fallas.
 
-Tareas:
-1. Pruebas E2E del flujo web completo.
-2. Pruebas de permisos (bloqueo crear ERP).
-3. Pruebas de rollback transaccional ante fallos.
-4. Pruebas de correos al cliente y equipo legal.
-5. Validacion manual de legal en Lista/Ver/Editar con ticket vinculado.
+Evidencia documental:
+1. docs/COMMIT_FASE_5_LIBRO_RECLAMACIONES.md
 
-Criterio de aceptacion:
-1. Flujo estable en QA sin huerfanos ni inconsistencias.
-2. Permisos y visibilidad coherentes con lo definido.
-Estado: Implementada.
+## 4. Archivos tecnicos clave modificados
 
-## Fase 6 - Testing extensible (opcional)
+## Dominio y logica
 
-Objetivo: preparar suite de pruebas para ciclos futuros.
+1. app/Models/LibroReclamacion/LibroReclamacion.php
+2. app/Livewire/Web/LibroReclamacion/LibroReclamacionLivewire.php
+3. app/Livewire/Erp/LibroReclamacion/LibroReclamacionLista.php
+4. app/Livewire/Erp/LibroReclamacion/LibroReclamacionVer.php
+5. app/Livewire/Erp/LibroReclamacion/LibroReclamacionEditar.php
+6. config/libro_reclamacion.php
 
-Pendiente de refinamiento:
-1. Pruebas de rollback transaccional ante fallos de Ticket.
-2. Pruebas de correos emitidos por el listener.
-3. Validacion de payload de eventos si se agregan nuevos handlers.
+## Vistas
 
-Nota: Esta fase es opcional y depende de politica de testing del equipo. Los casos basicos de regresion ya estan cubiertos en Fase 5.
-Estado: Implementada.
+1. resources/views/livewire/erp/libro-reclamacion/libro-reclamacion-lista.blade.php
+2. resources/views/livewire/erp/libro-reclamacion/libro-reclamacion-ver.blade.php
+3. resources/views/livewire/erp/libro-reclamacion/libro-reclamacion-editar.blade.php
+4. resources/views/livewire/erp/atc/ticket/ticket-lista.blade.php
 
-## Slicing sugerido para commits (reversible)
+## Migraciones
 
-1. Commit A - Access control ERP
-   - ocultar boton Crear,
-   - bloquear ruta/permiso de crear.
+1. database/migrations/2026_04_17_160100_add_missing_ticket_id_to_libro_reclamacions_table.php
+2. database/migrations/2026_02_16_210945_create_prospecto_entrega_fests_table.php
 
-2. Commit B - Contrato de mapeo
-   - config/constantes de IDs,
-   - documentacion de mapeo RECLAMO/QUEJA.
+## Pruebas
 
-3. Commit C - Core transaccional
-   - crear Ticket,
-   - crear Libro,
-   - vincular `ticket_id`,
-   - rollback seguro.
+1. tests/Feature/Livewire/LibroReclamacionFase5Test.php
 
-4. Commit D - Ajustes ERP legal
-   - lista/ver/editar con trazabilidad a ticket.
+## 5. Evidencia de calidad y estabilidad
 
-5. Commit E - Modelo y consultas
-   - relacion `ticket()`,
-   - eager loading y ajustes de consulta.
+1. No se reportaron errores de sintaxis en los archivos ajustados de fases 3, 4 y 5.
+2. Pruebas de Fase 5 ejecutadas en verde (3/3).
+3. Compatibilidad mantenida para registros historicos sin `ticket_id`.
+4. Produccion MySQL no cambia comportamiento funcional por el ajuste de SQLite en testing.
 
-6. Commit F - Testing y cierre documental
-   - tests,
-   - checklist de despliegue,
-   - resumen tecnico final.
+## 6. Decisiones tecnicas relevantes del dia
 
-## Archivos objetivo (referencia inicial)
+1. Se uso nombre de relacion `ticketRelacionado` para evitar conflicto con PK historica `ticket` en LibroReclamacion.
+2. Se forzo carga de relacion en consultas de Lista/Ver/Editar para evitar consultas repetidas y fragilidad de vistas.
+3. Se aplico condicion por driver en migracion legacy de Entrega Fest para que SQLite no falle por collation MySQL.
+4. Se mantuvo enfoque de cambios reversibles por flags/config y sin borrado abrupto de componentes legacy.
 
-1. `routes/erp/libro-reclamacion.php`
-2. `resources/views/livewire/erp/libro-reclamacion/libro-reclamacion-lista.blade.php`
-3. `database/seeders/RolesYPermisosSeeder.php`
-4. `app/Livewire/Web/LibroReclamacion/LibroReclamacionLivewire.php`
-5. `app/Models/LibroReclamacion/LibroReclamacion.php`
-6. `app/Events/LibroReclamacion/LibroReclamacionRegistrado.php`
-7. `app/Listeners/LibroReclamacion/EnviarCorreosLibroReclamacion.php`
-8. `resources/views/livewire/erp/libro-reclamacion/libro-reclamacion-ver.blade.php`
-9. `app/Livewire/Erp/LibroReclamacion/LibroReclamacionLista.php`
-10. `database/migrations/2026_02_16_211526_create_libro_reclamacions_table.php`
+## 7. Riesgos residuales y siguiente capa de cobertura
 
-## Checklist de inicio de implementacion
+Riesgos residuales:
+1. Falta automatizar escenarios completos de rollback forzado por excepciones externas.
+2. Falta automatizar pruebas de listener/correos en cadena completa.
 
-1. Confirmar IDs de tipo_solicitud/sub_tipo para RECLAMO y QUEJA.
-2. Confirmar ID del canal Formulario Web en catalogo actual. Resultado: confirmado `Libro Reclamacion` id `4`.
-3. Definir mecanismo de bloqueo crear ERP (permiso, feature flag, o ambos).
-4. Definir si correos deben salir antes o despues de persistir Ticket+Libro (recomendado: despues de persistir).
-5. Acordar estrategia de despliegue: gradual con feature flag en produccion.
+Siguiente capa sugerida (opcional):
+1. Testear rollback transaccional con fallas inducidas de Ticket.
+2. Testear emision de correos del listener de Libro Reclamaciones.
+3. Testear contrato de payload de eventos ante nuevos handlers.
 
-## Riesgos y mitigacion
+## 8. Estado final para cierre
 
-1. Riesgo: acceso residual por URL a crear ERP.
-   - Mitigacion: bloqueo por middleware/permiso + flag y pruebas de acceso.
+Estado de cierre del dia: Aprobado
 
-2. Riesgo: desalineacion de catalogos Ticket (tipo/canal/area).
-   - Mitigacion: Fase 1 obligatoria con IDs cerrados antes de codificar.
+1. Fase 0: Implementada
+2. Fase 1: Implementada
+3. Fase 2: Implementada
+4. Fase 3: Implementada
+5. Fase 4: Implementada
+6. Fase 5: Implementada
 
-3. Riesgo: registros huerfanos en fallos parciales.
-   - Mitigacion: transaccion unica + pruebas de rollback.
+Conclusion:
+El flujo simplificado Web -> Ticket -> Libro queda operativo, trazable y validado con pruebas base de regresion. La documentacion queda consolidada en este archivo como evidencia unica de avance del 17-04-2026.
 
-4. Riesgo: regresion en correos.
-   - Mitigacion: pruebas de listener/mail y validacion de payload final.
+## 9. Anexos de trazabilidad (fuente original)
 
-## Resultado esperado
-
-Al finalizar estas fases, el flujo quedara estandarizado en un solo canal (web), con trazabilidad completa entre Libro y Ticket, y con operacion legal simplificada y mantenible dentro del ERP.
+1. docs/COMMIT_FASE_0_LIBRO_RECLAMACIONES.md
+2. docs/COMMIT_FASE_1_LIBRO_RECLAMACIONES.md
+3. docs/COMMIT_FASE_2_LIBRO_RECLAMACIONES.md
+4. docs/COMMIT_FASE_3_LIBRO_RECLAMACIONES.md
+5. docs/COMMIT_FASE_4_LIBRO_RECLAMACIONES.md
+6. docs/COMMIT_FASE_5_LIBRO_RECLAMACIONES.md
+7. docs/CAMPO_TECNICOS_AUTOCREACION_TICKET_LIBRO_RECLAMACIONES.md
