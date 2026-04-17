@@ -16,11 +16,7 @@
                                 de su registro</h2>
                         </div>
 
-                        <div class="informacion_resumen_grid">
-                            <div class="informacion_resumen_item">
-                                <span class="informacion_resumen_label">ID interno</span>
-                                <span class="informacion_resumen_valor">{{ $reclamo_registrado->ticket }}</span>
-                            </div>
+                        <div class="informacion_resumen_grid">                            
                             <div class="informacion_resumen_item">
                                 <span class="informacion_resumen_label">Ticket N°</span>
                                 <span class="informacion_resumen_valor">{{ $reclamo_registrado->codigo_ticket }}</span>

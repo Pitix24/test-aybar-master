@@ -65,10 +65,6 @@ return new class extends Migration {
             $table->dateTime('assigned_at')->nullable();
             $table->text('observaciones_internas')->nullable();
 
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
-
             $table->string('archivo_1')->nullable();
             $table->string('archivo_2')->nullable();
             $table->string('archivo_3')->nullable();
@@ -81,6 +77,10 @@ return new class extends Migration {
             $table->index(['unidad_negocio_id', 'numero_reclamo']);
             $table->index('codigo_ticket');
             $table->index('estado_libro_reclamaciones_id');
+
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();
             $table->softDeletes();
