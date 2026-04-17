@@ -27,6 +27,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
     protected $creado_por_id;
     protected $perPage;
     protected $page;
+    protected $todo;
 
     public function __construct(
         $buscar = '',
@@ -73,7 +74,7 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
     public function collection()
     {
         $query = Ticket::query()
-            ->with(['userCliente', 'area', 'estado', 'prioridad', 'gestor', 'unidadNegocio', 'proyecto', 'tipoSolicitud', 'subTipoSolicitud', 'canal', 'creadoPor']);
+            ->with(['userCliente', 'area', 'estado', 'prioridad', 'gestor', 'unidadNegocio', 'proyecto', 'tipoSolicitud', 'subTipoSolicitud', 'canal', 'creadoPor', 'validadoPor']);
 
         if (!$this->todo) {
             $query->when($this->buscar, function ($query) {
@@ -116,9 +117,15 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
                     $index + 1,
                     $item->id,
                     $item->asunto_inicial,
+                    $item->descripcion_inicial,
+                    $item->asunto_respuesta,
+                    $item->descripcion_respuesta,
                     $item->dni,
                     $item->nombres,
-                    $item->cliente?->name ?? 'N/A',
+                    $item->userCliente?->name ?? 'N/A',
+                    $item->email,
+                    $item->celular,
+                    $item->direccion,
                     $item->unidadNegocio?->nombre ?? 'N/A',
                     $item->proyecto?->nombre ?? 'N/A',
                     $item->area?->nombre ?? 'N/A',
@@ -132,6 +139,10 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
                     $item->creadoPor?->name ?? 'N/A',
                     $item->created_at->format('d/m/Y H:i'),
                     $item->updated_at->format('d/m/Y H:i'),
+                    $item->fecha_vencimiento ? $item->fecha_vencimiento->format('d/m/Y H:i') : 'N/A',
+                    $item->validadoPor?->name ?? 'N/A',
+                    $item->fecha_validacion ? $item->fecha_validacion->format('d/m/Y H:i') : 'N/A',
+                    $item->origen,
                 ];
             });
     }
@@ -141,10 +152,16 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
         return [
             'N°',
             'ID',
-            'Asunto',
+            'Asunto Inicial',
+            'Descripción Inicial',
+            'Asunto Respuesta',
+            'Descripción Respuesta',
             'DNI',
             'Nombres',
             'Cliente (User)',
+            'Email',
+            'Celular',
+            'Dirección',
             'Empresa',
             'Proyecto',
             'Área',
@@ -158,6 +175,10 @@ class TicketExport implements FromCollection, WithHeadings, ShouldAutoSize
             'Creado por',
             'Fecha Creación',
             'Última Modificación',
+            'Fecha Vencimiento',
+            'Validado por',
+            'Fecha Cierre',
+            'Origen',
         ];
     }
 }

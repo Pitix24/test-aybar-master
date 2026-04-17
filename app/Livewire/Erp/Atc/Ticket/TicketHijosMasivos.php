@@ -253,6 +253,8 @@ class TicketHijosMasivos extends Component
                     'descripcion_inicial' => $h['descripcion'],
                     'estado_ticket_id' => $estadoDerivadoId,
                     'created_by' => auth()->id(),
+                    'lotes' => $this->parentTicket->lotes,
+                    'origen' => $this->parentTicket->origen,
                 ]);
 
                 // Registrar la derivación (desde el área de origen seleccionada al área de destino)
