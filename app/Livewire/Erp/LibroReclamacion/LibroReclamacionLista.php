@@ -15,7 +15,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Lazy]
-#[Layout('layouts.erp.layout-erp')]
+#[Layout('layouts.erp.layout-erp', ['anchoPantalla' => '100%'])]
 #[Title('Tickets Libro Reclamacion')]
 class LibroReclamacionLista extends Component
 {

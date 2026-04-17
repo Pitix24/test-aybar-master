@@ -18,6 +18,8 @@ return new class extends Migration {
             $table->foreignId('cliente_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('gestor_id')->nullable()->constrained('users')->nullOnDelete();
 
+            $table->foreignId('ticket_id')->nullable()->constrained('tickets')->nullOnDelete();
+
             $table->string('serie')->default('TCK');
             $table->unsignedBigInteger('numero_reclamo')->nullable();
             $table->string('codigo_ticket', 20)->nullable();

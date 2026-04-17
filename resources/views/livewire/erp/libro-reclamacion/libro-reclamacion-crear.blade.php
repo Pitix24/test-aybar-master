@@ -73,7 +73,7 @@
                     <div class="g_fila">
                         <div class="g_columna_4 g_margin_bottom_10">
                             <label>Estado Legal</label>
-                            <select wire:model.live="estado_libro_reclamaciones_id" class="@error('estado_libro_reclamaciones_id') input-error @enderror">
+                            <select wire:model.live="estado_libro_reclamaciones_id" class="@error('estado_libro_reclamaciones_id') input-error @enderror" disabled>
                                 <option value="">Seleccione...</option>
                                 @foreach ($estados as $estado)
                                     <option value="{{ $estado->id }}">{{ str_replace('_', ' ', $estado->nombre) }}</option>

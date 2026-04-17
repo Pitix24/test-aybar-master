@@ -252,20 +252,40 @@
                             <h2><i class="fa-solid fa-circle-exclamation"></i> 4.- Detalle de la reclamación</h2>
                         </div>
 
-                        <label><strong class="g_negrita">Tipo de solicitud:</strong></label>
-                        <div class="g_fila">
+                        <div class="g_margin_bottom_10">
+                            <label><strong class="g_negrita">Tipo de solicitud:</strong></label>
+                        </div>
 
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                                    <input type="radio" wire:model="tipo_pedido" value="reclamo">
-                                    <strong>RECLAMO:</strong> Disconformidad relacionada a los productos o servicios.
+                        <div class="g_fila" style="align-items: stretch;">
+                            <div class="g_margin_bottom_10 g_columna_6" style="display:flex;">
+                                <label for="tipo_pedido_reclamo"
+                                    style="width: 100%; height: 100%; min-height: 180px; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 2px solid {{ $tipo_pedido === 'reclamo' ? '#02424E' : 'rgba(0,0,0,0.10)' }}; border-radius: 10px; background: {{ $tipo_pedido === 'reclamo' ? 'rgba(2, 66, 78, 0.14)' : '#ffffff' }}; cursor: pointer; box-sizing: border-box; box-shadow: {{ $tipo_pedido === 'reclamo' ? '0 0 0 2px rgba(2,66,78,0.18), 0 12px 22px rgba(2,66,78,0.10)' : 'none' }}; transition: all 0.15s ease;">
+                                    <div style="display:flex; align-items:center; gap: 10px;">
+                                        <input id="tipo_pedido_reclamo" type="radio" wire:model="tipo_pedido" value="reclamo" style="margin: 0;">
+                                        <span style="font-weight: 800; letter-spacing: 0.02em; color: {{ $tipo_pedido === 'reclamo' ? '#02424E' : 'inherit' }};">RECLAMO</span>
+                                        @if ($tipo_pedido === 'reclamo')
+                                            <span class="g_badge info" style="margin-left: auto;">Seleccionado</span>
+                                        @endif
+                                    </div>
+                                    <p style="margin: 0; line-height: 1.55; text-align: justify; padding-left: 5px; color: {{ $tipo_pedido === 'reclamo' ? '#02424E' : 'inherit' }}; opacity: {{ $tipo_pedido === 'reclamo' ? '1' : '0.92' }};">
+                                        Manifestación que un consumidor realiza al proveedor a través de una Hoja de Reclamación del Libro de Reclamaciones, mediante la cual expresa una disconformidad relacionada a los bienes expendidos o suministrados o a los servicios prestados. No constituye una denuncia y no inicia un procedimiento administrativo sancionador.
+                                    </p>
                                 </label>
                             </div>
 
-                            <div class="g_margin_bottom_10 g_columna_6">
-                                <label style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                                    <input type="radio" wire:model="tipo_pedido" value="queja">
-                                    <strong>QUEJA:</strong> Disconformidad no relacionada a los productos o servicios.
+                            <div class="g_margin_bottom_10 g_columna_6" style="display:flex;">
+                                <label for="tipo_pedido_queja"
+                                    style="width: 100%; height: 100%; min-height: 180px; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 2px solid {{ $tipo_pedido === 'queja' ? '#02424E' : 'rgba(0,0,0,0.10)' }}; border-radius: 10px; background: {{ $tipo_pedido === 'queja' ? 'rgba(2, 66, 78, 0.14)' : '#ffffff' }}; cursor: pointer; box-sizing: border-box; box-shadow: {{ $tipo_pedido === 'queja' ? '0 0 0 2px rgba(2,66,78,0.18), 0 12px 22px rgba(2,66,78,0.10)' : 'none' }}; transition: all 0.15s ease;">
+                                    <div style="display:flex; align-items:center; gap: 10px;">
+                                        <input id="tipo_pedido_queja" type="radio" wire:model="tipo_pedido" value="queja" style="margin: 0;">
+                                        <span style="font-weight: 800; letter-spacing: 0.02em; color: {{ $tipo_pedido === 'queja' ? '#02424E' : 'inherit' }};">QUEJA</span>
+                                        @if ($tipo_pedido === 'queja')
+                                            <span class="g_badge info" style="margin-left: auto;">Seleccionado</span>
+                                        @endif
+                                    </div>
+                                    <p style="margin: 0; line-height: 1.55; text-align: justify; padding-left: 5px; color: {{ $tipo_pedido === 'queja' ? '#02424E' : 'inherit' }}; opacity: {{ $tipo_pedido === 'queja' ? '1' : '0.92' }};">
+                                        Manifestación que un consumidor realiza al proveedor a través de una Hoja de Reclamación del Libro de Reclamaciones, mediante la cual expresa una disconformidad que no se encuentra relacionada a los bienes expendidos o suministrados o a los servicios prestados; o, expresa el malestar o descontento del consumidor respecto a la atención al público, sin que tenga por finalidad la obtención de un pronunciamiento por parte del proveedor. Tampoco constituye una denuncia ni inicia un procedimiento sancionador.
+                                    </p>
                                 </label>
                             </div>
                         </div>
