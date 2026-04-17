@@ -3,8 +3,11 @@
 namespace App\Livewire\Web\LibroReclamacion;
 
 use App\Events\LibroReclamacion\LibroReclamacionRegistrado;
+use App\Models\Canal;
 use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
+use App\Models\SubTipoSolicitud;
+use App\Models\TipoSolicitud;
 use App\Models\UnidadNegocio;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -16,6 +19,8 @@ use Livewire\Attributes\Layout;
 class LibroReclamacionLivewire extends Component
 {
     use WithFileUploads;
+
+    public array $payload_ticket_autocreacion = [];
 
     public $unidad_negocio_id;
     public $proyecto_id;
@@ -148,6 +153,7 @@ class LibroReclamacionLivewire extends Component
 
             $this->unidad_negocio_id = $unidadNegocio->id;
             $this->unidad_razon_social = $unidadNegocio->razon_social ?? $unidadNegocio->nombre;
+            $this->payload_ticket_autocreacion = $this->construirPayloadTicketAutocreacion($proyecto?->id);
             $ticket = LibroReclamacion::generarTicket($this->unidad_negocio_id);
 
             $reclamo = LibroReclamacion::create([
@@ -350,6 +356,132 @@ class LibroReclamacionLivewire extends Component
         $texto = trim((string) $valor);
 
         return $texto === '' ? null : $texto;
+    }
+
+    protected function construirPayloadTicketAutocreacion(?int $proyectoId = null): array
+    {
+        $tipoPedido = $this->resolverTipoPedido();
+        $documento = $this->textoNullable($this->numero_documento);
+        $detalle = $this->textoNullable($this->detalle);
+        $pedido = $this->textoNullable($this->pedido);
+
+        return [
+            'area_id' => (int) config('libro_reclamacion.ticket_autocreacion.area_legal_id', 3),
+            'canal_id' => $this->resolverCanalTicketId(),
+            'tipo_solicitud_id' => $this->resolverTipoSolicitudTicketId(),
+            'sub_tipo_solicitud_id' => $this->resolverSubTipoSolicitudTicketId($tipoPedido),
+            'prioridad_ticket_id' => (int) config('libro_reclamacion.ticket_autocreacion.prioridad_ticket_id', 3),
+            'created_by' => config('libro_reclamacion.ticket_autocreacion.created_by'),
+            'unidad_negocio_id' => $this->unidad_negocio_id,
+            'proyecto_id' => $proyectoId,
+            'dni' => $documento,
+            'nombres' => trim(implode(' ', array_filter([
+                $this->textoNullable($this->nombre),
+                $this->textoNullable($this->apellido_paterno),
+                $this->textoNullable($this->apellido_materno),
+            ]))),
+            'email' => $this->textoNullable($this->email),
+            'celular' => $this->textoNullable($this->telefono),
+            'direccion' => $this->textoNullable($this->domicilio),
+            'asunto_inicial' => $this->construirAsuntoInicialTicket($tipoPedido, $documento),
+            'descripcion_inicial' => $this->construirDescripcionInicialTicket($detalle, $pedido),
+            'origen' => 'FORMULARIO_WEB_LIBRO_RECLAMACION',
+            'lotes' => null,
+        ];
+    }
+
+    protected function construirAsuntoInicialTicket(string $tipoPedido, ?string $documento): string
+    {
+        $formato = (string) config('libro_reclamacion.ticket_autocreacion.asunto.formato', ':tipo_pedido - :documento');
+        $tipo = $tipoPedido !== 'NO_DEFINIDO'
+            ? $tipoPedido
+            : (string) config('libro_reclamacion.ticket_autocreacion.asunto.tipo_default', 'NO_DEFINIDO');
+        $dni = $documento ?: (string) config('libro_reclamacion.ticket_autocreacion.asunto.documento_default', 'SIN DOCUMENTO');
+
+        return strtr($formato, [
+            ':tipo_pedido' => $tipo,
+            ':documento' => $dni,
+        ]);
+    }
+
+    protected function construirDescripcionInicialTicket(?string $detalle, ?string $pedido): string
+    {
+        $prefijoDetalle = (string) config('libro_reclamacion.ticket_autocreacion.descripcion.prefijo_detalle', 'Cliente detalla lo siguiente:');
+        $prefijoPedido = (string) config('libro_reclamacion.ticket_autocreacion.descripcion.prefijo_pedido', 'Cliente pide lo siguiente:');
+
+        $partes = [];
+
+        if ($detalle) {
+            $partes[] = $prefijoDetalle . ' ' . $detalle;
+        }
+
+        if ($pedido) {
+            $partes[] = $prefijoPedido . ' ' . $pedido;
+        }
+
+        if (empty($partes)) {
+            return '';
+        }
+
+        return implode("\n\n", $partes);
+    }
+
+    protected function resolverCanalTicketId(): ?int
+    {
+        $canalId = config('libro_reclamacion.ticket_autocreacion.canal_id');
+
+        if ($canalId !== null && $canalId !== '') {
+            return (int) $canalId;
+        }
+
+        $canalNombre = trim((string) config('libro_reclamacion.ticket_autocreacion.canal_nombre', 'FORMULARIO WEB'));
+
+        if ($canalNombre === '') {
+            return null;
+        }
+
+        return Canal::query()
+            ->whereRaw('UPPER(nombre) = ?', [mb_strtoupper($canalNombre)])
+            ->value('id');
+    }
+
+    protected function resolverTipoSolicitudTicketId(): ?int
+    {
+        $tipoSolicitudId = (int) config('libro_reclamacion.ticket_autocreacion.tipo_solicitud_id', 0);
+
+        if ($tipoSolicitudId > 0) {
+            return $tipoSolicitudId;
+        }
+
+        $tipoSolicitudNombre = trim((string) config('libro_reclamacion.ticket_autocreacion.tipo_solicitud_nombre', 'LIBRO DE RECLAMACIONES'));
+
+        if ($tipoSolicitudNombre === '') {
+            return null;
+        }
+
+        return TipoSolicitud::query()
+            ->whereRaw('UPPER(nombre) = ?', [mb_strtoupper($tipoSolicitudNombre)])
+            ->value('id');
+    }
+
+    protected function resolverSubTipoSolicitudTicketId(string $tipoPedido): ?int
+    {
+        $tipoSolicitudId = $this->resolverTipoSolicitudTicketId();
+
+        if (! $tipoSolicitudId) {
+            return null;
+        }
+
+        $subTipoNombre = trim((string) config('libro_reclamacion.ticket_autocreacion.subtipo_por_tipo_pedido.' . $tipoPedido, ''));
+
+        if ($subTipoNombre === '') {
+            return null;
+        }
+
+        return SubTipoSolicitud::query()
+            ->where('tipo_solicitud_id', $tipoSolicitudId)
+            ->whereRaw('UPPER(nombre) = ?', [mb_strtoupper($subTipoNombre)])
+            ->value('id');
     }
 
     public function render()

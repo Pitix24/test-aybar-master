@@ -27,6 +27,34 @@ return [
     'unidad_template_nombre' => 'RECLAMOS_SIN_PROYECTO',
     'unidad_template_razon_social' => 'RECLAMOS SIN PROYECTO',
 
+    // Contrato Fase 1: mapeo tecnico para autogeneracion de Ticket desde formulario web.
+    'ticket_autocreacion' => [
+        'area_legal_id' => (int) env('LIBRO_RECLAMACION_TICKET_AREA_ID', 3),
+        'canal_id' => env('LIBRO_RECLAMACION_TICKET_CANAL_ID'),
+        'canal_nombre' => env('LIBRO_RECLAMACION_TICKET_CANAL_NOMBRE', 'FORMULARIO WEB'),
+        'tipo_solicitud_id' => (int) env('LIBRO_RECLAMACION_TICKET_TIPO_SOLICITUD_ID', 28),
+        'tipo_solicitud_nombre' => env('LIBRO_RECLAMACION_TICKET_TIPO_SOLICITUD_NOMBRE', 'LIBRO DE RECLAMACIONES'),
+        'prioridad_ticket_id' => (int) env('LIBRO_RECLAMACION_TICKET_PRIORIDAD_ID', 3),
+        'created_by' => null,
+
+        // El nombre de subtipo es un fallback. En fase 2 se usara para resolver el subtipo real por catalogo.
+        'subtipo_por_tipo_pedido' => [
+            'RECLAMO' => env('LIBRO_RECLAMACION_TICKET_SUBTIPO_RECLAMO_NOMBRE', 'RECLAMO'),
+            'QUEJA' => env('LIBRO_RECLAMACION_TICKET_SUBTIPO_QUEJA_NOMBRE', 'QUEJA'),
+        ],
+
+        // Plantillas acordadas para contenido tecnico del ticket.
+        'asunto' => [
+            'formato' => ':tipo_pedido - :documento',
+            'documento_default' => 'SIN DOCUMENTO',
+            'tipo_default' => 'NO_DEFINIDO',
+        ],
+        'descripcion' => [
+            'prefijo_detalle' => 'Cliente detalla lo siguiente:',
+            'prefijo_pedido' => 'Cliente pide lo siguiente:',
+        ],
+    ],
+
     'aybar' => [
         'razon_social' => env('LIBRO_RECLAMACION_AYBAR_RAZON_SOCIAL', 'AYBAR CORP. S.A.C.'),
         'numero_inicial' => (int) env('LIBRO_RECLAMACION_AYBAR_NUMERO_INICIAL', 0),

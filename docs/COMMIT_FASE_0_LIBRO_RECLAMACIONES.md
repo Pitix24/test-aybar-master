@@ -28,3 +28,10 @@ Si en el futuro se necesita reactivar temporalmente la creacion desde ERP, basta
 `LIBRO_RECLAMACION_CREAR_ERP_HABILITADO=true`
 
 Luego limpiar cache de config si aplica.
+
+## Mini-commit complementario (hotfix)
+
+- Commit: `0f83a1f`
+- Mensaje: `fix(menu-erp): evitar error por rutas no definidas en enlaces dinamicos`
+- Archivo: `resources/views/layouts/erp/menu-erp.blade.php`
+- Motivo: evitar `RouteNotFoundException` cuando existan items de menu con rutas deshabilitadas o no registradas.
