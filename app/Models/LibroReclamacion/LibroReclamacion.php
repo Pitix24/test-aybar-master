@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\LibroReclamacion\LibroReclamacionNumeroService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class LibroReclamacion extends Model
 {
@@ -19,6 +20,7 @@ class LibroReclamacion extends Model
     protected $fillable = [
         'unidad_negocio_id',
         'proyecto_id',
+        'ticket_id',
         'manzana',
         'lote',
         'cliente_id',
@@ -175,11 +177,11 @@ class LibroReclamacion extends Model
                 $reclamacion->codigo_ticket = $reclamacion->codigo ?: null;
             }
             if (!$reclamacion->created_by) {
-                $reclamacion->created_by = auth()?->user()?->id;
+                $reclamacion->created_by = Auth::id();
             }
         });
         static::updating(function ($reclamacion) {
-            $reclamacion->updated_by = auth()?->user()?->id;
+            $reclamacion->updated_by = Auth::id();
         });
     }
 

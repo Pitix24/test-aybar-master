@@ -29,6 +29,7 @@ return [
 
     // Contrato Fase 1: mapeo tecnico para autogeneracion de Ticket desde formulario web.
     'ticket_autocreacion' => [
+        'habilitado' => filter_var(env('LIBRO_RECLAMACION_TICKET_AUTOCREACION_HABILITADO', true), FILTER_VALIDATE_BOOL),
         'area_legal_id' => (int) env('LIBRO_RECLAMACION_TICKET_AREA_ID', 3),
         'canal_id' => env('LIBRO_RECLAMACION_TICKET_CANAL_ID'),
         'canal_nombre' => env('LIBRO_RECLAMACION_TICKET_CANAL_NOMBRE', 'FORMULARIO WEB'),

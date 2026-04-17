@@ -4,9 +4,11 @@ namespace App\Livewire\Web\LibroReclamacion;
 
 use App\Events\LibroReclamacion\LibroReclamacionRegistrado;
 use App\Models\Canal;
+use App\Models\EstadoTicket;
 use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
 use App\Models\SubTipoSolicitud;
+use App\Models\Ticket;
 use App\Models\TipoSolicitud;
 use App\Models\UnidadNegocio;
 use Livewire\Component;
@@ -154,11 +156,19 @@ class LibroReclamacionLivewire extends Component
             $this->unidad_negocio_id = $unidadNegocio->id;
             $this->unidad_razon_social = $unidadNegocio->razon_social ?? $unidadNegocio->nombre;
             $this->payload_ticket_autocreacion = $this->construirPayloadTicketAutocreacion($proyecto?->id);
+
+            $ticketVinculado = null;
+
+            if (config('libro_reclamacion.ticket_autocreacion.habilitado', true)) {
+                $ticketVinculado = $this->crearTicketAutogenerado($this->payload_ticket_autocreacion);
+            }
+
             $ticket = LibroReclamacion::generarTicket($this->unidad_negocio_id);
 
             $reclamo = LibroReclamacion::create([
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'proyecto_id' => $proyecto?->id,
+                'ticket_id' => $ticketVinculado?->id,
                 'manzana' => $this->textoNullable($this->manzana),
                 'lote' => $this->textoNullable($this->lote),
                 'serie' => $ticket['serie'],
@@ -370,6 +380,7 @@ class LibroReclamacionLivewire extends Component
             'canal_id' => $this->resolverCanalTicketId(),
             'tipo_solicitud_id' => $this->resolverTipoSolicitudTicketId(),
             'sub_tipo_solicitud_id' => $this->resolverSubTipoSolicitudTicketId($tipoPedido),
+            'estado_ticket_id' => $this->resolverEstadoTicketNuevoId(),
             'prioridad_ticket_id' => (int) config('libro_reclamacion.ticket_autocreacion.prioridad_ticket_id', 3),
             'created_by' => config('libro_reclamacion.ticket_autocreacion.created_by'),
             'unidad_negocio_id' => $this->unidad_negocio_id,
@@ -388,6 +399,33 @@ class LibroReclamacionLivewire extends Component
             'origen' => 'FORMULARIO_WEB_LIBRO_RECLAMACION',
             'lotes' => null,
         ];
+    }
+
+    protected function crearTicketAutogenerado(array $payload): Ticket
+    {
+        return Ticket::query()->create([
+            'unidad_negocio_id' => $payload['unidad_negocio_id'] ?: null,
+            'proyecto_id' => $payload['proyecto_id'] ?: null,
+            'cliente_id' => null,
+            'gestor_id' => null,
+            'area_id' => $payload['area_id'] ?: null,
+            'ticket_padre_id' => null,
+            'tipo_solicitud_id' => $payload['tipo_solicitud_id'] ?: null,
+            'sub_tipo_solicitud_id' => $payload['sub_tipo_solicitud_id'] ?: null,
+            'canal_id' => $payload['canal_id'] ?: null,
+            'estado_ticket_id' => $payload['estado_ticket_id'] ?: 1,
+            'prioridad_ticket_id' => $payload['prioridad_ticket_id'] ?: 3,
+            'asunto_inicial' => $payload['asunto_inicial'] ?: 'LIBRO DE RECLAMACIONES',
+            'descripcion_inicial' => $payload['descripcion_inicial'] ?: 'Sin detalle proporcionado por el cliente.',
+            'lotes' => $payload['lotes'] ?? null,
+            'dni' => $payload['dni'] ?: null,
+            'nombres' => $payload['nombres'] ?: null,
+            'email' => $payload['email'] ?: null,
+            'celular' => $payload['celular'] ?: null,
+            'direccion' => $payload['direccion'] ?: null,
+            'origen' => $payload['origen'] ?: 'FORMULARIO_WEB_LIBRO_RECLAMACION',
+            'created_by' => $payload['created_by'],
+        ]);
     }
 
     protected function construirAsuntoInicialTicket(string $tipoPedido, ?string $documento): string
@@ -450,7 +488,11 @@ class LibroReclamacionLivewire extends Component
         $tipoSolicitudId = (int) config('libro_reclamacion.ticket_autocreacion.tipo_solicitud_id', 0);
 
         if ($tipoSolicitudId > 0) {
-            return $tipoSolicitudId;
+            $existe = TipoSolicitud::query()->whereKey($tipoSolicitudId)->exists();
+
+            if ($existe) {
+                return $tipoSolicitudId;
+            }
         }
 
         $tipoSolicitudNombre = trim((string) config('libro_reclamacion.ticket_autocreacion.tipo_solicitud_nombre', 'LIBRO DE RECLAMACIONES'));
@@ -481,6 +523,13 @@ class LibroReclamacionLivewire extends Component
         return SubTipoSolicitud::query()
             ->where('tipo_solicitud_id', $tipoSolicitudId)
             ->whereRaw('UPPER(nombre) = ?', [mb_strtoupper($subTipoNombre)])
+            ->value('id');
+    }
+
+    protected function resolverEstadoTicketNuevoId(): ?int
+    {
+        return EstadoTicket::query()
+            ->where('nombre', EstadoTicket::NUEVO)
             ->value('id');
     }
 
