@@ -455,6 +455,24 @@
                 }
             });
         });
+
+        $wire.on('alertConfirmarDuplicado', () => {
+            Swal.fire({
+                title: '¡Ticket Duplicado!',
+                text: "Se ha detectado que ya existe un ticket activo para este DNI y tipo de solicitud. ¿Deseas crearlo de todas formas?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, crear duplicado',
+                cancelButtonText: 'No, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $wire.set('confirmado_duplicado', true);
+                    $wire.store(true);
+                }
+            });
+        });
     </script>
     @endscript
 </div>

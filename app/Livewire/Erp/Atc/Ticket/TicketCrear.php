@@ -44,6 +44,11 @@ class TicketCrear extends Component
     public $asunto_inicial = '';
     public $descripcion_inicial = '';
     public $dni = '';
+    public function updatedDni($value)
+    {
+        $this->confirmado_duplicado = false;
+        $this->verificarDuplicados();
+    }
     public $nombres = '';
     public $email = '';
     public $celular = '';
@@ -57,6 +62,8 @@ class TicketCrear extends Component
 
     public $searchUser = '';
     public $selectedParticipants = [];
+    public $has_duplicado = false;
+    public $confirmado_duplicado = false;
 
     public Collection $informaciones;
 
@@ -240,9 +247,51 @@ class TicketCrear extends Component
     public function updatedTipoSolicitudId($value)
     {
         $this->sub_tipo_solicitud_id = '';
+        $this->confirmado_duplicado = false;
 
         if ($value) {
             $this->loadSubTipoSolicitudes();
+            $this->verificarDuplicados();
+        }
+    }
+
+    public function updatedSubTipoSolicitudId($value)
+    {
+        $this->confirmado_duplicado = false;
+        $this->verificarDuplicados();
+    }
+
+    public function verificarDuplicados()
+    {
+        if (!$this->dni || !$this->tipo_solicitud_id || !$this->sub_tipo_solicitud_id || empty($this->lotes_agregados)) {
+            $this->has_duplicado = false;
+            return;
+        }
+
+        $lotesConTicket = [];
+        foreach ($this->lotes_agregados as $lote) {
+            if (
+                \App\Services\TicketService::existeTicketSimilar(
+                    $this->dni,
+                    $lote['id'],
+                    $this->tipo_solicitud_id,
+                    $this->sub_tipo_solicitud_id
+                )
+            ) {
+                $lotesConTicket[] = $lote['numero_lote'];
+            }
+        }
+
+        if (!empty($lotesConTicket)) {
+            $this->has_duplicado = true;
+            $mensaje = "Ya existe un ticket activo para este DNI y Tipo de Solicitud en los lotes: " . implode(', ', $lotesConTicket);
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => '¡Ticket Duplicado detectado!',
+                'text' => $mensaje
+            ]);
+        } else {
+            $this->has_duplicado = false;
         }
     }
 
@@ -338,6 +387,8 @@ class TicketCrear extends Component
         ];
 
         $this->lote_id = "";
+        $this->confirmado_duplicado = false;
+        $this->verificarDuplicados();
     }
     public function quitarLote($id)
     {
@@ -360,6 +411,12 @@ class TicketCrear extends Component
                 'text' => 'Verifique los errores de los campos resaltados.'
             ]);
             throw $e;
+        }
+
+        // 2. Validación de duplicados (Confirmación opcional via JS)
+        if (!$confirmado && $this->has_duplicado && !$this->confirmado_duplicado) {
+            $this->dispatch('alertConfirmarDuplicado');
+            return;
         }
 
         // 1. Validación de contacto (Confirmación opcional via JS)

@@ -64,4 +64,19 @@ class TicketService
 
         return $fechaVencimiento;
     }
+
+    /**
+     * Verifica si existe un ticket con los mismos datos base.
+     */
+    public static function existeTicketSimilar($dni, $loteId, $tipoSolicitudId, $subTipoSolicitudId)
+    {
+        return \App\Models\Ticket::where('dni', $dni)
+            ->where('tipo_solicitud_id', $tipoSolicitudId)
+            ->where('sub_tipo_solicitud_id', $subTipoSolicitudId)
+            ->whereJsonContains('lotes', ['id' => (int)$loteId])
+            ->whereNotIn('estado_ticket_id', [
+                \App\Models\EstadoTicket::id(\App\Models\EstadoTicket::CERRADO)
+            ])
+            ->exists();
+    }
 }
