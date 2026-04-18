@@ -193,6 +193,150 @@
         <div class="g_columna_4 g_gap_pagina">
             @livewire('erp.atc.ticket.ticket-archivo', ['ticket' => $ticket, 'soloLectura' => true])
 
+            @if ($ticket->libroReclamacion)
+                @php
+                    $libro = $ticket->libroReclamacion;
+                    $razonSocial = $libro->proyecto?->unidadNegocio?->razon_social ?: ($libro->proyecto?->unidadNegocio?->nombre ?: 'Sin proveedor definido');
+                    $proyectoLibro = $libro->proyecto?->nombre ?: 'Sin proyecto definido';
+                    $lotesLibro = ($libro->manzana || $libro->lote) ? trim(($libro->manzana ?: '-') . '/' . ($libro->lote ?: '-')) : 'Sin lote';
+
+                    $clienteCompleto = trim((string) ($libro->cliente_nombre ?: trim(($libro->nombre ?: '') . ' ' . ($libro->apellido_paterno ?: '') . ' ' . ($libro->apellido_materno ?: ''))));
+                    $clienteCompleto = $clienteCompleto !== '' ? $clienteCompleto : 'Sin nombre registrado';
+                    $documentoCliente = $libro->cliente_documento ?: $libro->numero_documento ?: 'N/D';
+                    $tipoDocumentoCliente = $libro->cliente_tipo_documento ?: $libro->tipo_documento ?: 'N/D';
+                    $correoCliente = $libro->cliente_email ?: $libro->email ?: 'N/D';
+                    $celularCliente = $libro->cliente_celular ?: $libro->telefono ?: 'N/D';
+                    $direccionCliente = $libro->cliente_direccion ?: $libro->domicilio ?: 'N/D';
+
+                    $detalleLibre = trim(implode("\n", array_filter([
+                        'Detalle de la reclamación: ' . ($libro->detalle ?: 'N/D'),                        
+                        'Pedido del consumidor: ' . ($libro->pedido ?: 'N/D'),
+                    ])));
+                @endphp
+                <div class="g_panel">
+                    <h4 class="g_panel_titulo">Libro de Reclamaciones Vinculado</h4>
+
+                    <div class="formulario">
+                        <div class="g_margin_bottom_10">
+                            <label>Código del Libro</label>
+                            <input type="text" disabled value="{{ $libro->codigo ?: 'N/D' }}">
+                        </div>
+
+                        <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
+                            <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Identificación del Proveedor</h5>
+
+                            <div class="g_fila">
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Razón social</label>
+                                    <input type="text" disabled value="{{ $razonSocial }}">
+                                </div>
+
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Proyecto</label>
+                                    <input type="text" disabled value="{{ $proyectoLibro }}">
+                                </div>
+                            </div>
+
+                            <div class="g_fila">
+                                <div class="g_columna_12 g_margin_bottom_10">
+                                    <label>Lotes</label>
+                                    <input type="text" disabled value="{{ $lotesLibro }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
+                            <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Datos del Consumidor Reclamante</h5>
+
+                            <div class="g_fila">
+                                <div class="g_columna_12 g_margin_bottom_10">
+                                    <label>Nombre completo</label>
+                                    <input type="text" disabled value="{{ $clienteCompleto }}">
+                                </div>
+                            </div>
+
+                            <div class="g_fila">
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Tipo de documento</label>
+                                    <input type="text" disabled value="{{ $tipoDocumentoCliente }}">
+                                </div>
+
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>N° de documento</label>
+                                    <input type="text" disabled value="{{ $documentoCliente }}">
+                                </div>                                
+                            </div>
+
+                            <div class="g_fila">
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Correo</label>
+                                    <input type="text" disabled value="{{ $correoCliente }}">
+                                </div>
+
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Celular</label>
+                                    <input type="text" disabled value="{{ $celularCliente }}">
+                                </div>
+                            </div>
+
+                            <div class="g_fila">
+                                <div class="g_columna_12 g_margin_bottom_10">
+                                    <label>Dirección</label>
+                                    <input type="text" disabled value="{{ $direccionCliente }}">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
+                            <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Tipo de Pedido y Bien Contratado</h5>
+
+                            <div class="g_fila">
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Tipo de pedido</label>
+                                    <input type="text" disabled value="{{ $libro->tipo_pedido ? str_replace('_', ' ', $libro->tipo_pedido) : 'N/D' }}">
+                                </div>
+
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Bien contratado</label>
+                                    <input type="text" disabled value="{{ $libro->tipo_bien_contratado ? str_replace('_', ' ', $libro->tipo_bien_contratado) : 'N/D' }}">
+                                </div>
+                            </div>
+
+                            <div class="g_fila">
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Monto reclamado</label>
+                                    <input type="text" disabled value="{{ $libro->monto_reclamado !== null ? $libro->monto_reclamado : 'N/D' }}">
+                                </div>
+
+                                <div class="g_columna_6 g_margin_bottom_10">
+                                    <label>Clasificación</label>
+                                    <input type="text" disabled value="{{ $libro->clasificacion ? str_replace('_', ' ', $libro->clasificacion) : 'N/D' }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class=" g_margin_bottom_10">
+                           <label>Descripción del bien</label>
+                                <textarea rows="3" disabled>{{ $libro->descripcion ?: 'N/D' }}</textarea>
+                        </div>
+
+                        <div class="g_margin_bottom_10">
+                            <label>Detalle de la Reclamación</label>
+                            <textarea rows="7" disabled>{{ $detalleLibre }}</textarea>
+                        </div>
+
+                        @can('ticket-libro-reclamacion.ver')
+                            <div class="formulario_botones">
+                                <a href="{{ route('erp.libro-reclamacion.vista.ver', $libro->ticket) }}" class="g_boton warning">
+                                    Ver Libro <i class="fa-solid fa-book"></i>
+                                </a>
+                            </div>
+                        @endcan
+                    </div>
+                </div>
+            @endif
+
             @if ($ticket->padre)
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">Ticket Principal (Padre)</h4>
