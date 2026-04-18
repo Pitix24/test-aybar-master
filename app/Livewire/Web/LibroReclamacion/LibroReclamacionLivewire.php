@@ -47,6 +47,11 @@ class LibroReclamacionLivewire extends Component
     public $lista_proyectos = [];
     public $success = false;
     public $reclamo_registrado;
+    public $mostrar_advertencia_no_procede = false;
+    public $mensaje_resultado = 'Tu reclamo ha sido enviado con éxito.';
+    public $estilo_resultado = 'success';
+    public $icono_resultado = 'fa-circle-check';
+
     protected function rules()
     {
         return [
@@ -115,8 +120,41 @@ class LibroReclamacionLivewire extends Component
         }
     }
 
+    public function updated($propertyName): void
+    {
+        if ($propertyName !== 'mostrar_advertencia_no_procede' && $this->mostrar_advertencia_no_procede) {
+            $this->mostrar_advertencia_no_procede = false;
+        }
+    }
+
+    public function registrar(): void
+    {
+        $clasificacion = $this->resolverClasificacionWeb();
+
+        if ($clasificacion === 'NO_PROCEDE' && ! $this->mostrar_advertencia_no_procede) {
+            $this->mostrar_advertencia_no_procede = true;
+
+            return;
+        }
+
+        $this->enviar();
+    }
+
+    public function confirmarEnvioNoProcede(): void
+    {
+        $this->mostrar_advertencia_no_procede = false;
+        $this->enviar();
+    }
+
+    public function cancelarAdvertenciaNoProcede(): void
+    {
+        $this->mostrar_advertencia_no_procede = false;
+    }
+
     public function enviar()
     {
+        $this->mostrar_advertencia_no_procede = false;
+
         try {
             $this->validate();
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -204,13 +242,29 @@ class LibroReclamacionLivewire extends Component
             $this->reclamo_registrado = $reclamo;
             $this->success = true;
 
-            $this->dispatch('alertaLivewire', [
-                'type' => 'success',
-                'title' => 'Enviado',
-                'text' => 'Su reclamo ha sido registrado con éxito.'
-            ]);
+            if ($clasificacion === 'NO_PROCEDE') {
+                $this->mensaje_resultado = 'Tu reclamo se encuentra siendo validado por nuestro equipo. Recordarle que su apoyo con los datos necesarios agiliza este proceso.';
+                $this->estilo_resultado = 'info';
+                $this->icono_resultado = 'fa-circle-info';
 
-            session()->flash('success', 'Tu reclamo ha sido enviado con éxito.');
+                $this->dispatch('alertaLivewire', [
+                    'type' => 'info',
+                    'title' => 'En validación',
+                    'text' => $this->mensaje_resultado,
+                ]);
+            } else {
+                $this->mensaje_resultado = 'Tu reclamo ha sido enviado con éxito.';
+                $this->estilo_resultado = 'success';
+                $this->icono_resultado = 'fa-circle-check';
+
+                $this->dispatch('alertaLivewire', [
+                    'type' => 'success',
+                    'title' => 'Enviado',
+                    'text' => 'Su reclamo ha sido registrado con éxito.'
+                ]);
+            }
+
+            session()->flash('success', $this->mensaje_resultado);
 
         } catch (\Exception $e) {
             DB::rollBack();

@@ -1,12 +1,12 @@
 <div class="g_centrar_pagina">
-    <x-loading-overlay wire:loading wire:target="enviar" message="Registrando su reclamo..." />
+    <x-loading-overlay wire:loading wire:target="registrar,confirmarEnvioNoProcede,enviar" message="Registrando su reclamo..." />
 
     <div class="g_pading_pagina g_gap_pagina">
         <div class="g_contenedor_columna">
             @if ($success)
-                <div class="g_alerta success">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <div>{{ session('success') }}</div>
+                <div class="g_alerta {{ $estilo_resultado }}">
+                    <i class="fa-solid {{ $icono_resultado }}"></i>
+                    <div>{{ $mensaje_resultado }}</div>
                 </div>
 
                 @if ($reclamo_registrado)
@@ -18,7 +18,7 @@
 
                         <div class="informacion_resumen_grid">                            
                             <div class="informacion_resumen_item">
-                                <span class="informacion_resumen_label">Ticket N°</span>
+                                <span class="informacion_resumen_label">{{ $reclamo_registrado->ticket_id ? 'Ticket N°' : 'Código de registro' }}</span>
                                 <span class="informacion_resumen_valor">{{ $reclamo_registrado->codigo_ticket }}</span>
                             </div>
                             <div class="informacion_resumen_item">
@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <form wire:submit.prevent="enviar" class="g_gap_pagina formulario">
+                <form wire:submit.prevent="registrar" class="g_gap_pagina formulario">
 
                     <div class="g_resaltado_caja info">
                         <span class="g_resaltado_caja_titulo">Información importante</span>
@@ -322,13 +322,33 @@
                         </div>
                     </div>
 
+                    @if ($mostrar_advertencia_no_procede)
+                        <div class="g_alerta info">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div>
+                                Su envío tiene información mínima y podría dificultar el escalamiento de su caso.
+                                Puede continuar de todas formas, pero si completa sus datos de contacto y referencia del caso,
+                                podremos atenderlo mejor.
+                            </div>
+                        </div>
+
+                        <div class="formulario_botones centrar" style="margin-top: 8px;">
+                            <button type="button" class="g_boton light" wire:click="cancelarAdvertenciaNoProcede" wire:loading.attr="disabled">
+                                <i class="fa-solid fa-pen"></i> Completar datos
+                            </button>
+                            <button type="button" class="g_boton warning" wire:click="confirmarEnvioNoProcede" wire:loading.attr="disabled">
+                                <i class="fa-solid fa-paper-plane"></i> Registrar de todas formas
+                            </button>
+                        </div>
+                    @endif
+
                     <div class="g_margin_top_20">
                         <div class="formulario_botones centrar">
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="enviar">
+                                <span wire:loading.remove wire:target="registrar,confirmarEnvioNoProcede,enviar">
                                     <i class="fa-solid fa-paper-plane"></i> ENVIAR MI RECLAMO
                                 </span>
-                                <span wire:loading wire:target="enviar">
+                                <span wire:loading wire:target="registrar,confirmarEnvioNoProcede,enviar">
                                     <i class="fa-solid fa-spinner fa-spin"></i> PROCESANDO...
                                 </span>
                             </button>
