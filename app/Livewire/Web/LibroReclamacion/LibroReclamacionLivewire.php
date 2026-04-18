@@ -155,11 +155,14 @@ class LibroReclamacionLivewire extends Component
 
             $this->unidad_negocio_id = $unidadNegocio->id;
             $this->unidad_razon_social = $unidadNegocio->razon_social ?? $unidadNegocio->nombre;
-            $this->payload_ticket_autocreacion = $this->construirPayloadTicketAutocreacion($proyecto?->id);
+
+            $clasificacion = $this->resolverClasificacionWeb();
+            $this->payload_ticket_autocreacion = [];
 
             $ticketVinculado = null;
 
-            if (config('libro_reclamacion.ticket_autocreacion.habilitado', true)) {
+            if ($clasificacion !== 'NO_PROCEDE' && config('libro_reclamacion.ticket_autocreacion.habilitado', true)) {
+                $this->payload_ticket_autocreacion = $this->construirPayloadTicketAutocreacion($proyecto?->id);
                 $ticketVinculado = $this->crearTicketAutogenerado($this->payload_ticket_autocreacion);
             }
 
@@ -189,6 +192,7 @@ class LibroReclamacionLivewire extends Component
                 'detalle' => $this->textoNullable($this->detalle),
                 'pedido' => $this->textoNullable($this->pedido),
                 'conformidad' => $this->conformidad,
+                'clasificacion' => $clasificacion,
                 'estado' => 'NUEVO',
             ]);
 
@@ -347,6 +351,62 @@ class LibroReclamacionLivewire extends Component
         }
 
         return mb_strtoupper((string) $this->tipo_pedido);
+    }
+
+    protected function resolverClasificacionWeb(): string
+    {
+        if ($this->esFormularioVacio()) {
+            return 'NO_PROCEDE';
+        }
+
+        if (! $this->tieneDatosMinimosSeguimiento()) {
+            return 'NO_PROCEDE';
+        }
+
+        if (! $this->tieneDatosMinimosProcedencia()) {
+            return 'PENDIENTE_REVISION';
+        }
+
+        return 'PROCEDE';
+    }
+
+    protected function tieneDatosMinimosSeguimiento(): bool
+    {
+        $nombreCompleto = $this->tieneNombreCompleto();
+        $tieneDocumento = $this->textoNullable($this->numero_documento) !== null;
+        $tieneEmail = $this->textoNullable($this->email) !== null;
+        $tieneCelular = $this->textoNullable($this->telefono) !== null;
+        $tieneUbicacion = $this->tieneProyectoOUbicacion();
+
+        $contactoDirecto = $nombreCompleto && ($tieneDocumento || $tieneEmail || $tieneCelular);
+        $busquedaPorUbicacion = $tieneUbicacion && ($tieneDocumento || $nombreCompleto);
+
+        return $contactoDirecto || $busquedaPorUbicacion;
+    }
+
+    protected function tieneDatosMinimosProcedencia(): bool
+    {
+        $tipoPedidoResuelto = $this->resolverTipoPedido();
+        $tieneDetalleCaso = $this->textoNullable($this->detalle) !== null
+            || $this->textoNullable($this->pedido) !== null
+            || $this->textoNullable($this->descripcion) !== null;
+
+        return $this->tieneDatosMinimosSeguimiento()
+            && $this->tieneProyectoOUbicacion()
+            && $tipoPedidoResuelto !== 'NO_DEFINIDO'
+            && $tieneDetalleCaso;
+    }
+
+    protected function tieneNombreCompleto(): bool
+    {
+        return $this->textoNullable($this->nombre) !== null
+            && $this->textoNullable($this->apellido_paterno) !== null;
+    }
+
+    protected function tieneProyectoOUbicacion(): bool
+    {
+        return ! empty($this->proyecto_id)
+            || ($this->textoNullable($this->manzana) !== null && $this->textoNullable($this->lote) !== null);
     }
 
     protected function esValorNoDefinido(mixed $valor): bool

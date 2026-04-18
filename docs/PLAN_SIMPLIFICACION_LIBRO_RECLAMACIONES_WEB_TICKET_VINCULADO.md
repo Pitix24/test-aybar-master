@@ -188,3 +188,115 @@ El flujo simplificado Web -> Ticket -> Libro queda operativo, trazable y validad
 5. docs/COMMIT_FASE_4_LIBRO_RECLAMACIONES.md
 6. docs/COMMIT_FASE_5_LIBRO_RECLAMACIONES.md
 7. docs/CAMPO_TECNICOS_AUTOCREACION_TICKET_LIBRO_RECLAMACIONES.md
+
+## 10. Matriz de campos de libro_reclamacions (decision de saneamiento)
+
+Objetivo de esta matriz:
+1. Identificar campos canonicos del flujo actual.
+2. Diferenciar campos de compatibilidad historica.
+3. Marcar candidatos de deprecacion sin romper produccion.
+
+Recomendacion ejecutiva:
+1. No botar la tabla ni rehacer desde cero en esta etapa.
+2. Aplicar saneamiento progresivo por fases (write-new/read-old, luego retiro controlado).
+
+### 10.1 Campos canonicos (mantener)
+
+1. Identidad y trazabilidad:
+	- ticket (PK historica)
+	- ticket_id (vinculo a tickets.id)
+	- codigo
+	- codigo_ticket
+2. Operacion legal:
+	- estado_libro_reclamaciones_id
+	- clasificacion
+	- tipo_pedido
+	- gestor_id
+	- assigned_at
+	- observaciones_internas
+3. Contexto de negocio:
+	- unidad_negocio_id
+	- proyecto_id
+	- asunto
+	- lotes
+4. Cliente canonico ERP:
+	- cliente_id
+	- cliente_tipo_documento
+	- cliente_documento
+	- cliente_nombre
+	- cliente_email
+	- cliente_celular
+	- cliente_direccion
+5. Auditoria:
+	- created_by
+	- updated_by
+	- deleted_by
+	- created_at
+	- updated_at
+	- deleted_at
+
+### 10.2 Campos de compatibilidad historica (mantener temporalmente)
+
+Estos campos siguen en uso por flujo web/correos/fallbacks de vista:
+1. nombre
+2. apellido_paterno
+3. apellido_materno
+4. domicilio
+5. telefono
+6. email
+7. tipo_documento
+8. numero_documento
+9. detalle
+10. pedido
+11. manzana
+12. lote
+13. tipo_bien_contratado
+14. monto_reclamado
+15. descripcion
+16. conformidad
+17. observaciones
+18. estado
+19. serie
+20. numero_reclamo
+21. nota_fuente_titulo
+22. nota_fuente_fecha
+
+### 10.3 Candidatos de deprecacion prioritaria (sin uso funcional actual)
+
+Observacion: En el barrido de logica/vistas/tests del modulo, estos campos no muestran uso funcional directo actual.
+
+1. fecha_respuesta
+2. archivo_1
+3. archivo_2
+4. archivo_3
+5. archivo_4
+6. leido
+
+Politica sugerida:
+1. Marcar como deprecated en documentacion interna.
+2. Bloquear nuevas escrituras desde app.
+3. Monitorear 1 ciclo release.
+4. Eliminar por migracion recien cuando no haya lecturas externas/reportes.
+
+### 10.4 Plan recomendado de saneamiento (sin rehacer tabla)
+
+Fase A - Contrato canonico:
+1. Confirmar que ERP y web escriban prioritariamente en cliente_* y ticket_id.
+2. Mantener legacy solo como respaldo de lectura.
+
+Fase B - Dual read controlado:
+1. Leer primero canonico.
+2. Fallback a legacy donde aun aplique.
+3. Registrar metricas de fallback para saber cuando ya no se usa.
+
+Fase C - Limpieza segura:
+1. Eliminar primero campos sin uso (archivos, fecha_respuesta, leido).
+2. Mantener historicos sensibles hasta validar reportes y exportaciones.
+3. Reindexar y ajustar consultas finales.
+
+### 10.5 Conclusiones de arquitectura
+
+1. El tamano de la tabla se explica por convivencia de modelo historico + modelo simplificado actual.
+2. El modulo ya opera estable con el esquema actual y no exige reset estructural.
+3. Rehacer tabla completa hoy aumenta riesgo (migracion de datos, vistas, mails, reportes y referencias cruzadas).
+4. La estrategia de menor riesgo y menor costo es deprecacion progresiva con migraciones pequenas y verificables.

@@ -2,10 +2,12 @@
 
 namespace Tests\Feature\Livewire;
 
+use App\Livewire\Web\LibroReclamacion\LibroReclamacionLivewire;
 use App\Livewire\Erp\LibroReclamacion\LibroReclamacionLista;
 use App\Livewire\Erp\LibroReclamacion\LibroReclamacionVer;
 use App\Models\Area;
 use App\Models\Canal;
+use App\Models\EstadoTicket;
 use App\Models\LibroReclamacion\EstadoLibroReclamacion;
 use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\PrioridadTicket;
@@ -20,6 +22,7 @@ use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class LibroReclamacionFase5Test extends TestCase
@@ -59,7 +62,7 @@ class LibroReclamacionFase5Test extends TestCase
         $this->actingAs($usuario);
 
         Livewire::test(LibroReclamacionLista::class)
-            ->assertSee('Ticket ATC')
+            ->assertSee('Ticket')
             ->assertSeeHtml(route('erp.ticket.vista.ver', $ticket->id))
             ->assertDontSee('Crear');
     }
@@ -86,6 +89,55 @@ class LibroReclamacionFase5Test extends TestCase
 
         $this->assertStringContainsString(route('erp.ticket.vista.ver', $ticket->id), $verHtml);
         $this->assertStringContainsString('Ver Ticket', $verHtml);
+    }
+
+    #[Test]
+    public function web_sin_datos_suficientes_guarda_no_procede_sin_ticket(): void
+    {
+        Mail::fake();
+
+        UnidadNegocio::factory()->create(['activo' => true]);
+
+        Livewire::test(LibroReclamacionLivewire::class)
+            ->call('enviar');
+
+        $libro = LibroReclamacion::query()->latest('ticket')->first();
+
+        $this->assertNotNull($libro);
+        $this->assertSame('NO_PROCEDE', $libro->clasificacion);
+        $this->assertNull($libro->ticket_id);
+        $this->assertDatabaseCount('tickets', 0);
+    }
+
+    #[Test]
+    public function web_con_datos_de_seguimiento_crea_ticket_y_queda_pendiente_verificacion(): void
+    {
+        Mail::fake();
+
+        $unidadNegocio = UnidadNegocio::factory()->create(['activo' => true]);
+        $this->prepararCatalogosAutocreacion();
+
+        config([
+            'libro_reclamacion.unidad_default_id' => $unidadNegocio->id,
+        ]);
+
+        Livewire::test(LibroReclamacionLivewire::class)
+            ->set('nombre', 'Carlos')
+            ->set('apellido_paterno', 'Torres')
+            ->set('email', 'carlos.torres@example.com')
+            ->set('tipo_pedido', 'reclamo')
+            ->call('enviar');
+
+        $libro = LibroReclamacion::query()->latest('ticket')->first();
+
+        $this->assertNotNull($libro);
+        $this->assertSame('PENDIENTE_REVISION', $libro->clasificacion);
+        $this->assertNotNull($libro->ticket_id);
+        $this->assertDatabaseCount('tickets', 1);
+
+        $ticket = Ticket::query()->find($libro->ticket_id);
+        $this->assertNotNull($ticket);
+        $this->assertSame($unidadNegocio->id, $ticket->unidad_negocio_id);
     }
 
     protected function crearLibroVinculado(): array
@@ -221,5 +273,57 @@ class LibroReclamacionFase5Test extends TestCase
         $usuario->givePermissionTo($permisos);
 
         return $usuario;
+    }
+
+    protected function prepararCatalogosAutocreacion(): void
+    {
+        $area = Area::forceCreate([
+            'nombre' => 'Legal Web Test',
+            'email_buzon' => 'legal-web@example.com',
+            'color' => '#123456',
+            'icono' => 'fa-briefcase',
+            'activo' => true,
+        ]);
+
+        $tipoSolicitud = TipoSolicitud::forceCreate([
+            'nombre' => 'LIBRO DE RECLAMACIONES',
+            'tiempo_solucion' => 48,
+            'activo' => true,
+        ]);
+
+        SubTipoSolicitud::forceCreate([
+            'tipo_solicitud_id' => $tipoSolicitud->id,
+            'nombre' => 'RECLAMO',
+            'tiempo_solucion' => 48,
+            'activo' => true,
+        ]);
+
+        $canal = Canal::forceCreate([
+            'nombre' => 'FORMULARIO WEB',
+            'activo' => true,
+        ]);
+
+        $estadoTicket = EstadoTicket::forceCreate([
+            'nombre' => EstadoTicket::NUEVO,
+            'color' => '#00aa00',
+            'icono' => 'fa-circle',
+            'activo' => true,
+        ]);
+
+        $prioridadTicket = PrioridadTicket::forceCreate([
+            'nombre' => 'ALTA WEB',
+            'tiempo_permitido' => 48,
+            'color' => '#ff0000',
+            'icono' => 'fa-triangle-exclamation',
+            'activo' => true,
+        ]);
+
+        config([
+            'libro_reclamacion.ticket_autocreacion.habilitado' => true,
+            'libro_reclamacion.ticket_autocreacion.area_legal_id' => $area->id,
+            'libro_reclamacion.ticket_autocreacion.canal_id' => $canal->id,
+            'libro_reclamacion.ticket_autocreacion.tipo_solicitud_id' => $tipoSolicitud->id,
+            'libro_reclamacion.ticket_autocreacion.prioridad_ticket_id' => $prioridadTicket->id,
+        ]);
     }
 }

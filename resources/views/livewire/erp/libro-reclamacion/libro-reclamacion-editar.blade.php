@@ -77,7 +77,7 @@
 
                 <div class="g_columna_4 g_margin_bottom_10">
                     <label>Clasificación</label>
-                    <input type="text" value="{{ str_replace('_', ' ', $clasificacion) }}" disabled>
+                    <input type="text" value="{{ $clasificacion === 'PENDIENTE_REVISION' ? 'PENDIENTE VERIFICACION' : str_replace('_', ' ', $clasificacion) }}" disabled>
                 </div>
             </div>
 
@@ -147,7 +147,7 @@
 
             <div class="g_fila">
                 <div class="g_columna_12 g_margin_bottom_10">
-                    <label>Ticket ATC vinculado</label>
+                    <label>Ticket vinculado</label>
                     <input type="text" value="{{ $ticket_model->ticketRelacionado ? ('#' . $ticket_model->ticketRelacionado->id) : 'Sin vincular' }}" disabled>
                 </div>
             </div>

@@ -41,7 +41,7 @@
                         <option value="">Todos</option>
                         <option value="PROCEDE">Procede</option>
                         <option value="NO_PROCEDE">No procede</option>
-                        <option value="PENDIENTE_REVISION">Pendiente revision</option>
+                        <option value="PENDIENTE_REVISION">Pendiente verificacion</option>
                     </select>
                 </div>
 
@@ -130,7 +130,7 @@
                         <th class="g_celda_centro">Estado</th>
                         <th class="g_celda_centro">Clasif.</th>
                         <th>Gestor</th>
-                        <th class="g_celda_centro">Ticket ATC</th>
+                        <th class="g_celda_centro">Ticket</th>
                         <th class="g_celda_centro">Fecha</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
@@ -151,7 +151,7 @@
                                 @elseif ($item->clasificacion === 'PROCEDE')
                                     <span class="g_badge success">{{ str_replace('_', ' ', $item->clasificacion) }}</span>
                                 @else
-                                    <span class="g_badge warning">{{ str_replace('_', ' ', $item->clasificacion) }}</span>
+                                    <span class="g_badge warning">{{ $item->clasificacion === 'PENDIENTE_REVISION' ? 'PENDIENTE VERIFICACION' : str_replace('_', ' ', $item->clasificacion) }}</span>
                                 @endif
                             </td>
                             <td class="g_negrita g_resumir">{{ $item->gestor?->name ?: 'N/D' }}</td>
