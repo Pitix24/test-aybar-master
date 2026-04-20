@@ -2,7 +2,7 @@
 
 namespace App\Services\LibroReclamacion;
 
-use App\Models\LibroReclamacion\LibroReclamacionContador;
+use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\UnidadNegocio;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -12,28 +12,26 @@ class LibroReclamacionNumeroService
     public function generar(int $unidadNegocioId): array
     {
         return DB::transaction(function () use ($unidadNegocioId) {
-            $unidad = UnidadNegocio::query()->find($unidadNegocioId);
+            // Lock the business unit row to serialize number allocation per unit.
+            $unidad = UnidadNegocio::query()
+                ->whereKey($unidadNegocioId)
+                ->lockForUpdate()
+                ->first();
 
             if (! $unidad) {
                 throw new RuntimeException('No se encontro la unidad de negocio para generar el ticket.');
             }
 
-            $this->asegurarContador($unidadNegocioId, $unidad->nombre ?? '');
-
-            $contador = LibroReclamacionContador::query()
+            $ultimoNumero = LibroReclamacion::query()
                 ->where('unidad_negocio_id', $unidadNegocioId)
-                ->lockForUpdate()
-                ->first();
+                ->max('numero_reclamo');
 
-            if (! $contador) {
-                throw new RuntimeException('No se pudo crear o recuperar el contador del libro de reclamaciones.');
-            }
-
-            $contador->siguiente_numero = $contador->siguiente_numero + 1;
-            $contador->save();
+            $numeroBase = is_null($ultimoNumero)
+                ? $this->resolverNumeroInicial((string) ($unidad->razon_social ?: $unidad->nombre ?: ''))
+                : (int) $ultimoNumero;
 
             $serie = $this->resolverSerie();
-            $numeroReclamo = $contador->siguiente_numero;
+            $numeroReclamo = $numeroBase + 1;
 
             return [
                 'serie' => $serie,
@@ -41,18 +39,6 @@ class LibroReclamacionNumeroService
                 'codigo_ticket' => $this->formatearCodigoTicket($this->resolverCodigoUnidad($unidad), $numeroReclamo),
             ];
         });
-    }
-
-    protected function asegurarContador(int $unidadNegocioId, string $razonSocial): void
-    {
-        $inicio = $this->resolverNumeroInicial($razonSocial);
-
-        LibroReclamacionContador::query()->insertOrIgnore([
-            'unidad_negocio_id' => $unidadNegocioId,
-            'siguiente_numero' => $inicio,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
     }
 
     protected function resolverNumeroInicial(string $razonSocial): int

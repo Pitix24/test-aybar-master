@@ -74,7 +74,7 @@ return new class extends Migration {
             $table->enum('estado', ['NUEVO', 'REVISION', 'RESUELTO', 'CERRADO'])->default('NUEVO');
 
             $table->unique('codigo');
-            $table->index(['unidad_negocio_id', 'numero_reclamo']);
+            $table->unique(['unidad_negocio_id', 'numero_reclamo'], 'libro_reclamacions_unidad_numero_unique');
             $table->index('codigo_ticket');
             $table->index('estado_libro_reclamaciones_id');
 
