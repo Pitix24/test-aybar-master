@@ -43,14 +43,14 @@ class EntregaFestProspectoBancarizacionExport implements FromQuery, WithHeadings
                         ->orWhere('dni', 'like', '%' . $this->buscar . '%');
                 })->orWhere('cuota', 'like', '%' . $this->buscar . '%');
             })
-            ->when($this->proyecto_id, function ($q) {
-                $q->whereHas('prospecto', function ($sub) {
-                    $sub->where('proyecto_id', $this->proyecto_id);
+                ->when($this->proyecto_id, function ($q) {
+                    $q->whereHas('prospecto', function ($sub) {
+                        $sub->where('proyecto_id', $this->proyecto_id);
+                    });
+                })
+                ->when($this->estado, function ($q) {
+                    $q->where('estado', $this->estado);
                 });
-            })
-            ->when($this->estado, function ($q) {
-                $q->where('estado', $this->estado);
-            });
         }
 
         return $query->orderBy('fecha_deposito_real', 'desc');
@@ -63,6 +63,8 @@ class EntregaFestProspectoBancarizacionExport implements FromQuery, WithHeadings
             'DNI',
             'Prospecto',
             'Proyecto',
+            'Lote',
+            'Manzana',
             'Cuota',
             'Importe',
             'Fecha Depósito Real',
@@ -78,6 +80,8 @@ class EntregaFestProspectoBancarizacionExport implements FromQuery, WithHeadings
             $item->prospecto->dni,
             $item->prospecto->nombres,
             $item->prospecto->proyecto->nombre ?? '-',
+            $item->prospecto->lote,
+            $item->prospecto->manzana,
             $item->cuota,
             $item->importe,
             $item->fecha_deposito_real->format('d/m/Y'),
