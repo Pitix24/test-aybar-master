@@ -19,6 +19,10 @@ return new class extends Migration {
             $table->string('cuota');
             $table->decimal('importe', 10, 2);
             $table->date('fecha_deposito_real');
+            $table->enum('estado', [
+                'PENDIENTE',
+                'BANCARIZADO',
+            ])->default('PENDIENTE');
             $table->timestamps();
         });
     }

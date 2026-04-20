@@ -20,16 +20,29 @@
     <div class="g_panel">
         <div class="formulario">
             <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_10">
+                <div class="g_margin_bottom_10 g_columna_4">
                     <label>Buscar por Cliente (DNI, Nombres) o Cuota</label>
-                    <input type="text" wire:model.live.debounce.400ms="buscar" placeholder="Escriba aquí para buscar...">
+                    <input type="text" wire:model.live.debounce.400ms="buscar"
+                        placeholder="Escriba aquí para buscar...">
                 </div>
-                <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Mostrar</label>
-                    <select wire:model.live="perPage">
-                        <option value="20">20 por página</option>
-                        <option value="50">50 por página</option>
-                        <option value="100">100 por página</option>
+
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Proyecto</label>
+                    <select wire:model.live="proyecto_id">
+                        <option value="">Todos los Proyectos</option>
+                        @foreach ($proyectos as $proy)
+                            <option value="{{ $proy->id }}">{{ $proy->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_3">
+                    <label>Estado</label>
+                    <select wire:model.live="estado">
+                        <option value="">Todos los Estados</option>
+                        @foreach (App\Models\ProspectoBancarizacionEntregaFest::ESTADO as $key => $val)
+                            <option value="{{ $key }}">{{ $val['label'] }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -37,6 +50,45 @@
     </div>
 
     <div class="g_panel">
+        <div class="g_tabla_cabecera">
+            <div class="g_tabla_cabecera_botones">
+                @can('prospecto.exportar-filtro')
+                    <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
+                        wire:target="exportExcelFiltro">
+                        <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
+                                class="fa-regular fa-file-excel"></i></span>
+                        <span wire:loading wire:target="exportExcelFiltro">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                @can('prospecto.exportar-todo')
+                    <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
+                        wire:target="exportExcelTodo">
+                        <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
+                                class="fa-solid fa-file-export"></i></span>
+                        <span wire:loading wire:target="exportExcelTodo">Generando... <i
+                                class="fa-solid fa-spinner fa-spin"></i></span>
+                    </button>
+                @endcan
+
+                <button wire:click="resetFiltros" class="g_boton danger">
+                    Limpiar <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
+            <div class="g_tabla_cabecera_filtro formulario">
+                <div>
+                    <label>Mostrar</label>
+                    <select wire:model.live="perPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="g_contenedor_tabla">
             <table class="g_tabla">
                 <thead>
@@ -49,6 +101,7 @@
                         <th>Cuota</th>
                         <th>Importe</th>
                         <th class="g_celda_centro">Fecha Depósito Real</th>
+                        <th class="g_celda_centro">Estado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
                 </thead>
@@ -66,6 +119,12 @@
                             <td><span class="g_badge info">{{ $item->cuota }}</span></td>
                             <td class="g_negrita">S/ {{ number_format($item->importe, 2) }}</td>
                             <td class="g_celda_centro">{{ $item->fecha_deposito_real->format('d/m/Y') }}</td>
+                            <td class="g_celda_centro">
+                                <span class="g_badge g_badge_soft"
+                                    style="background-color: {{ $item->badgeEstado() }}20; color: {{ $item->badgeEstado() }};">
+                                    {{ App\Models\ProspectoBancarizacionEntregaFest::ESTADO[$item->estado]['label'] ?? $item->estado }}
+                                </span>
+                            </td>
                             <td class="g_celda_acciones g_celda_centro">
                                 @can('prospecto.editar')
                                     <a href="{{ route('erp.entrega-fest.prospecto.editar', [$evento->id, $item->prospecto_entrega_fest_id]) }}"

@@ -443,8 +443,12 @@ class EntregaFestProspectoEditar extends Component
             'estado_backoffice' => $this->estado_backoffice,
         ], 'PROSPECTO EDITAR - BACKOFFICE');
 
-        // Si se acaba de aprobar (CONFORME), disparamos el evento de invitaciones
+        // Si se acaba de aprobar (CONFORME), actualizamos bancarización y disparamos el evento de invitaciones
         if ($this->estado_backoffice === 'CONFORME') {
+            \App\Models\ProspectoBancarizacionEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)
+                ->where('entrega_fest_id', $this->evento->id)
+                ->update(['estado' => 'BANCARIZADO']);
+
             EntregaFestAsistenciaInvitacion::dispatch($this->prospecto);
         }
     }

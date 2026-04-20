@@ -1,0 +1,247 @@
+{
+  "name": "Entrega Fest - Asistencia Invitacion (Whatsap)",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "wa-set-1",
+              "name": "status",
+              "value": "completado",
+              "type": "string"
+            },
+            {
+              "id": "wa-set-2",
+              "name": "mensaje",
+              "value": "Todos los mensajes WhatsApp de pre-invitación fueron enviados",
+              "type": "string"
+            },
+            {
+              "id": "wa-set-3",
+              "name": "timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "wa-set-4",
+              "name": "workflow",
+              "value": "Laravel -> Pre-Invitaciones WhatsApp",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        992,
+        -128
+      ],
+      "id": "f5c3e645-55c3-404d-8c69-b2f708c72262",
+      "name": "Resumen Final"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "entregafest-asistencia-invitacion",
+        "options": {}
+      },
+      "id": "05f9ce97-cac5-444c-8157-69e6b424c858",
+      "name": "webhook-laravel",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        224,
+        48
+      ],
+      "webhookId": "b1a2c3d4-e5f6-7890-abcd-ef1234567890"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// Mapeamos los campos según la nueva estructura\nconst titular = body.titular;\nconst copropietarios = body.copropietarios ?? [];\nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto predeterminado\nconst asunto = plantilla.titulo ?? 'Invitación al evento';\n\nlet finalItems = [];\n\n// 1. Añadimos al Titular (Propietario) si existe y tiene envíos pendientes\nif (titular) {\n    if (titular.enviar_email || titular.enviar_whatsapp) {\n        finalItems.push({\n            json: {\n                id: titular.id,\n                email: titular.email,\n                nombres: titular.nombres,\n                celular: titular.celular ?? '',\n                dni: titular.dni ?? '',\n                link: titular.link,\n                html: titular.html,\n                tipo: 'Propietario',\n                asunto: asunto,\n                evento: evento,\n                // --- BANDERAS DE ENVÍO ---\n                enviar_email: titular.enviar_email,\n                enviar_whatsapp: titular.enviar_whatsapp,\n                // --- CAMPOS DE LA PLANTILLA ---\n                plantilla_titulo: plantilla.titulo ?? '',\n                plantilla_subtitulo: plantilla.subtitulo ?? '',\n                plantilla_descripcion: plantilla.descripcion ?? '',\n                plantilla_imagen: plantilla.imagen_url ?? '',\n                plantilla_link_boton: plantilla.link_boton ?? ''\n            }\n        });\n    }\n}\n\n// 2. Recorremos y añadimos a cada Copropietario si tiene envíos pendientes\ncopropietarios.forEach(cp => {\n    if (cp.enviar_email || cp.enviar_whatsapp) {\n        finalItems.push({\n            json: {\n                id: cp.id,\n                email: cp.email ?? '',\n                nombres: cp.nombres,\n                celular: cp.celular ?? '',\n                dni: cp.dni ?? '',\n                link: cp.link,\n                html: cp.html,\n                tipo: 'Copropietario',\n                asunto: asunto,\n                evento: evento,\n                // --- BANDERAS DE ENVÍO ---\n                enviar_email: cp.enviar_email,\n                enviar_whatsapp: cp.enviar_whatsapp,\n                // --- CAMPOS DE LA PLANTILLA ---\n                plantilla_titulo: plantilla.titulo ?? '',\n                plantilla_subtitulo: plantilla.subtitulo ?? '',\n                plantilla_descripcion: plantilla.descripcion ?? '',\n                plantilla_imagen: plantilla.imagen_url ?? '',\n                plantilla_link_boton: plantilla.link_boton ?? ''\n            }\n        });\n    }\n});\n\nreturn finalItems;\n"
+      },
+      "id": "5b8af110-6f09-4a7c-9515-3307d65c7384",
+      "name": "formatear-contactos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "id": "6c7ee557-0a47-43ac-9a25-848573a2e663",
+      "name": "split-10-contactos",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        624,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "32d3a4f7-289e-4574-b346-95387ebd596b",
+              "leftValue": "={{ $json.enviar_whatsapp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        144
+      ],
+      "id": "41cc4c0c-e7a8-49f0-b146-c19816bc9583",
+      "name": "filtro-1"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "588ee282-073d-4c2b-9167-e809f3e603b6",
+      "name": "espera-10s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        144
+      ],
+      "webhookId": "wa-wait-preinvitacion"
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "111079285343903",
+        "recipientPhoneNumber": "={{ $json.celular }}",
+        "template": "hello_world|en_US"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        144
+      ],
+      "id": "f4c82b14-bbc3-496b-80d0-e1dbf7e509d9",
+      "name": "enviar-mensaje-wsp",
+      "webhookId": "f2dd0443-4a47-4744-8aa1-3893e81e9bb5",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "wsfypPUomJK3uU3v",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "webhook-laravel": {
+      "main": [
+        [
+          {
+            "node": "formatear-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "formatear-contactos": {
+      "main": [
+        [
+          {
+            "node": "split-10-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split-10-contactos": {
+      "main": [
+        [
+          {
+            "node": "Resumen Final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "filtro-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro-1": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "espera-10s": {
+      "main": [
+        [
+          {
+            "node": "split-10-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviar-mensaje-wsp": {
+      "main": [
+        [
+          {
+            "node": "espera-10s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5928c250-dcea-4bd4-8ce1-f815b8b702c8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
+  },
+  "id": "bmgDQQY3NOHPXeNp",
+  "tags": []
+}
