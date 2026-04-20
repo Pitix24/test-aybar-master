@@ -102,7 +102,7 @@
             <div class="g_fila">
                 <div class="g_columna_4 g_margin_bottom_10">
                     <label>Origen</label>
-                    <input type="text" value="{{ $ticket_model->esOrigenErp() ? 'ERP - Registro Interno' : 'Formulario web' }}" disabled>
+                    <input type="text" value="{{ $ticket_model->created_by ? 'ERP - Registro Interno' : 'Formulario web' }}" disabled>
                 </div>
 
                 <div class="g_columna_4 g_margin_bottom_10">
@@ -296,25 +296,6 @@
                 <label>Observaciones internas</label>
                 <textarea wire:model.blur="observaciones_internas" rows="5" class="@error('observaciones_internas') input-error @enderror"></textarea>
                 @error('observaciones_internas') <p class="mensaje_error">{{ $message }}</p> @enderror
-            </div>
-
-            <div class="g_fila">
-                <div class="g_columna_6 g_margin_bottom_10">
-                    <label>Titulo de nota</label>
-                    <input type="text" wire:model.blur="nota_fuente_titulo" class="@error('nota_fuente_titulo') input-error @enderror">
-                    @error('nota_fuente_titulo') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="g_columna_6 g_margin_bottom_10">
-                    <label>Fecha de nota</label>
-                    <input type="text" wire:model.blur="nota_fuente_fecha" class="@error('nota_fuente_fecha') input-error @enderror">
-                    @error('nota_fuente_fecha') <p class="mensaje_error">{{ $message }}</p> @enderror
-                </div>
-            </div>
-
-            <div class="g_margin_bottom_10">
-                <label>Nota fuente</label>
-                <textarea rows="8" disabled>{{ $nota_fuente ?: 'Sin nota fuente.' }}</textarea>
             </div>
         </div>
 

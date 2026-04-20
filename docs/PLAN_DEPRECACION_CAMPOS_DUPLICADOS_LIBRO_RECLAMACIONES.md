@@ -1,7 +1,7 @@
 # Plan Faseado de Deprecacion de Campos Duplicados en Libro Reclamaciones
 
 Fecha: 2026-04-20
-Estado: En ejecucion (Fase 1 y Fase 2 cerradas)
+Estado: Completado (Fases 1, 2, 3, 4 y 5 cerradas)
 Estrategia: Faseada segura
 
 ## 1) Objetivo
@@ -127,10 +127,16 @@ Comandos base sugeridos:
 - Mantener respaldo previo del esquema/datos antes del drop final.
 
 ## 10) Proximo Paso Operativo
-Iniciar Fase 3 con backfill historico idempotente, metricas de conflictos y reporte de pendientes.
+Plan faseado finalizado. Continuar solo con monitoreo post-despliegue y validacion funcional en entorno productivo.
 
 ## 11) Evidencia de avance
 - Entregable de Fase 1 completado en:
   - `docs/FASE_1_MATRIZ_REGLAS_BACKFILL_LIBRO_RECLAMACIONES.md`
 - Cierre de Fase 2 (escritura canonica) documentado en:
   - `docs/FASE_2_ESCRITURA_CANONICA_LIBRO_RECLAMACIONES.md`
+- Cierre de Fase 3 (backfill canonico) documentado en:
+  - `docs/FASE_3_BACKFILL_CANONICO_LIBRO_RECLAMACIONES.md`
+- Cierre de Fase 4 (retiro de fallback legacy) documentado en:
+  - `docs/FASE_4_RETIRO_FALLBACK_LIBRO_RECLAMACIONES.md`
+- Cierre de Fase 5 (drop final legacy) documentado en:
+  - `docs/FASE_5_DROP_FINAL_LEGACY_LIBRO_RECLAMACIONES.md`

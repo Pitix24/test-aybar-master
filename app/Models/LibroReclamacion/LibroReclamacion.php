@@ -29,14 +29,6 @@ class LibroReclamacion extends Model
         'serie',
         'numero_reclamo',
         'codigo_ticket',
-        'nombre',
-        'apellido_paterno',
-        'apellido_materno',
-        'domicilio',
-        'telefono',
-        'email',
-        'tipo_documento',
-        'numero_documento',
         'tipo_bien_contratado',
         'monto_reclamado',
         'descripcion',
@@ -62,8 +54,6 @@ class LibroReclamacion extends Model
         'cliente_direccion',
         'asunto',
         'lotes',
-        'nota_fuente_titulo',
-        'nota_fuente_fecha',
         'assigned_at',
         'observaciones_internas',
         'created_by',
@@ -79,7 +69,6 @@ class LibroReclamacion extends Model
         'monto_reclamado' => 'decimal:2',
         'lotes' => 'array',
         'assigned_at' => 'datetime',
-        'nota_fuente_fecha' => 'datetime',
     ];
 
     public function unidadNegocio()
@@ -122,25 +111,6 @@ class LibroReclamacion extends Model
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
-    public function esOrigenErp(): bool
-    {
-        return ! is_null($this->created_by);
-    }
-
-    public function tituloNotaFuenteResuelto(): string
-    {
-        if ($this->esOrigenErp()) {
-            return 'ERP - Registro Interno';
-        }
-
-        return trim((string) $this->nota_fuente_titulo) ?: 'Formulario web';
-    }
-
-    public function contenidoNotaFuenteResuelto(): string
-    {
-        return $this->esOrigenErp() ? '' : $this->tituloNotaFuenteResuelto();
-    }
-
     public function estadoActualNombre(): string
     {
         $nombreTicket = (string) ($this->ticketRelacionado?->estado?->nombre ?? '');
@@ -167,26 +137,6 @@ class LibroReclamacion extends Model
     protected static function booted()
     {
         static::creating(function ($reclamacion) {
-            // Keep backward compatibility with legacy non-null columns in libro_reclamacions.
-            if (! $reclamacion->nombre) {
-                $reclamacion->nombre = (string) ($reclamacion->cliente_nombre ?: 'NO DEFINIDO');
-            }
-            if (! $reclamacion->apellido_paterno) {
-                $reclamacion->apellido_paterno = '-';
-            }
-            if (! $reclamacion->apellido_materno) {
-                $reclamacion->apellido_materno = '-';
-            }
-            if (! $reclamacion->domicilio) {
-                $reclamacion->domicilio = (string) ($reclamacion->cliente_direccion ?: 'NO DEFINIDO');
-            }
-            if (! $reclamacion->tipo_documento) {
-                $reclamacion->tipo_documento = self::normalizarTipoDocumento($reclamacion->cliente_tipo_documento);
-            }
-            if (! $reclamacion->numero_documento) {
-                $reclamacion->numero_documento = (string) ($reclamacion->cliente_documento ?: 'NO DEFINIDO');
-            }
-
             if (!$reclamacion->codigo && $reclamacion->unidad_negocio_id) {
                 $ticket = self::generarTicket($reclamacion->unidad_negocio_id);
                 $reclamacion->codigo = (string) ($ticket['codigo_ticket'] ?? '');
@@ -206,14 +156,5 @@ class LibroReclamacion extends Model
     public static function generarTicket(int $unidadNegocioId): array
     {
         return app(LibroReclamacionNumeroService::class)->generar($unidadNegocioId);
-    }
-
-    protected static function normalizarTipoDocumento(?string $tipo): string
-    {
-        $tipo = strtoupper(trim((string) $tipo));
-
-        return in_array($tipo, ['DNI', 'RUC', 'CE', 'NO_DEFINIDO'], true)
-            ? $tipo
-            : 'NO_DEFINIDO';
     }
 }

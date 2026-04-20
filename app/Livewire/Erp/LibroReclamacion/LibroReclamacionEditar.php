@@ -8,7 +8,6 @@ use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
 use App\Services\ConsultaClienteService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -41,9 +40,6 @@ class LibroReclamacionEditar extends Component
     public $gestor_id = '';
     public $clasificacion = 'PENDIENTE_REVISION';
     public $tipo_pedido = '';
-    public $nota_fuente = '';
-    public $nota_fuente_titulo = '';
-    public $nota_fuente_fecha = '';
     public $observaciones_internas = '';
 
     public $unidades = [];
@@ -79,9 +75,6 @@ class LibroReclamacionEditar extends Component
         $this->gestor_id = $this->ticket_model->gestor_id;
         $this->clasificacion = $this->ticket_model->clasificacion;
         $this->tipo_pedido = $this->ticket_model->tipo_pedido ?: '';
-        $this->nota_fuente_titulo = $this->ticket_model->tituloNotaFuenteResuelto();
-        $this->nota_fuente = $this->ticket_model->contenidoNotaFuenteResuelto();
-        $this->nota_fuente_fecha = optional($this->ticket_model->nota_fuente_fecha)->format('Y-m-d H:i:s') ?: now()->format('Y-m-d H:i:s');
         $this->observaciones_internas = $this->ticket_model->observaciones_internas;
         $this->cliente_tipo_documento = $this->ticket_model->cliente_tipo_documento;
         $this->cliente_documento = $this->ticket_model->cliente_documento;
@@ -346,8 +339,6 @@ class LibroReclamacionEditar extends Component
                 'gestor_id' => $asignadoNuevo,
                 'tipo_pedido' => $this->resolverTipoPedido(),
                 'clasificacion' => $clasificacion,
-                'nota_fuente_titulo' => $this->nota_fuente_titulo,
-                'nota_fuente_fecha' => Carbon::parse($this->nota_fuente_fecha),
                 'observaciones_internas' => $this->textoNullable($this->observaciones_internas),
                 'assigned_at' => $this->resolverAssignedAt($asignadoAntes, $asignadoNuevo),
             ]);

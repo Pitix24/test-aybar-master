@@ -93,7 +93,7 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_12">
                     <label>Origen</label>
-                    <input type="text" value="{{ $ticket->esOrigenErp() ? 'ERP - Registro Interno' : 'Formulario web' }}" disabled>
+                    <input type="text" value="{{ $ticket->created_by ? 'ERP - Registro Interno' : 'Formulario web' }}" disabled>
                 </div>
             </div>
 
@@ -116,12 +116,12 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Documento</label>
-                    <input type="text" value="{{ $ticket->cliente_documento ?: ($ticket->numero_documento ?: 'N/D') }}" disabled>
+                    <input type="text" value="{{ $ticket->cliente_documento ?: 'N/D' }}" disabled>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Tipo documento</label>
-                    <input type="text" value="{{ $ticket->cliente_tipo_documento ?: ($ticket->tipo_documento ?: 'N/D') }}" disabled>
+                    <input type="text" value="{{ $ticket->cliente_tipo_documento ?: 'N/D' }}" disabled>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
@@ -133,24 +133,24 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_6">
                     <label>Nombre cliente</label>
-                    <input type="text" value="{{ $ticket->cliente_nombre ?: ($ticket->cliente?->name ?: $ticket->nombre ?: 'N/D') }}" disabled>
+                    <input type="text" value="{{ $ticket->cliente_nombre ?: 'N/D' }}" disabled>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_6">
                     <label>Email</label>
-                    <input type="text" value="{{ $ticket->cliente_email ?: ($ticket->email ?: 'N/D') }}" disabled>
+                    <input type="text" value="{{ $ticket->cliente_email ?: 'N/D' }}" disabled>
                 </div>
             </div>
 
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_6">
                     <label>Celular</label>
-                    <input type="text" value="{{ $ticket->cliente_celular ?: ($ticket->telefono ?: 'N/D') }}" disabled>
+                    <input type="text" value="{{ $ticket->cliente_celular ?: 'N/D' }}" disabled>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_6">
                     <label>Dirección</label>
-                    <input type="text" value="{{ $ticket->cliente_direccion ?: ($ticket->domicilio ?: 'N/D') }}" disabled>
+                    <input type="text" value="{{ $ticket->cliente_direccion ?: 'N/D' }}" disabled>
                 </div>
             </div>
         </div>
@@ -195,23 +195,6 @@
             <div class="g_margin_top_20">
                 <label>Observaciones internas</label>
                 <textarea rows="5" disabled>{{ $ticket->observaciones_internas ?: 'Sin observaciones.' }}</textarea>
-            </div>
-
-            <div class="g_fila g_margin_top_10">
-                <div class="g_columna_6">
-                    <label>Titulo de nota</label>
-                    <input type="text" value="{{ $ticket->tituloNotaFuenteResuelto() }}" disabled>
-                </div>
-
-                <div class="g_columna_6">
-                    <label>Fecha de nota</label>
-                    <input type="text" value="{{ optional($ticket->nota_fuente_fecha)->format('d/m/Y H:i') ?: 'N/D' }}" disabled>
-                </div>
-            </div>
-
-            <div class="g_margin_bottom_10">
-                <label>Nota fuente</label>
-                <textarea rows="8" disabled>{{ $ticket->esOrigenErp() ? '' : ($ticket->contenidoNotaFuenteResuelto() ?: 'Sin nota fuente.') }}</textarea>
             </div>
         </div>
 

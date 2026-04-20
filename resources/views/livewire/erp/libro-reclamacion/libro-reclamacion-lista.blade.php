@@ -141,7 +141,7 @@
                         <tr wire:key="libro-ticket-{{ $item->ticket }}">
                             <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
                             <td class="g_celda_centro g_resaltar">{{ $item->codigo }}</td>
-                            <td class="g_negrita g_resumir">{{ $item->cliente_nombre ?: $item->cliente?->name ?: 'N/D' }}</td>
+                            <td class="g_negrita g_resumir">{{ $item->cliente_nombre ?: 'N/D' }}</td>
                             <td class="g_resumir g_inferior">{{ $item->proyecto?->nombre ?: 'N/D' }}</td>
                             <td class="g_celda_centro">
                                 <span class="g_badge info">{{ $item->estadoActualNombre() }}</span>

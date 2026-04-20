@@ -219,14 +219,6 @@ class LibroReclamacionFase5Test extends TestCase
             'numero_reclamo' => 1,
             'codigo_ticket' => 'AYB-000001',
             'codigo' => 'AYB-000002',
-            'nombre' => 'Matias',
-            'apellido_paterno' => 'Lazaro',
-            'apellido_materno' => 'Pomasoncco',
-            'domicilio' => 'Jr. 10 de diciembre 245',
-            'telefono' => '937184206',
-            'email' => 'mglp2404@example.com',
-            'tipo_documento' => 'DNI',
-            'numero_documento' => '75540928',
             'tipo_bien_contratado' => 'PRODUCTO',
             'monto_reclamado' => 2500,
             'descripcion' => 'Producto en prueba',
@@ -242,7 +234,6 @@ class LibroReclamacionFase5Test extends TestCase
             'cliente_direccion' => 'Jr. 10 de diciembre 245',
             'asunto' => 'RECLAMO - 75540928',
             'lotes' => [],
-            'nota_fuente_titulo' => 'Formulario web',
             'observaciones_internas' => null,
         ]);
 

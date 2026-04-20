@@ -28,15 +28,6 @@ return new class extends Migration {
             $table->string('manzana', 5)->nullable();
             $table->string('lote', 5)->nullable();
 
-            $table->string('nombre');
-            $table->string('apellido_paterno');
-            $table->string('apellido_materno');
-            $table->string('domicilio');
-            $table->string('telefono')->nullable();
-            $table->string('email')->nullable();
-            $table->enum('tipo_documento', ['DNI', 'RUC', 'CE', 'NO_DEFINIDO'])->default('DNI');
-            $table->string('numero_documento');
-
             $table->enum('tipo_bien_contratado', ['PRODUCTO', 'SERVICIO', 'NO_DEFINIDO'])->default('PRODUCTO');
             $table->decimal('monto_reclamado', 10, 2)->nullable();
             $table->text('descripcion')->nullable();
@@ -59,8 +50,6 @@ return new class extends Migration {
             $table->text('cliente_direccion')->nullable();
             $table->text('asunto')->nullable();
             $table->json('lotes')->nullable();
-            $table->string('nota_fuente_titulo', 255)->nullable();
-            $table->dateTime('nota_fuente_fecha')->nullable();
             $table->dateTime('assigned_at')->nullable();
             $table->text('observaciones_internas')->nullable();
 

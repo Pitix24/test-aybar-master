@@ -8,7 +8,6 @@ use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
 use App\Services\ConsultaClienteService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -40,9 +39,6 @@ class LibroReclamacionCrear extends Component
     public $gestor_id = '';
     public $clasificacion = 'PENDIENTE_REVISION';
     public $tipo_pedido = '';
-    public $nota_fuente = '';
-    public $nota_fuente_titulo = 'ERP - Registro Interno';
-    public $nota_fuente_fecha = '';
     public $observaciones_internas = '';
 
     public $unidades = [];
@@ -63,8 +59,6 @@ class LibroReclamacionCrear extends Component
         }
 
         $this->authorize('ticket-libro-reclamacion.crear');
-
-        $this->nota_fuente_fecha = now()->format('Y-m-d H:i:s');
         $this->unidades = UnidadNegocio::query()->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
         $this->proyectos = collect();
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
@@ -366,8 +360,6 @@ class LibroReclamacionCrear extends Component
                 'gestor_id' => $this->gestor_id ?: null,
                 'tipo_pedido' => $this->resolverTipoPedido(),
                 'clasificacion' => $this->clasificacion,
-                'nota_fuente_titulo' => $this->nota_fuente_titulo,
-                'nota_fuente_fecha' => Carbon::parse($this->nota_fuente_fecha),
                 'observaciones_internas' => $this->textoNullable($this->observaciones_internas),
                 'assigned_at' => $this->gestor_id ? now() : null,
             ]);
@@ -428,42 +420,6 @@ class LibroReclamacionCrear extends Component
             $longitud === 8 => 'DNI',
             default => 'CE',
         };
-    }
-
-    protected function construirNotaFuente(): string
-    {
-        $lineas = [
-            'Origen: ' . $this->nota_fuente_titulo,
-            'Fecha: ' . Carbon::parse($this->nota_fuente_fecha)->format('d/m/Y H:i'),
-            'Documento: ' . $this->cliente_documento,
-            'Cliente: ' . $this->cliente_nombre,
-        ];
-
-        if ($this->cliente_email) {
-            $lineas[] = 'Email: ' . $this->cliente_email;
-        }
-
-        if ($this->cliente_celular) {
-            $lineas[] = 'Celular: ' . $this->cliente_celular;
-        }
-
-        if ($this->cliente_direccion) {
-            $lineas[] = 'Direccion: ' . $this->cliente_direccion;
-        }
-
-        if ($this->asunto) {
-            $lineas[] = 'Asunto: ' . $this->asunto;
-        }
-
-        if (! empty($this->lotes_agregados)) {
-            $lineas[] = 'Lotes:';
-
-            foreach ($this->lotes_agregados as $lote) {
-                $lineas[] = '- ' . ($lote['razon_social'] ?? 'Sin razon social') . ' | ' . ($lote['proyecto'] ?? 'Sin proyecto') . ' | ' . ($lote['numero_lote'] ?? 'Sin lote');
-            }
-        }
-
-        return implode("\n", $lineas);
     }
 
     protected function textoNullable(?string $valor): ?string
