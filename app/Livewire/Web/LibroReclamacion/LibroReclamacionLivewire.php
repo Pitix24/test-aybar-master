@@ -215,14 +215,12 @@ class LibroReclamacionLivewire extends Component
                 'serie' => $ticket['serie'],
                 'numero_reclamo' => $ticket['numero_reclamo'],
                 'codigo_ticket' => $ticket['codigo_ticket'],
-                'nombre' => $this->textoNoNulo($this->nombre),
-                'apellido_paterno' => $this->textoNoNulo($this->apellido_paterno),
-                'apellido_materno' => $this->textoNoNulo($this->apellido_materno),
-                'domicilio' => $this->textoNoNulo($this->domicilio),
-                'telefono' => $this->textoNullable($this->telefono),
-                'email' => $this->textoNullable($this->email),
-                'tipo_documento' => $this->resolverTipoDocumento(),
-                'numero_documento' => $this->textoNoNulo($this->numero_documento),
+                'cliente_tipo_documento' => $this->resolverTipoDocumento(),
+                'cliente_documento' => $this->textoNullable($this->numero_documento),
+                'cliente_nombre' => $this->resolverNombreClienteCanonico(),
+                'cliente_email' => $this->textoNullable($this->email),
+                'cliente_celular' => $this->textoNullable($this->telefono),
+                'cliente_direccion' => $this->textoNullable($this->domicilio),
                 'tipo_bien_contratado' => $this->resolverTipoBienContratado(),
                 'monto_reclamado' => $this->monto_reclamado,
                 'descripcion' => $this->textoNullable($this->descripcion),
@@ -480,6 +478,19 @@ class LibroReclamacionLivewire extends Component
         $texto = trim((string) $valor);
 
         return $texto === '' ? null : $texto;
+    }
+
+    protected function resolverNombreClienteCanonico(): ?string
+    {
+        $partes = array_filter([
+            $this->textoNullable($this->nombre),
+            $this->textoNullable($this->apellido_paterno),
+            $this->textoNullable($this->apellido_materno),
+        ]);
+
+        $nombre = trim(implode(' ', $partes));
+
+        return $nombre === '' ? null : $nombre;
     }
 
     protected function construirPayloadTicketAutocreacion(?int $proyectoId = null): array
