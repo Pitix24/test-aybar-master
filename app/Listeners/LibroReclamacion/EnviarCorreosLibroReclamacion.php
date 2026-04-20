@@ -21,8 +21,8 @@ class EnviarCorreosLibroReclamacion
             Mail::to($emailLegal)->send(new LibroReclamacionLegalMail($reclamo));
         }
 
-        if (! empty($reclamo->email) && filter_var($reclamo->email, FILTER_VALIDATE_EMAIL)) {
-            Mail::to($reclamo->email)->send(new LibroReclamacionClienteMail($reclamo));
+        if (! empty($reclamo->cliente_email) && filter_var($reclamo->cliente_email, FILTER_VALIDATE_EMAIL)) {
+            Mail::to($reclamo->cliente_email)->send(new LibroReclamacionClienteMail($reclamo));
         }
     }
 }

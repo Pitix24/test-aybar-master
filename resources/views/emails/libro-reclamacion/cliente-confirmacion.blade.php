@@ -1,7 +1,7 @@
 <h2>Hemos recibido su reclamo</h2>
 
 @php
-	$nombreCompleto = trim(($reclamo->nombre ?? '') . ' ' . ($reclamo->apellido_paterno ?? '') . ' ' . ($reclamo->apellido_materno ?? ''));
+	$clienteNombre = trim((string) ($reclamo->cliente_nombre ?? ''));
 	$formatearValor = static function (?string $valor): string {
 		$texto = trim((string) $valor);
 
@@ -13,7 +13,7 @@
 	};
 @endphp
 
-<p>Estimado(a) {{ $nombreCompleto !== '' ? $nombreCompleto : 'cliente' }},</p>
+<p>Estimado(a) {{ $clienteNombre !== '' ? $clienteNombre : 'cliente' }},</p>
 
 <p>Su registro fue creado correctamente.</p>
 

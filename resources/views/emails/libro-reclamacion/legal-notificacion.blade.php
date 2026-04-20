@@ -2,9 +2,7 @@
 	$proyecto = $reclamo->proyecto;
 	$unidad = optional($proyecto)->unidadNegocio;
 
-	$clienteNombre = trim(
-		($reclamo->nombre ?? '') . ' ' . ($reclamo->apellido_paterno ?? '') . ' ' . ($reclamo->apellido_materno ?? '')
-	);
+	$clienteNombre = trim((string) ($reclamo->cliente_nombre ?? ''));
 
 	$tipoPedidoMap = [
 		'RECLAMO' => 'Reclamo',
@@ -27,7 +25,7 @@
 
 	$tipoPedido = strtoupper((string) $reclamo->tipo_pedido);
 	$tipoBien = strtoupper((string) $reclamo->tipo_bien_contratado);
-	$tipoDocumento = strtoupper((string) $reclamo->tipo_documento);
+	$tipoDocumento = strtoupper((string) ($reclamo->cliente_tipo_documento ?? ''));
 
 	$formatear = static function (string $valor): string {
 		$texto = trim($valor);
@@ -88,14 +86,14 @@
 						<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #cbd5e1;border-collapse:collapse;">
 							<tr>
 								<td style="width:50%;padding:8px 10px;border-right:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Nombre:</strong> {{ $clienteNombre ?: 'N/D' }}</td>
-								<td style="width:50%;padding:8px 10px;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Telefono:</strong> {{ $reclamo->telefono ?: 'N/D' }}</td>
+								<td style="width:50%;padding:8px 10px;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Telefono:</strong> {{ $reclamo->cliente_celular ?: 'N/D' }}</td>
 							</tr>
 							<tr>
-								<td style="padding:8px 10px;border-right:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Tipo y Nro Documento:</strong> {{ $tipoDocumentoMap[$tipoDocumento] ?? $formatear($tipoDocumento) }} {{ $reclamo->numero_documento ?: '' }}</td>
-								<td style="padding:8px 10px;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Email:</strong> {{ $reclamo->email ?: 'N/D' }}</td>
+								<td style="padding:8px 10px;border-right:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Tipo y Nro Documento:</strong> {{ $tipoDocumentoMap[$tipoDocumento] ?? $formatear($tipoDocumento) }} {{ $reclamo->cliente_documento ?: '' }}</td>
+								<td style="padding:8px 10px;border-bottom:1px solid #cbd5e1;font-size:12px;"><strong>Email:</strong> {{ $reclamo->cliente_email ?: 'N/D' }}</td>
 							</tr>
 							<tr>
-								<td colspan="2" style="padding:8px 10px;font-size:12px;"><strong>Domicilio:</strong> {{ $reclamo->domicilio ?: 'N/D' }}</td>
+								<td colspan="2" style="padding:8px 10px;font-size:12px;"><strong>Domicilio:</strong> {{ $reclamo->cliente_direccion ?: 'N/D' }}</td>
 							</tr>
 						</table>
 					</td>
