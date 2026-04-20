@@ -72,17 +72,6 @@
 
                     <div class="g_fila">
                         <div class="g_columna_4 g_margin_bottom_10">
-                            <label>Estado Legal</label>
-                            <select wire:model.live="estado_libro_reclamaciones_id" class="@error('estado_libro_reclamaciones_id') input-error @enderror" disabled>
-                                <option value="">Seleccione...</option>
-                                @foreach ($estados as $estado)
-                                    <option value="{{ $estado->id }}">{{ str_replace('_', ' ', $estado->nombre) }}</option>
-                                @endforeach
-                            </select>
-                            @error('estado_libro_reclamaciones_id') <p class="mensaje_error">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div class="g_columna_4 g_margin_bottom_10">
                             <label>Subtipo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
                             <select wire:model.live="tipo_pedido" class="@error('tipo_pedido') input-error @enderror">
                                 <option value="">Seleccione...</option>

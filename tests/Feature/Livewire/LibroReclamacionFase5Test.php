@@ -8,7 +8,6 @@ use App\Livewire\Erp\LibroReclamacion\LibroReclamacionVer;
 use App\Models\Area;
 use App\Models\Canal;
 use App\Models\EstadoTicket;
-use App\Models\LibroReclamacion\EstadoLibroReclamacion;
 use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\PrioridadTicket;
 use App\Models\Proyecto;
@@ -191,14 +190,6 @@ class LibroReclamacionFase5Test extends TestCase
             'activo' => true,
         ]);
 
-        $estadoLibro = EstadoLibroReclamacion::forceCreate([
-            'nombre' => 'NUEVO',
-            'descripcion' => 'Estado inicial para pruebas',
-            'color' => '#0055ff',
-            'es_final' => false,
-            'orden' => 1,
-        ]);
-
         $ticket = Ticket::forceCreate([
             'unidad_negocio_id' => $unidadNegocio->id,
             'proyecto_id' => $proyecto->id,
@@ -243,7 +234,6 @@ class LibroReclamacionFase5Test extends TestCase
             'detalle' => 'Detalle de prueba',
             'pedido' => 'Pedido de prueba',
             'conformidad' => true,
-            'estado_libro_reclamaciones_id' => $estadoLibro->id,
             'clasificacion' => 'PENDIENTE_REVISION',
             'cliente_documento' => '75540928',
             'cliente_nombre' => 'Matias Lazaro Pomasoncco',

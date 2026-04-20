@@ -49,7 +49,6 @@ return new class extends Migration {
             $table->text('observaciones')->nullable();
             $table->dateTime('fecha_respuesta')->nullable()->comment('Fecha de respuesta al usuario.');
 
-            $table->unsignedBigInteger('estado_libro_reclamaciones_id')->nullable();
             $table->enum('clasificacion', ['PROCEDE', 'NO_PROCEDE', 'PENDIENTE_REVISION'])->default('PENDIENTE_REVISION');
 
             $table->string('cliente_tipo_documento', 50)->nullable();
@@ -76,7 +75,6 @@ return new class extends Migration {
             $table->unique('codigo');
             $table->unique(['unidad_negocio_id', 'numero_reclamo'], 'libro_reclamacions_unidad_numero_unique');
             $table->index('codigo_ticket');
-            $table->index('estado_libro_reclamaciones_id');
 
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

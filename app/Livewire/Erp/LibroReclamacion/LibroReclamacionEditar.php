@@ -3,7 +3,6 @@
 namespace App\Livewire\Erp\LibroReclamacion;
 
 use App\Models\Cliente;
-use App\Models\LibroReclamacion\EstadoLibroReclamacion;
 use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
@@ -40,7 +39,6 @@ class LibroReclamacionEditar extends Component
     public $cliente_direccion = '';
     public $asunto = '';
     public $gestor_id = '';
-    public $estado_libro_reclamaciones_id = '';
     public $clasificacion = 'PENDIENTE_REVISION';
     public $tipo_pedido = '';
     public $nota_fuente = '';
@@ -52,7 +50,6 @@ class LibroReclamacionEditar extends Component
     public $proyectos = [];
     public $usuarios = [];
     public $gestores = [];
-    public $estados = [];
 
     public $dni = '';
     public $lote_id = '';
@@ -66,7 +63,6 @@ class LibroReclamacionEditar extends Component
 
         $this->ticket_model = LibroReclamacion::with([
             'ticketRelacionado',
-            'estadoLibroReclamacion',
             'unidadNegocio',
             'proyecto',
             'cliente',
@@ -81,7 +77,6 @@ class LibroReclamacionEditar extends Component
         $this->proyecto_id = $this->ticket_model->proyecto_id;
         $this->cliente_id = $this->ticket_model->cliente_id;
         $this->gestor_id = $this->ticket_model->gestor_id;
-        $this->estado_libro_reclamaciones_id = $this->ticket_model->estado_libro_reclamaciones_id;
         $this->clasificacion = $this->ticket_model->clasificacion;
         $this->tipo_pedido = $this->ticket_model->tipo_pedido ?: '';
         $this->nota_fuente_titulo = $this->ticket_model->tituloNotaFuenteResuelto();
@@ -102,7 +97,6 @@ class LibroReclamacionEditar extends Component
         $this->proyectos = Proyecto::query()->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
         $this->gestores = $this->usuarios;
-        $this->estados = EstadoLibroReclamacion::query()->orderBy('orden')->get(['id', 'nombre']);
         $this->informaciones = collect();
     }
 
@@ -119,7 +113,6 @@ class LibroReclamacionEditar extends Component
             'asunto' => 'required|string|max:255',
             'cliente_id' => 'nullable|exists:users,id',
             'gestor_id' => 'nullable|exists:users,id',
-            'estado_libro_reclamaciones_id' => 'required|exists:estado_libro_reclamaciones,id',
             'tipo_pedido' => 'required|in:RECLAMO,QUEJA',
             'observaciones_internas' => 'nullable|string',
         ];
@@ -137,7 +130,6 @@ class LibroReclamacionEditar extends Component
             'cliente_direccion' => 'Dirección',
             'asunto' => 'Asunto',
             'gestor_id' => 'Gestor',
-            'estado_libro_reclamaciones_id' => 'Estado legal',
             'tipo_pedido' => 'Subtipo',
             'observaciones_internas' => 'Observaciones internas',
         ];
@@ -163,7 +155,6 @@ class LibroReclamacionEditar extends Component
             'cliente_direccion',
             'asunto',
             'gestor_id',
-            'estado_libro_reclamaciones_id',
             'tipo_pedido',
             'observaciones_internas',
         ], true)) {
@@ -353,7 +344,6 @@ class LibroReclamacionEditar extends Component
                 'asunto' => $this->asunto,
                 'lotes' => $this->lotes_agregados,
                 'gestor_id' => $asignadoNuevo,
-                'estado_libro_reclamaciones_id' => $this->estado_libro_reclamaciones_id,
                 'tipo_pedido' => $this->resolverTipoPedido(),
                 'clasificacion' => $clasificacion,
                 'nota_fuente_titulo' => $this->nota_fuente_titulo,

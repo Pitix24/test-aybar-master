@@ -3,7 +3,6 @@
 namespace App\Livewire\Erp\LibroReclamacion;
 
 use App\Models\Cliente;
-use App\Models\LibroReclamacion\EstadoLibroReclamacion;
 use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
@@ -39,7 +38,6 @@ class LibroReclamacionCrear extends Component
     public $cliente_direccion = '';
     public $asunto = '';
     public $gestor_id = '';
-    public $estado_libro_reclamaciones_id = '';
     public $clasificacion = 'PENDIENTE_REVISION';
     public $tipo_pedido = '';
     public $nota_fuente = '';
@@ -51,7 +49,6 @@ class LibroReclamacionCrear extends Component
     public $proyectos = [];
     public $usuarios = [];
     public $gestores = [];
-    public $estados = [];
 
     public $dni = '';
     public $lote_id = '';
@@ -72,10 +69,6 @@ class LibroReclamacionCrear extends Component
         $this->proyectos = collect();
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
         $this->cargarGestoresDisponibles();
-        $this->estados = EstadoLibroReclamacion::query()->orderBy('orden')->get(['id', 'nombre']);
-        $this->estado_libro_reclamaciones_id = (string) EstadoLibroReclamacion::query()
-            ->where('nombre', 'NUEVO')
-            ->value('id');
         $this->informaciones = collect();
     }
 
@@ -110,7 +103,6 @@ class LibroReclamacionCrear extends Component
             'cliente_direccion' => 'nullable|string',
             'asunto' => 'required|string|max:255',
             'gestor_id' => 'nullable|exists:users,id',
-            'estado_libro_reclamaciones_id' => 'required|exists:estado_libro_reclamaciones,id',
             'tipo_pedido' => 'required|in:RECLAMO,QUEJA',
             'observaciones_internas' => 'nullable|string',
         ];
@@ -128,7 +120,6 @@ class LibroReclamacionCrear extends Component
             'cliente_direccion' => 'Dirección',
             'asunto' => 'Asunto',
             'gestor_id' => 'Gestor',
-            'estado_libro_reclamaciones_id' => 'Estado legal',
             'tipo_pedido' => 'Subtipo',
             'observaciones_internas' => 'Observaciones internas',
         ];
@@ -154,7 +145,6 @@ class LibroReclamacionCrear extends Component
             'cliente_direccion',
             'asunto',
             'gestor_id',
-            'estado_libro_reclamaciones_id',
             'tipo_pedido',
             'observaciones_internas',
         ], true)) {
@@ -374,7 +364,6 @@ class LibroReclamacionCrear extends Component
                 'asunto' => $this->asunto,
                 'lotes' => $this->lotes_agregados,
                 'gestor_id' => $this->gestor_id ?: null,
-                'estado_libro_reclamaciones_id' => $this->estado_libro_reclamaciones_id,
                 'tipo_pedido' => $this->resolverTipoPedido(),
                 'clasificacion' => $this->clasificacion,
                 'nota_fuente_titulo' => $this->nota_fuente_titulo,

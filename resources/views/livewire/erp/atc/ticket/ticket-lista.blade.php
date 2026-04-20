@@ -231,7 +231,7 @@
                                     <span class="g_badge light">-</span>
                                 @endif
                             </td>
-                            <td class="g_resumir g_inferior">{{ $item->tipoSolicitud->nombre }}</td>
+                            <td class="g_resumir g_inferior">{{ $item->tipoSolicitud?->nombre ?? '-' }}</td>
                             <td>{{ $item->canal?->nombre ?? '-' }}</td>
                             <td class="g_celda_centro">
                                 <span class="g_badge g_badge_soft" style="color: {{ $item->estado?->color }};">

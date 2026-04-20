@@ -53,7 +53,6 @@ class LibroReclamacion extends Model
         'leido',
         'estado',
         'codigo',
-        'estado_libro_reclamaciones_id',
         'clasificacion',
         'cliente_tipo_documento',
         'cliente_documento',
@@ -108,11 +107,6 @@ class LibroReclamacion extends Model
         return $this->belongsTo(User::class, 'gestor_id');
     }
 
-    public function estadoLibroReclamacion()
-    {
-        return $this->belongsTo(EstadoLibroReclamacion::class, 'estado_libro_reclamaciones_id');
-    }
-
     public function creador()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -147,6 +141,29 @@ class LibroReclamacion extends Model
         return $this->esOrigenErp() ? '' : $this->tituloNotaFuenteResuelto();
     }
 
+    public function estadoActualNombre(): string
+    {
+        $nombreTicket = (string) ($this->ticketRelacionado?->estado?->nombre ?? '');
+
+        if ($nombreTicket !== '') {
+            return $nombreTicket;
+        }
+
+        $clasificacion = strtoupper(trim((string) $this->clasificacion));
+
+        if ($clasificacion === 'NO_PROCEDE') {
+            return 'NO PROCEDE';
+        }
+
+        if ($clasificacion === 'PENDIENTE_REVISION') {
+            return 'PENDIENTE VERIFICACION';
+        }
+
+        $nombre = 'N/D';
+
+        return str_replace('_', ' ', $nombre);
+    }
+
     protected static function booted()
     {
         static::creating(function ($reclamacion) {
@@ -170,12 +187,6 @@ class LibroReclamacion extends Model
                 $reclamacion->numero_documento = (string) ($reclamacion->cliente_documento ?: 'NO DEFINIDO');
             }
 
-            if (!$reclamacion->estado_libro_reclamaciones_id) {
-                $estadoNuevo = EstadoLibroReclamacion::where('nombre', 'NUEVO')->first();
-                if ($estadoNuevo) {
-                    $reclamacion->estado_libro_reclamaciones_id = $estadoNuevo->id;
-                }
-            }
             if (!$reclamacion->codigo && $reclamacion->unidad_negocio_id) {
                 $ticket = self::generarTicket($reclamacion->unidad_negocio_id);
                 $reclamacion->codigo = (string) ($ticket['codigo_ticket'] ?? '');

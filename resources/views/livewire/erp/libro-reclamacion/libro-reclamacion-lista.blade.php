@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, estado_libro_reclamaciones_id, clasificacion, gestor_id, unidad_negocio_id, proyecto_id, desde, hasta, perPage, resetFiltros, gotoPage, nextPage, previousPage"
+        wire:target="buscar, estado_filtro, clasificacion, gestor_id, unidad_negocio_id, proyecto_id, desde, hasta, perPage, resetFiltros, gotoPage, nextPage, previousPage"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -26,12 +26,13 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Estado legal</label>
-                    <select wire:model.live="estado_libro_reclamaciones_id">
+                    <label>Estado</label>
+                    <select wire:model.live="estado_filtro">
                         <option value="">Todos</option>
-                        @foreach ($estados as $estado)
-                            <option value="{{ $estado->id }}">{{ str_replace('_', ' ', $estado->nombre) }}</option>
+                        @foreach ($estadosTicket as $estado)
+                            <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
                         @endforeach
+                        <option value="NO_PROCEDE">NO PROCEDE</option>
                     </select>
                 </div>
 
@@ -143,7 +144,7 @@
                             <td class="g_negrita g_resumir">{{ $item->cliente_nombre ?: $item->cliente?->name ?: 'N/D' }}</td>
                             <td class="g_resumir g_inferior">{{ $item->proyecto?->nombre ?: 'N/D' }}</td>
                             <td class="g_celda_centro">
-                                <span class="g_badge info">{{ str_replace('_', ' ', $item->estadoLibroReclamacion?->nombre ?? 'N/D') }}</span>
+                                <span class="g_badge info">{{ $item->estadoActualNombre() }}</span>
                             </td>
                             <td class="g_celda_centro">
                                 @if ($item->clasificacion === 'NO_PROCEDE')

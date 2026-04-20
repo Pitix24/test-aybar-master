@@ -63,8 +63,8 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
-                    <label>Estado legal</label>
-                    <input type="text" value="{{ str_replace('_', ' ', $ticket->estadoLibroReclamacion?->nombre ?? 'N/D') }}" disabled>
+                    <label>Estado (Libro/Ticket)</label>
+                    <input type="text" value="{{ $ticket->estadoActualNombre() }}" disabled>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
