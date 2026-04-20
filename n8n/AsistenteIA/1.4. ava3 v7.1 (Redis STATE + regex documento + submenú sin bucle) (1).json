@@ -1,0 +1,901 @@
+{
+  "name": "1.4. ava3 v7.1 (Redis STATE + regex documento + submenú sin bucle)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "id": "17271188-b596-4819-aa06-245a6689fe86",
+      "name": "WhatsApp Trigger",
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2336,
+        192
+      ],
+      "webhookId": "wa-asistente-aybar",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "ZU5BA9VOXghhBOAn",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst message = item.messages?.[0] || null;\nconst contact = item.contacts?.[0] || null;\nif (!message) return [];\n\nconst tipo = message.type;\nlet texto = '';\nif (tipo === 'text') texto = message?.text?.body ?? '';\nif (tipo === 'button') texto = message?.button?.text ?? '';\nif (tipo === 'interactive') texto = message?.interactive?.button_reply?.title ?? message?.interactive?.list_reply?.title ?? '';\ntexto = (texto || '').trim();\nif (!texto) return [];\n\nreturn [{ json: { from: message.from, messageId: message.id, tipo, texto, nombre: contact?.profile?.name ?? 'Cliente' } }];\n"
+      },
+      "id": "fdca46e9-dbe2-4a09-9612-8a391e4e1792",
+      "name": "Parsear Mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2128,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "21bc39a5-d5dc-4ea0-94d8-52541cf22b90",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1968,
+        432
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "q695YCGVaztjeNOj",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "Clasifica el mensaje del usuario en UN SOLO intent. Responde SOLO con una palabra:\nBIENVENIDA\nCONSULTA_CLIENTE\nCOMPRA\nEMPRESA\nASESOR\n\nReglas:\n- BIENVENIDA: hola/menú/opciones.\n- CONSULTA_CLIENTE: soy cliente, mis proyectos, lotes, contrato, estado, o envía documento.\n- COMPRA: quiero comprar, precios, info.\n- EMPRESA: quiénes son, ubicación, horario.\n- ASESOR: asesor/humano.\nSi hay duda: CONSULTA_CLIENTE."
+        }
+      },
+      "id": "ecf1f3a9-6d83-4ce9-9c60-2ea36d567491",
+      "name": "Intent Classifier (AI)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1968,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $(\"Parsear Mensaje\").first().json;\nconst raw = ($json.output || '').trim().toUpperCase();\nconst allowed = new Set(['BIENVENIDA','CONSULTA_CLIENTE','COMPRA','EMPRESA','ASESOR']);\nconst intent = allowed.has(raw) ? raw : 'CONSULTA_CLIENTE';\nreturn [{ json: { ...base, intent } }];\n"
+      },
+      "id": "9685bdd3-0f37-4f4e-9d66-b0b2a4c73746",
+      "name": "Normalizar Intent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1696,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "BIENVENIDA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "BIENVENIDA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "CONSULTA_CLIENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "CONSULTA_CLIENTE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "COMPRA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "COMPRA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "EMPRESA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "EMPRESA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "ASESOR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "ASESOR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c2faf756-7542-42bd-8625-e020d7b5a3b4",
+      "name": "Switch Intent",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -1488,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, output: \"¡Hola! 👋 Bienvenido a *Aybar Corp SAC*.\\nSoy Aya, tu asistente virtual. ¿En qué puedo ayudarte hoy?\\n1️⃣ Soy cliente — consultar mis proyectos\\n2️⃣ Quiero comprar — información de proyectos\\n3️⃣ Información de la empresa\\n4️⃣ Hablar con un asesor\" } }];"
+      },
+      "id": "fcc48972-fa16-42fd-864f-3b4df58a15b8",
+      "name": "Agente Bienvenida (leaf)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1216,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "value",
+        "key": "={{ `aybar:state:${$json.from}` }}",
+        "options": {}
+      },
+      "id": "fe947d98-f3b0-46a0-9bee-1fcb774c9ff9",
+      "name": "Redis GET STATE",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        80
+      ],
+      "credentials": {
+        "redis": {
+          "id": "Ws0kyxFTxOP4qYgn",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $(\"Parsear Mensaje\").first().json;\nconst v = $json.value;\nlet state = null;\nif (v) {\n  try { state = typeof v === 'string' ? JSON.parse(v) : v; } catch (e) { state = null; }\n}\nreturn [{ json: { ...base, state, tiene_state: !!state } }];\n"
+      },
+      "id": "32866916-484d-407f-a865-7cc60ada01be",
+      "name": "Parse STATE (Redis)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.tiene_state }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue"
+              },
+              "id": "0f7334ea-0afa-47c2-a4b9-fec2bd30ffa4"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "6e69d44c-a7a7-4137-afe0-f01c1abca0f1",
+      "name": "IF Ya hay STATE en Redis?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const t = ($json.texto || '').trim();\nconst isDigits = /^\\d{8,11}$/.test(t);\nconst isCE = /^CE\\d{6,12}$/i.test(t);\nreturn [{ json: { ...$json, es_documento: isDigits || isCE, numero_documento: t } }];\n"
+      },
+      "id": "34c63deb-6bba-4a62-9727-38cb8f20f311",
+      "name": "Detectar Documento (regex)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.es_documento }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue"
+              },
+              "id": "587f06e1-a028-47d4-9e35-63cd1e70801a"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "looseTypeValidation": true
+        }
+      },
+      "id": "44c2daec-4359-47df-9feb-eb7d1ed6dd85",
+      "name": "IF Texto es Documento?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, output: \"Hola, estoy aquí para ayudarte. 👋\\nPor favor, ingresa tu número de documento nuevamente:\\n📄 DNI / Carnet de Extranjería / RUC\" } }];"
+      },
+      "id": "2b7c1baf-ba26-4ecc-b1bd-faa2a6955227",
+      "name": "Pedir Documento (leaf)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://aybarcorp.com/slin/cliente/{{ $json.numero_documento }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "193350d0-b6dd-4f12-acd9-32b607cff6fa",
+      "name": "HTTP consultar_cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -208,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst apellidos_nombres = data.apellidos_nombres ?? null;\nconst empresas = Array.isArray(data.empresas) ? data.empresas : [];\n\nif (!apellidos_nombres || empresas.length === 0) {\n  return [{ json: { ...$(\"Parsear Mensaje\").first().json, output: \"Hmm 🤔 No encontré ningún registro con ese número.\\n¿Lo escribiste correctamente? Vuelve a ingresar tu documento:\\n📄 *DNI / Carnet de Extranjería / RUC*\", state: null, tiene_state: false } }];\n}\n\nconst state = { apellidos_nombres, empresas: empresas.map(e => ({ codigo: e.codigo, id_empresa: e.id_empresa, razon_social: e.razon_social })) };\nconst output = `Hola *${apellidos_nombres}* 👋\\nYa te identifiqué. ¿Qué deseas hacer?\\n1️⃣ Conocer tus *proyectos*\\n2️⃣ Conocer tus *lotes*\\n3️⃣ Regresar al *Menú Principal*`;\n\nreturn [{ json: { ...$(\"Parsear Mensaje\").first().json, output, state, tiene_state: true } }];\n"
+      },
+      "id": "693739d4-bf03-48ed-a6b9-a81415e81d72",
+      "name": "Armar STATE + Submenú",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ `aybar:state:${$json.from}` }}",
+        "value": "={{ JSON.stringify($json.state) }}"
+      },
+      "id": "dab7f9dd-39d6-4ebf-b314-0cfb08b24094",
+      "name": "Redis SET STATE",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        208,
+        288
+      ],
+      "credentials": {
+        "redis": {
+          "id": "Ws0kyxFTxOP4qYgn",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "Clasifica la opción del submenú de CLIENTE. Responde SOLO:\nPROYECTOS\nLOTES\nMENU\n\n- PROYECTOS: 1, 'proyectos'\n- LOTES: 2, 'lotes'\n- MENU: 3, 'menú principal'\nSi duda: LOTES."
+        }
+      },
+      "id": "280b2f82-8025-41eb-aa85-b1031c0f4d13",
+      "name": "Submenu Classifier (AI)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -864,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = ($json.output || '').trim().toUpperCase();\nconst allowed = new Set(['PROYECTOS','LOTES','MENU']);\nconst submenu_intent = allowed.has(raw) ? raw : 'LOTES';\nreturn [{ json: { ...$json, submenu_intent } }];\n"
+      },
+      "id": "7ae8fea4-e528-4169-ad51-22deeb5aeb5c",
+      "name": "Normalizar Submenu Intent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.submenu_intent }}",
+                    "rightValue": "PROYECTOS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "PROYECTOS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.submenu_intent }}",
+                    "rightValue": "LOTES",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "LOTES"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.submenu_intent }}",
+                    "rightValue": "MENU",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": "MENU"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1d47f42b-cd1f-46db-b895-835cc0adbe60",
+      "name": "Switch Submenú Cliente",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -256,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const state = $json.state;\nif (!state?.empresas?.length) return [{ json: { ...$json, output: 'Primero necesito identificarte. Envíame tu documento:\\n📄 DNI / Carnet de Extranjería / RUC' } }];\nconst lines = ['Estos son tus proyectos/empresas:'];\nstate.empresas.forEach((e,i)=>lines.push(`${i+1}️⃣ ${e.razon_social}`));\nreturn [{ json: { ...$json, output: lines.join('\\n') } }];\n"
+      },
+      "id": "1c162cc9-401c-408c-9f5b-f30301ba9641",
+      "name": "Agente Proyectos (leaf)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ `aybar:state:${$json.from}` }}"
+      },
+      "id": "e1653a1c-7533-471d-bbcd-84fc8c8d28a7",
+      "name": "Redis DEL STATE",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        0,
+        112
+      ],
+      "credentials": {
+        "redis": {
+          "id": "Ws0kyxFTxOP4qYgn",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, output: \"¡Hola! 👋 Bienvenido a *Aybar Corp SAC*.\\nSoy Aya, tu asistente virtual. ¿En qué puedo ayudarte hoy?\\n1️⃣ Soy cliente — consultar mis proyectos\\n2️⃣ Quiero comprar — información de proyectos\\n3️⃣ Información de la empresa\\n4️⃣ Hablar con un asesor\" } }];"
+      },
+      "id": "982e240d-a3ae-4ebc-a635-68c927efa88a",
+      "name": "Agente Bienvenida (leaf) [from redirect]",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "111079285343903",
+        "recipientPhoneNumber": "={{ $(\"Parsear Mensaje\").first().json.from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "id": "c8c1c225-ec08-40f5-9016-861616e86f87",
+      "name": "Send message",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        512,
+        128
+      ],
+      "webhookId": "556a9e67-dd86-4cae-80a8-54b2f3b033d3",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "wsfypPUomJK3uU3v",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parsear Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Mensaje": {
+      "main": [
+        [
+          {
+            "node": "Intent Classifier (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Classifier (AI)": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Intent": {
+      "main": [
+        [
+          {
+            "node": "Switch Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Intent": {
+      "main": [
+        [
+          {
+            "node": "Agente Bienvenida (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redis GET STATE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Bienvenida (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Bienvenida (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Bienvenida (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Bienvenida (leaf)": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis GET STATE": {
+      "main": [
+        [
+          {
+            "node": "Parse STATE (Redis)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse STATE (Redis)": {
+      "main": [
+        [
+          {
+            "node": "IF Ya hay STATE en Redis?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Ya hay STATE en Redis?": {
+      "main": [
+        [
+          {
+            "node": "Submenu Classifier (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Detectar Documento (regex)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detectar Documento (regex)": {
+      "main": [
+        [
+          {
+            "node": "IF Texto es Documento?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Texto es Documento?": {
+      "main": [
+        [
+          {
+            "node": "HTTP consultar_cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pedir Documento (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedir Documento (leaf)": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP consultar_cliente": {
+      "main": [
+        [
+          {
+            "node": "Armar STATE + Submenú",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar STATE + Submenú": {
+      "main": [
+        [
+          {
+            "node": "Redis SET STATE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis SET STATE": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submenu Classifier (AI)": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Submenu Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Submenu Intent": {
+      "main": [
+        [
+          {
+            "node": "Switch Submenú Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Submenú Cliente": {
+      "main": [
+        [
+          {
+            "node": "Agente Proyectos (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agente Proyectos (leaf)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redis DEL STATE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Proyectos (leaf)": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis DEL STATE": {
+      "main": [
+        [
+          {
+            "node": "Agente Bienvenida (leaf) [from redirect]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Bienvenida (leaf) [from redirect]": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Intent Classifier (AI)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Submenu Classifier (AI)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b1e4e22c-29bc-4f4e-a0ba-58523ca5cd2d",
+  "meta": {
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
+  },
+  "id": "VQMnIqSkWwxySkRr",
+  "tags": []
+}
