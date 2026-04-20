@@ -250,6 +250,26 @@ php artisan migrate
 ```
 Reejecutar. Si persiste, revisar si hay migrations custom en `database/migrations/`.
 
+### Error: "Unknown column 'numero_reclamo'" al registrar Reclamo Web
+**Causa probable:** Dump restaurado con versión antigua de `libro_reclamacions` (estructura desalineada con el código actual).
+
+**Solución recomendada (no destructiva):**
+1. Verificar columnas críticas:
+```bash
+php artisan tinker --execute "echo 'numero_reclamo='.(\Illuminate\Support\Facades\Schema::hasColumn('libro_reclamacions','numero_reclamo')?1:0).PHP_EOL; echo 'cliente_nombre='.(\Illuminate\Support\Facades\Schema::hasColumn('libro_reclamacions','cliente_nombre')?1:0).PHP_EOL;"
+```
+2. Ejecutar migración de alineación de esquema (si existe en el proyecto):
+```bash
+php artisan migrate --force
+```
+3. Limpiar cachés y reintentar:
+```bash
+php artisan permission:cache-reset
+php artisan optimize:clear
+```
+
+**Nota:** Este caso suele aparecer cuando el dump trae la tabla `libro_reclamacions` sin columnas nuevas como `numero_reclamo`, `clasificacion` o `cliente_*`.
+
 ### Error: "Base table or view already exists" durante `php artisan migrate`
 **Causa probable:** Desalineación entre la tabla `migrations` y el esquema real del backup. Ejemplo: la tabla `libro_reclamacions` ya existe físicamente, pero su migración no está registrada como ejecutada.
 
