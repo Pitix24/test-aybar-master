@@ -325,8 +325,17 @@ class TicketLista extends Component
             )
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
+        $unreadTicketIds = auth()->user()->unreadNotifications()
+            ->where('type', 'App\Notifications\TicketActualizadoNotification')
+            ->get()
+            ->pluck('data.ticket_id')
+            ->unique()
+            ->toArray();
 
-        return view('livewire.erp.atc.ticket.ticket-lista', compact('items'));
+        return view('livewire.erp.atc.ticket.ticket-lista', [
+            'items' => $items,
+            'unreadTicketIds' => $unreadTicketIds
+        ]);
     }
 
     public function placeholder()

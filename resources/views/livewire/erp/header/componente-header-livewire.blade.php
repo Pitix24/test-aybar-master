@@ -10,6 +10,20 @@
     </div>
 
     <div class="header_menu" x-data="{ menuAbierto: null }" @keydown.escape.window="menuAbierto = null">
+        <!-- Dropdown Notificaciones -->
+        <div class="header_dropdown_wrapper" x-data="{ 
+            get open() { return menuAbierto === 'notificaciones' }, 
+            set open(val) { menuAbierto = val ? 'notificaciones' : null } 
+        }">
+            <button type="button" class="header_dropdown_trigger" @click="open = !open" title="Notificaciones">
+                <i class="fa-solid fa-bell"></i>
+                @if ($this->unreadCount > 0)
+                    <span class="header_notification_badge">{{ $this->unreadCount }}</span>
+                @endif
+            </button>
+
+            <x-notification-dropdown :unreadCount="$this->unreadCount" :notifications="$this->notifications" />
+        </div>
         <!-- Dropdown Tema -->
         <div class="header_dropdown_wrapper" x-data="{ 
             get open() { return menuAbierto === 'tema' }, 

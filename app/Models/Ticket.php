@@ -252,6 +252,13 @@ class Ticket extends Model
             }
         });
 
+        static::updated(function ($ticket) {
+            // Notificar al creador del ticket si existe
+            if ($ticket->creadoPor && $ticket->created_by !== auth()->id()) {
+                $ticket->creadoPor->notify(new \App\Notifications\TicketActualizadoNotification($ticket));
+            }
+        });
+
         static::deleting(function ($ticket) {
             if (auth()->check()) {
                 $ticket->deleted_by = auth()->id();

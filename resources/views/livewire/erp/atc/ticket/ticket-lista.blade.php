@@ -235,7 +235,14 @@
                     @foreach ($items as $item)
                         <tr>
                             <td class="g_celda_centro">
-                                <span class="g_badge light">#{{ $item->id }}</span>
+                                @if(in_array($item->id, $unreadTicketIds))
+                                    <span style="position: relative; display: inline-block;">
+                                        <span class="g_badge light" style="border-left: 3px solid #ef4444;">#{{ $item->id }}</span>
+                                        <span style="position: absolute; top: -5px; right: -5px; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid white;"></span>
+                                    </span>
+                                @else
+                                    <span class="g_badge light">#{{ $item->id }}</span>
+                                @endif
                             </td>
                             <td class="g_negrita g_resumir">{{ $item->nombres }}</td>
                             <td>
