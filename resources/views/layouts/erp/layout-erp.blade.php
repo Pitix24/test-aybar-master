@@ -20,6 +20,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="{{ asset('vendor/sweetalert2@11/sweetalert2@11.min.js') }}"></script>
     <script src="{{ asset('vendor/chart.js/chart.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.23.1/dist/powerbi.min.js"></script>
 
     <!-- STYLES -->
     @livewireStyles
