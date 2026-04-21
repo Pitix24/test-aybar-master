@@ -40,6 +40,7 @@ class SolicitudDigitalizarLetra extends Model
         'email',
         'celular',
         'direccion',
+        'pais',
         'region',
         'provincia',
         'distrito',

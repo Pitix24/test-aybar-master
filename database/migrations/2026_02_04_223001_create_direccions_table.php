@@ -15,9 +15,10 @@ return new class extends Migration {
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
-            $table->foreignId('region_id')->constrained('regions')->onDelete('cascade');
-            $table->foreignId('provincia_id')->constrained('provincias')->onDelete('cascade');
-            $table->foreignId('distrito_id')->constrained('distritos')->onDelete('cascade');
+            $table->foreignId('pais_id')->nullable()->constrained('pais')->onDelete('set null');
+            $table->foreignId('region_id')->nullable()->constrained('regions')->onDelete('set null');
+            $table->foreignId('provincia_id')->nullable()->constrained('provincias')->onDelete('set null');
+            $table->foreignId('distrito_id')->nullable()->constrained('distritos')->onDelete('set null');
 
             $table->string('direccion');
             $table->string('direccion_numero');

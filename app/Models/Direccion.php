@@ -12,6 +12,7 @@ class Direccion extends Model
 
     protected $fillable = [
         'user_id',
+        'pais_id',
         'region_id',
         'provincia_id',
         'distrito_id',
@@ -28,6 +29,14 @@ class Direccion extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the pais associated with the address.
+     */
+    public function pais()
+    {
+        return $this->belongsTo(Pais::class);
     }
 
     /**

@@ -26,11 +26,27 @@
 
     <div class="formulario">
         <div class="g_fila">
-            <div class="g_margin_bottom_10 g_columna_4">
-                <label for="region_id">Departamento <span class="obligatorio"><i
-                            class="fa-solid fa-asterisk"></i></span></label>
+            <div class="g_margin_bottom_10 g_columna_6">
+                <label for="pais_id">País <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>
+                <select wire:model.live="pais_id" id="pais_id" name="pais_id"
+                    class="@error('pais_id') input-error @enderror">
+                    <option value="">Selecciona</option>
+                    @foreach ($paises as $pais)
+                        <option value="{{ $pais->id }}">{{ $pais->nombre }}</option>
+                    @endforeach
+                </select>
+                @error('pais_id')
+                    <p class="mensaje_error">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="g_margin_bottom_10 g_columna_6">
+                <label for="region_id">Departamento @if ($pais_id == 1)
+                    <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                @endif
+                </label>
                 <select wire:model.live="region_id" id="region_id" name="region_id"
-                    class="@error('region_id') input-error @enderror">
+                    class="@error('region_id') input-error @enderror" @if ($pais_id != 1) disabled @endif>
                     <option value="">Selecciona</option>
                     @foreach ($departamentos as $departamento)
                         <option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>
@@ -40,12 +56,17 @@
                     <p class="mensaje_error">{{ $message }}</p>
                 @enderror
             </div>
+        </div>
 
-            <div class="g_margin_bottom_10 g_columna_4">
-                <label for="provincia_id">Provincia <span class="obligatorio"><i
-                            class="fa-solid fa-asterisk"></i></span></label>
+        <div class="g_fila">
+            <div class="g_margin_bottom_10 g_columna_6">
+                <label for="provincia_id">Provincia @if ($pais_id == 1)
+                    <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                @endif
+                </label>
                 <select wire:model.live="provincia_id" id="provincia_id" name="provincia_id"
-                    class="@error('provincia_id') input-error @enderror">
+                    class="@error('provincia_id') input-error @enderror" @if ($pais_id != 1 || $region_id == 27) disabled
+                    @endif>
                     <option value="">Selecciona</option>
                     @foreach ($provincias as $provincia)
                         <option value="{{ $provincia->id }}">{{ $provincia->nombre }}</option>
@@ -56,11 +77,14 @@
                 @enderror
             </div>
 
-            <div class="g_margin_bottom_10 g_columna_4">
-                <label for="distrito_id">Distrito <span class="obligatorio"><i
-                            class="fa-solid fa-asterisk"></i></span></label>
+            <div class="g_margin_bottom_10 g_columna_6">
+                <label for="distrito_id">Distrito @if ($pais_id == 1)
+                    <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                @endif
+                </label>
                 <select wire:model.live="distrito_id" id="distrito_id" name="distrito_id"
-                    class="@error('distrito_id') input-error @enderror">
+                    class="@error('distrito_id') input-error @enderror" @if ($pais_id != 1 || $region_id == 27) disabled
+                    @endif>
                     <option value="">Selecciona</option>
                     @foreach ($distritos as $distrito)
                         <option value="{{ $distrito->id }}">{{ $distrito->nombre }}</option>

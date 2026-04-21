@@ -44,6 +44,7 @@ return new class extends Migration {
             $table->string('email')->nullable();
             $table->string('celular')->nullable();
             $table->string('direccion')->nullable();
+            $table->string('pais')->nullable();
             $table->string('region')->nullable();
             $table->string('provincia')->nullable();
             $table->string('distrito')->nullable();

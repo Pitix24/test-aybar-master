@@ -28,10 +28,12 @@ class AceptarDigitalizarLetra extends Component
     public $email = '';
     public $celular = '';
     public $direccion = '';
+    public $pais_id = '';
     public $region_id = '';
     public $provincia_id = '';
     public $distrito_id = '';
 
+    public $paises = [];
     public $regions = [];
     public $provincias = [];
     public $distritos = [];
@@ -49,9 +51,10 @@ class AceptarDigitalizarLetra extends Component
             $rules['email'] = 'required|email';
             $rules['celular'] = 'required|min:9';
             $rules['direccion'] = 'required|min:10';
-            $rules['region_id'] = 'required';
-            $rules['provincia_id'] = 'required';
-            $rules['distrito_id'] = 'required';
+            $rules['pais_id'] = 'required';
+            $rules['region_id'] = 'required_if:pais_id,1';
+            $rules['provincia_id'] = 'required_if:pais_id,1';
+            $rules['distrito_id'] = 'required_if:pais_id,1';
         }
 
         return $rules;
@@ -74,9 +77,10 @@ class AceptarDigitalizarLetra extends Component
                 if ($cliente->user && $cliente->user->direccion) {
                     $dir = $cliente->user->direccion;
                     $this->direccion = $dir->direccion;
-                    $this->region_id = $dir->region->id;
-                    $this->provincia_id = $dir->provincia->id;
-                    $this->distrito_id = $dir->distrito->id;
+                    $this->pais_id = $dir->pais_id;
+                    $this->region_id = $dir->region_id;
+                    $this->provincia_id = $dir->provincia_id;
+                    $this->distrito_id = $dir->distrito_id;
                 }
             }
         }
@@ -94,6 +98,7 @@ class AceptarDigitalizarLetra extends Component
         }
 
         if (Auth::user()->rol === 'admin') {
+            $this->paises = \App\Models\Pais::orderBy('id')->get();
             $this->regions = Region::all();
 
             // Cargar listas dependientes si hay datos pre-cargados
@@ -104,6 +109,15 @@ class AceptarDigitalizarLetra extends Component
                 $this->distritos = Distrito::where('provincia_id', $this->provincia_id)->get();
             }
         }
+    }
+
+    public function updatedPaisId($value)
+    {
+        $this->region_id = '';
+        $this->provincia_id = '';
+        $this->distrito_id = '';
+        $this->provincias = [];
+        $this->distritos = [];
     }
 
     public function updatedRegionId($value)
@@ -141,18 +155,22 @@ class AceptarDigitalizarLetra extends Component
             $cliente = $nit ? Cliente::where('dni', $nit)->first() : null;
             $cliente_id = $cliente ? $cliente->user_id : null;
 
-            $region_nombre = '';
-            $provincia_nombre = '';
-            $distrito_nombre = '';
+            $pais_nombre = null;
+            $region_nombre = null;
+            $provincia_nombre = null;
+            $distrito_nombre = null;
 
+            if ($this->pais_id) {
+                $pais_nombre = \App\Models\Pais::find($this->pais_id)?->nombre ?? null;
+            }
             if ($this->region_id) {
-                $region_nombre = Region::find($this->region_id)?->nombre ?? '';
+                $region_nombre = Region::find($this->region_id)?->nombre ?? null;
             }
             if ($this->provincia_id) {
-                $provincia_nombre = Provincia::find($this->provincia_id)?->nombre ?? '';
+                $provincia_nombre = Provincia::find($this->provincia_id)?->nombre ?? null;
             }
             if ($this->distrito_id) {
-                $distrito_nombre = Distrito::find($this->distrito_id)?->nombre ?? '';
+                $distrito_nombre = Distrito::find($this->distrito_id)?->nombre ?? null;
             }
 
             SolicitudDigitalizarLetra::updateOrCreate(
@@ -188,6 +206,7 @@ class AceptarDigitalizarLetra extends Component
                     'email' => $this->email ?: null,
                     'celular' => $this->celular ?: null,
                     'direccion' => $this->direccion ?: null,
+                    'pais' => $pais_nombre,
                     'region' => $region_nombre,
                     'provincia' => $provincia_nombre,
                     'distrito' => $distrito_nombre,

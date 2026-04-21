@@ -115,10 +115,31 @@
                 </div>
 
                 <div class="g_fila g_margin_bottom_10">
+                    <div class="g_columna_12">
+                        <label for="pais_id">País <span class="obligatorio"><i
+                                    class="fa-solid fa-asterisk"></i></span></label>
+                        <select id="pais_id" wire:model.live="pais_id"
+                            class="g_input @error('pais_id') input-error @enderror">
+                            <option value="">Seleccione...</option>
+                            @foreach ($paises as $pais)
+                                <option value="{{ $pais->id }}">{{ $pais->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('pais_id')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="g_fila g_margin_bottom_10">
                     <div class="g_columna_4">
-                        <label for="region_id">Región</label>
+                        <label for="region_id">Región @if ($pais_id == 1)
+                                <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                            @endif
+                        </label>
                         <select id="region_id" wire:model.live="region_id"
-                            class="g_input @error('region_id') input-error @enderror">
+                            class="g_input @error('region_id') input-error @enderror" @if ($pais_id != 1) disabled
+                            @endif>
                             <option value="">Seleccione...</option>
                             @foreach ($regions as $region)
                                 <option value="{{ $region->id }}">{{ $region->nombre }}</option>
@@ -130,9 +151,13 @@
                     </div>
 
                     <div class="g_columna_4">
-                        <label for="provincia_id">Provincia</label>
+                        <label for="provincia_id">Provincia @if ($pais_id == 1)
+                                <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                            @endif
+                        </label>
                         <select id="provincia_id" wire:model.live="provincia_id"
-                            class="g_input @error('provincia_id') input-error @enderror">
+                            class="g_input @error('provincia_id') input-error @enderror" @if ($pais_id != 1 || $region_id == 27) disabled
+                            @endif>
                             <option value="">Seleccione...</option>
                             @foreach ($provincias as $provincia)
                                 <option value="{{ $provincia->id }}">{{ $provincia->nombre }}</option>
@@ -144,9 +169,13 @@
                     </div>
 
                     <div class="g_columna_4">
-                        <label for="distrito_id">Distrito</label>
+                        <label for="distrito_id">Distrito @if ($pais_id == 1)
+                                <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                            @endif
+                        </label>
                         <select id="distrito_id" wire:model="distrito_id"
-                            class="g_input @error('distrito_id') input-error @enderror">
+                            class="g_input @error('distrito_id') input-error @enderror" @if ($pais_id != 1 || $region_id == 27) disabled
+                            @endif>
                             <option value="">Seleccione...</option>
                             @foreach ($distritos as $distrito)
                                 <option value="{{ $distrito->id }}">{{ $distrito->nombre }}</option>

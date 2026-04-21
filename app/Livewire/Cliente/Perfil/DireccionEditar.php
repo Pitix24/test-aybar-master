@@ -18,10 +18,12 @@ class DireccionEditar extends Component
 {
     public ?Direccion $direccion_seleccionada = null;
 
+    public $paises = [];
     public $departamentos = [];
     public $provincias = [];
     public $distritos = [];
 
+    public $pais_id;
     public $region_id;
     public $provincia_id;
     public $distrito_id;
@@ -37,6 +39,7 @@ class DireccionEditar extends Component
     public function mount($origen = null)
     {
         $this->origen = $origen;
+        $this->paises = \App\Models\Pais::orderBy('id')->get();
         $this->departamentos = Region::all();
 
         $usuario = Auth::user();
@@ -59,6 +62,7 @@ class DireccionEditar extends Component
         $this->opcional = $dir->opcional;
         $this->referencia = $dir->referencia;
 
+        $this->pais_id = $dir->pais_id;
         $this->region_id = $dir->region_id;
         $this->provincia_id = $dir->provincia_id;
         $this->distrito_id = $dir->distrito_id;
@@ -80,9 +84,10 @@ class DireccionEditar extends Component
     protected function rules()
     {
         return [
-            'region_id' => 'required|integer',
-            'provincia_id' => 'required|integer',
-            'distrito_id' => 'required|integer',
+            'pais_id' => 'required|integer',
+            'region_id' => 'required_if:pais_id,1|nullable|integer',
+            'provincia_id' => 'required_if:pais_id,1|nullable|integer',
+            'distrito_id' => 'required_if:pais_id,1|nullable|integer',
             'direccion' => 'required|string|max:255',
             'direccion_numero' => 'required|string|max:50',
             'codigo_postal' => 'required|string|max:10',
@@ -94,6 +99,7 @@ class DireccionEditar extends Component
     protected function validationAttributes()
     {
         return [
+            'pais_id' => 'país',
             'region_id' => 'departamento',
             'provincia_id' => 'provincia',
             'distrito_id' => 'distrito',
@@ -128,6 +134,7 @@ class DireccionEditar extends Component
             }
 
             $this->direccion_seleccionada->fill([
+                'pais_id' => $this->pais_id,
                 'region_id' => $this->region_id,
                 'provincia_id' => $this->provincia_id,
                 'distrito_id' => $this->distrito_id,
@@ -149,6 +156,15 @@ class DireccionEditar extends Component
             session()->flash('error', 'No se pudo actualizar la dirección. Intente nuevamente.');
             return;
         }
+    }
+
+    public function updatedPaisId()
+    {
+        $this->region_id = null;
+        $this->provincia_id = null;
+        $this->distrito_id = null;
+        $this->provincias = [];
+        $this->distritos = [];
     }
 
     public function updatedRegionId()
