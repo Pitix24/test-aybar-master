@@ -52,16 +52,16 @@ class AsistenciaInvitacionPropietario extends Component
         }
 
         // Si ya respondió (confirmó o rechazó), no permitir volver a llenar
-        if (!is_null($this->prospecto->invitacion_confirmada)) {
+        /*if (!is_null($this->prospecto->invitacion_confirmada)) {
             $this->enviado = true;
             $this->mensaje_exito = 'Ya hemos registrado tu respuesta anteriormente. ¡Muchas gracias!';
             $this->codigo_invitado = $this->prospecto->invitado?->codigo_invitado;
-        }
+        }*/
 
         // Si no está aprobado en backoffice, no debería estar aquí (opcional)
-        if ($this->prospecto->estado_backoffice !== 'CONFORME') {
+        /*if ($this->prospecto->estado_backoffice !== 'CONFORME') {
             abort(403, 'Tu evaluación aún no ha sido aprobada.');
-        }
+        }*/
     }
 
     protected function rules()
@@ -71,7 +71,7 @@ class AsistenciaInvitacionPropietario extends Component
             'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:1',
             'transporte' => 'required_if:asistira,si|in:bus,propio',
             'observaciones' => 'nullable|string|max:500',
-            
+
             // Validación para el acompañante
             'acompanante_dni' => 'required_if:cantidad_acompanantes,1|nullable|string|max:15',
             'acompanante_nombres' => 'required_if:cantidad_acompanantes,1|nullable|string|max:255',
@@ -129,7 +129,7 @@ class AsistenciaInvitacionPropietario extends Component
 
                 // Despachar evento para notificaciones (Email/WhatsApp)
                 EntregaFestAsistenciaConfirmacion::dispatch($invitado);
-                
+
                 $this->codigo_invitado = $codigo;
             } else {
                 DB::commit();

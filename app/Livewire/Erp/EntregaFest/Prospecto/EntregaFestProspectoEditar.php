@@ -45,6 +45,9 @@ class EntregaFestProspectoEditar extends Component
     // Archivos
     public $archivo_contrato_preeliminar;
 
+    public $link_preinvitacion = '';
+    public $link_invitacion = '';
+
     public $proyectos = [];
     public $estados_cliente = [];
 
@@ -158,6 +161,16 @@ class EntregaFestProspectoEditar extends Component
             ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_firma)) : null;
         $this->fecha_generacion_contrato = $this->prospecto->fecha_generacion_contrato
             ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_generacion_contrato)) : null;
+
+        $this->link_preinvitacion = route('entrega-fest.pre-invitacion.propietario', [
+            'slug' => $this->evento->slug,
+            'propietarioId' => $this->prospecto->id
+        ]);
+
+        $this->link_invitacion = route('entrega-fest.asistencia-invitacion.propietario', [
+            'slug' => $this->evento->slug,
+            'propietarioId' => $this->prospecto->id,
+        ]);
 
         $this->proyectos = $this->evento->proyectos;
         $this->estados_cliente = EntregaFestEstadoCliente::where('activo', true)

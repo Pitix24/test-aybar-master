@@ -76,6 +76,46 @@
                         <span>{{ $prospecto->celular }}</span>
                     </div>
                 </div>
+
+                <!--  LINK DE PREINVITACION E INVITACION AL PROPIETARIO --->
+                <div class="g_panel_seccion_divider"></div>
+                <div class="g_gap_small">
+                    <h4 class="g_negrita g_texto_centrado"
+                        style="margin-bottom: 12px; font-size: 0.9rem; text-transform: uppercase; color: var(--g-texto-suave);">
+                        Enlaces del Propietario</h4>
+
+                    <div class="g_gap_small">
+                        <label class="g_label" style="font-size: 0.75rem;">Link Pre-Invitación</label>
+                        <div class="g_input_grupo" x-data="{ copied: false }">
+                            <input type="text" class="g_input small" value="{{ $link_preinvitacion }}" readonly>
+                            <button type="button" class="g_boton_icono info small"
+                                @click="navigator.clipboard.writeText('{{ $link_preinvitacion }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                title="Copiar enlace">
+                                <i class="fa-solid" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                            </button>
+                            <a href="{{ $link_preinvitacion }}" target="_blank" class="g_boton_icono dark small"
+                                title="Ver enlace">
+                                <i class="fa-solid fa-external-link"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="g_gap_small" style="margin-top: 10px;">
+                        <label class="g_label" style="font-size: 0.75rem;">Link Invitación Asistencia</label>
+                        <div class="g_input_grupo" x-data="{ copied: false }">
+                            <input type="text" class="g_input small" value="{{ $link_invitacion }}" readonly>
+                            <button type="button" class="g_boton_icono info small"
+                                @click="navigator.clipboard.writeText('{{ $link_invitacion }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                title="Copiar enlace">
+                                <i class="fa-solid" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                            </button>
+                            <a href="{{ $link_invitacion }}" target="_blank" class="g_boton_icono dark small"
+                                title="Ver enlace">
+                                <i class="fa-solid fa-external-link"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -99,9 +139,9 @@
                             :class="activeTab === 'copropietarios' ? 'g_tab_active' : 'g_tab_inactive'">
                             <i class="fa-solid fa-people-group"></i> Copropietarios
                             @if(count($copropietarios) > 0)
-                                <span class="g_badge_circular info" style="margin-left:6px;">
-                                    {{ count($copropietarios) }}
-                                </span>
+                            <span class="g_badge_circular info" style="margin-left:6px;">
+                                {{ count($copropietarios) }}
+                            </span>
                             @endif
                         </button>
                     </div>
@@ -110,7 +150,8 @@
                 <div x-show="activeTab === 'prospecto'" x-transition class="g_tab_content">
                     @include('livewire.erp.entrega-fest.prospecto.partials._tab-datos-basicos')
 
-                    @livewire('erp.entrega-fest.prospecto.entrega-fest-prospecto-bancarizacion', ['prospectoId' => $prospecto->id])
+                    @livewire('erp.entrega-fest.prospecto.entrega-fest-prospecto-bancarizacion', ['prospectoId' =>
+                    $prospecto->id])
                 </div>
 
                 <div x-show="activeTab === 'backoffice'" x-transition class="g_tab_content">

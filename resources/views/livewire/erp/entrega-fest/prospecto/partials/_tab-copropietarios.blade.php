@@ -127,7 +127,46 @@
                     {{-- Fila normal --}}
                     <tr wire:key="cop-{{ $cop['id'] }}">
                         <td class="g_negrita">{{ $cop['dni'] }}</td>
-                        <td>{{ $cop['nombres'] }}</td>
+                        <td>
+                            <div class="g_negrita">{{ $cop['nombres'] }}</div>
+                            <div class="g_gap_small" style="margin-top: 4px; display: flex; gap: 8px; align-items: center;">
+                                <!--  LINK DE PREINVITACION E INVITACION AL COPROPIETARIO --->
+                                @php
+                                    $link_pre = route('entrega-fest.pre-invitacion.copropietario', [
+                                        'slug' => $evento->slug,
+                                        'copropietarioId' => $cop['id']
+                                    ]);
+                                    $link_inv = route('entrega-fest.asistencia-invitacion.copropietario', [
+                                        'slug' => $evento->slug,
+                                        'copropietarioId' => $cop['id'],
+                                    ]);
+                                @endphp
+                                
+                                <div style="display: flex; align-items: center; gap: 4px;" x-data="{ copied: false }">
+                                    <span style="font-size: 0.7rem; color: var(--g-texto-suave);">Pre:</span>
+                                    <button type="button" class="g_boton_icono info extra_small" 
+                                        @click="navigator.clipboard.writeText('{{ $link_pre }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                        title="Copiar Link Pre-Invitación">
+                                        <i class="fa-solid" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                                    </button>
+                                    <a href="{{ $link_pre }}" target="_blank" class="g_boton_icono dark extra_small" title="Ver Link Pre-Invitación">
+                                        <i class="fa-solid fa-external-link"></i>
+                                    </a>
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 4px;" x-data="{ copied: false }">
+                                    <span style="font-size: 0.7rem; color: var(--g-texto-suave);">Inv:</span>
+                                    <button type="button" class="g_boton_icono info extra_small" 
+                                        @click="navigator.clipboard.writeText('{{ $link_inv }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                        title="Copiar Link Invitación">
+                                        <i class="fa-solid" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                                    </button>
+                                    <a href="{{ $link_inv }}" target="_blank" class="g_boton_icono dark extra_small" title="Ver Link Invitación">
+                                        <i class="fa-solid fa-external-link"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
                         <td>
                             {{ $cop['email'] ?? '—' }}
                         </td>
