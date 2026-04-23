@@ -19,7 +19,7 @@ class ReporteClientePowerBI extends Component
     public function mount(PowerBiService $powerBiService)
     {
         $this->embedData = $powerBiService->getEmbedData($this->reporteKey);
-        $this->rutaClasica = route('reporte.vista.cliente');
+        $this->rutaClasica = route('erp.reporte.vista.cliente');
     }
 
     public function render()

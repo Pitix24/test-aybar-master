@@ -19,7 +19,7 @@ class ReporteDireccionPowerBI extends Component
     public function mount(PowerBiService $powerBiService)
     {
         $this->embedData = $powerBiService->getEmbedData($this->reporteKey);
-        $this->rutaClasica = route('reporte.vista.direccion');
+        $this->rutaClasica = route('erp.reporte.vista.direccion');
     }
 
     public function render()

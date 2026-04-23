@@ -19,7 +19,7 @@ class ReporteAdminPowerBI extends Component
     public function mount(PowerBiService $powerBiService)
     {
         $this->embedData = $powerBiService->getEmbedData($this->reporteKey);
-        $this->rutaClasica = route('reporte.vista.admin');
+        $this->rutaClasica = route('erp.reporte.vista.admin');
     }
 
     public function render()

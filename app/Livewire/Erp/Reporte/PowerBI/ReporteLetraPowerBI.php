@@ -19,7 +19,7 @@ class ReporteLetraPowerBI extends Component
     public function mount(PowerBiService $powerBiService)
     {
         $this->embedData = $powerBiService->getEmbedData($this->reporteKey);
-        $this->rutaClasica = route('reporte.vista.letra');
+        $this->rutaClasica = route('erp.reporte.vista.letra');
     }
 
     public function render()

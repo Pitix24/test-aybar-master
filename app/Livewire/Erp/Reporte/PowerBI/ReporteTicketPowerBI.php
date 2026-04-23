@@ -19,7 +19,7 @@ class ReporteTicketPowerBI extends Component
     public function mount(PowerBiService $powerBiService)
     {
         $this->embedData = $powerBiService->getEmbedData($this->reporteKey);
-        $this->rutaClasica = route('reporte.vista.ticket');
+        $this->rutaClasica = route('erp.reporte.vista.ticket');
     }
 
     public function render()

@@ -17,13 +17,13 @@ Este archivo contiene medidas DAX listas para copiar en Power BI Desktop, alinea
 
 ## 3) Medidas base globales
 
-```DAX
-KPI Fecha Max =
-MAX('vw_pbi_v2_dim_fecha'[fecha])
+    ```DAX
+    KPI Fecha Max =
+    MAX('vw_pbi_v2_dim_fecha'[fecha])
 
-KPI Fecha Min =
-MIN('vw_pbi_v2_dim_fecha'[fecha])
-```
+    KPI Fecha Min =
+    MIN('vw_pbi_v2_dim_fecha'[fecha])
+    ```
 
 ## 4) Clientes
 

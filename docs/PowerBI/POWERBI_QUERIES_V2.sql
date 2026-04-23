@@ -1,3 +1,4 @@
+
 /*
 Power BI V2 - ERP Aybar
 Estrategia:
@@ -5,6 +6,9 @@ Estrategia:
 2) Vistas hecho: vw_pbi_v2_fact_*
 3) Vistas QA: vw_pbi_v2_qa_* para conciliacion
 */
+use aybar;
+
+SET GLOBAL cte_max_recursion_depth = 100000;
 
 CREATE OR REPLACE VIEW vw_pbi_v2_dim_fecha AS
 WITH RECURSIVE fechas AS (
@@ -120,12 +124,19 @@ SELECT
     d.provincia_id,
     d.distrito_id,
     d.direccion,
+    d.direccion_numero,
+    d.opcional,
+    d.codigo_postal,
+    d.referencia,
     d.created_at,
     d.updated_at,
-    d.deleted_at
+    CAST(NULL AS DATETIME) AS deleted_at
 FROM direccions d
 JOIN users u ON u.id = d.user_id
 WHERE u.rol = 'cliente';
+
+
+DESCRIBE direccions;
 
 CREATE OR REPLACE VIEW vw_pbi_v2_fact_admins AS
 SELECT

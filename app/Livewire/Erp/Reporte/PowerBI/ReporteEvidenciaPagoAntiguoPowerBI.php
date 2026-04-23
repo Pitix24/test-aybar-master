@@ -19,7 +19,7 @@ class ReporteEvidenciaPagoAntiguoPowerBI extends Component
     public function mount(PowerBiService $powerBiService)
     {
         $this->embedData = $powerBiService->getEmbedData($this->reporteKey);
-        $this->rutaClasica = route('reporte.vista.evidencia-pago-antiguo');
+        $this->rutaClasica = route('erp.reporte.vista.evidencia-pago-antiguo');
     }
 
     public function render()

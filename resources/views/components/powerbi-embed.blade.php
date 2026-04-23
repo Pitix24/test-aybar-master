@@ -89,7 +89,7 @@
             const pageName     = @json($pageName);
             const containerId  = 'pbi-container-' + reporteKey;
             const loaderId     = 'pbi-loader-' + reporteKey;
-            const tokenRefreshUrl = @json(route('powerbi.token', ['reportKey' => $reporteKey]));
+            const tokenRefreshUrl = @json(route('erp.powerbi.token', ['reportKey' => $reporteKey]));
 
             // Tiempo de refresh: 55 minutos (tokens duran ~60 min)
             const TOKEN_REFRESH_MS = 55 * 60 * 1000;
