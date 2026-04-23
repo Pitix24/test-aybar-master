@@ -12,7 +12,7 @@
 {{-- ═══════════ HEADER ═══════════ --}}
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
     <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; color: var(--color-texto-primario, #1e293b);">
             <i class="fa-solid fa-chart-column" style="color: #7C3AED;"></i>
             {{ $titulo }}
         </h2>
