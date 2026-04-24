@@ -412,7 +412,7 @@ class EntregaFestProspectoEditar extends Component
             'fecha_culminacion_eecc' => 'nullable|date',
             'link_carpeta_eecc' => 'nullable|string|max:255',
             'link_eecc_firmado' => 'nullable|string|max:255',
-            'estado_gestor_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
+            'estado_gestor_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME,VIGENTE',
             'observacion_gestor_backoffice' => 'nullable|string',
         ];
 
@@ -445,7 +445,7 @@ class EntregaFestProspectoEditar extends Component
         $rules = [
             'validador_backoffice_id' => 'required|exists:users,id',
             'fecha_validacion_eecc' => 'required|date',
-            'estado_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
+            'estado_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME,VIGENTE',
         ];
 
         $this->validate($rules);
