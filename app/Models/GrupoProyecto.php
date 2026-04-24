@@ -26,4 +26,9 @@ class GrupoProyecto extends Model
     {
         return $this->hasMany(Proyecto::class);
     }
+
+    public function avances()
+    {
+        return $this->hasMany(AvanceProyecto::class);
+    }
 }
