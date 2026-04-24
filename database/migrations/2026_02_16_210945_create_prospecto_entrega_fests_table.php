@@ -47,7 +47,8 @@ return new class extends Migration {
                 'BANCARIZAR',
                 'PENALIDAD',
                 'OBSERVADO',
-                'CONFORME'
+                'CONFORME',
+                'VIGENTE'
             ])->default('PENDIENTE');
             $table->text('observacion_gestor_backoffice')->nullable();
             $table->foreignId('validador_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //validador backoffice
@@ -57,7 +58,8 @@ return new class extends Migration {
                 'BANCARIZAR',
                 'PENALIDAD',
                 'OBSERVADO',
-                'CONFORME'
+                'CONFORME',
+                'VIGENTE'
             ])->default('PENDIENTE');
 
             // Legal

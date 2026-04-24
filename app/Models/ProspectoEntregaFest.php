@@ -26,6 +26,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'PENALIDAD' => ['label' => 'Penalidad', 'color' => '#EF4444'],
         'OBSERVADO' => ['label' => 'Observado', 'color' => '#F59E0B'],
         'CONFORME' => ['label' => 'Conforme', 'color' => '#10B981'],
+        'VIGENTE' => ['label' => 'Vigente', 'color' => '#f65a3bff'],
     ];
 
     const ESTADO_GESTOR_BACKOFFICE = [
@@ -34,6 +35,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'PENALIDAD' => ['label' => 'Penalidad', 'color' => '#EF4444'],
         'OBSERVADO' => ['label' => 'Observado', 'color' => '#F59E0B'],
         'CONFORME' => ['label' => 'Conforme', 'color' => '#10B981'],
+        'VIGENTE' => ['label' => 'Vigente', 'color' => '#f65a3bff'],
     ];
 
     // ---------------------------------------------------------------
