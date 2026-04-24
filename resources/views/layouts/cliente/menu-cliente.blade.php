@@ -20,6 +20,12 @@
         <i class="fa-solid fa-chevron-right"></i>
     </a>
 
+    <a href="{{ route('cliente.avance-proyecto') }}"
+        class="{{ request()->routeIs('cliente.avance-proyecto') ? 'active' : '' }}">
+        <span><i class="fa-solid fa-person-digging"></i> Avance Proyecto</span>
+        <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit">
