@@ -63,7 +63,7 @@
                                 <a href="{{ route('cliente.avance-proyecto') }}"
                                     class="boton_personalizado boton_personalizado_amarillo_v2">
                                     <i class="fa-solid fa-person-digging"></i>
-                                    AVANCE PROYECTO
+                                    AVANCES DE PROYECTO
                                 </a>
                             </li>
 

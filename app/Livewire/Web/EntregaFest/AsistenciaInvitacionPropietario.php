@@ -52,11 +52,11 @@ class AsistenciaInvitacionPropietario extends Component
         }
 
         // Si ya respondió (confirmó o rechazó), no permitir volver a llenar
-        /*if (!is_null($this->prospecto->invitacion_confirmada)) {
+        if (!is_null($this->prospecto->invitacion_confirmada)) {
             $this->enviado = true;
             $this->mensaje_exito = 'Ya hemos registrado tu respuesta anteriormente. ¡Muchas gracias!';
             $this->codigo_invitado = $this->prospecto->invitado?->codigo_invitado;
-        }*/
+        }
 
         // Si no está aprobado en backoffice, no debería estar aquí (opcional)
         /*if ($this->prospecto->estado_backoffice !== 'CONFORME') {

@@ -51,9 +51,9 @@ class AsistenciaInvitacionCopropietario extends Component
         }
 
         // El prospecto titular debe estar aprobado en backoffice
-        if ($this->copropietario->prospecto->estado_backoffice !== 'CONFORME') {
+        /*if ($this->copropietario->prospecto->estado_backoffice !== 'CONFORME') {
             abort(403, 'Tu evaluación aún no ha sido aprobada.');
-        }
+        }*/
 
         // Si ya respondió (confirmó o rechazó), no permitir volver a llenar
         if (!is_null($this->copropietario->invitacion_confirmada)) {
@@ -128,7 +128,7 @@ class AsistenciaInvitacionCopropietario extends Component
 
                 // Despachar evento para notificaciones (Email/WhatsApp)
                 EntregaFestAsistenciaConfirmacion::dispatch($invitado);
-                
+
                 $this->codigo_invitado = $codigo;
             } else {
                 DB::commit();
