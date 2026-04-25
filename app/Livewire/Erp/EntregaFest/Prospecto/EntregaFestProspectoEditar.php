@@ -85,13 +85,13 @@ class EntregaFestProspectoEditar extends Component
             'fecha_culminacion_eecc' => 'nullable|date',
             'link_carpeta_eecc' => 'nullable|string|max:255',
             'link_eecc_firmado' => 'nullable|string|max:255',
-            'estado_gestor_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
+            'estado_gestor_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME,VIGENTE',
             'observacion_gestor_backoffice' => 'nullable|string',
 
             // BackOffice — Supervisor
             'validador_backoffice_id' => 'nullable|exists:users,id',
             'fecha_validacion_eecc' => 'nullable|date',
-            'estado_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME',
+            'estado_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME,VIGENTE',
 
             // Legal — Asesor
             'estado_contrato_preeliminar_emitido' => 'required|in:PENDIENTE,GENERADO,OBSERVADO,CONFORME',
@@ -439,7 +439,6 @@ class EntregaFestProspectoEditar extends Component
     {
         // Auto-asignar si están vacíos al momento de validar
         $this->validador_backoffice_id = auth()->id();
-
         $this->fecha_validacion_eecc = now()->format('Y-m-d\TH:i');
 
         $rules = [
@@ -456,11 +455,14 @@ class EntregaFestProspectoEditar extends Component
             'estado_backoffice' => $this->estado_backoffice,
         ], 'PROSPECTO EDITAR - BACKOFFICE');
 
-        // Si se acaba de aprobar (CONFORME), actualizamos bancarización y disparamos el evento de invitaciones
-        if ($this->estado_backoffice === 'CONFORME') {
-            \App\Models\ProspectoBancarizacionEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)
-                ->where('entrega_fest_id', $this->evento->id)
-                ->update(['estado' => 'BANCARIZADO']);
+        // Disparar lógica de bancarización e invitaciones
+        if (in_array($this->estado_backoffice, ['CONFORME', 'BANCARIZAR', 'VIGENTE'])) {
+            
+            if ($this->estado_backoffice === 'CONFORME') {
+                \App\Models\ProspectoBancarizacionEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)
+                    ->where('entrega_fest_id', $this->evento->id)
+                    ->update(['estado' => 'BANCARIZADO']);
+            }
 
             EntregaFestAsistenciaInvitacion::dispatch($this->prospecto);
         }
