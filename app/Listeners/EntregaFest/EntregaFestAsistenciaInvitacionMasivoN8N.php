@@ -24,9 +24,9 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
 
         $etapa = $plantilla->tipo ?? 'asistencia-invitacion';
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $evento->id)
-            ->whereHas('estadoCliente', function ($query) {
+            /*->whereHas('estadoCliente', function ($query) {
                 $query->whereNotIn('nombre', ['PLANTON', 'DESISTIMIENTO', 'DEVOLUCION DE APORTES', 'CARTA NOTARIAL', 'RESOLUCION DE CONTRATO']);
-            })
+            })*/
             ->where(function ($query) use ($etapa) {
                 // El titular necesita algo y NO ha respondido
                 $query->where(function ($q) use ($etapa) {
