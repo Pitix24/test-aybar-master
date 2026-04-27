@@ -37,6 +37,8 @@ return new class extends Migration {
                 'C',
                 'D'
             ])->default('A');
+            $table->foreignId('responsable_llamada_id')->nullable()->constrained('users')->nullOnDelete(); //responsable llamadas
+            $table->dateTime('responsable_llamada_fecha_asignacion')->nullable(); //fecha asignacion responsable llamadas
             $table->foreignId('gestor_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //gestor backoffice
             $table->dateTime('gestor_fecha_asignacion')->nullable(); //fecha asignacion gestor
             $table->dateTime('fecha_culminacion_eecc')->nullable(); //fecha culminación estado de cuenta

@@ -144,6 +144,10 @@
                             </span>
                             @endif
                         </button>
+                        <button @click="activeTab = 'llamada'" class="g_tab_boton"
+                            :class="activeTab === 'llamada' ? 'g_tab_active' : 'g_tab_inactive'">
+                            <i class="fa-solid fa-phone"></i> Llamada
+                        </button>
                     </div>
                 </div>
 
@@ -166,6 +170,9 @@
                     @include('livewire.erp.entrega-fest.prospecto.partials._tab-copropietarios')
                 </div>
 
+                <div x-show="activeTab === 'llamada'" x-transition class="g_tab_content">
+                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-llamada')
+                </div>
             </div>
         </div>
     </div>

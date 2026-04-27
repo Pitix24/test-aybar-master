@@ -96,6 +96,8 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'manzana',
         'estado_cliente_id',
         'grupo',
+        'responsable_llamada_id',
+        'responsable_llamada_fecha_asignacion',
         'gestor_backoffice_id',
         'gestor_fecha_asignacion',
         'fecha_culminacion_eecc',
@@ -116,6 +118,12 @@ class ProspectoEntregaFest extends Model implements HasMedia
     protected $casts = [
         'preinvitacion_confirmada' => 'boolean',
         'invitacion_confirmada' => 'boolean',
+        'responsable_llamada_fecha_asignacion' => 'datetime',
+        'gestor_fecha_asignacion' => 'datetime',
+        'fecha_culminacion_eecc' => 'datetime',
+        'fecha_validacion_eecc' => 'datetime',
+        'fecha_firma' => 'datetime',
+        'fecha_generacion_contrato' => 'datetime',
     ];
 
     // ---------------------------------------------------------------
@@ -159,6 +167,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function gestor()
     {
         return $this->belongsTo(User::class, 'gestor_backoffice_id');
+    }
+
+    public function responsableLlamada()
+    {
+        return $this->belongsTo(User::class, 'responsable_llamada_id');
     }
 
     public function validador()

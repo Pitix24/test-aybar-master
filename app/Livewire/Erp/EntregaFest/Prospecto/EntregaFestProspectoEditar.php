@@ -37,6 +37,7 @@ class EntregaFestProspectoEditar extends Component
     public $grupo, $gestor_backoffice_id = '', $gestor_fecha_asignacion, $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
     public $validador_backoffice_id = '', $fecha_validacion_eecc, $estado_backoffice;
     public $estado_gestor_backoffice, $observacion_gestor_backoffice;
+    public $responsable_llamada_id = '', $responsable_llamada_fecha_asignacion;
 
     // Legal
     public $estado_contrato_preeliminar_emitido, $estado_firma_contrato_firmado;
@@ -87,6 +88,8 @@ class EntregaFestProspectoEditar extends Component
             'link_eecc_firmado' => 'nullable|string|max:255',
             'estado_gestor_backoffice' => 'required|in:PENDIENTE,BANCARIZAR,PENALIDAD,OBSERVADO,CONFORME,VIGENTE',
             'observacion_gestor_backoffice' => 'nullable|string',
+            'responsable_llamada_id' => 'nullable|exists:users,id',
+            'responsable_llamada_fecha_asignacion' => 'nullable|date',
 
             // BackOffice — Supervisor
             'validador_backoffice_id' => 'nullable|exists:users,id',
@@ -115,6 +118,8 @@ class EntregaFestProspectoEditar extends Component
             'estado_backoffice' => 'estado backoffice',
             'estado_contrato_preeliminar_emitido' => 'estado contrato preliminar',
             'estado_firma_contrato_firmado' => 'estado firma contrato',
+            'responsable_llamada_id' => 'responsable de llamada',
+            'responsable_llamada_fecha_asignacion' => 'fecha de asignación de llamada',
         ];
     }
 
@@ -149,6 +154,11 @@ class EntregaFestProspectoEditar extends Component
         $this->link_eecc_firmado = $this->prospecto->link_eecc_firmado;
         $this->estado_gestor_backoffice = $this->prospecto->estado_gestor_backoffice;
         $this->observacion_gestor_backoffice = $this->prospecto->observacion_gestor_backoffice;
+
+        $this->responsable_llamada_id = $this->prospecto->responsable_llamada_id;
+        $this->responsable_llamada_fecha_asignacion = $this->prospecto->responsable_llamada_fecha_asignacion
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->responsable_llamada_fecha_asignacion)) : null;
+
         $this->validador_backoffice_id = $this->prospecto->validador_backoffice_id;
         $this->fecha_validacion_eecc = $this->prospecto->fecha_validacion_eecc
             ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_eecc)) : null;
@@ -435,6 +445,26 @@ class EntregaFestProspectoEditar extends Component
         ], 'PROSPECTO EDITAR - BACKOFFICE');
     }
 
+    public function updateLlamada()
+    {
+        $rules = [
+            'responsable_llamada_id' => 'nullable|exists:users,id',
+            'responsable_llamada_fecha_asignacion' => 'nullable|date',
+        ];
+
+        $this->validate($rules);
+
+        // Si se acaba de asignar un responsable, actualizamos la fecha de asignación
+        if ($this->responsable_llamada_id && $this->prospecto->responsable_llamada_id != $this->responsable_llamada_id) {
+            $this->responsable_llamada_fecha_asignacion = now()->format('Y-m-d\TH:i');
+        }
+
+        $this->handleUpdate([
+            'responsable_llamada_id' => $this->responsable_llamada_id ?: null,
+            'responsable_llamada_fecha_asignacion' => $this->responsable_llamada_fecha_asignacion,
+        ], 'PROSPECTO EDITAR - LLAMADA');
+    }
+
     public function updateBackofficeSupervisor()
     {
         // Auto-asignar si están vacíos al momento de validar
@@ -457,7 +487,7 @@ class EntregaFestProspectoEditar extends Component
 
         // Disparar lógica de bancarización e invitaciones
         if (in_array($this->estado_backoffice, ['CONFORME', 'BANCARIZAR', 'VIGENTE'])) {
-            
+
             if ($this->estado_backoffice === 'CONFORME') {
                 \App\Models\ProspectoBancarizacionEntregaFest::where('prospecto_entrega_fest_id', $this->prospecto->id)
                     ->where('entrega_fest_id', $this->evento->id)
@@ -598,8 +628,10 @@ class EntregaFestProspectoEditar extends Component
     public function render()
     {
         $usuarios = User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
+        $usuariosLlamada = User::role(['asesor-atc', 'asesor-backoffice', 'supervisor-backoffice'])->get();
         return view('livewire.erp.entrega-fest.prospecto.entrega-fest-prospecto-editar', [
             'usuarios' => $usuarios,
+            'usuariosLlamada' => $usuariosLlamada,
         ]);
     }
 
