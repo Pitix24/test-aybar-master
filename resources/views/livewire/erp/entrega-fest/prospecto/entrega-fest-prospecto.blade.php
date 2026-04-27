@@ -21,6 +21,10 @@
                 Enviar pre invitación <i class="fa-solid fa-envelope"></i> <i class="fa-brands fa-whatsapp"></i>
             </button>
 
+            <button wire:click="enviarInvitacion" class="g_boton success">
+                Enviar invitación <i class="fa-solid fa-envelope"></i> <i class="fa-brands fa-whatsapp"></i>
+            </button>
+
             <a href="{{ route('erp.entrega-fest.prospecto.bancarizacion', $evento->id) }}" class="g_boton light">
                 Bancarización <i class="fa-solid fa-list"></i>
             </a>

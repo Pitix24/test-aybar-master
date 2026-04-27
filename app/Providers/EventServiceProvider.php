@@ -67,6 +67,9 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\EntregaFest\EntregaFestAsistenciaInvitacion::class => [
             \App\Listeners\EntregaFest\EntregaFestAsistenciaInvitacionN8N::class,
         ],
+        \App\Events\EntregaFest\EntregaFestAsistenciaInvitacionMasivo::class => [
+            \App\Listeners\EntregaFest\EntregaFestAsistenciaInvitacionMasivoN8N::class,
+        ],
     ];
 
     public function boot(): void

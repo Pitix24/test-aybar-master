@@ -16,10 +16,12 @@ class AsistenciaInvitacionCopropietarioMail extends Mailable
     public CopropietarioEntregaFest $copropietario;
     public $evento;
     public $link;
+    public $plantilla;
 
-    public function __construct(CopropietarioEntregaFest $copropietario)
+    public function __construct(CopropietarioEntregaFest $copropietario, $plantilla = null)
     {
         $this->copropietario = $copropietario;
+        $this->plantilla = $plantilla;
         $this->evento = $copropietario->prospecto->entregaFest;
         // Link a la página PROPIA del copropietario
         $this->link = route('entrega-fest.asistencia-invitacion.copropietario', [

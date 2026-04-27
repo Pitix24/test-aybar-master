@@ -16,13 +16,15 @@ class AsistenciaInvitacionPropietarioMail extends Mailable
     public $prospecto;
     public $evento;
     public $link;
+    public $plantilla;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($prospecto)
+    public function __construct($prospecto, $plantilla = null)
     {
         $this->prospecto = $prospecto;
+        $this->plantilla = $plantilla;
         $this->evento = $prospecto->entregaFest;
         $this->link = route('entrega-fest.asistencia-invitacion.propietario', [
             'slug' => $this->evento->slug,

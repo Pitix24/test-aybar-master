@@ -61,6 +61,7 @@ return [
         'entregafest' => [
             'pre_invitacion' => env('N8N_WEBHOOK_ENTREGA_FEST_PRE_INVITACION'),
             'asistencia_invitacion' => env('N8N_WEBHOOK_ENTREGA_FEST_ASISTENCIA_INVITACION'),
+            'asistencia_invitacion_masivo' => env('N8N_WEBHOOK_ENTREGA_FEST_ASISTENCIA_INVITACION_MASIVO'),
             'asistencia_confirmacion' => env('N8N_WEBHOOK_ENTREGA_FEST_ASISTENCIA_CONFIRMACION'),
             'instrucciones' => env('N8N_WEBHOOK_ENTREGA_FEST_INSTRUCCIONES'),
             'contrato_preliminar' => env('N8N_WEBHOOK_ENTREGA_FEST_CONTRATO_PRELIMINAR'),

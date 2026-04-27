@@ -3,6 +3,7 @@
 namespace App\Livewire\Erp\EntregaFest\Prospecto;
 
 use App\Events\EntregaFest\EntregaFestPreInvitacion;
+use App\Events\EntregaFest\EntregaFestAsistenciaInvitacionMasivo;
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
 use Livewire\Attributes\Layout;
@@ -52,7 +53,7 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $perPage = 20;
-    
+
     #[Url(keep: true)]
     public $gestor_id = '';
 
@@ -72,7 +73,7 @@ class EntregaFestProspecto extends Component
         $this->proyectos = $this->evento->proyectos;
         $this->usuarios = \App\Models\User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
         $this->estados_cliente = \App\Models\EntregaFestEstadoCliente::where('activo', true)->orderBy('nombre')->get();
-        
+
         $this->cargarStats();
     }
 
@@ -153,6 +154,17 @@ class EntregaFestProspecto extends Component
             'type' => 'success',
             'title' => '¡Solicitud de envío procesada!',
             'text' => 'Se ha enviado la orden de envío masivo de "Pre-invitación" a n8n',
+        ]);
+    }
+
+    public function enviarInvitacion()
+    {
+        EntregaFestAsistenciaInvitacionMasivo::dispatch($this->evento);
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => '¡Solicitud de envío procesada!',
+            'text' => 'Se ha enviado la orden de envío masivo de "Invitación" a n8n',
         ]);
     }
 
