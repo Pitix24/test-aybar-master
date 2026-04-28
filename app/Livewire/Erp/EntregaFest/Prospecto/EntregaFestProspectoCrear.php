@@ -91,6 +91,26 @@ class EntregaFestProspectoCrear extends Component
             return;
         }
 
+        // Verificar duplicado de Lote y Manzana en este evento y proyecto
+        if (!empty($this->lote) || !empty($this->manzana)) {
+            $loteManzanaExiste = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+                ->where('proyecto_id', $this->proyecto_id)
+                ->where('lote', $this->lote)
+                ->where('manzana', $this->manzana)
+                ->exists();
+
+            if ($loteManzanaExiste) {
+                $this->addError('lote', 'Lote ocupado');
+                $this->addError('manzana', 'Manzana ocupada');
+                $this->dispatch('alertaLivewire', [
+                    'type' => 'error',
+                    'title' => 'Ubicación Duplicada',
+                    'text' => "El Lote {$this->lote} de la Manzana {$this->manzana} ya está registrado para este proyecto."
+                ]);
+                return;
+            }
+        }
+
         try {
             DB::beginTransaction();
 
