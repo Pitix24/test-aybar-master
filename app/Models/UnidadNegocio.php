@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\LibroReclamacion\LibroReclamacion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -33,6 +34,20 @@ class UnidadNegocio extends Model
         'activo' => 'boolean',
     ];
 
+    public static function generarCodigoSecuencial(int $indice): string
+    {
+        $indice = max(1, $indice) - 1;
+
+        $codigo = '';
+
+        for ($i = 0; $i < 3; $i++) {
+            $codigo = chr(65 + ($indice % 26)) . $codigo;
+            $indice = intdiv($indice, 26);
+        }
+
+        return $codigo;
+    }
+
     public function proyectos()
     {
         return $this->hasMany(Proyecto::class);
@@ -48,4 +63,8 @@ class UnidadNegocio extends Model
         return $this->hasMany(AvanceProyecto::class);
     }
 
+    public function libroReclamacions()
+    {
+        return $this->hasMany(LibroReclamacion::class);
+    }
 }

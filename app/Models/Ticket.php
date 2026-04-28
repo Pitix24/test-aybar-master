@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\LibroReclamacion\LibroReclamacion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -134,6 +135,11 @@ class Ticket extends Model
     public function citas()
     {
         return $this->hasMany(Cita::class);
+    }
+
+    public function libroReclamacion()
+    {
+        return $this->hasOne(LibroReclamacion::class, 'ticket_id');
     }
 
     public function validadoPor()
