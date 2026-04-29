@@ -64,12 +64,20 @@ class EntregaFestAsistencia extends Component
             $this->mensajeTipo = 'error';
             // Aquí NO vaciamos el $this->codigo_qr, para que pueda seguir escribiendo su DNI.
         } elseif (!$invitado->confirmado) {
-            $this->mensaje = 'El invitado ' . ($invitado->nombre_completo) . ' NO ha confirmado su asistencia.';
+            $estadoKey = $invitado->estado_backoffice;
+            $estadoInfo = \App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE[$estadoKey] ?? null;
+            $mensajeBack = $estadoInfo['mensaje'] ?? '';
+
+            $this->mensaje = 'El invitado ' . ($invitado->nombre_completo) . ' NO ha confirmado su asistencia | ' . $mensajeBack;
             $this->mensajeTipo = 'error';
             $this->codigo_qr = ''; // Como sí se encontró el invitado, limpiamos la caja.
         } else {
+            $estadoKey = $invitado->estado_backoffice;
+            $estadoInfo = \App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE[$estadoKey] ?? null;
+            $mensajeBack = $estadoInfo['mensaje'] ?? '';
+
             if ($invitado->asistencia) {
-                $this->mensaje = 'El invitado ' . ($invitado->nombre_completo) . ' ya registró su ingreso a las ' . $invitado->asistencia->fecha_checkin->format('H:i');
+                $this->mensaje = 'El invitado ' . ($invitado->nombre_completo) . ' ya registró su ingreso a las ' . $invitado->asistencia->fecha_checkin->format('H:i') . ' | ' . $mensajeBack;
                 $this->mensajeTipo = 'warning';
                 $this->codigo_qr = ''; // Como sí se encontró el invitado, limpiamos la caja.
             } else {
@@ -87,9 +95,9 @@ class EntregaFestAsistencia extends Component
                     'fecha_checkin' => now(),
                     'metodo' => $metodo,
                 ]);
-                $this->mensaje = '¡Bienvenido(a) ' . ($invitado->nombre_completo) . '! Ingreso registrado.';
+                $this->mensaje = '¡Bienvenido(a) ' . ($invitado->nombre_completo) . '! Ingreso registrado ' . ' | ' . $mensajeBack;
                 $this->mensajeTipo = 'success';
-                
+
                 $this->codigo_qr = ''; // Todo salió bien, limpiamos la caja para el siguiente.
             }
         }
