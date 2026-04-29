@@ -120,6 +120,13 @@ class EntregaFestAsistencia extends Component
         );
     }
 
+    public function toggleSegundaAsistencia($id)
+    {
+        $asistencia = AsistenciaEntregaFest::findOrFail($id);
+        $asistencia->segunda_asistencia = !$asistencia->segunda_asistencia;
+        $asistencia->save();
+    }
+
     public function render()
     {
         $items = AsistenciaEntregaFest::query()

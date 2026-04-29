@@ -21,6 +21,7 @@ return new class extends Migration {
 
             $table->timestamp('fecha_checkin')->nullable();
             $table->string('metodo')->nullable(); // qr, manual, dni
+            $table->boolean('segunda_asistencia')->default(false);
 
             $table->timestamps();
         });

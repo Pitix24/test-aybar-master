@@ -15,10 +15,12 @@ class AsistenciaEntregaFest extends Model
         'user_id',
         'fecha_checkin',
         'metodo',
+        'segunda_asistencia',
     ];
 
     protected $casts = [
         'fecha_checkin' => 'datetime',
+        'segunda_asistencia' => 'boolean',
     ];
 
     public function invitado()

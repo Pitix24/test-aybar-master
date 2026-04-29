@@ -132,13 +132,15 @@
                                 <th>Proyecto</th>
                                 <th class="g_celda_centro">Fecha / Hora</th>
                                 <th>Responsable</th>
+                                <th>Segunda Asistencia</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($items as $a)
                                                     <tr wire:key="asistencia-{{ $a->id }}">
                                                         <td class="g_negrita" style="color: var(--color-primary);">
-                                                            {{ $a->invitado->codigo_invitado }}</td>
+                                                            {{ $a->invitado->codigo_invitado }}
+                                                        </td>
                                                         <td>
                                                             <div style="margin-bottom:3px;">
                                                                 @if ($a->invitado->prospecto_entrega_fest_id)
@@ -155,8 +157,10 @@
                                                             </div>
                                                             @if($a->invitado->acompanantes->count() > 0)
                                                                 <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ddd;">
-                                                                    <div style="font-size: 0.75rem; color: #666; font-weight: bold; margin-bottom: 2px;">
-                                                                        <i class="fa-solid fa-users" style="color:var(--color-primary)"></i> Acompañantes:
+                                                                    <div
+                                                                        style="font-size: 0.75rem; color: #666; font-weight: bold; margin-bottom: 2px;">
+                                                                        <i class="fa-solid fa-users" style="color:var(--color-primary)"></i>
+                                                                        Acompañantes:
                                                                     </div>
                                                                     @foreach($a->invitado->acompanantes as $ac)
                                                                         <div style="font-size: 0.75rem; color: #555;">
@@ -179,19 +183,27 @@
                                                         </td>
                                                         <td class="g_celda_centro">
                                                             <div class="g_badge light" style="font-size: 0.75rem;">
-                                                                {{ $a->created_at->format('d/m/Y') }}</div>
+                                                                {{ $a->created_at->format('d/m/Y') }}
+                                                            </div>
                                                             <div class="g_negrita" style="margin-top: 4px;">
-                                                                {{ $a->created_at->format('H:i:s') }}</div>
+                                                                {{ $a->created_at->format('H:i:s') }}
+                                                            </div>
                                                         </td>
                                                         <td>
                                                             <div style="font-size: 0.85rem;">{{ $a->user->name ?? 'Sistema' }}</div>
                                                             <div style="font-size: 0.75rem; color: #999;">Método: {{ strtoupper($a->metodo) }}
                                                             </div>
                                                         </td>
+                                                        <td class="g_celda_centro">
+                                                            <button wire:click="toggleSegundaAsistencia({{ $a->id }})"
+                                                                class="g_boton {{ $a->segunda_asistencia ? 'success' : 'danger' }}">
+                                                                {{ $a->segunda_asistencia ? 'SI' : 'NO' }}
+                                                            </button>
+                                                        </td>
                                                     </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="g_celda_centro" style="padding: 40px; color: #999;">
+                                    <td colspan="6" class="g_celda_centro" style="padding: 40px; color: #999;">
                                         No hay registros de ingreso aún.
                                     </td>
                                 </tr>

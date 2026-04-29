@@ -59,7 +59,7 @@ class EntregaFestInvitado extends Component
 
     public function exportExcelFiltro()
     {
-        $this->authorize('entrega-fest.invitados');
+        $this->authorize('invitado.exportar-filtro');
 
         return \Maatwebsite\Excel\Facades\Excel::download(
             new \App\Exports\EntregaFest\EntregaFestInvitadoExport(
@@ -77,7 +77,7 @@ class EntregaFestInvitado extends Component
 
     public function exportExcelTodo()
     {
-        $this->authorize('entrega-fest.invitados');
+        $this->authorize('invitado.exportar-todo');
 
         return \Maatwebsite\Excel\Facades\Excel::download(
             new \App\Exports\EntregaFest\EntregaFestInvitadoExport(
@@ -185,11 +185,11 @@ class EntregaFestInvitado extends Component
                         $sub->where('nombres', 'like', '%' . $this->buscar . '%')
                             ->orWhere('dni', 'like', '%' . $this->buscar . '%');
                     })
-                    ->orWhereHas('copropietario', function ($sub) {
-                        $sub->where('nombres', 'like', '%' . $this->buscar . '%')
-                            ->orWhere('dni', 'like', '%' . $this->buscar . '%');
-                    })
-                    ->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
+                        ->orWhereHas('copropietario', function ($sub) {
+                            $sub->where('nombres', 'like', '%' . $this->buscar . '%')
+                                ->orWhere('dni', 'like', '%' . $this->buscar . '%');
+                        })
+                        ->orWhere('codigo_invitado', 'like', '%' . $this->buscar . '%');
                 });
             })
             ->when($this->confirmado !== '', fn($q) => $q->where('confirmado', $this->confirmado))

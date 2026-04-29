@@ -58,6 +58,7 @@ class EntregaFestAsistenciaExport implements FromCollection, WithHeadings, Shoul
             $item->fecha_checkin->format('H:i:s'),
             strtoupper($item->metodo),
             $item->user?->name ?? 'Sistema',
+            $item->segunda_asistencia ? 'SI' : 'NO',
         ];
     }
 
@@ -75,6 +76,7 @@ class EntregaFestAsistenciaExport implements FromCollection, WithHeadings, Shoul
             'Hora Ingreso',
             'Método',
             'Responsable',
+            '2da Asistencia',
         ];
     }
 }
