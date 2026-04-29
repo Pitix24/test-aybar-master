@@ -181,6 +181,15 @@
                                                                     style="background-color: {{ $estadoInfo['color'] }}; color: white; font-size: 0.70rem;">
                                                                     {{ $estadoInfo['label'] }}
                                                                 </span>
+                                                                <br/>
+                                                                <br/>
+                                                                @php
+                                                                    $colorCondicion = ($estadoInfo['condicion'] ?? '') === 'ENTREGA' ? '#10B981' : '#EF4444';
+                                                                @endphp
+                                                                <span class="g_badge"
+                                                                    style="background-color: {{ $colorCondicion }}; color: white; font-size: 0.70rem;">
+                                                                    {{ $estadoInfo['condicion'] }}
+                                                                </span>
                                                                 <x-tooltip text="{{ $estadoInfo['mensaje'] }}" />
                                                             @else
                                                                 <span class="g_badge light" style="font-size: 0.70rem;">N/D</span>
