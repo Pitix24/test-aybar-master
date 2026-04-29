@@ -54,10 +54,18 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
         if (!$this->todo) {
             $query->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
+                    // Buscar en titular
                     $q->where('nombres', 'like', '%' . $this->buscar . '%')
                         ->orWhere('dni', 'like', '%' . $this->buscar . '%')
                         ->orWhere('email', 'like', '%' . $this->buscar . '%')
-                        ->orWhere('celular', 'like', '%' . $this->buscar . '%');
+                        ->orWhere('celular', 'like', '%' . $this->buscar . '%')
+                        // Buscar en copropietarios
+                        ->orWhereHas('copropietarios', function ($sub) {
+                            $sub->where('nombres', 'like', '%' . $this->buscar . '%')
+                                ->orWhere('dni', 'like', '%' . $this->buscar . '%')
+                                ->orWhere('email', 'like', '%' . $this->buscar . '%')
+                                ->orWhere('celular', 'like', '%' . $this->buscar . '%');
+                        });
                 });
             })
                 ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))

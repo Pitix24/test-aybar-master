@@ -120,4 +120,13 @@ class InvitadoEntregaFest extends Model
         return $this->prospecto?->dni
             ?? $this->copropietario?->dni;
     }
+
+    /**
+     * Estado backoffice del invitado (titular o copropietario).
+     */
+    public function getEstadoBackofficeAttribute(): ?string
+    {
+        return $this->prospecto?->estado_backoffice
+            ?? $this->copropietario?->prospecto?->estado_backoffice;
+    }
 }
