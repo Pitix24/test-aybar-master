@@ -181,6 +181,7 @@
                                                                     style="background-color: {{ $estadoInfo['color'] }}; color: white; font-size: 0.70rem;">
                                                                     {{ $estadoInfo['label'] }}
                                                                 </span>
+                                                                <x-tooltip text="{{ $estadoInfo['mensaje'] }}" />
                                                             @else
                                                                 <span class="g_badge light" style="font-size: 0.70rem;">N/D</span>
                                                             @endif

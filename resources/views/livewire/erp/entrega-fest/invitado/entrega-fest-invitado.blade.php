@@ -121,6 +121,7 @@
                                                     style="background-color: {{ $estadoInfo['color'] }}; color: white; font-size: 0.75rem;">
                                                     {{ $estadoInfo['label'] }}
                                                 </span>
+                                                <x-tooltip text="{{ $estadoInfo['mensaje'] }}" />
                                             @else
                                                 <span class="g_badge light" style="font-size: 0.75rem;">N/D</span>
                                             @endif
@@ -153,7 +154,7 @@
                                                 $registrados = $i->acompanantes->count();
                                                 $restantes = $totalPermitido - $registrados;
                                             @endphp
-                             <div
+                                            <div
                                                 style="font-weight: bold; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 5px;">
                                                 {{ $registrados }} / {{ $totalPermitido }}
                                             </div>

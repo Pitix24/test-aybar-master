@@ -21,12 +21,12 @@ class ProspectoEntregaFest extends Model implements HasMedia
     // ENUMS: Estado BackOffice
     // ---------------------------------------------------------------
     const ESTADO_BACKOFFICE = [
-        'PENDIENTE' => ['label' => 'Pendiente', 'color' => '#6B7280'],
-        'BANCARIZAR' => ['label' => 'Bancarizar', 'color' => '#3B82F6'],
-        'PENALIDAD' => ['label' => 'Penalidad', 'color' => '#EF4444'],
-        'OBSERVADO' => ['label' => 'Observado', 'color' => '#F59E0B'],
-        'CONFORME' => ['label' => 'Conforme', 'color' => '#10B981'],
-        'VIGENTE' => ['label' => 'Vigente', 'color' => '#f65a3bff'],
+        'PENDIENTE' => ['label' => 'Pendiente', 'color' => '#6B7280', 'mensaje' => 'Cliente con información de pago aún por validar.'],
+        'BANCARIZAR' => ['label' => 'Bancarizar', 'color' => '#3B82F6', 'mensaje' => 'Cliente que ha cancelado, pero falta sustento (vouchers).'],
+        'PENALIDAD' => ['label' => 'Penalidad', 'color' => '#EF4444', 'mensaje' => 'Cliente con deuda (moras).'],
+        'OBSERVADO' => ['label' => 'Observado', 'color' => '#F59E0B', 'mensaje' => 'Cliente con cuotas pendientes.'],
+        'CONFORME' => ['label' => 'Conforme', 'color' => '#10B981', 'mensaje' => 'Cliente que ha cancelado al 100%.'],
+        'VIGENTE' => ['label' => 'Vigente', 'color' => '#f65a3bff', 'mensaje' => 'Cliente con pagos en proceso (cuotas al día o en curso).'],
     ];
 
     const ESTADO_GESTOR_BACKOFFICE = [
