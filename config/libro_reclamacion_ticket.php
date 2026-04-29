@@ -36,8 +36,8 @@ return [
         'tipo_solicitud_id' => 28,
         'tipo_solicitud_nombre' => 'LIBRO DE RECLAMACIONES',
         'prioridad_ticket_id' => 1,
-        'created_by' => 2562,
-        'gestor_id' => 2562,
+        'created_by' => 3066,
+        'gestor_id' => 3066,
 
         // El nombre de subtipo es un fallback. En fase 2 se usara para resolver el subtipo real por catalogo.
         'subtipo_por_tipo_pedido' => [
@@ -59,6 +59,6 @@ return [
 
     'aybar' => [
         'razon_social' => 'AYBAR CORP. S.A.C.',
-        'numero_inicial' => 0,
+        'numero_inicial' => env('LIBRO_RECLAMACION_AYBAR_NUMERO_INICIAL', 1269),
     ],
 ];

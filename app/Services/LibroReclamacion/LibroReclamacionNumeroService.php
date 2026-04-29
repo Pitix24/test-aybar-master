@@ -26,12 +26,15 @@ class LibroReclamacionNumeroService
                 ->where('unidad_negocio_id', $unidadNegocioId)
                 ->max('numero_reclamo');
 
-            $numeroBase = is_null($ultimoNumero)
-                ? $this->resolverNumeroInicial((string) ($unidad->razon_social ?: $unidad->nombre ?: ''))
-                : (int) $ultimoNumero;
+            $numeroConfigurado = $this->resolverNumeroInicial($unidad);
+
+            if (is_null($ultimoNumero)) {
+                $numeroReclamo = max(1, $numeroConfigurado);
+            } else {
+                $numeroReclamo = max((int) $ultimoNumero + 1, $numeroConfigurado);
+            }
 
             $serie = $this->resolverSerie();
-            $numeroReclamo = $numeroBase + 1;
 
             return [
                 'serie' => $serie,
@@ -41,9 +44,21 @@ class LibroReclamacionNumeroService
         });
     }
 
-    protected function resolverNumeroInicial(string $razonSocial): int
+    protected function resolverNumeroInicial(?UnidadNegocio $unidad): int
     {
+        if (!$unidad) {
+            return 0;
+        }
+
         $config = config('libro_reclamacion_ticket', []);
+
+        // Priority 1: Match by ID (ID 1 is Aybar)
+        if ($unidad->id === 1) {
+            return (int) data_get($config, 'aybar.numero_inicial', 0);
+        }
+
+        // Priority 2: Match by Razon Social (fallback)
+        $razonSocial = (string) ($unidad->razon_social ?: $unidad->nombre ?: '');
         $aybarRazonSocial = $this->normalizarTexto(data_get($config, 'aybar.razon_social', 'AYBAR CORP. S.A.C.'));
 
         if ($this->normalizarTexto($razonSocial) === $aybarRazonSocial) {

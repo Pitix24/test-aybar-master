@@ -688,7 +688,7 @@ class LibroReclamacionLivewire extends Component
 
     protected function resolverUsuarioSistemaId(): ?int
     {
-        $usuarioId = (int) config('libro_reclamacion_ticket.ticket_autocreacion.created_by', 2562);
+        $usuarioId = (int) config('libro_reclamacion_ticket.ticket_autocreacion.created_by', 3066);
 
         if ($usuarioId <= 0) {
             return null;
