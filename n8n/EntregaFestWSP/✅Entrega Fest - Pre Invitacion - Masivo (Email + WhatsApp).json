@@ -1,0 +1,682 @@
+{
+  "name": "✅Entrega Fest - Pre Invitacion - Masivo (Email + WhatsApp)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "entregafest-pre-invitacion",
+        "options": {}
+      },
+      "id": "f9c8c433-8001-40de-bf0e-8f6db30f920f",
+      "name": "webhook-laravel",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        368
+      ],
+      "webhookId": "5784ff8d-5a93-463f-bd55-41341e7438d5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\nconst contactos = body.contactos ?? [];\nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto predeterminado\nconst asunto = plantilla.titulo ?? 'Invitación al evento';\n\nlet finalItems = [];\n\n// Recorremos cada contacto principal (Propietario)\ncontactos.forEach(c => {\n    \n    // 1. Añadimos al Propietario principal\n    // Solo si tiene al menos un canal pendiente por enviar\n    if (c.enviar_email || c.enviar_whatsapp) {\n        finalItems.push({\n            json: {\n                id: c.id,\n                nombres: c.nombres,\n                email: c.email,\n                celular: c.celular ?? '',\n                dni: c.dni ?? '',\n                link: c.link,\n                html: c.html,\n                tipo: c.tipo ?? 'Propietario', // Usamos el tipo enviado por Laravel\n                asunto: asunto,\n                evento: evento,\n                // --- BANDERAS DE ENVÍO ---\n                enviar_email: c.enviar_email,\n                enviar_whatsapp: c.enviar_whatsapp,\n                // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n                plantilla_titulo: plantilla.titulo ?? '',\n                plantilla_subtitulo: plantilla.subtitulo ?? '',\n                plantilla_descripcion: plantilla.descripcion ?? '',\n                plantilla_imagen: plantilla.imagen_url ?? '',\n                plantilla_link_boton: plantilla.link_boton ?? ''\n            }\n        });\n    }\n\n    // 2. Si tiene copropietarios, los recorremos y añadimos\n    if (c.copropietarios && c.copropietarios.length > 0) {\n        c.copropietarios.forEach(cp => {\n            // Solo añadimos al copropietario si tiene al menos un canal por enviar\n            if (cp.enviar_email || cp.enviar_whatsapp) {\n                finalItems.push({\n                    json: {\n                        id: cp.id,\n                        nombres: cp.nombres,\n                        email: cp.email ?? '',\n                        celular: cp.celular ?? '',\n                        dni: cp.dni ?? '',\n                        link: cp.link,\n                        html: cp.html,\n                        tipo: cp.tipo ?? 'Copropietario', // Usamos el tipo enviado por Laravel\n                        asunto: asunto,\n                        evento: evento,\n                        // --- BANDERAS DE ENVÍO ---\n                        enviar_email: cp.enviar_email,\n                        enviar_whatsapp: cp.enviar_whatsapp,\n                        // --- NUEVOS CAMPOS DE LA PLANTILLA ---\n                        plantilla_titulo: plantilla.titulo ?? '',\n                        plantilla_subtitulo: plantilla.subtitulo ?? '',\n                        plantilla_descripcion: plantilla.descripcion ?? '',\n                        plantilla_imagen: plantilla.imagen_url ?? '',\n                        plantilla_link_boton: plantilla.link_boton ?? ''\n                    }\n                });\n            }\n        });\n    }\n});\n\nreturn finalItems;\n"
+      },
+      "id": "85b978c4-db37-47a8-977d-6ee7f3afbbec",
+      "name": "formatear-contactos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "adm-response@aybarsac.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.asunto }}",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "c748249f-83df-4acc-b206-a2274114de95",
+      "name": "enviar-mensaje-email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        176
+      ],
+      "webhookId": "35f1df2c-3320-452f-ae19-c12dbb5c7b59",
+      "credentials": {
+        "smtp": {
+          "id": "nFrcmjvGHAuSVgqd",
+          "name": "SMTP account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "whatsapp"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.key ? 'enviado' : 'fallido' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        288,
+        608
+      ],
+      "id": "122f595b-9351-4d40-ac31-c5b674e0d8b7",
+      "name": "set-laravel-mensaje-1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "email"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.accepted?.length > 0 ? 'enviado' : 'invalido' }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        288,
+        176
+      ],
+      "id": "1f1b4716-5940-4125-9b4d-b3deaff7eb55",
+      "name": "set-laravel-mensaje-2",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "54029fa4-1ed0-4a3f-bf38-05544953a62e",
+              "name": "status",
+              "value": "completado",
+              "type": "string"
+            },
+            {
+              "id": "081cfbc4-078a-4b72-b282-285a0d7faf6a",
+              "name": "mensaje",
+              "value": "Todos los mensajes de invitación fueron enviados",
+              "type": "string"
+            },
+            {
+              "id": "30f6259a-9cb5-4c3f-aa4e-ca64cb72cdf0",
+              "name": "timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "2beb95d4-233b-4be9-81e1-209888d24966",
+              "name": "workflow",
+              "value": "Laravel -> Enviar Pre-Invitaciones",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        416
+      ],
+      "id": "a416a835-51d6-4cfe-8b7f-f585f67e9006",
+      "name": "resumen-1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resultados = $(\"enviar-mensaje-wsp-3\").all();\nconst datosOriginales = $(\"formatear-contactos\").all(); \n\n// CAMBIO AQUÍ: Evolution API suele devolver un objeto con 'key' si es exitoso\nconst exitosos = resultados.filter(r => r.json.key && r.json.key.remoteJid).length;\nconst fallidos = resultados.length - exitosos;\nconst total = resultados.length;\n\nlet logDetallado = \"Resumen de envíos por WhatsApp:\\n\";\nresultados.forEach((r, index) => {\n    // CAMBIO AQUÍ: Validamos por la existencia de 'key'\n    const status = (r.json.key) ? \"✅ OK\" : \"❌ Error\";\n    \n    // Traemos el nombre y el celular original\n    const nombre = datosOriginales[index].json.nombres;\n    const celular = datosOriginales[index].json.celular; // <--- Añadimos esto\n    \n    logDetallado += `${index + 1}. ${nombre} (${celular}): ${status}\\n`; // <--- Mostramos el celular aquí\n});\n\nreturn { exitosos, fallidos, total, logDetallado, fecha: new Date().toLocaleString() };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        416
+      ],
+      "id": "707c75f5-22c7-40a7-ab35-f7ea300f5a08",
+      "name": "formatear-resultados-1"
+    },
+    {
+      "parameters": {
+        "fromEmail": "adm-response@aybarsac.com",
+        "toEmail": "adm-response@aybarsac.com",
+        "subject": "=LOG: ENTREGAFEST - PRE INVITACION, {{ $json.total }} whatsaps enviados",
+        "html": "=<h3>Reporte de Envío - Entrega Fest - Pre invitación</h3>\n<p>El proceso ha finalizado con los siguientes resultados:</p>\n\n<ul>\n    <li><b>Total de personas marcadas:</b> {{ $json.total }}</li>\n    <li><b>Envíos exitosos:</b> {{ $json.exitosos }}</li>\n    <li><b>Envíos fallidos:</b> {{ $json.fallidos }}</li>\n    <li><b>Fecha de fin:</b> {{ $json.fecha }}</li>\n</ul>\n\n<hr>\n<h4>Detalle por cada destinatario:</h4>\n<pre style=\"background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace;\">\n{{ $json.logDetallado }}\n</pre>\n",
+        "options": {
+          "ccEmail": "gestiondeprocesos@aybarsac.com,amiragutierrez@aybarsac.com"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        416
+      ],
+      "id": "5b86f7e6-57e2-4ce3-83e4-eb3dc1feca7d",
+      "name": "enviar-email-constancia-1",
+      "webhookId": "74d1c913-bb94-46af-8e72-38d22b90bd63",
+      "credentials": {
+        "smtp": {
+          "id": "nFrcmjvGHAuSVgqd",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "54029fa4-1ed0-4a3f-bf38-05544953a62e",
+              "name": "status",
+              "value": "completado",
+              "type": "string"
+            },
+            {
+              "id": "081cfbc4-078a-4b72-b282-285a0d7faf6a",
+              "name": "mensaje",
+              "value": "Todos los correos de invitación fueron enviados",
+              "type": "string"
+            },
+            {
+              "id": "30f6259a-9cb5-4c3f-aa4e-ca64cb72cdf0",
+              "name": "timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "2beb95d4-233b-4be9-81e1-209888d24966",
+              "name": "workflow",
+              "value": "Laravel -> Enviar Pre-Invitaciones",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4c50734d-65ff-4ed8-a31d-7708a2832d37",
+      "name": "resumen-2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resultados = $(\"enviar-mensaje-email\").all();\nconst datosOriginales = $(\"formatear-contactos\").all(); // Para traer los nombres\n\nconst exitosos = resultados.filter(r => r.json.accepted && r.json.accepted.length > 0).length;\nconst fallidos = resultados.length - exitosos;\nconst total = resultados.length;\n\nlet logDetallado = \"Resumen de envíos por Email:\\n\";\nresultados.forEach((r, index) => {\n    const status = (r.json.accepted && r.json.accepted.length > 0) ? \"✅ OK\" : \"❌ Error\";\n    // Traemos el nombre y el correo original de la expansión\n    const nombre = datosOriginales[index].json.nombres;\n    const email = datosOriginales[index].json.email;\n    logDetallado += `${index + 1}. ${nombre} (${email}): ${status}\\n`;\n});\n\nreturn { exitosos, fallidos, total, logDetallado, fecha: new Date().toLocaleString() };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        0
+      ],
+      "id": "be5b916e-c83a-4f42-88da-8ae4c50d49df",
+      "name": "formatear-resultados-2"
+    },
+    {
+      "parameters": {
+        "fromEmail": "adm-response@aybarsac.com",
+        "toEmail": "adm-response@aybarsac.com",
+        "subject": "=LOG: ENTREGAFEST - PRE INVITACION, {{ $json.total }} correos enviados",
+        "html": "=<h3>Reporte de Envío - Entrega Fest - Pre invitación</h3>\n<p>El proceso ha finalizado con los siguientes resultados:</p>\n\n<ul>\n    <li><b>Total de personas marcadas:</b> {{ $json.total }}</li>\n    <li><b>Envíos exitosos:</b> {{ $json.exitosos }}</li>\n    <li><b>Envíos fallidos:</b> {{ $json.fallidos }}</li>\n    <li><b>Fecha de fin:</b> {{ $json.fecha }}</li>\n</ul>\n\n<hr>\n<h4>Detalle por cada destinatario:</h4>\n<pre style=\"background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace;\">\n{{ $json.logDetallado }}\n</pre>\n",
+        "options": {
+          "ccEmail": "gestiondeprocesos@aybarsac.com,amiragutierrez@aybarsac.com"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        0
+      ],
+      "id": "d1e67e9a-5150-4054-b78f-137f034e87b8",
+      "name": "enviar-email-constancia-2",
+      "webhookId": "dae98dc8-2442-4c52-9d7d-712644f074d0",
+      "credentials": {
+        "smtp": {
+          "id": "nFrcmjvGHAuSVgqd",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 25,
+        "options": {}
+      },
+      "id": "9ad98d35-bca7-4303-9691-266e85b05702",
+      "name": "split-25-contactos",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -480,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 12
+      },
+      "id": "3bd933b0-ef24-460a-a5a1-686d5d4c9239",
+      "name": "espera-12s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        176
+      ],
+      "webhookId": "aac688e3-bc5d-449c-85bb-a12e5db949c8"
+    },
+    {
+      "parameters": {
+        "batchSize": 2,
+        "options": {}
+      },
+      "id": "9be7c368-aabf-425f-b40f-d5fef884eeb1",
+      "name": "split-10-contactos",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -480,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 120
+      },
+      "id": "e230a26d-1414-4387-984a-8dbca62956c9",
+      "name": "espera-120s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        608
+      ],
+      "webhookId": "94b8e4c7-06eb-4262-ab99-a7b1bd58775c"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "52565282-96b1-452c-92d4-b78fdced1ea3",
+              "leftValue": "={{ $json.enviar_whatsapp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -240,
+        608
+      ],
+      "id": "6f5a2f6f-0cd7-4567-aa18-5a1e178b62b5",
+      "name": "filtro-1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "52565282-96b1-452c-92d4-b78fdced1ea3",
+              "leftValue": "={{$json.enviar_email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -240,
+        176
+      ],
+      "id": "bd523e2b-6a0b-4f96-b0d7-cb1baed3778b",
+      "name": "filtro-2"
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "1089842304211504",
+        "recipientPhoneNumber": "={{ $json.celular }}",
+        "template": "entregafest_preinvitacion|es_PE",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.nombres }}"
+                  },
+                  {
+                    "text": "={{ $json.plantilla_titulo }}"
+                  },
+                  {
+                    "text": "={{ $json.plantilla_descripcion }}"
+                  },
+                  {
+                    "text": "={{ $json.link }}"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "header",
+              "headerParameters": {
+                "parameter": [
+                  {
+                    "type": "image",
+                    "imageLink": "={{ $json.plantilla_imagen }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        608
+      ],
+      "id": "46112640-b28e-4f48-8d08-bde59a19572f",
+      "name": "enviar-mensaje-wsp",
+      "webhookId": "f2dd0443-4a47-4744-8aa1-3893e81e9bb5",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "wsfypPUomJK3uU3v",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "webhook-laravel": {
+      "main": [
+        [
+          {
+            "node": "formatear-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "formatear-contactos": {
+      "main": [
+        [
+          {
+            "node": "split-10-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviar-mensaje-email": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-1": {
+      "main": [
+        [
+          {
+            "node": "espera-120s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-2": {
+      "main": [
+        [
+          {
+            "node": "espera-12s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resumen-1": {
+      "main": [
+        [
+          {
+            "node": "formatear-resultados-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "formatear-resultados-1": {
+      "main": [
+        [
+          {
+            "node": "enviar-email-constancia-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resumen-2": {
+      "main": [
+        [
+          {
+            "node": "formatear-resultados-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "formatear-resultados-2": {
+      "main": [
+        [
+          {
+            "node": "enviar-email-constancia-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split-25-contactos": {
+      "main": [
+        [],
+        [
+          {
+            "node": "filtro-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "espera-12s": {
+      "main": [
+        [
+          {
+            "node": "split-25-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "split-10-contactos": {
+      "main": [
+        [],
+        [
+          {
+            "node": "filtro-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "espera-120s": {
+      "main": [
+        [
+          {
+            "node": "split-10-contactos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro-1": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro-2": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviar-mensaje-wsp": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "26afc86b-7525-4a26-8cd8-6b469724f099",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
+  },
+  "id": "bn3wYa42XVJA58wh",
+  "tags": []
+}
