@@ -1,5 +1,6 @@
 <div class="g_centrar_pagina">
-    <x-loading-overlay wire:loading wire:target="registrar,confirmarEnvioNoProcede,enviar" message="Registrando su reclamo..." />
+    <x-loading-overlay wire:loading wire:target="registrar,confirmarEnvioNoProcede,enviar"
+        message="Registrando su reclamo..." />
 
     <div class="g_pading_pagina g_gap_pagina">
         <div class="g_contenedor_columna">
@@ -16,9 +17,10 @@
                                 de su registro</h2>
                         </div>
 
-                        <div class="informacion_resumen_grid">                            
+                        <div class="informacion_resumen_grid">
                             <div class="informacion_resumen_item">
-                                <span class="informacion_resumen_label">{{ $reclamo_registrado->ticket_id ? 'Ticket N°' : 'Código de registro' }}</span>
+                                <span
+                                    class="informacion_resumen_label">{{ $reclamo_registrado->ticket_id ? 'Ticket N°' : 'Código de registro' }}</span>
                                 <span class="informacion_resumen_valor">{{ $reclamo_registrado->codigo_ticket }}</span>
                             </div>
                             <div class="informacion_resumen_item">
@@ -33,7 +35,8 @@
                             </div>
                             <div class="informacion_resumen_item" style="grid-column: span 2;">
                                 <span class="informacion_resumen_label">Nombre completo</span>
-                                <span class="informacion_resumen_valor">{{ trim(($reclamo_registrado->cliente_nombre ?? '') . ' ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno ?? '')) !== '' ? trim(($reclamo_registrado->cliente_nombre ?? '') . ' ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno ?? '')) : 'N/D' }}</span>
+                                <span
+                                    class="informacion_resumen_valor">{{ trim(($reclamo_registrado->cliente_nombre ?? '') . ' ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno ?? '')) !== '' ? trim(($reclamo_registrado->cliente_nombre ?? '') . ' ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno ?? '')) : 'N/D' }}</span>
                             </div>
                             <div class="informacion_resumen_item">
                                 <span class="informacion_resumen_label">Manzana</span>
@@ -56,7 +59,10 @@
                         <div class="g_margin_top_20 g_resaltado_caja info">
                             <span class="g_resaltado_caja_titulo">Importante</span>
                             <div class="g_margin_top_10" style="font-size: 0.9em; opacity: 0.95; line-height: 1.6;">
-                                <p><i class="fa-solid fa-calendar-check"></i> La empresa dispone de <strong>quince (15) días hábiles improrrogables</strong> para atender y responder a su reclamo o queja, contados desde la fecha de recepción. La respuesta será escrita y se enviará por el medio que usted indique.</p>
+                                <p><i class="fa-solid fa-calendar-check"></i> La empresa dispone de <strong>quince (15) días
+                                        hábiles improrrogables</strong> para atender y responder a su reclamo o queja, contados
+                                    desde la fecha de recepción. La respuesta será escrita y se enviará por el medio que usted
+                                    indique.</p>
                             </div>
                         </div>
 
@@ -87,8 +93,10 @@
                     <div class="g_resaltado_caja info">
                         <span class="g_resaltado_caja_titulo">Información importante</span>
                         <div class="g_margin_top_10" style="font-size: 0.9em; opacity: 0.95; line-height: 1.5;">
-                            <p><i class="fa-solid fa-circle-info"></i> Ningún campo es obligatorio para registrar su reclamo.</p>
-                            <p><i class="fa-solid fa-address-card"></i> Si completa sus datos de contacto, podremos realizar un mejor seguimiento.</p>
+                            <p><i class="fa-solid fa-circle-info"></i> Ningún campo es obligatorio para registrar su
+                                reclamo.</p>
+                            <p><i class="fa-solid fa-address-card"></i> Si completa sus datos de contacto, podremos realizar
+                                un mejor seguimiento.</p>
                         </div>
                     </div>
 
@@ -117,6 +125,14 @@
                                         <span class="informacion_resumen_label">Razón Social</span>
                                         <span class="informacion_resumen_valor">{{ $unidad_razon_social }}</span>
                                     </div>
+                                    <div class="informacion_resumen_item" style="grid-column: span 2;">
+                                        <span class="informacion_resumen_label">RUC</span>
+                                        <span class="informacion_resumen_valor">{{ $unidad_ruc }}</span>
+                                    </div>
+                                    <div class="informacion_resumen_item" style="grid-column: span 2;">
+                                        <span class="informacion_resumen_label">Dirección</span>
+                                        <span class="informacion_resumen_valor">{{ $unidad_direccion }}</span>
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -125,16 +141,14 @@
                             <div class="g_margin_bottom_10 g_columna_6">
                                 <label>Manzana</label>
                                 <input type="text" wire:model="manzana" maxlength="5"
-                                    class="@error('manzana') input-error @enderror"
-                                    placeholder="Ej: A1">
+                                    class="@error('manzana') input-error @enderror" placeholder="Ej: A1">
                                 @error('manzana') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="g_margin_bottom_10 g_columna_6">
                                 <label>Lote</label>
                                 <input type="text" wire:model="lote" inputmode="numeric" pattern="[0-9]*" maxlength="5"
-                                    class="@error('lote') input-error @enderror"
-                                    placeholder="Ej: 00125">
+                                    class="@error('lote') input-error @enderror" placeholder="Ej: 00125">
                                 @error('lote') <p class="mensaje_error">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -257,14 +271,20 @@
                                 <label for="tipo_pedido_reclamo"
                                     style="width: 100%; height: 100%; min-height: 180px; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 2px solid {{ $tipo_pedido === 'reclamo' ? '#02424E' : 'rgba(0,0,0,0.10)' }}; border-radius: 10px; background: {{ $tipo_pedido === 'reclamo' ? 'rgba(2, 66, 78, 0.14)' : '#ffffff' }}; cursor: pointer; box-sizing: border-box; box-shadow: {{ $tipo_pedido === 'reclamo' ? '0 0 0 2px rgba(2,66,78,0.18), 0 12px 22px rgba(2,66,78,0.10)' : 'none' }}; transition: all 0.15s ease;">
                                     <div style="display:flex; align-items:center; gap: 10px;">
-                                        <input id="tipo_pedido_reclamo" type="radio" wire:model="tipo_pedido" value="reclamo" style="margin: 0;">
-                                        <span style="font-weight: 800; letter-spacing: 0.02em; color: {{ $tipo_pedido === 'reclamo' ? '#02424E' : 'inherit' }};">RECLAMO</span>
+                                        <input id="tipo_pedido_reclamo" type="radio" wire:model="tipo_pedido"
+                                            value="reclamo" style="margin: 0;">
+                                        <span
+                                            style="font-weight: 800; letter-spacing: 0.02em; color: {{ $tipo_pedido === 'reclamo' ? '#02424E' : 'inherit' }};">RECLAMO</span>
                                         @if ($tipo_pedido === 'reclamo')
                                             <span class="g_badge info" style="margin-left: auto;">Seleccionado</span>
                                         @endif
                                     </div>
-                                    <p style="margin: 0; line-height: 1.55; text-align: justify; padding-left: 5px; color: {{ $tipo_pedido === 'reclamo' ? '#02424E' : 'inherit' }}; opacity: {{ $tipo_pedido === 'reclamo' ? '1' : '0.92' }};">
-                                        Manifestación que un consumidor realiza al proveedor a través de una Hoja de Reclamación del Libro de Reclamaciones, mediante la cual expresa una disconformidad relacionada a los bienes expendidos o suministrados o a los servicios prestados. No constituye una denuncia y no inicia un procedimiento administrativo sancionador.
+                                    <p
+                                        style="margin: 0; line-height: 1.55; text-align: justify; padding-left: 5px; color: {{ $tipo_pedido === 'reclamo' ? '#02424E' : 'inherit' }}; opacity: {{ $tipo_pedido === 'reclamo' ? '1' : '0.92' }};">
+                                        Manifestación que un consumidor realiza al proveedor a través de una Hoja de
+                                        Reclamación del Libro de Reclamaciones, mediante la cual expresa una disconformidad
+                                        relacionada a los bienes expendidos o suministrados o a los servicios prestados. No
+                                        constituye una denuncia y no inicia un procedimiento administrativo sancionador.
                                     </p>
                                 </label>
                             </div>
@@ -273,14 +293,23 @@
                                 <label for="tipo_pedido_queja"
                                     style="width: 100%; height: 100%; min-height: 180px; display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border: 2px solid {{ $tipo_pedido === 'queja' ? '#02424E' : 'rgba(0,0,0,0.10)' }}; border-radius: 10px; background: {{ $tipo_pedido === 'queja' ? 'rgba(2, 66, 78, 0.14)' : '#ffffff' }}; cursor: pointer; box-sizing: border-box; box-shadow: {{ $tipo_pedido === 'queja' ? '0 0 0 2px rgba(2,66,78,0.18), 0 12px 22px rgba(2,66,78,0.10)' : 'none' }}; transition: all 0.15s ease;">
                                     <div style="display:flex; align-items:center; gap: 10px;">
-                                        <input id="tipo_pedido_queja" type="radio" wire:model="tipo_pedido" value="queja" style="margin: 0;">
-                                        <span style="font-weight: 800; letter-spacing: 0.02em; color: {{ $tipo_pedido === 'queja' ? '#02424E' : 'inherit' }};">QUEJA</span>
+                                        <input id="tipo_pedido_queja" type="radio" wire:model="tipo_pedido" value="queja"
+                                            style="margin: 0;">
+                                        <span
+                                            style="font-weight: 800; letter-spacing: 0.02em; color: {{ $tipo_pedido === 'queja' ? '#02424E' : 'inherit' }};">QUEJA</span>
                                         @if ($tipo_pedido === 'queja')
                                             <span class="g_badge info" style="margin-left: auto;">Seleccionado</span>
                                         @endif
                                     </div>
-                                    <p style="margin: 0; line-height: 1.55; text-align: justify; padding-left: 5px; color: {{ $tipo_pedido === 'queja' ? '#02424E' : 'inherit' }}; opacity: {{ $tipo_pedido === 'queja' ? '1' : '0.92' }};">
-                                        Manifestación que un consumidor realiza al proveedor a través de una Hoja de Reclamación del Libro de Reclamaciones, mediante la cual expresa una disconformidad que no se encuentra relacionada a los bienes expendidos o suministrados o a los servicios prestados; o, expresa el malestar o descontento del consumidor respecto a la atención al público, sin que tenga por finalidad la obtención de un pronunciamiento por parte del proveedor. Tampoco constituye una denuncia ni inicia un procedimiento sancionador.
+                                    <p
+                                        style="margin: 0; line-height: 1.55; text-align: justify; padding-left: 5px; color: {{ $tipo_pedido === 'queja' ? '#02424E' : 'inherit' }}; opacity: {{ $tipo_pedido === 'queja' ? '1' : '0.92' }};">
+                                        Manifestación que un consumidor realiza al proveedor a través de una Hoja de
+                                        Reclamación del Libro de Reclamaciones, mediante la cual expresa una disconformidad
+                                        que no se encuentra relacionada a los bienes expendidos o suministrados o a los
+                                        servicios prestados; o, expresa el malestar o descontento del consumidor respecto a
+                                        la atención al público, sin que tenga por finalidad la obtención de un
+                                        pronunciamiento por parte del proveedor. Tampoco constituye una denuncia ni inicia
+                                        un procedimiento sancionador.
                                     </p>
                                 </label>
                             </div>
@@ -333,10 +362,12 @@
                         </div>
 
                         <div class="formulario_botones centrar" style="margin-top: 8px;">
-                            <button type="button" class="g_boton light" wire:click="cancelarAdvertenciaNoProcede" wire:loading.attr="disabled">
+                            <button type="button" class="g_boton light" wire:click="cancelarAdvertenciaNoProcede"
+                                wire:loading.attr="disabled">
                                 <i class="fa-solid fa-pen"></i> Completar datos
                             </button>
-                            <button type="button" class="g_boton warning" wire:click="confirmarEnvioNoProcede" wire:loading.attr="disabled">
+                            <button type="button" class="g_boton warning" wire:click="confirmarEnvioNoProcede"
+                                wire:loading.attr="disabled">
                                 <i class="fa-solid fa-paper-plane"></i> Registrar de todas formas
                             </button>
                         </div>

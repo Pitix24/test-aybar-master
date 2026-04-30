@@ -45,6 +45,8 @@ class LibroReclamacionLivewire extends Component
     public $pedido;
     public $conformidad = false;
     public $unidad_razon_social;
+    public $unidad_ruc;
+    public $unidad_direccion;
     public $lista_proyectos = [];
     public $success = false;
     public $reclamo_registrado;
@@ -117,6 +119,8 @@ class LibroReclamacionLivewire extends Component
             if ($proyecto && $proyecto->unidadNegocio) {
                 $this->unidad_negocio_id = $proyecto->unidadNegocio->id;
                 $this->unidad_razon_social = $proyecto->unidadNegocio->razon_social;
+                $this->unidad_ruc = $proyecto->unidadNegocio->ruc;
+                $this->unidad_direccion = $proyecto->unidadNegocio->direccion;
             }
         }
     }

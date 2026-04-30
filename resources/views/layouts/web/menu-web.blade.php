@@ -77,7 +77,7 @@
                             </li>
                         @elseif (auth()->user()->rol === 'admin')
                             <li class="menu_item">
-                                <a href="{{ route('admin.home') }}"
+                                <a href="{{ route('erp.home') }}"
                                     class="boton_personalizado boton_personalizado_amarillo_v2">BACKOFFICE</a>
                             </li>
                         @endif
