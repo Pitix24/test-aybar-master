@@ -126,30 +126,17 @@
                             <div class="g_margin_top_20 g_panel"
                                 style="background-color: rgba(0,0,0,0.02); border-style: dashed;">
                                 <div class="informacion_resumen_grid">
-                                    <div class="g_fila">
-                                        <div class="g_margin_bottom_10 g_columna_6">
-                                            <label>Razón Social</label>
-                                            <input type="text" wire:model="unidad_razon_social" readonly
-                                                class="@error('unidad_razon_social') input-error @enderror" placeholder="">
-                                            @error('unidad_razon_social') <p class="mensaje_error">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                        <div class="g_margin_bottom_10 g_columna_6">
-                                            <label>RUC</label>
-                                            <input type="text" wire:model="unidad_ruc" readonly
-                                                class="@error('unidad_ruc') input-error @enderror" placeholder="">
-                                            @error('unidad_ruc') <p class="mensaje_error">{{ $message }}</p> @enderror
-                                        </div>
+                                    <div class="informacion_resumen_item">
+                                        <span class="informacion_resumen_label">Razón Social</span>
+                                        <span class="informacion_resumen_valor">{{ $unidad_razon_social }}</span>
                                     </div>
-                                    <div class="g_fila">
-                                        <div class="g_margin_bottom_10 g_columna_12">
-                                            <label>Dirección</label>
-                                            <input type="text" wire:model="unidad_direccion" readonly
-                                                class="@error('unidad_direccion') input-error @enderror" placeholder="">
-                                            @error('unidad_direccion') <p class="mensaje_error">{{ $message }}</p>
-                                            @enderror
-                                        </div>
+                                    <div class="informacion_resumen_item">
+                                        <span class="informacion_resumen_label">RUC</span>
+                                        <span class="informacion_resumen_valor">{{ $unidad_ruc }}</span>
                                     </div>
+                                    <div class="informacion_resumen_item">
+                                        <span class="informacion_resumen_label">Dirección</span>
+                                        <span class="informacion_resumen_valor">{{ $unidad_direccion }}</span>
                                 </div>
                             </div>
                         @endif
