@@ -44,6 +44,10 @@ class LibroReclamacionLivewire extends Component
     public $detalle;
     public $pedido;
     public $conformidad = false;
+    public $es_cliente_menor = null;
+    public $representante_legal_nombre = '';
+    public $representante_legal_apellido_paterno = '';
+    public $representante_legal_apellido_materno = '';
     public $unidad_razon_social;
     public $unidad_ruc;
     public $unidad_direccion;
@@ -76,6 +80,10 @@ class LibroReclamacionLivewire extends Component
             'detalle' => 'nullable|string',
             'pedido' => 'nullable|string',
             'conformidad' => 'nullable|boolean',
+            'es_cliente_menor' => 'nullable|boolean',
+            'representante_legal_nombre' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
+            'representante_legal_apellido_paterno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
+            'representante_legal_apellido_materno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
         ];
     }
 
@@ -97,6 +105,9 @@ class LibroReclamacionLivewire extends Component
             'detalle' => 'detalle del reclamo/queja',
             'pedido' => 'pedido del consumidor',
             'conformidad' => 'conformidad con los términos',
+            'es_cliente_menor' => 'indicador de menor de edad',
+            'representante_legal_nombre' => 'nombre del representante legal',
+            'representante_legal_apellido_paterno' => 'apellido paterno del representante legal',
         ];
     }
 
@@ -231,6 +242,10 @@ class LibroReclamacionLivewire extends Component
                 'cliente_email' => $this->textoNullable($this->email),
                 'cliente_celular' => $this->textoNullable($this->telefono),
                 'cliente_direccion' => $this->textoNullable($this->domicilio),
+                'es_cliente_menor' => (bool) $this->es_cliente_menor,
+                'representante_legal_nombre' => $this->textoNullable($this->representante_legal_nombre),
+                'representante_legal_apellido_paterno' => $this->textoNullable($this->representante_legal_apellido_paterno),
+                'representante_legal_apellido_materno' => $this->textoNullable($this->representante_legal_apellido_materno),
                 'tipo_bien_contratado' => $this->resolverTipoBienContratado(),
                 'monto_reclamado' => $this->decimalNullable($this->monto_reclamado),
                 'descripcion' => $this->textoNullable($this->descripcion),
@@ -274,7 +289,6 @@ class LibroReclamacionLivewire extends Component
             }
 
             session()->flash('success', $this->mensaje_resultado);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('[RECLAMACION] Error al registrar: ' . $e->getMessage(), [

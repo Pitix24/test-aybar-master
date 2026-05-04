@@ -4,23 +4,23 @@
 
         <div class="cabecera_titulo_botones">
             @can('ticket-libro-reclamacion.lista')
-                <a href="{{ route('erp.libro-reclamacion.vista.todo') }}" class="g_boton light">
-                    Lista <i class="fa-solid fa-list"></i>
-                </a>
+            <a href="{{ route('erp.libro-reclamacion.vista.todo') }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i>
+            </a>
             @endcan
 
             @can('ticket-libro-reclamacion.editar')
-                <a href="{{ route('erp.libro-reclamacion.vista.editar', $ticket->ticket) }}" class="g_boton primary">
-                    Editar <i class="fa-solid fa-pencil"></i>
-                </a>
+            <a href="{{ route('erp.libro-reclamacion.vista.editar', $ticket->ticket) }}" class="g_boton primary">
+                Editar <i class="fa-solid fa-pencil"></i>
+            </a>
             @endcan
 
             @can('ticket.ver')
-                @if ($ticket->ticketRelacionado)
-                    <a href="{{ route('erp.ticket.vista.ver', $ticket->ticketRelacionado->id) }}" class="g_boton warning">
-                        Ver Ticket <i class="fa-solid fa-ticket"></i>
-                    </a>
-                @endif
+            @if ($ticket->ticketRelacionado)
+            <a href="{{ route('erp.ticket.vista.ver', $ticket->ticketRelacionado->id) }}" class="g_boton warning">
+                Ver Ticket <i class="fa-solid fa-ticket"></i>
+            </a>
+            @endif
             @endcan
         </div>
     </div>
@@ -69,7 +69,9 @@
 
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Clasificacion</label>
-                    <input type="text" value="{{ $ticket->clasificacion === 'PENDIENTE_REVISION' ? 'PENDIENTE VERIFICACION' : str_replace('_', ' ', $ticket->clasificacion) }}" disabled>
+                    <input type="text"
+                        value="{{ $ticket->clasificacion === 'PENDIENTE_REVISION' ? 'PENDIENTE VERIFICACION' : str_replace('_', ' ', $ticket->clasificacion) }}"
+                        disabled>
                 </div>
             </div>
 
@@ -93,21 +95,26 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_12">
                     <label>Origen</label>
-                    <input type="text" value="{{ $ticket->created_by ? 'ERP - Registro Interno' : 'Formulario web' }}" disabled>
+                    <input type="text" value="{{ $ticket->created_by ? 'ERP - Registro Interno' : 'Formulario web' }}"
+                        disabled>
                 </div>
             </div>
 
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_12">
                     <label>Subtipo</label>
-                    <input type="text" value="{{ $ticket->tipo_pedido ? ucwords(strtolower(str_replace('_', ' ', $ticket->tipo_pedido))) : 'N/D' }}" disabled>
+                    <input type="text"
+                        value="{{ $ticket->tipo_pedido ? ucwords(strtolower(str_replace('_', ' ', $ticket->tipo_pedido))) : 'N/D' }}"
+                        disabled>
                 </div>
             </div>
 
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_12">
                     <label>Ticket vinculado</label>
-                    <input type="text" value="{{ $ticket->ticketRelacionado ? ('#' . $ticket->ticketRelacionado->id) : 'Sin vincular' }}" disabled>
+                    <input type="text"
+                        value="{{ $ticket->ticketRelacionado ? ('#' . $ticket->ticketRelacionado->id) : 'Sin vincular' }}"
+                        disabled>
                 </div>
             </div>
         </div>
@@ -153,6 +160,31 @@
                     <input type="text" value="{{ $ticket->cliente_direccion ?: 'N/D' }}" disabled>
                 </div>
             </div>
+
+            <!-- Bloque de Menor de Edad y Representante Legal (Solo lectura) -->
+            @if ($ticket->es_cliente_menor)
+            <div class="g_margin_top_20 g_alerta info">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                <strong>Cliente Menor de Edad - Representante Legal Registrado</strong>
+            </div>
+
+            <div class="g_fila">
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label>Nombre del representante legal</label>
+                    <input type="text" value="{{ $ticket->representante_legal_nombre ?: 'N/D' }}" disabled>
+                </div>
+
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label>Apellido paterno del representante legal</label>
+                    <input type="text" value="{{ $ticket->representante_legal_apellido_paterno ?: 'N/D' }}" disabled>
+                </div>
+
+                <div class="g_columna_6 g_margin_bottom_10">
+                    <label>Apellido materno del representante legal</label>
+                    <input type="text" value="{{ $ticket->representante_legal_apellido_materno ?: 'N/D' }}" disabled>
+                </div>
+            </div>
+            @endif
         </div>
 
         <div x-show="activeTab === 'asunto'" x-transition class="g_tab_content">
@@ -161,9 +193,12 @@
                     <label>Tipo de bien contratado</label>
                     <select disabled>
                         <option value="">Seleccionar...</option>
-                        <option value="PRODUCTO" @selected(strtoupper((string) $ticket->tipo_bien_contratado) === 'PRODUCTO')>PRODUCTO</option>
-                        <option value="SERVICIO" @selected(strtoupper((string) $ticket->tipo_bien_contratado) === 'SERVICIO')>SERVICIO</option>
-                        <option value="NO_DEFINIDO" @selected(strtoupper((string) $ticket->tipo_bien_contratado) === 'NO_DEFINIDO')>NO DEFINIDO</option>
+                        <option value="PRODUCTO" @selected(strtoupper((string) $ticket->tipo_bien_contratado) ===
+                            'PRODUCTO')>PRODUCTO</option>
+                        <option value="SERVICIO" @selected(strtoupper((string) $ticket->tipo_bien_contratado) ===
+                            'SERVICIO')>SERVICIO</option>
+                        <option value="NO_DEFINIDO" @selected(strtoupper((string) $ticket->tipo_bien_contratado) ===
+                            'NO_DEFINIDO')>NO DEFINIDO</option>
                     </select>
                 </div>
 
@@ -221,17 +256,20 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Creado</label>
-                    <input type="text" value="{{ optional($ticket->created_at)->format('d/m/Y H:i') ?: 'N/D' }}" disabled>
+                    <input type="text" value="{{ optional($ticket->created_at)->format('d/m/Y H:i') ?: 'N/D' }}"
+                        disabled>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Actualizado</label>
-                    <input type="text" value="{{ optional($ticket->updated_at)->format('d/m/Y H:i') ?: 'N/D' }}" disabled>
+                    <input type="text" value="{{ optional($ticket->updated_at)->format('d/m/Y H:i') ?: 'N/D' }}"
+                        disabled>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Asignado</label>
-                    <input type="text" value="{{ optional($ticket->assigned_at)->format('d/m/Y H:i') ?: 'N/D' }}" disabled>
+                    <input type="text" value="{{ optional($ticket->assigned_at)->format('d/m/Y H:i') ?: 'N/D' }}"
+                        disabled>
                 </div>
             </div>
         </div>
