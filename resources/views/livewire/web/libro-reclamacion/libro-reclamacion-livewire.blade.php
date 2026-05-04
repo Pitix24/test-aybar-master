@@ -246,7 +246,7 @@
 
                     <div class="g_fila g_margin_top_20">
                         <div class="g_margin_bottom_10 g_columna_6">
-                            <label>Nombre del representante legal <span style="color: #d32f2f;">*</span></label>
+                            <label>Nombre del representante legal</span></label>
                             <input type="text" wire:model.blur="representante_legal_nombre"
                                 class="@error('representante_legal_nombre') input-error @enderror"
                                 placeholder="Ej: Juan">
@@ -254,7 +254,7 @@
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_6">
-                            <label>Apellido Paterno del representante legal <span style="color: #d32f2f;">*</span></label>
+                            <label>Apellido Paterno del representante legal</span></label>
                             <input type="text" wire:model.blur="representante_legal_apellido_paterno"
                                 class="@error('representante_legal_apellido_paterno') input-error @enderror"
                                 placeholder="Ej: Pérez García">
@@ -262,7 +262,7 @@
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_6">
-                            <label>Apellido Materno del representante legal <span style="color: #d32f2f;">*</span></label>
+                            <label>Apellido Materno del representante legal</label>
                             <input type="text" wire:model.blur="representante_legal_apellido_materno"
                                 class="@error('representante_legal_apellido_materno') input-error @enderror"
                                 placeholder="Ej: López Martínez">
