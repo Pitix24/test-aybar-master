@@ -198,22 +198,11 @@ class LibroReclamacionLivewire extends Component
                 $unidadNegocio = $proyecto?->unidadNegocio;
             }
 
-            if (!$unidadNegocio) {
-                if ($this->esFormularioVacio()) {
-                    $unidadNegocio = $this->resolverUnidadNegocioTemplate();
-                }
-            }
+            // Si no se selecciona proyecto ni unidad, el reclamo queda sin unidad.
+            // En ese caso el codigo_ticket debe salir con el placeholder TCK.
 
-            if (!$unidadNegocio) {
-                $unidadNegocio = $this->resolverUnidadNegocioPorDefecto();
-            }
-
-            if (!$unidadNegocio) {
-                throw new \RuntimeException('No se encontro unidad de negocio para generar el ticket. Configure LIBRO_RECLAMACION_UNIDAD_DEFAULT_ID o seleccione un proyecto valido.');
-            }
-
-            $this->unidad_negocio_id = $unidadNegocio->id;
-            $this->unidad_razon_social = $unidadNegocio->razon_social ?? $unidadNegocio->nombre;
+            $this->unidad_negocio_id = $unidadNegocio?->id;
+            $this->unidad_razon_social = $unidadNegocio?->razon_social ?? $unidadNegocio?->nombre ?? '';
 
             $clasificacion = $this->resolverClasificacionWeb();
             $this->payload_ticket_autocreacion = [];

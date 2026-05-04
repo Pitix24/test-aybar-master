@@ -19,6 +19,7 @@ class UnidadNegocioEditar extends Component
 {
     public UnidadNegocio $unidad_model;
 
+    public $codigo = '';
     public $nombre = '';
     public $razon_social = '';
     public $ruc = '';
@@ -35,6 +36,7 @@ class UnidadNegocioEditar extends Component
     protected function rules()
     {
         return [
+            'codigo' => 'nullable|string|size:3|regex:/^[A-Z]{3}$/|unique:unidad_negocios,codigo,' . $this->unidad_model->id,
             'nombre' => 'required|string|max:255|unique:unidad_negocios,nombre,' . $this->unidad_model->id,
             'razon_social' => 'required|string|max:255',
             'ruc' => 'nullable|string|max:20|unique:unidad_negocios,ruc,' . $this->unidad_model->id,
@@ -53,6 +55,7 @@ class UnidadNegocioEditar extends Component
     public function validationAttributes()
     {
         return [
+            'codigo' => 'código',
             'nombre' => 'nombre comercial',
             'razon_social' => 'razón social',
             'ruc' => 'RUC',
@@ -70,6 +73,7 @@ class UnidadNegocioEditar extends Component
     public function mount($id)
     {
         $this->unidad_model = UnidadNegocio::findOrFail($id);
+        $this->codigo = $this->unidad_model->codigo;
         $this->nombre = $this->unidad_model->nombre;
         $this->razon_social = $this->unidad_model->razon_social;
         $this->ruc = $this->unidad_model->ruc;
@@ -86,6 +90,10 @@ class UnidadNegocioEditar extends Component
 
     public function updated($propertyName)
     {
+        if ($propertyName === 'codigo') {
+            $this->codigo = strtoupper(trim((string) $this->codigo));
+        }
+
         $this->validateOnly($propertyName);
     }
 
@@ -108,6 +116,7 @@ class UnidadNegocioEditar extends Component
             DB::beginTransaction();
 
             $this->unidad_model->update([
+                'codigo' => $this->codigo ?: null,
                 'nombre' => $this->nombre,
                 'razon_social' => $this->razon_social,
                 'ruc' => $this->ruc ?: null,
@@ -121,6 +130,12 @@ class UnidadNegocioEditar extends Component
                 'cavali_girador_telefono' => $this->cavali_girador_telefono ?: null,
                 'activo' => $this->activo,
             ]);
+
+            if (blank($this->unidad_model->codigo)) {
+                $this->unidad_model->codigo = UnidadNegocio::generarCodigoSecuencial((int) $this->unidad_model->id);
+                $this->unidad_model->saveQuietly();
+                $this->codigo = $this->unidad_model->codigo;
+            }
 
             DB::commit();
 

@@ -50,6 +50,11 @@
                         </div>
 
                         <div class="g_columna_4 g_margin_bottom_10">
+                            <label>Código de ticket</label>
+                            <input type="text" value="{{ $codigo ?: 'TCK' }}" disabled>
+                        </div>
+
+                        <div class="g_columna_4 g_margin_bottom_10">
                             <label>Proyecto <span class="obligatorio"><i
                                         class="fa-solid fa-asterisk"></i></span></label>
                             <select wire:model.live="proyecto_id" class="@error('proyecto_id') input-error @enderror">

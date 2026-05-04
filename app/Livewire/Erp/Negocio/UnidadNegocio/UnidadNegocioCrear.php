@@ -16,6 +16,7 @@ use Livewire\Attributes\Title;
 #[Title('Crear Unidad de Negocio')]
 class UnidadNegocioCrear extends Component
 {
+    public $codigo = '';
     public $nombre = '';
     public $razon_social = '';
     public $ruc = '';
@@ -32,6 +33,7 @@ class UnidadNegocioCrear extends Component
     protected function rules()
     {
         return [
+            'codigo' => 'nullable|string|size:3|regex:/^[A-Z]{3}$/|unique:unidad_negocios,codigo',
             'nombre' => 'required|string|max:255|unique:unidad_negocios,nombre',
             'razon_social' => 'required|string|max:255',
             'ruc' => 'nullable|string|max:20|unique:unidad_negocios,ruc',
@@ -50,6 +52,7 @@ class UnidadNegocioCrear extends Component
     public function validationAttributes()
     {
         return [
+            'codigo' => 'código',
             'nombre' => 'nombre comercial',
             'razon_social' => 'razón social',
             'ruc' => 'RUC',
@@ -66,6 +69,10 @@ class UnidadNegocioCrear extends Component
 
     public function updated($propertyName)
     {
+        if ($propertyName === 'codigo') {
+            $this->codigo = strtoupper(trim((string) $this->codigo));
+        }
+
         $this->validateOnly($propertyName);
     }
 
@@ -87,7 +94,8 @@ class UnidadNegocioCrear extends Component
         try {
             DB::beginTransaction();
 
-            UnidadNegocio::create([
+            $unidad = UnidadNegocio::create([
+                'codigo' => $this->codigo ?: null,
                 'nombre' => $this->nombre,
                 'razon_social' => $this->razon_social,
                 'ruc' => $this->ruc ?: null,
@@ -101,6 +109,11 @@ class UnidadNegocioCrear extends Component
                 'cavali_girador_telefono' => $this->cavali_girador_telefono ?: null,
                 'activo' => $this->activo,
             ]);
+
+            if (blank($unidad->codigo)) {
+                $unidad->codigo = UnidadNegocio::generarCodigoSecuencial((int) $unidad->id);
+                $unidad->saveQuietly();
+            }
 
             DB::commit();
 

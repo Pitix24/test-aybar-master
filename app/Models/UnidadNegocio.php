@@ -16,6 +16,7 @@ class UnidadNegocio extends Model
     protected $table = 'unidad_negocios';
 
     protected $fillable = [
+        'codigo',
         'nombre',
         'razon_social',
         'ruc',
@@ -46,6 +47,11 @@ class UnidadNegocio extends Model
         }
 
         return $codigo;
+    }
+
+    public function setCodigoAttribute($value)
+    {
+        $this->attributes['codigo'] = $value !== null ? strtoupper(trim((string) $value)) : null;
     }
 
     public function proyectos()

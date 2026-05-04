@@ -106,6 +106,18 @@
                                 @enderror
                             </div>
 
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label for="codigo">
+                                    Código
+                                </label>
+                                <input type="text" id="codigo" wire:model.blur="codigo"
+                                    class="@error('codigo') input-error @enderror" autocomplete="off" maxlength="3"
+                                    style="text-transform: uppercase;">
+                                @error('codigo')
+                                <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <div class="g_margin_bottom_10 g_columna_12">
                                 <label for="direccion">
                                     Dirección

@@ -4,8 +4,9 @@ return [
     'serie' => 'TCK',
     'crear_erp_habilitado' => false,
 
-    // Prefijos de 3 letras para codigo de ticket por unidad (sin depender de columna en BD).
-    // Si una unidad no esta mapeada, se genera automaticamente por id (AAA, AAB, ...).
+    // DEPRECADO: prefijos manuales por unidad.
+    // El codigo_ticket ahora debe salir de `unidad_negocios.codigo` y, si no hay unidad,
+    // se usa el placeholder `TCK`.
     'codigos_unidad_negocio' => [
         'por_id' => [
             1 => 'AYB',
@@ -22,6 +23,8 @@ return [
         ],
     ],
 
+    // DEPRECADO: estos valores solo se mantenian para el fallback de una unidad por defecto.
+    // El flujo actual conserva `unidad_negocio_id` en null cuando el usuario no elige una unidad.
     'unidad_default_id' => 0,
     'unidad_template_id' => 0,
     'unidad_template_nombre' => 'RECLAMOS_SIN_PROYECTO',

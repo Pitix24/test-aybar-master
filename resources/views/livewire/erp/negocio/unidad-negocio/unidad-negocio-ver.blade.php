@@ -80,6 +80,12 @@
                                 <label>RUC</label>
                                 <input type="text" value="{{ $unidad_model->ruc ?? '-' }}" readonly disabled>
                             </div>
+
+                            <div class="g_margin_bottom_10 g_columna_6">
+                                <label>Código</label>
+                                <input type="text" value="{{ $unidad_model->codigo ?? '-' }}" readonly disabled>
+                            </div>
+
                             <div class="g_margin_bottom_10 g_columna_12">
                                 <label>Dirección</label>
                                 <input type="text" value="{{ $unidad_model->direccion ?? '-' }}" readonly disabled>

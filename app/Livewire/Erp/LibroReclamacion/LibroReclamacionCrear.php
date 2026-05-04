@@ -167,7 +167,7 @@ class LibroReclamacionCrear extends Component
 
         if (! $value) {
             $this->proyectos = collect();
-            $this->codigo = '';
+            $this->codigo = 'TCK';
 
             return;
         }

@@ -9,9 +9,34 @@ use RuntimeException;
 
 class LibroReclamacionNumeroService
 {
-    public function generar(int $unidadNegocioId): array
+    public function generar(?int $unidadNegocioId): array
     {
         return DB::transaction(function () use ($unidadNegocioId) {
+            $serie = $this->resolverSerie();
+
+            // Global generation when no unidad provided (unidadNegocioId <= 0)
+            if ((int) $unidadNegocioId <= 0) {
+                $ultimoNumero = LibroReclamacion::query()
+                    ->whereNull('unidad_negocio_id')
+                    ->max('numero_reclamo');
+
+                $numeroConfigurado = $this->resolverNumeroInicial(null);
+
+                if (is_null($ultimoNumero)) {
+                    $numeroReclamo = max(1, $numeroConfigurado);
+                } else {
+                    $numeroReclamo = max((int) $ultimoNumero + 1, $numeroConfigurado);
+                }
+
+                $codigoTicket = $this->formatearCodigoTicket($serie, $numeroReclamo);
+
+                return [
+                    'serie' => $serie,
+                    'numero_reclamo' => $numeroReclamo,
+                    'codigo_ticket' => $codigoTicket,
+                ];
+            }
+
             // Lock the business unit row to serialize number allocation per unit.
             $unidad = UnidadNegocio::query()
                 ->whereKey($unidadNegocioId)
@@ -33,8 +58,6 @@ class LibroReclamacionNumeroService
             } else {
                 $numeroReclamo = max((int) $ultimoNumero + 1, $numeroConfigurado);
             }
-
-            $serie = $this->resolverSerie();
 
             return [
                 'serie' => $serie,
@@ -81,50 +104,19 @@ class LibroReclamacionNumeroService
     protected function resolverCodigoUnidad(?UnidadNegocio $unidad): string
     {
         if (!$unidad) {
-            throw new RuntimeException('No se encontro la unidad de negocio para generar el ticket.');
+            return 'TCK';
         }
 
-        $codigoConfigurado = $this->resolverCodigoConfigurado($unidad);
-        if ($codigoConfigurado !== null) {
-            return $codigoConfigurado;
+        $codigoUnidad = strtoupper(trim((string) ($unidad->codigo ?? '')));
+        if (preg_match('/^[A-Z]{3}$/', $codigoUnidad)) {
+            return $codigoUnidad;
         }
 
         if ($unidad->id) {
             return UnidadNegocio::generarCodigoSecuencial((int) $unidad->id);
         }
 
-        return 'UNI';
-    }
-
-    protected function resolverCodigoConfigurado(UnidadNegocio $unidad): ?string
-    {
-        $config = (array) data_get(config('libro_reclamacion_ticket', []), 'codigos_unidad_negocio', []);
-        $porId = (array) data_get($config, 'por_id', []);
-        $porNombre = (array) data_get($config, 'por_nombre', []);
-
-        $id = (int) ($unidad->id ?? 0);
-        if ($id > 0 && array_key_exists($id, $porId)) {
-            $codigo = strtoupper(trim((string) $porId[$id]));
-            if (preg_match('/^[A-Z]{3}$/', $codigo)) {
-                return $codigo;
-            }
-        }
-
-        $nombreNormalizado = $this->normalizarTexto((string) ($unidad->nombre ?? ''));
-        $razonSocialNormalizada = $this->normalizarTexto((string) ($unidad->razon_social ?? ''));
-
-        foreach ($porNombre as $nombre => $codigo) {
-            $clave = $this->normalizarTexto((string) $nombre);
-
-            if ($clave === $nombreNormalizado || $clave === $razonSocialNormalizada) {
-                $codigo = strtoupper(trim((string) $codigo));
-                if (preg_match('/^[A-Z]{3}$/', $codigo)) {
-                    return $codigo;
-                }
-            }
-        }
-
-        return null;
+        return 'TCK';
     }
 
     protected function normalizarTexto(string $valor): string
@@ -134,5 +126,4 @@ class LibroReclamacionNumeroService
 
         return $valor ?? '';
     }
-
 }
