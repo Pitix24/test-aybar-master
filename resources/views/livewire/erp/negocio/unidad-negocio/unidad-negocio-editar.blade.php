@@ -6,15 +6,15 @@
 
         <div class="cabecera_titulo_botones">
             @can('unidad-negocio.lista')
-                <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton light">
-                    Lista <i class="fa-solid fa-list"></i>
-                </a>
+            <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i>
+            </a>
             @endcan
 
             @can('unidad-negocio.eliminar')
-                <button type="button" class="g_boton danger" onclick="confirmarEliminarUnidadNegocio()">
-                    Eliminar <i class="fa-solid fa-trash"></i>
-                </button>
+            <button type="button" class="g_boton danger" onclick="confirmarEliminarUnidadNegocio()">
+                Eliminar <i class="fa-solid fa-trash"></i>
+            </button>
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -65,7 +65,7 @@
                                 </span>
 
                                 @error('activo')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -78,7 +78,7 @@
                                 <input type="text" id="nombre" wire:model.blur="nombre"
                                     class="@error('nombre') input-error @enderror" autocomplete="off">
                                 @error('nombre')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -89,7 +89,7 @@
                                 <input type="text" id="razon_social" wire:model.blur="razon_social"
                                     class="@error('razon_social') input-error @enderror" autocomplete="off">
                                 @error('razon_social')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -102,7 +102,18 @@
                                 <input type="text" id="ruc" wire:model.blur="ruc"
                                     class="@error('ruc') input-error @enderror" autocomplete="off" maxlength="11">
                                 @error('ruc')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_12">
+                                <label for="direccion">
+                                    Dirección
+                                </label>
+                                <input type="text" id="direccion" wire:model.blur="direccion"
+                                    class="@error('direccion') input-error @enderror" autocomplete="off">
+                                @error('direccion')
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -124,7 +135,7 @@
                                     <option value="RUC">RUC</option>
                                 </select>
                                 @error('cavali_girador_tipo_documento')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -136,7 +147,7 @@
                                     wire:model.blur="cavali_girador_documento"
                                     class="@error('cavali_girador_documento') input-error @enderror" autocomplete="off">
                                 @error('cavali_girador_documento')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -149,7 +160,7 @@
                                 <input type="text" id="cavali_girador_nombre" wire:model.blur="cavali_girador_nombre"
                                     class="@error('cavali_girador_nombre') input-error @enderror" autocomplete="off">
                                 @error('cavali_girador_nombre')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -161,7 +172,7 @@
                                     wire:model.blur="cavali_girador_apellido"
                                     class="@error('cavali_girador_apellido') input-error @enderror" autocomplete="off">
                                 @error('cavali_girador_apellido')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -174,7 +185,7 @@
                                 <input type="email" id="cavali_girador_email" wire:model.blur="cavali_girador_email"
                                     class="@error('cavali_girador_email') input-error @enderror" autocomplete="off">
                                 @error('cavali_girador_email')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -186,7 +197,7 @@
                                     wire:model.blur="cavali_girador_telefono"
                                     class="@error('cavali_girador_telefono') input-error @enderror" autocomplete="off">
                                 @error('cavali_girador_telefono')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -202,7 +213,7 @@
                                 <input type="text" id="slin_id" wire:model.blur="slin_id"
                                     class="@error('slin_id') input-error @enderror" autocomplete="off">
                                 @error('slin_id')
-                                    <p class="mensaje_error">{{ $message }}</p>
+                                <p class="mensaje_error">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -210,14 +221,14 @@
 
                     <div class="formulario_botones g_tab_form_buttons">
                         @can('unidad-negocio.editar')
-                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
-                                <span wire:loading.remove wire:target="update">
-                                    <i class="fa-solid fa-save"></i> Actualizar
-                                </span>
-                                <span wire:loading wire:target="update">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                                </span>
-                            </button>
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                            <span wire:loading.remove wire:target="update">
+                                <i class="fa-solid fa-save"></i> Actualizar
+                            </span>
+                            <span wire:loading wire:target="update">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                            </span>
+                        </button>
                         @endcan
 
                         <button type="button" class="g_boton cancelar" onclick="history.back()">

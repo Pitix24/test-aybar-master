@@ -23,6 +23,7 @@ class UnidadNegocioEditar extends Component
     public $razon_social = '';
     public $ruc = '';
     public $slin_id = '';
+    public $direccion = '';
     public $cavali_girador_tipo_documento = '';
     public $cavali_girador_documento = '';
     public $cavali_girador_nombre = '';
@@ -38,6 +39,7 @@ class UnidadNegocioEditar extends Component
             'razon_social' => 'required|string|max:255',
             'ruc' => 'nullable|string|max:20|unique:unidad_negocios,ruc,' . $this->unidad_model->id,
             'slin_id' => 'nullable|string|max:50|unique:unidad_negocios,slin_id,' . $this->unidad_model->id,
+            'direccion' => 'nullable|string|max:255',
             'cavali_girador_tipo_documento' => 'nullable|string|max:50',
             'cavali_girador_documento' => 'nullable|string|max:20',
             'cavali_girador_nombre' => 'nullable|string|max:255',
@@ -55,6 +57,7 @@ class UnidadNegocioEditar extends Component
             'razon_social' => 'razón social',
             'ruc' => 'RUC',
             'slin_id' => 'SLIN ID',
+            'direccion' => 'dirección',
             'cavali_girador_tipo_documento' => 'tipo doc. girador',
             'cavali_girador_documento' => 'nº doc. girador',
             'cavali_girador_nombre' => 'nombre girador',
@@ -71,6 +74,7 @@ class UnidadNegocioEditar extends Component
         $this->razon_social = $this->unidad_model->razon_social;
         $this->ruc = $this->unidad_model->ruc;
         $this->slin_id = $this->unidad_model->slin_id;
+        $this->direccion = $this->unidad_model->direccion;
         $this->cavali_girador_tipo_documento = $this->unidad_model->cavali_girador_tipo_documento;
         $this->cavali_girador_documento = $this->unidad_model->cavali_girador_documento;
         $this->cavali_girador_nombre = $this->unidad_model->cavali_girador_nombre;
@@ -108,6 +112,7 @@ class UnidadNegocioEditar extends Component
                 'razon_social' => $this->razon_social,
                 'ruc' => $this->ruc ?: null,
                 'slin_id' => $this->slin_id ?: null,
+                'direccion' => $this->direccion ?: null,
                 'cavali_girador_tipo_documento' => $this->cavali_girador_tipo_documento ?: null,
                 'cavali_girador_documento' => $this->cavali_girador_documento ?: null,
                 'cavali_girador_nombre' => $this->cavali_girador_nombre ?: null,
@@ -124,7 +129,6 @@ class UnidadNegocioEditar extends Component
                 'title' => 'Actualizado',
                 'text' => 'La unidad de negocio se actualizó correctamente.'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('negocio')->error("[UNIDAD NEGOCIO] Error al actualizar: " . $e->getMessage(), [
@@ -163,7 +167,6 @@ class UnidadNegocioEditar extends Component
             ]);
 
             return redirect()->route('erp.unidad-negocio.vista.todo');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('negocio')->error("[UNIDAD NEGOCIO] Error al eliminar: " . $e->getMessage(), [
