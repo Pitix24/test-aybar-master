@@ -19,7 +19,7 @@
 
     <div class="g_fila">
         <div class="g_columna_8">
-            <form wire:submit.prevent="store" class="formulario g_panel" x-data="{ activeTab: 'general' }">
+            <form wire:submit.prevent="store" class="formulario g_panel">
                 <div class="g_tab_navegacion">
                     <div class="g_tab_botones">
                         <button type="button" @click="activeTab = 'general'"
@@ -212,7 +212,8 @@
                                         class="fa-solid fa-asterisk"></i></span></label>
                             <input type="text" wire:model.blur="representante_legal_apellido_paterno"
                                 class="@error('representante_legal_apellido_paterno') input-error @enderror">
-                            @error('representante_legal_apellido_paterno') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            @error('representante_legal_apellido_paterno') <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="g_columna_6 g_margin_bottom_10">
@@ -220,25 +221,14 @@
                                         class="fa-solid fa-asterisk"></i></span></label>
                             <input type="text" wire:model.blur="representante_legal_apellido_materno"
                                 class="@error('representante_legal_apellido_materno') input-error @enderror">
-                            @error('representante_legal_apellido_materno') <p class="mensaje_error">{{ $message }}</p> @enderror
+                            @error('representante_legal_apellido_materno') <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
                     @endif
                 </div>
 
-                <div class="formulario_botones">
-                    @can('ticket-libro-reclamacion.crear')
-                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                        <span wire:loading.remove wire:target="store"><i class="fa-solid fa-save"></i> Crear</span>
-                        <span wire:loading wire:target="store"><i class="fa-solid fa-spinner fa-spin"></i>
-                            Creando...</span>
-                    </button>
-                    @endcan
-
-                    <button type="button" class="g_boton cancelar" onclick="history.back()">
-                        <i class="fa-solid fa-times"></i> Cancelar
-                    </button>
-                </div>
+                @include('livewire.erp.libro-reclamacion.libro-reclamacion-form')
             </form>
         </div>
 
