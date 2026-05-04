@@ -36,12 +36,7 @@
                             </div>
                             <div class="informacion_resumen_item" style="grid-column: span 2;">
                                 <span class="informacion_resumen_label">Nombre completo</span>
-                                <span class="informacion_resumen_valor">{{ trim(($reclamo_registrado->cliente_nombre ?? '') . '
-                                    ' . ($reclamo_registrado->apellido_paterno ?? '') . ' ' .
-                    ($reclamo_registrado->apellido_materno ?? '')) !== '' ?
-                    trim(($reclamo_registrado->cliente_nombre ?? '') . ' ' .
-                        ($reclamo_registrado->apellido_paterno ?? '') . ' ' . ($reclamo_registrado->apellido_materno
-                        ?? '')) : 'N/D' }}</span>
+                                <span class="informacion_resumen_valor">{{ $reclamo_registrado->cliente_nombre ?: 'N/D' }}</span>
                             </div>
                             <div class="informacion_resumen_item">
                                 <span class="informacion_resumen_label">Manzana</span>
@@ -137,6 +132,7 @@
                                     <div class="informacion_resumen_item">
                                         <span class="informacion_resumen_label">Dirección</span>
                                         <span class="informacion_resumen_valor">{{ $unidad_direccion }}</span>
+                                    </div>
                                 </div>
                             </div>
                         @endif
