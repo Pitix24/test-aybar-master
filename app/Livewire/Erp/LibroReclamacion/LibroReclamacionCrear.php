@@ -40,6 +40,10 @@ class LibroReclamacionCrear extends Component
     public $clasificacion = 'PENDIENTE_REVISION';
     public $tipo_pedido = '';
     public $observaciones_internas = '';
+    public $es_cliente_menor = null;
+    public $representante_legal_nombre = '';
+    public $representante_legal_apellido_paterno = '';
+    public $representante_legal_apellido_materno = '';
 
     public $unidades = [];
     public $proyectos = [];
@@ -99,6 +103,10 @@ class LibroReclamacionCrear extends Component
             'gestor_id' => 'nullable|exists:users,id',
             'tipo_pedido' => 'required|in:RECLAMO,QUEJA',
             'observaciones_internas' => 'nullable|string',
+            'es_cliente_menor' => 'nullable|boolean',
+            'representante_legal_nombre' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
+            'representante_legal_apellido_paterno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
+            'representante_legal_apellido_materno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
         ];
     }
 
@@ -116,6 +124,10 @@ class LibroReclamacionCrear extends Component
             'gestor_id' => 'Gestor',
             'tipo_pedido' => 'Subtipo',
             'observaciones_internas' => 'Observaciones internas',
+            'es_cliente_menor' => 'Indicador de menor de edad',
+            'representante_legal_nombre' => 'Nombre del representante legal',
+            'representante_legal_apellido_paterno' => 'Apellido paterno del representante legal',
+            'representante_legal_apellido_materno' => 'Apellido materno del representante legal',
         ];
     }
 
@@ -141,6 +153,9 @@ class LibroReclamacionCrear extends Component
             'gestor_id',
             'tipo_pedido',
             'observaciones_internas',
+            'es_cliente_menor',
+            'representante_legal_nombre',
+            'representante_legal_apellido',
         ], true)) {
             $this->validateOnly($propertyName);
         }
@@ -309,7 +324,7 @@ class LibroReclamacionCrear extends Component
     public function quitarLote(string $id): void
     {
         $this->lotes_agregados = collect($this->lotes_agregados)
-            ->reject(fn ($l) => (string) ($l['id'] ?? '') === $id)
+            ->reject(fn($l) => (string) ($l['id'] ?? '') === $id)
             ->values()
             ->toArray();
     }
@@ -355,6 +370,9 @@ class LibroReclamacionCrear extends Component
                 'cliente_email' => $this->cliente_email ?: null,
                 'cliente_celular' => $this->cliente_celular ?: null,
                 'cliente_direccion' => $this->cliente_direccion ?: null,
+                'es_cliente_menor' => (bool) $this->es_cliente_menor,
+                'representante_legal_nombre' => trim($this->representante_legal_nombre) ?: null,
+                'representante_legal_apellido' => trim($this->representante_legal_apellido) ?: null,
                 'asunto' => $this->asunto,
                 'lotes' => $this->lotes_agregados,
                 'gestor_id' => $this->gestor_id ?: null,
@@ -373,7 +391,6 @@ class LibroReclamacionCrear extends Component
             ]);
 
             return redirect()->route('erp.libro-reclamacion.vista.todo');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('[TICKET-LIBRO] Error al crear: ' . $e->getMessage(), [

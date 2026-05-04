@@ -41,6 +41,10 @@ class LibroReclamacionEditar extends Component
     public $clasificacion = 'PENDIENTE_REVISION';
     public $tipo_pedido = '';
     public $observaciones_internas = '';
+    public $es_cliente_menor = null;
+    public $representante_legal_nombre = '';
+    public $representante_legal_apellido_paterno = '';
+    public $representante_legal_apellido_materno = '';
 
     public $unidades = [];
     public $proyectos = [];
@@ -82,6 +86,10 @@ class LibroReclamacionEditar extends Component
         $this->cliente_email = $this->ticket_model->cliente_email;
         $this->cliente_celular = $this->ticket_model->cliente_celular;
         $this->cliente_direccion = $this->ticket_model->cliente_direccion;
+        $this->es_cliente_menor = $this->ticket_model->es_cliente_menor ?? false;
+        $this->representante_legal_nombre = $this->ticket_model->representante_legal_nombre ?? '';
+        $this->representante_legal_apellido_paterno = $this->ticket_model->representante_legal_apellido_paterno ?? '';
+        $this->representante_legal_apellido_materno = $this->ticket_model->representante_legal_apellido_materno ?? '';
         $this->asunto = $this->ticket_model->asunto;
         $this->lotes_agregados = $this->ticket_model->lotes ?? [];
         $this->dni = $this->ticket_model->cliente_documento ?? '';
@@ -108,6 +116,10 @@ class LibroReclamacionEditar extends Component
             'gestor_id' => 'nullable|exists:users,id',
             'tipo_pedido' => 'required|in:RECLAMO,QUEJA',
             'observaciones_internas' => 'nullable|string',
+            'es_cliente_menor' => 'nullable|boolean',
+            'representante_legal_nombre' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
+            'representante_legal_apellido_paterno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
+            'representante_legal_apellido_materno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
         ];
     }
 
@@ -125,6 +137,9 @@ class LibroReclamacionEditar extends Component
             'gestor_id' => 'Gestor',
             'tipo_pedido' => 'Subtipo',
             'observaciones_internas' => 'Observaciones internas',
+            'es_cliente_menor' => 'Indicador de menor de edad',
+            'representante_legal_nombre' => 'Nombre del representante legal',
+            'representante_legal_apellido_paterno' => 'Apellido paterno del representante legal',
         ];
     }
 
@@ -150,6 +165,9 @@ class LibroReclamacionEditar extends Component
             'gestor_id',
             'tipo_pedido',
             'observaciones_internas',
+            'es_cliente_menor',
+            'representante_legal_nombre',
+            'representante_legal_apellido',
         ], true)) {
             $this->validateOnly($propertyName);
         }
@@ -291,7 +309,7 @@ class LibroReclamacionEditar extends Component
     public function quitarLote(string $id): void
     {
         $this->lotes_agregados = collect($this->lotes_agregados)
-            ->reject(fn ($l) => (string) ($l['id'] ?? '') === $id)
+            ->reject(fn($l) => (string) ($l['id'] ?? '') === $id)
             ->values()
             ->toArray();
     }
@@ -334,6 +352,10 @@ class LibroReclamacionEditar extends Component
                 'cliente_email' => $this->cliente_email ?: null,
                 'cliente_celular' => $this->cliente_celular ?: null,
                 'cliente_direccion' => $this->cliente_direccion ?: null,
+                'es_cliente_menor' => (bool) $this->es_cliente_menor,
+                'representante_legal_nombre' => trim($this->representante_legal_nombre) ?: null,
+                'representante_legal_apellido_paterno' => trim($this->representante_legal_apellido_paterno) ?: null,
+                'representante_legal_apellido_materno' => trim($this->representante_legal_apellido_materno) ?: null,
                 'asunto' => $this->asunto,
                 'lotes' => $this->lotes_agregados,
                 'gestor_id' => $asignadoNuevo,
