@@ -58,7 +58,7 @@ class LibroReclamacionCrear extends Component
 
     public function mount(): void
     {
-        if (! config('libro_reclamacion_ticket.crear_erp_habilitado')) {
+        if (!config('libro_reclamacion_ticket.crear_erp_habilitado')) {
             abort(404);
         }
 
@@ -82,9 +82,11 @@ class LibroReclamacionCrear extends Component
 
         $this->gestores = $gestoresLegales->isNotEmpty() ? $gestoresLegales : $this->usuarios;
 
-        if ($this->gestor_id !== '' && ! collect($this->gestores)->contains(function ($gestor) {
-            return (int) data_get($gestor, 'id') === (int) $this->gestor_id;
-        })) {
+        if (
+            $this->gestor_id !== '' && !collect($this->gestores)->contains(function ($gestor) {
+                return (int) data_get($gestor, 'id') === (int) $this->gestor_id;
+            })
+        ) {
             $this->gestor_id = '';
         }
     }
@@ -141,22 +143,24 @@ class LibroReclamacionCrear extends Component
             $this->updatedDni($this->dni);
         }
 
-        if (in_array($propertyName, [
-            'unidad_negocio_id',
-            'proyecto_id',
-            'cliente_documento',
-            'cliente_nombre',
-            'cliente_email',
-            'cliente_celular',
-            'cliente_direccion',
-            'asunto',
-            'gestor_id',
-            'tipo_pedido',
-            'observaciones_internas',
-            'es_cliente_menor',
-            'representante_legal_nombre',
-            'representante_legal_apellido',
-        ], true)) {
+        if (
+            in_array($propertyName, [
+                'unidad_negocio_id',
+                'proyecto_id',
+                'cliente_documento',
+                'cliente_nombre',
+                'cliente_email',
+                'cliente_celular',
+                'cliente_direccion',
+                'asunto',
+                'gestor_id',
+                'tipo_pedido',
+                'observaciones_internas',
+                'es_cliente_menor',
+                'representante_legal_nombre',
+                'representante_legal_apellido',
+            ], true)
+        ) {
             $this->validateOnly($propertyName);
         }
     }
@@ -165,7 +169,7 @@ class LibroReclamacionCrear extends Component
     {
         $this->proyecto_id = '';
 
-        if (! $value) {
+        if (!$value) {
             $this->proyectos = collect();
             $this->codigo = 'TCK';
 
@@ -295,13 +299,13 @@ class LibroReclamacionCrear extends Component
 
     public function agregarLote(): void
     {
-        if (! $this->lote_id) {
+        if (!$this->lote_id) {
             return;
         }
 
         $lote = $this->informaciones->firstWhere('id', $this->lote_id);
 
-        if (! $lote) {
+        if (!$lote) {
             return;
         }
 
@@ -331,7 +335,7 @@ class LibroReclamacionCrear extends Component
 
     public function store()
     {
-        if (! config('libro_reclamacion_ticket.crear_erp_habilitado')) {
+        if (!config('libro_reclamacion_ticket.crear_erp_habilitado')) {
             abort(404);
         }
 
@@ -360,7 +364,7 @@ class LibroReclamacionCrear extends Component
             $this->clasificacion = $this->resolverClasificacion();
 
             LibroReclamacion::create([
-                'codigo' => trim($this->codigo),
+                'codigo_ticket' => trim($this->codigo),
                 'unidad_negocio_id' => $this->unidad_negocio_id,
                 'proyecto_id' => $this->proyecto_id,
                 'cliente_id' => $this->cliente_id ?: null,

@@ -44,7 +44,6 @@ class LibroReclamacion extends Model
         'archivo_4',
         'leido',
         'estado',
-        'codigo',
         'clasificacion',
         'cliente_tipo_documento',
         'cliente_documento',
@@ -64,6 +63,7 @@ class LibroReclamacion extends Model
         'updated_by',
         'deleted_by',
     ];
+
 
     protected $casts = [
         'ticket_id' => 'integer',
@@ -142,7 +142,7 @@ class LibroReclamacion extends Model
     protected static function booted()
     {
         static::saving(function ($reclamacion) {
-            $codigo = trim((string) ($reclamacion->codigo_ticket ?: $reclamacion->codigo ?: ''));
+            $codigo = trim((string) ($reclamacion->codigo_ticket ?? ''));
 
             if ($codigo === '' && $reclamacion->unidad_negocio_id) {
                 $ticket = self::generarTicket($reclamacion->unidad_negocio_id);
@@ -151,7 +151,6 @@ class LibroReclamacion extends Model
 
             if ($codigo !== '') {
                 $reclamacion->codigo_ticket = $codigo;
-                $reclamacion->codigo = $codigo;
             }
         });
 

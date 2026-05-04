@@ -24,7 +24,7 @@
                 <div class="g_columna_6 g_margin_bottom_10">
                     <label>Código de ticket</label>
                     @if($viewMode)
-                    <input type="text" value="{{ $ticket->codigo ?: 'TCK' }}" disabled>
+                    <input type="text" value="{{ $ticket->codigo_ticket ?: 'TCK' }}" disabled>
                     @else
                     <input type="text" value="{{ $codigo ?: 'TCK' }}" disabled>
                     @endif
