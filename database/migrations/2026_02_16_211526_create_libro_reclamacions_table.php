@@ -48,6 +48,10 @@ return new class extends Migration {
             $table->string('cliente_email', 255)->nullable();
             $table->string('cliente_celular', 30)->nullable();
             $table->text('cliente_direccion')->nullable();
+            $table->boolean('es_cliente_menor')->default(false);
+            $table->string('representante_legal_nombre', 255)->nullable();
+            $table->string('representante_legal_apellido_paterno', 255)->nullable();
+            $table->string('representante_legal_apellido_materno', 255)->nullable();
             $table->text('asunto')->nullable();
             $table->json('lotes')->nullable();
             $table->dateTime('assigned_at')->nullable();
