@@ -53,7 +53,7 @@ Schema::table('tickets', function (Blueprint $table) {
 
 5. Ticket (formulario)
     - En el formulario de creación/edición de tickets, mostrar el `codigo_ticket` calculado a partir de la unidad seleccionada.
-    - Si no hay unidad seleccionada, mostrar `TCK` como placeholder.
+    - Si no hay unidad seleccionada, mostrar `NUL` como placeholder.
     - El componente Ticket (crear/editar) debe mantener la propiedad `$codigo` sincronizada con la unidad elegida.
 
 6. Rutas / Permisos
@@ -65,7 +65,7 @@ Schema::table('tickets', function (Blueprint $table) {
     - Ejecutar migraciones: `php artisan migrate`
     - Validar sintaxis: `php -l` en archivos modificados
     - Limpiar cachés: `php artisan view:clear && php artisan cache:clear && php artisan config:clear && php artisan optimize:clear`
-    - Probar flujo UI: Crear/Editar UnidadNegocio con `codigo`, Crear ticket y seleccionar UnidadNegocio; verificar que el `codigo_ticket` cambie en vivo y que sin unidad muestre `TCK`.
+    - Probar flujo UI: Crear/Editar UnidadNegocio con `codigo`, Crear ticket y seleccionar UnidadNegocio; verificar que el `codigo_ticket` cambie en vivo y que sin unidad muestre `NUL`.
 
 ## Archivos a modificar (lista preliminar)
 

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'serie' => 'TCK',
+    'serie' => 'NUL',
     'crear_erp_habilitado' => false,
 
     // Contrato Fase 1: mapeo tecnico para autogeneracion de Ticket desde formulario web.
@@ -36,6 +36,6 @@ return [
 
     'aybar' => [
         'razon_social' => 'AYBAR CORP. S.A.C.',
-        'numero_inicial' => env('LIBRO_RECLAMACION_AYBAR_NUMERO_INICIAL', 1269),
+        'numero_inicial' => env('LIBRO_RECLAMACION_AYBAR_NUMERO_INICIAL', 1301),
     ],
 ];

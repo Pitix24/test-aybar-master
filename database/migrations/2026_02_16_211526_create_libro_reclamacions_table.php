@@ -23,7 +23,7 @@ return new class extends Migration {
 
             $table->foreignId('ticket_id')->nullable()->constrained('tickets')->nullOnDelete();
 
-            $table->string('serie')->default('TCK');
+            $table->string('serie')->default('NUL');
             $table->unsignedBigInteger('numero_reclamo')->nullable();
 
             $table->string('codigo_ticket', 20)->nullable();

@@ -233,10 +233,6 @@
                         @if ($es_cliente_menor)
                             <div class="g_margin_top_20 g_resaltado_caja warning">
                                 <span class="g_resaltado_caja_titulo">Datos del Padre, Madre o Representante Legal</span>
-                                <div class="g_margin_top_10" style="font-size: 0.9em; opacity: 0.95;">
-                                    <p><i class="fa-solid fa-exclamation-triangle"></i> Como el reclamante es menor de edad, es
-                                        necesario registrar los datos del padre, madre o representante legal.</p>
-                                </div>
                             </div>
 
                             <div class="g_fila g_margin_top_20">

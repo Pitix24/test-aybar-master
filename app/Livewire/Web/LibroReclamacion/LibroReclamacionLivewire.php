@@ -199,7 +199,7 @@ class LibroReclamacionLivewire extends Component
             }
 
             // Si no se selecciona proyecto ni unidad, el reclamo queda sin unidad.
-            // En ese caso el codigo_ticket debe salir con el placeholder TCK.
+            // En ese caso el codigo_ticket debe salir con el placeholder NUL.
 
             $this->unidad_negocio_id = $unidadNegocio?->id;
             $this->unidad_razon_social = $unidadNegocio?->razon_social ?? $unidadNegocio?->nombre ?? '';

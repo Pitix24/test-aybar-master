@@ -31,29 +31,29 @@ class LibroReclamacionNumeroServiceTest extends TestCase
     }
 
     /** @test */
-    public function genera_codigo_tck_cuando_no_hay_unidad_de_negocio()
+    public function genera_codigo_NUL_cuando_no_hay_unidad_de_negocio()
     {
-        Config::set('libro_reclamacion_ticket.serie', 'TCK');
+        Config::set('libro_reclamacion_ticket.serie', 'NUL');
 
         $resultado = app(LibroReclamacionNumeroService::class)->generar(null);
 
-        $this->assertSame('TCK', $resultado['serie']);
+        $this->assertSame('NUL', $resultado['serie']);
         $this->assertSame(1, $resultado['numero_reclamo']);
-        $this->assertSame('TCK-000001', $resultado['codigo_ticket']);
+        $this->assertSame('NUL-000001', $resultado['codigo_ticket']);
     }
 
     /** @test */
     public function guarda_codigo_ticket_en_el_modelo()
     {
         $reclamo = LibroReclamacion::query()->create([
-            'codigo_ticket' => 'TCK-000777',
+            'codigo_ticket' => 'NUL-000777',
             'numero_reclamo' => 777,
         ]);
 
-        $this->assertSame('TCK-000777', $reclamo->codigo_ticket);
+        $this->assertSame('NUL-000777', $reclamo->codigo_ticket);
         $this->assertDatabaseHas('libro_reclamacions', [
             'ticket' => $reclamo->ticket,
-            'codigo_ticket' => 'TCK-000777',
+            'codigo_ticket' => 'NUL-000777',
         ]);
     }
 }

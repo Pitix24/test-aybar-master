@@ -179,7 +179,7 @@ class LibroReclamacionEditar extends Component
 
         if (! $value) {
             $this->proyectos = collect();
-            $this->codigo = 'TCK';
+            $this->codigo = 'NUL';
 
             return;
         }
@@ -191,7 +191,7 @@ class LibroReclamacionEditar extends Component
             ->get(['id', 'nombre']);
 
         $ticket = LibroReclamacion::generarTicket((int) $value);
-        $this->codigo = (string) ($ticket['codigo_ticket'] ?? 'TCK');
+        $this->codigo = (string) ($ticket['codigo_ticket'] ?? 'NUL');
     }
 
     public function buscarCliente(ConsultaClienteService $service): void

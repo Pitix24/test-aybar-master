@@ -93,7 +93,7 @@ class LibroReclamacionNumeroService
 
     protected function resolverSerie(): string
     {
-        return (string) data_get(config('libro_reclamacion_ticket', []), 'serie', 'TCK');
+        return (string) data_get(config('libro_reclamacion_ticket', []), 'serie', 'NUL');
     }
 
     protected function formatearCodigoTicket(string $unidadCodigo, int $numeroReclamo): string
@@ -104,7 +104,7 @@ class LibroReclamacionNumeroService
     protected function resolverCodigoUnidad(?UnidadNegocio $unidad): string
     {
         if (!$unidad) {
-            return 'TCK';
+            return 'NUL';
         }
 
         $codigoUnidad = strtoupper(trim((string) ($unidad->codigo ?? '')));
@@ -116,7 +116,7 @@ class LibroReclamacionNumeroService
             return UnidadNegocio::generarCodigoSecuencial((int) $unidad->id);
         }
 
-        return 'TCK';
+        return 'NUL';
     }
 
     protected function normalizarTexto(string $valor): string

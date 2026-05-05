@@ -51,7 +51,7 @@
 
                         <div class="g_columna_4 g_margin_bottom_10">
                             <label>Código de ticket</label>
-                            <input type="text" value="{{ $codigo ?: 'TCK' }}" disabled>
+                            <input type="text" value="{{ $codigo ?: 'NUL' }}" disabled>
                         </div>
 
                         <div class="g_columna_4 g_margin_bottom_10">
