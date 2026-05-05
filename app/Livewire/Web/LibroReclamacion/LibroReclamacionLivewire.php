@@ -81,9 +81,9 @@ class LibroReclamacionLivewire extends Component
             'pedido' => 'nullable|string',
             'conformidad' => 'nullable|boolean',
             'es_cliente_menor' => 'nullable|boolean',
-            'representante_legal_nombre' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
-            'representante_legal_apellido_paterno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
-            'representante_legal_apellido_materno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
+            'representante_legal_nombre' => 'nullable|string|max:255',
+            'representante_legal_apellido_paterno' => 'nullable|string|max:255',
+            'representante_legal_apellido_materno' => 'nullable|string|max:255',
         ];
     }
 
@@ -232,9 +232,9 @@ class LibroReclamacionLivewire extends Component
                 'cliente_celular' => $this->textoNullable($this->telefono),
                 'cliente_direccion' => $this->textoNullable($this->domicilio),
                 'es_cliente_menor' => (bool) $this->es_cliente_menor,
-                'representante_legal_nombre' => $this->textoNullable($this->representante_legal_nombre),
-                'representante_legal_apellido_paterno' => $this->textoNullable($this->representante_legal_apellido_paterno),
-                'representante_legal_apellido_materno' => $this->textoNullable($this->representante_legal_apellido_materno),
+                'representante_legal_nombre' => $this->es_cliente_menor ? $this->textoNullable($this->representante_legal_nombre) : null,
+                'representante_legal_apellido_paterno' => $this->es_cliente_menor ? $this->textoNullable($this->representante_legal_apellido_paterno) : null,
+                'representante_legal_apellido_materno' => $this->es_cliente_menor ? $this->textoNullable($this->representante_legal_apellido_materno) : null,
                 'tipo_bien_contratado' => $this->resolverTipoBienContratado(),
                 'monto_reclamado' => $this->decimalNullable($this->monto_reclamado),
                 'descripcion' => $this->textoNullable($this->descripcion),
