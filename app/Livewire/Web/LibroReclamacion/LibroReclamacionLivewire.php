@@ -81,9 +81,9 @@ class LibroReclamacionLivewire extends Component
             'pedido' => 'nullable|string',
             'conformidad' => 'nullable|boolean',
             'es_cliente_menor' => 'nullable|boolean',
-            'representante_legal_nombre' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
-            'representante_legal_apellido_paterno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
-            'representante_legal_apellido_materno' => 'required_if:es_cliente_menor,true|string|max:255|nullable',
+            'representante_legal_nombre' => 'nullable|string|max:255',
+            'representante_legal_apellido_paterno' => 'nullable|string|max:255',
+            'representante_legal_apellido_materno' => 'nullable|string|max:255',
         ];
     }
 
@@ -198,22 +198,11 @@ class LibroReclamacionLivewire extends Component
                 $unidadNegocio = $proyecto?->unidadNegocio;
             }
 
-            if (!$unidadNegocio) {
-                if ($this->esFormularioVacio()) {
-                    $unidadNegocio = $this->resolverUnidadNegocioTemplate();
-                }
-            }
+            // Si no se selecciona proyecto ni unidad, el reclamo queda sin unidad.
+            // En ese caso el codigo_ticket debe salir con el placeholder NUL.
 
-            if (!$unidadNegocio) {
-                $unidadNegocio = $this->resolverUnidadNegocioPorDefecto();
-            }
-
-            if (!$unidadNegocio) {
-                throw new \RuntimeException('No se encontro unidad de negocio para generar el ticket. Configure LIBRO_RECLAMACION_UNIDAD_DEFAULT_ID o seleccione un proyecto valido.');
-            }
-
-            $this->unidad_negocio_id = $unidadNegocio->id;
-            $this->unidad_razon_social = $unidadNegocio->razon_social ?? $unidadNegocio->nombre;
+            $this->unidad_negocio_id = $unidadNegocio?->id;
+            $this->unidad_razon_social = $unidadNegocio?->razon_social ?? $unidadNegocio?->nombre ?? '';
 
             $clasificacion = $this->resolverClasificacionWeb();
             $this->payload_ticket_autocreacion = [];
@@ -243,9 +232,9 @@ class LibroReclamacionLivewire extends Component
                 'cliente_celular' => $this->textoNullable($this->telefono),
                 'cliente_direccion' => $this->textoNullable($this->domicilio),
                 'es_cliente_menor' => (bool) $this->es_cliente_menor,
-                'representante_legal_nombre' => $this->textoNullable($this->representante_legal_nombre),
-                'representante_legal_apellido_paterno' => $this->textoNullable($this->representante_legal_apellido_paterno),
-                'representante_legal_apellido_materno' => $this->textoNullable($this->representante_legal_apellido_materno),
+                'representante_legal_nombre' => $this->es_cliente_menor ? $this->textoNullable($this->representante_legal_nombre) : null,
+                'representante_legal_apellido_paterno' => $this->es_cliente_menor ? $this->textoNullable($this->representante_legal_apellido_paterno) : null,
+                'representante_legal_apellido_materno' => $this->es_cliente_menor ? $this->textoNullable($this->representante_legal_apellido_materno) : null,
                 'tipo_bien_contratado' => $this->resolverTipoBienContratado(),
                 'monto_reclamado' => $this->decimalNullable($this->monto_reclamado),
                 'descripcion' => $this->textoNullable($this->descripcion),
@@ -302,84 +291,6 @@ class LibroReclamacionLivewire extends Component
                 'text' => 'No se pudo registrar su reclamo. Por favor, intente nuevamente más tarde.'
             ]);
         }
-    }
-
-    protected function resolverUnidadNegocioPorDefecto(): ?UnidadNegocio
-    {
-        $unidadDefaultId = (int) config('libro_reclamacion_ticket.unidad_default_id', 0);
-
-        if ($unidadDefaultId > 0) {
-            $unidad = UnidadNegocio::query()->find($unidadDefaultId);
-
-            if ($unidad) {
-                return $unidad;
-            }
-
-            Log::warning('[RECLAMACION] No existe la unidad por defecto configurada.', [
-                'unidad_default_id' => $unidadDefaultId,
-            ]);
-        }
-
-        // Fallback operativo para no bloquear formulario vacio.
-        $unidadActiva = UnidadNegocio::query()
-            ->where('activo', true)
-            ->orderBy('id')
-            ->first();
-
-        if ($unidadActiva instanceof UnidadNegocio) {
-            return $unidadActiva;
-        }
-
-        $unidad = UnidadNegocio::query()->orderBy('id')->first();
-
-        return $unidad instanceof UnidadNegocio ? $unidad : null;
-    }
-
-    protected function resolverUnidadNegocioTemplate(): ?UnidadNegocio
-    {
-        $templateId = (int) config('libro_reclamacion_ticket.unidad_template_id', 0);
-
-        if ($templateId > 0) {
-            $unidad = UnidadNegocio::query()->find($templateId);
-
-            if ($unidad instanceof UnidadNegocio) {
-                return $unidad;
-            }
-
-            Log::warning('[RECLAMACION] No existe la unidad template configurada.', [
-                'unidad_template_id' => $templateId,
-            ]);
-        }
-
-        $nombreTemplate = trim((string) config('libro_reclamacion_ticket.unidad_template_nombre', 'RECLAMOS_SIN_PROYECTO'));
-        $razonSocialTemplate = trim((string) config('libro_reclamacion_ticket.unidad_template_razon_social', 'RECLAMOS SIN PROYECTO'));
-
-        if ($nombreTemplate === '') {
-            return null;
-        }
-
-        $unidadExistente = UnidadNegocio::withTrashed()
-            ->where('nombre', $nombreTemplate)
-            ->first();
-
-        if ($unidadExistente instanceof UnidadNegocio) {
-            if (method_exists($unidadExistente, 'trashed') && $unidadExistente->trashed()) {
-                $unidadExistente->restore();
-            }
-
-            if ($unidadExistente->activo !== true) {
-                $unidadExistente->activo = true;
-                $unidadExistente->save();
-            }
-
-            return $unidadExistente;
-        }
-
-        return UnidadNegocio::query()->create([
-            'nombre' => $nombreTemplate,
-            'razon_social' => $razonSocialTemplate !== '' ? $razonSocialTemplate : $nombreTemplate,
-            'activo' => true,
-        ]);
     }
 
     protected function esFormularioVacio(): bool

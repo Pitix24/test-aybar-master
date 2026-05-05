@@ -7,11 +7,14 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     /**
      * Run the migrations.
+     * Consolidada: incluye el campo 'codigo' (antes en 2026_05_04_131500_add_codigo_to_unidad_negocios_table.php)
      */
     public function up(): void
     {
         Schema::create('unidad_negocios', function (Blueprint $table) {
             $table->id();
+
+            $table->string('codigo', 3)->nullable()->unique();
 
             $table->string('nombre')->unique();
             $table->string('razon_social')->unique()->nullable();
@@ -19,7 +22,7 @@ return new class extends Migration {
             $table->string('slin_id')->unique()->nullable();
             $table->string('direccion')->nullable();
 
-            //REPRESENTANTE LEGAL DEL GIRADOR
+            // REPRESENTANTE LEGAL DEL GIRADOR
             $table->string('cavali_girador_tipo_documento')->nullable();
             $table->string('cavali_girador_documento')->nullable();
             $table->string('cavali_girador_nombre')->nullable();

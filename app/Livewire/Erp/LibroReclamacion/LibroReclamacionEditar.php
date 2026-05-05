@@ -72,7 +72,7 @@ class LibroReclamacionEditar extends Component
             'eliminador',
         ])->findOrFail($id);
 
-        $this->codigo = $this->ticket_model->codigo;
+        $this->codigo = $this->ticket_model->codigo_ticket;
         $this->unidad_negocio_id = $this->ticket_model->unidad_negocio_id;
         $this->proyecto_id = $this->ticket_model->proyecto_id;
         $this->cliente_id = $this->ticket_model->cliente_id;
@@ -179,6 +179,7 @@ class LibroReclamacionEditar extends Component
 
         if (! $value) {
             $this->proyectos = collect();
+            $this->codigo = 'NUL';
 
             return;
         }
@@ -188,6 +189,9 @@ class LibroReclamacionEditar extends Component
             ->where('activo', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
+
+        $ticket = LibroReclamacion::generarTicket((int) $value);
+        $this->codigo = (string) ($ticket['codigo_ticket'] ?? 'NUL');
     }
 
     public function buscarCliente(ConsultaClienteService $service): void
@@ -428,7 +432,7 @@ class LibroReclamacionEditar extends Component
         try {
             DB::beginTransaction();
 
-            $codigo = $this->ticket_model->codigo;
+            $codigo = $this->ticket_model->codigo_ticket;
             $this->ticket_model->delete();
 
             DB::commit();

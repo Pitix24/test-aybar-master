@@ -116,7 +116,7 @@ class LibroReclamacionLista extends Component
             ->with(['ticketRelacionado.estado', 'proyecto', 'unidadNegocio', 'gestor', 'cliente'])
             ->when($this->buscar !== '', function ($q): void {
                 $q->where(function ($sub): void {
-                    $sub->where('codigo', 'like', "%{$this->buscar}%")
+                    $sub->where('codigo_ticket', 'like', "%{$this->buscar}%")
                         ->orWhere('cliente_documento', 'like', "%{$this->buscar}%")
                         ->orWhere('cliente_nombre', 'like', "%{$this->buscar}%")
                         ->orWhere('cliente_email', 'like', "%{$this->buscar}%")

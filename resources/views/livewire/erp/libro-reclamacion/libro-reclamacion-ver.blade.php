@@ -59,7 +59,7 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Codigo</label>
-                    <input type="text" value="{{ $ticket->codigo }}" disabled>
+                    <input type="text" value="{{ $ticket->codigo_ticket }}" disabled>
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_4">

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     /**
      * Run the migrations.
+     *
+     * Consolidada: incluye todos los campos y constraints originales.
+     * El campo 'codigo_ticket' es el único identificador autogenerado del reclamo.
      */
     public function up(): void
     {
@@ -20,10 +23,10 @@ return new class extends Migration {
 
             $table->foreignId('ticket_id')->nullable()->constrained('tickets')->nullOnDelete();
 
-            $table->string('serie')->default('TCK');
+            $table->string('serie')->default('NUL');
             $table->unsignedBigInteger('numero_reclamo')->nullable();
+
             $table->string('codigo_ticket', 20)->nullable();
-            $table->string('codigo', 20)->nullable();
 
             $table->string('manzana', 5)->nullable();
             $table->string('lote', 5)->nullable();
@@ -65,9 +68,8 @@ return new class extends Migration {
             $table->boolean('leido')->default(false);
             $table->enum('estado', ['NUEVO', 'REVISION', 'RESUELTO', 'CERRADO'])->default('NUEVO');
 
-            $table->unique('codigo');
+            $table->unique('codigo_ticket');
             $table->unique(['unidad_negocio_id', 'numero_reclamo'], 'libro_reclamacions_unidad_numero_unique');
-            $table->index('codigo_ticket');
 
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

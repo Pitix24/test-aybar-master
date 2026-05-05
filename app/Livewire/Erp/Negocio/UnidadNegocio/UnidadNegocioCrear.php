@@ -16,10 +16,12 @@ use Livewire\Attributes\Title;
 #[Title('Crear Unidad de Negocio')]
 class UnidadNegocioCrear extends Component
 {
+    public $codigo = '';
     public $nombre = '';
     public $razon_social = '';
     public $ruc = '';
     public $slin_id = '';
+    public $direccion = '';
     public $cavali_girador_tipo_documento = '';
     public $cavali_girador_documento = '';
     public $cavali_girador_nombre = '';
@@ -31,10 +33,12 @@ class UnidadNegocioCrear extends Component
     protected function rules()
     {
         return [
+            'codigo' => 'nullable|string|size:3|regex:/^[A-Z]{3}$/|unique:unidad_negocios,codigo',
             'nombre' => 'required|string|max:255|unique:unidad_negocios,nombre',
             'razon_social' => 'required|string|max:255',
             'ruc' => 'nullable|string|max:20|unique:unidad_negocios,ruc',
             'slin_id' => 'nullable|string|max:50|unique:unidad_negocios,slin_id',
+            'direccion' => 'nullable|string|max:255',
             'cavali_girador_tipo_documento' => 'nullable|string|max:50',
             'cavali_girador_documento' => 'nullable|string|max:20',
             'cavali_girador_nombre' => 'nullable|string|max:255',
@@ -48,10 +52,12 @@ class UnidadNegocioCrear extends Component
     public function validationAttributes()
     {
         return [
+            'codigo' => 'código',
             'nombre' => 'nombre comercial',
             'razon_social' => 'razón social',
             'ruc' => 'RUC',
             'slin_id' => 'SLIN ID',
+            'direccion' => 'dirección',
             'cavali_girador_tipo_documento' => 'tipo doc. girador',
             'cavali_girador_documento' => 'nº doc. girador',
             'cavali_girador_nombre' => 'nombre girador',
@@ -63,6 +69,10 @@ class UnidadNegocioCrear extends Component
 
     public function updated($propertyName)
     {
+        if ($propertyName === 'codigo') {
+            $this->codigo = strtoupper(trim((string) $this->codigo));
+        }
+
         $this->validateOnly($propertyName);
     }
 
@@ -84,11 +94,13 @@ class UnidadNegocioCrear extends Component
         try {
             DB::beginTransaction();
 
-            UnidadNegocio::create([
+            $unidad = UnidadNegocio::create([
+                'codigo' => $this->codigo ?: null,
                 'nombre' => $this->nombre,
                 'razon_social' => $this->razon_social,
                 'ruc' => $this->ruc ?: null,
                 'slin_id' => $this->slin_id ?: null,
+                'direccion' => $this->direccion ?: null,
                 'cavali_girador_tipo_documento' => $this->cavali_girador_tipo_documento ?: null,
                 'cavali_girador_documento' => $this->cavali_girador_documento ?: null,
                 'cavali_girador_nombre' => $this->cavali_girador_nombre ?: null,
@@ -97,6 +109,11 @@ class UnidadNegocioCrear extends Component
                 'cavali_girador_telefono' => $this->cavali_girador_telefono ?: null,
                 'activo' => $this->activo,
             ]);
+
+            if (blank($unidad->codigo)) {
+                $unidad->codigo = UnidadNegocio::generarCodigoSecuencial((int) $unidad->id);
+                $unidad->saveQuietly();
+            }
 
             DB::commit();
 
@@ -107,7 +124,6 @@ class UnidadNegocioCrear extends Component
             ]);
 
             return redirect()->route('erp.unidad-negocio.vista.todo');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('negocio')->error("[UNIDAD NEGOCIO] Error al crear: " . $e->getMessage(), [
