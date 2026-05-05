@@ -4,15 +4,15 @@
 
         <div class="cabecera_titulo_botones">
             @can('unidad-negocio.lista')
-            <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton light">
-                Lista <i class="fa-solid fa-list"></i>
-            </a>
+                <a href="{{ route('erp.unidad-negocio.vista.todo') }}" class="g_boton light">
+                    Lista <i class="fa-solid fa-list"></i>
+                </a>
             @endcan
 
             @can('unidad-negocio.editar')
-            <a href="{{ route('erp.unidad-negocio.vista.editar', $unidad_model->id) }}" class="g_boton primary">
-                Editar <i class="fa-solid fa-pencil"></i>
-            </a>
+                <a href="{{ route('erp.unidad-negocio.vista.editar', $unidad_model->id) }}" class="g_boton primary">
+                    Editar <i class="fa-solid fa-pencil"></i>
+                </a>
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -53,7 +53,7 @@
                             <div class="g_switch-wrapper">
                                 <label class="g_switch">
                                     <input id="estado_activo" type="checkbox" @checked($unidad_model->activo) readonly
-                                    disabled>
+                                        disabled>
                                     <span class="g_switch-slider"></span>
                                 </label>
 
@@ -89,6 +89,26 @@
                             <div class="g_margin_bottom_10 g_columna_12">
                                 <label>Dirección</label>
                                 <input type="text" value="{{ $unidad_model->direccion ?? '-' }}" readonly disabled>
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label>Región</label>
+                                <input type="text" value="{{ $unidad_model->region?->nombre ?? '-' }}" readonly
+                                    disabled>
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label>Provincia</label>
+                                <input type="text" value="{{ $unidad_model->provincia?->nombre ?? '-' }}" readonly
+                                    disabled>
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label>Distrito</label>
+                                <input type="text" value="{{ $unidad_model->distrito?->nombre ?? '-' }}" readonly
+                                    disabled>
                             </div>
                         </div>
                     </div>

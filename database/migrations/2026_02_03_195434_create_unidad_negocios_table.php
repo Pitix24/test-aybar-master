@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     /**
      * Run the migrations.
-     * Consolidada: incluye el campo 'codigo' (antes en 2026_05_04_131500_add_codigo_to_unidad_negocios_table.php)
+     * Consolidada: incluye 'codigo' (antes en 2026_05_04_131500_add_codigo_to_unidad_negocios_table.php)
+     *              y ubicación geográfica (antes en 2026_05_05_add_ubicacion_to_unidad_negocios_table.php)
      */
     public function up(): void
     {
@@ -21,6 +22,11 @@ return new class extends Migration {
             $table->string('ruc')->unique()->nullable();
             $table->string('slin_id')->unique()->nullable();
             $table->string('direccion')->nullable();
+
+            // UBICACIÓN GEOGRÁFICA
+            $table->foreignId('region_id')->nullable()->constrained('regions')->onDelete('set null');
+            $table->foreignId('provincia_id')->nullable()->constrained('provincias')->onDelete('set null');
+            $table->foreignId('distrito_id')->nullable()->constrained('distritos')->onDelete('set null');
 
             // REPRESENTANTE LEGAL DEL GIRADOR
             $table->string('cavali_girador_tipo_documento')->nullable();

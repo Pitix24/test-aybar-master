@@ -22,6 +22,9 @@ class UnidadNegocio extends Model
         'ruc',
         'slin_id',
         'direccion',
+        'region_id',
+        'provincia_id',
+        'distrito_id',
         'cavali_girador_tipo_documento',
         'cavali_girador_documento',
         'cavali_girador_nombre',
@@ -72,5 +75,20 @@ class UnidadNegocio extends Model
     public function libroReclamacions()
     {
         return $this->hasMany(LibroReclamacion::class);
+    }
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
+
+    public function provincia()
+    {
+        return $this->belongsTo(Provincia::class);
+    }
+
+    public function distrito()
+    {
+        return $this->belongsTo(Distrito::class);
     }
 }

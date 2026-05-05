@@ -28,6 +28,9 @@ class UnidadNegocioCrear extends Component
     public $cavali_girador_apellido = '';
     public $cavali_girador_email = '';
     public $cavali_girador_telefono = '';
+    public $region_id = null;
+    public $provincia_id = null;
+    public $distrito_id = null;
     public $activo = true;
 
     protected function rules()
@@ -39,6 +42,9 @@ class UnidadNegocioCrear extends Component
             'ruc' => 'nullable|string|max:20|unique:unidad_negocios,ruc',
             'slin_id' => 'nullable|string|max:50|unique:unidad_negocios,slin_id',
             'direccion' => 'nullable|string|max:255',
+            'region_id' => 'nullable|exists:regions,id',
+            'provincia_id' => 'nullable|exists:provincias,id',
+            'distrito_id' => 'nullable|exists:distritos,id',
             'cavali_girador_tipo_documento' => 'nullable|string|max:50',
             'cavali_girador_documento' => 'nullable|string|max:20',
             'cavali_girador_nombre' => 'nullable|string|max:255',
@@ -58,6 +64,9 @@ class UnidadNegocioCrear extends Component
             'ruc' => 'RUC',
             'slin_id' => 'SLIN ID',
             'direccion' => 'dirección',
+            'region_id' => 'región',
+            'provincia_id' => 'provincia',
+            'distrito_id' => 'distrito',
             'cavali_girador_tipo_documento' => 'tipo doc. girador',
             'cavali_girador_documento' => 'nº doc. girador',
             'cavali_girador_nombre' => 'nombre girador',
@@ -101,6 +110,9 @@ class UnidadNegocioCrear extends Component
                 'ruc' => $this->ruc ?: null,
                 'slin_id' => $this->slin_id ?: null,
                 'direccion' => $this->direccion ?: null,
+                'region_id' => $this->region_id ?: null,
+                'provincia_id' => $this->provincia_id ?: null,
+                'distrito_id' => $this->distrito_id ?: null,
                 'cavali_girador_tipo_documento' => $this->cavali_girador_tipo_documento ?: null,
                 'cavali_girador_documento' => $this->cavali_girador_documento ?: null,
                 'cavali_girador_nombre' => $this->cavali_girador_nombre ?: null,

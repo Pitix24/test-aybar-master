@@ -129,6 +129,67 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label for="region_id">
+                                    Región
+                                </label>
+                                <select id="region_id" wire:model.live="region_id"
+                                    class="@error('region_id') input-error @enderror">
+                                    <option value="">Seleccione región...</option>
+                                    @forelse(\App\Models\Region::orderBy('nombre')->get() as $region)
+                                    <option value="{{ $region->id }}">{{ $region->nombre }}</option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                                @error('region_id')
+                                <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label for="provincia_id">
+                                    Provincia
+                                </label>
+                                <select id="provincia_id" wire:model.live="provincia_id"
+                                    class="@error('provincia_id') input-error @enderror" {{ empty($region_id)
+                                    ? 'disabled' : '' }}>
+                                    <option value="">Seleccione provincia...</option>
+                                    @if($region_id)
+                                    @forelse(\App\Models\Provincia::where('region_id',
+                                    $region_id)->orderBy('nombre')->get() as $provincia)
+                                    <option value="{{ $provincia->id }}">{{ $provincia->nombre }}</option>
+                                    @empty
+                                    @endforelse
+                                    @endif
+                                </select>
+                                @error('provincia_id')
+                                <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label for="distrito_id">
+                                    Distrito
+                                </label>
+                                <select id="distrito_id" wire:model.blur="distrito_id"
+                                    class="@error('distrito_id') input-error @enderror" {{ empty($provincia_id)
+                                    ? 'disabled' : '' }}>
+                                    <option value="">Seleccione distrito...</option>
+                                    @if($provincia_id)
+                                    @forelse(\App\Models\Distrito::where('provincia_id',
+                                    $provincia_id)->orderBy('nombre')->get() as $distrito)
+                                    <option value="{{ $distrito->id }}">{{ $distrito->nombre }}</option>
+                                    @empty
+                                    @endforelse
+                                    @endif
+                                </select>
+                                @error('distrito_id')
+                                <p class="mensaje_error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
 
                     <div x-show="activeTab === 'cavali'" x-transition class="g_tab_content">

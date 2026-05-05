@@ -51,6 +51,9 @@ class LibroReclamacionLivewire extends Component
     public $unidad_razon_social;
     public $unidad_ruc;
     public $unidad_direccion;
+    public $unidad_region_nombre;
+    public $unidad_provincia_nombre;
+    public $unidad_distrito_nombre;
     public $lista_proyectos = [];
     public $success = false;
     public $reclamo_registrado;
@@ -123,15 +126,21 @@ class LibroReclamacionLivewire extends Component
     {
         $this->unidad_negocio_id = null;
         $this->unidad_razon_social = '';
+        $this->unidad_region_nombre = '';
+        $this->unidad_provincia_nombre = '';
+        $this->unidad_distrito_nombre = '';
 
         if ($id) {
-            $proyecto = Proyecto::with('unidadNegocio')->find($id);
+            $proyecto = Proyecto::with('unidadNegocio', 'unidadNegocio.region', 'unidadNegocio.provincia', 'unidadNegocio.distrito')->find($id);
 
             if ($proyecto && $proyecto->unidadNegocio) {
                 $this->unidad_negocio_id = $proyecto->unidadNegocio->id;
                 $this->unidad_razon_social = $proyecto->unidadNegocio->razon_social;
                 $this->unidad_ruc = $proyecto->unidadNegocio->ruc;
                 $this->unidad_direccion = $proyecto->unidadNegocio->direccion;
+                $this->unidad_region_nombre = $proyecto->unidadNegocio->region?->nombre ?? '';
+                $this->unidad_provincia_nombre = $proyecto->unidadNegocio->provincia?->nombre ?? '';
+                $this->unidad_distrito_nombre = $proyecto->unidadNegocio->distrito?->nombre ?? '';
             }
         }
     }
@@ -252,7 +261,14 @@ class LibroReclamacionLivewire extends Component
             // El correo se dispara fuera de la transaccion para no afectar el alta del reclamo.
             LibroReclamacionRegistrado::dispatch($reclamo);
 
-            $this->reclamo_registrado = $reclamo;
+            // Recargar con relaciones para que la vista muestre proyecto, proveedor y ubicación.
+            $this->reclamo_registrado = $reclamo->fresh([
+                'proyecto',
+                'unidadNegocio',
+                'unidadNegocio.region',
+                'unidadNegocio.provincia',
+                'unidadNegocio.distrito',
+            ]);
             $this->success = true;
 
             if ($clasificacion === 'NO_PROCEDE') {
