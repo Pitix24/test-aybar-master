@@ -7,6 +7,7 @@ use App\Models\LibroReclamacion\LibroReclamacion;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
+use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
@@ -52,6 +53,7 @@ class LibroReclamacionLista extends Component
     public $unidades = [];
     public $proyectos = [];
     public $estadosTicket = [];
+    public $stats = [];
 
     public function mount(): void
     {
@@ -75,23 +77,133 @@ class LibroReclamacionLista extends Component
         $this->estadosTicket = EstadoTicket::query()
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
+
+        $this->cargarStats();
     }
 
     public function updated($property): void
     {
-        if (in_array($property, [
-            'buscar',
-            'estado_filtro',
-            'clasificacion',
-            'gestor_id',
-            'unidad_negocio_id',
-            'proyecto_id',
-            'desde',
-            'hasta',
-            'perPage',
-        ], true)) {
+        if (
+            in_array($property, [
+                'buscar',
+                'estado_filtro',
+                'clasificacion',
+                'gestor_id',
+                'unidad_negocio_id',
+                'proyecto_id',
+                'desde',
+                'hasta',
+                'perPage',
+            ], true)
+        ) {
             $this->resetPage();
+            $this->cargarStats();
         }
+    }
+
+    public function filterTotal(): void
+    {
+        $this->estado_filtro = '';
+        $this->clasificacion = '';
+        $this->resetPage();
+        $this->cargarStats();
+    }
+
+    public function filterResueltos(): void
+    {
+        $this->estado_filtro = EstadoTicket::id(EstadoTicket::CERRADO);
+        $this->resetPage();
+        $this->cargarStats();
+    }
+
+    public function filterPendientes(): void
+    {
+        $this->estado_filtro = 'PENDIENTES';
+        $this->resetPage();
+        $this->cargarStats();
+    }
+
+    public function filterNoProcede(): void
+    {
+        $this->estado_filtro = 'NO_PROCEDE';
+        $this->resetPage();
+        $this->cargarStats();
+    }
+
+    public function cargarStats(array $filters = []): void
+    {
+        $baseQuery = LibroReclamacion::query()
+            ->when($this->proyecto_id !== '', fn($q) => $q->where('proyecto_id', $this->proyecto_id))
+            ->when($this->gestor_id !== '', fn($q) => $q->where('gestor_id', $this->gestor_id))
+            ->when($this->unidad_negocio_id !== '', fn($q) => $q->where('unidad_negocio_id', $this->unidad_negocio_id))
+            ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
+            ->when($this->buscar !== '', function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('codigo_ticket', 'like', "%{$this->buscar}%")
+                        ->orWhere('cliente_documento', 'like', "%{$this->buscar}%")
+                        ->orWhere('cliente_nombre', 'like', "%{$this->buscar}%")
+                        ->orWhere('cliente_email', 'like', "%{$this->buscar}%")
+                        ->orWhere('cliente_celular', 'like', "%{$this->buscar}%");
+                });
+            });
+
+        $total = (clone $baseQuery)->count();
+
+        // Resueltos: reclamos cuyo ticket relacionado está CERRADO o ATENDIDO
+        $estadosCerrado = array_filter([
+            EstadoTicket::id(EstadoTicket::CERRADO),
+            EstadoTicket::id(EstadoTicket::ATENDIDO),
+        ]);
+
+        $resueltos = !empty($estadosCerrado)
+            ? (clone $baseQuery)
+                ->whereHas('ticketRelacionado', fn($q) => $q->whereIn('estado_ticket_id', $estadosCerrado))
+                ->count()
+            : 0;
+
+        // Pendientes: tienen ticket relacionado en estados de gestión activa
+        $pendientesEstados = array_filter([
+            EstadoTicket::id(EstadoTicket::NUEVO),
+            EstadoTicket::id(EstadoTicket::EN_GESTION),
+            EstadoTicket::id(EstadoTicket::EN_ESPERA_CLIENTE),
+            EstadoTicket::id(EstadoTicket::DERIVADO),
+        ]);
+
+        $pendientes = (clone $baseQuery)
+            ->where('clasificacion', '!=', 'NO_PROCEDE')
+            ->where(function ($q) use ($pendientesEstados) {
+                // Sin ticket vinculado (reclamo NUEVO sin ticket auto-creado)
+                $q->whereNull('ticket_id');
+                // O con ticket en estados activos
+                if (!empty($pendientesEstados)) {
+                    $q->orWhereHas('ticketRelacionado', fn($t) => $t->whereIn('estado_ticket_id', $pendientesEstados));
+                }
+            })
+            ->count();
+
+        // No procedentes: clasificación NO_PROCEDE
+        $no_procede = (clone $baseQuery)
+            ->where('clasificacion', 'NO_PROCEDE')
+            ->count();
+
+        $minFecha = (clone $baseQuery)->min('created_at');
+        $dias = 1;
+        if ($minFecha) {
+            // +1 para incluir tanto el día inicial como el día actual en el rango
+            $dias = Carbon::now()->startOfDay()->diffInDays(Carbon::parse($minFecha)->startOfDay()) + 1;
+        }
+        $dias = max(1, $dias);
+        $promedio = round($total / $dias, 2);
+
+        $this->stats = [
+            'total' => $total,
+            'resueltos' => $resueltos,
+            'pendientes' => $pendientes,
+            'no_procede' => $no_procede,
+            'promedio_por_dia' => $promedio,
+            'dias' => $dias,
+        ];
     }
 
     public function resetFiltros(): void
@@ -134,6 +246,18 @@ class LibroReclamacionLista extends Component
             ->when($this->estado_filtro !== '', function ($q): void {
                 if ($this->estado_filtro === 'NO_PROCEDE') {
                     $q->where('clasificacion', 'NO_PROCEDE');
+
+                    return;
+                }
+
+                if ($this->estado_filtro === 'PENDIENTES') {
+                    $pendientesEstados = array_filter([
+                        EstadoTicket::id(EstadoTicket::EN_GESTION),
+                        EstadoTicket::id(EstadoTicket::EN_ESPERA_CLIENTE),
+                        EstadoTicket::id(EstadoTicket::DERIVADO),
+                    ]);
+
+                    $q->whereHas('ticketRelacionado', fn($ticket) => $ticket->whereIn('estado_ticket_id', $pendientesEstados));
 
                     return;
                 }

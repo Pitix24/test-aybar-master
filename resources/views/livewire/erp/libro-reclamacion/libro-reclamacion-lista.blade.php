@@ -33,7 +33,7 @@
                         @foreach ($estadosTicket as $estado)
                         <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
                         @endforeach
-                        <option value="NO_PROCEDE">NO PROCEDE</option>
+                        <option value="NO_PROCEDE">No Procede</option>
                     </select>
                 </div>
 
@@ -100,6 +100,8 @@
             </div>
         </div>
     </div>
+
+    @include('livewire.erp.libro-reclamacion.partials.kpis', ['stats' => $stats])
 
     <div class="g_panel">
         <div class="g_tabla_cabecera">

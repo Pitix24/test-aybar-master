@@ -127,7 +127,7 @@ class LibroReclamacion extends Model
         $clasificacion = strtoupper(trim((string) $this->clasificacion));
 
         if ($clasificacion === 'NO_PROCEDE') {
-            return 'NO PROCEDE';
+            return 'No Procede';
         }
 
         if ($clasificacion === 'PENDIENTE_REVISION') {

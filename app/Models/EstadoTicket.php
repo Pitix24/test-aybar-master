@@ -34,7 +34,7 @@ class EstadoTicket extends Model
         return $this->hasMany(Ticket::class);
     }
 
-    public static function id(string $nombre): int
+    public static function id(string $nombre): ?int
     {
         return static::where('nombre', $nombre)->value('id');
     }
