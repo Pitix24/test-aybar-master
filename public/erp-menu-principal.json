@@ -1011,5 +1011,45 @@
                 ]
             }
         ]
+    },
+    {
+        "id": 115,
+        "nombre": "Módulo Soporte",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-ticket",
+        "nivel": 1,
+        "permiso": "modulo-soporte.ver",
+        "submenus": [
+            {
+                "id": 116,
+                "nombre": "Ticket Soporte",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-ticket",
+                "nivel": 2,
+                "permiso": "soporte.navegacion",
+                "submenus": [
+                    {
+                        "id": 117,
+                        "nombre": "Lista Ticket",
+                        "ruta": "erp.soporte.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.vista-lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 118,
+                        "nombre": "Crear Ticket",
+                        "ruta": "erp.soporte.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.vista-crear",
+                        "submenus": []
+                    }
+                ]
+            }
+        ]
     }
 ]
