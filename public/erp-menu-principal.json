@@ -533,6 +533,35 @@
                         "submenus": []
                     }
                 ]
+            },
+            {
+                "id": 47,
+                "nombre": "Libro Reclamación",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-book-open",
+                "nivel": 2,
+                "permiso": "ticket-libro-reclamacion.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.libro-reclamacion.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "ticket-libro-reclamacion.lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.libro-reclamacion.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "ticket-libro-reclamacion.crear",
+                        "submenus": []
+                    }
+                ]
             }
         ]
     },
@@ -893,6 +922,15 @@
                         "submenus": []
                     },
                     {
+                        "id": 114,
+                        "nombre": "⚡ Cliente Power BI",
+                        "ruta": "erp.reporte.vista.cliente-powerbi",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-usuario.cliente.ver",
+                        "submenus": []
+                    },
+                    {
                         "id": 112,
                         "nombre": "Reporte Cliente Dirección",
                         "ruta": "erp.reporte.vista.direccion",
@@ -902,9 +940,27 @@
                         "submenus": []
                     },
                     {
+                        "id": 115,
+                        "nombre": "⚡ Dirección Power BI",
+                        "ruta": "erp.reporte.vista.direccion-powerbi",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-usuario.direccion.ver",
+                        "submenus": []
+                    },
+                    {
                         "id": 113,
                         "nombre": "Reporte Admin",
                         "ruta": "erp.reporte.vista.admin",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-usuario.admin.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 116,
+                        "nombre": "⚡ Admin Power BI",
+                        "ruta": "erp.reporte.vista.admin-powerbi",
                         "url": null,
                         "nivel": 3,
                         "permiso": "reporte-usuario.admin.ver",
@@ -931,6 +987,15 @@
                         "submenus": []
                     },
                     {
+                        "id": 117,
+                        "nombre": "⚡ Solicitud EP Power BI",
+                        "ruta": "erp.reporte.vista.solicitud-evidencia-pago-powerbi",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-backoffice.solicitud-evidencia-pago.ver",
+                        "submenus": []
+                    },
+                    {
                         "id": 112,
                         "nombre": "Reporte Evidencia Pago",
                         "ruta": "erp.reporte.vista.evidencia-pago",
@@ -940,9 +1005,27 @@
                         "submenus": []
                     },
                     {
+                        "id": 118,
+                        "nombre": "⚡ Evidencia Pago Power BI",
+                        "ruta": "erp.reporte.vista.evidencia-pago-powerbi",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-backoffice.evidencia-pago.ver",
+                        "submenus": []
+                    },
+                    {
                         "id": 112,
                         "nombre": "Reporte Evidencia Pago Antiguo",
                         "ruta": "erp.reporte.vista.evidencia-pago-antiguo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-backoffice.evidencia-pago-antiguo.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 119,
+                        "nombre": "⚡ EP Antiguo Power BI",
+                        "ruta": "erp.reporte.vista.evidencia-pago-antiguo-powerbi",
                         "url": null,
                         "nivel": 3,
                         "permiso": "reporte-backoffice.evidencia-pago-antiguo.ver",
@@ -967,6 +1050,15 @@
                         "nivel": 3,
                         "permiso": "reporte-atc.ticket.ver",
                         "submenus": []
+                    },
+                    {
+                        "id": 120,
+                        "nombre": "⚡ Ticket Power BI",
+                        "ruta": "erp.reporte.vista.ticket-powerbi",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-atc.ticket.ver",
+                        "submenus": []
                     }
                 ]
             },
@@ -987,6 +1079,15 @@
                         "nivel": 3,
                         "permiso": "reporte-cita.cita.ver",
                         "submenus": []
+                    },
+                    {
+                        "id": 121,
+                        "nombre": "⚡ Cita Power BI",
+                        "ruta": "erp.reporte.vista.cita-powerbi",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-cita.cita.ver",
+                        "submenus": []
                     }
                 ]
             },
@@ -1003,6 +1104,15 @@
                         "id": 112,
                         "nombre": "Reporte Letras",
                         "ruta": "erp.reporte.vista.letra",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reporte-letra.letra.ver",
+                        "submenus": []
+                    },
+                    {
+                        "id": 122,
+                        "nombre": "⚡ Letras Power BI",
+                        "ruta": "erp.reporte.vista.letra-powerbi",
                         "url": null,
                         "nivel": 3,
                         "permiso": "reporte-letra.letra.ver",

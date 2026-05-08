@@ -6,6 +6,7 @@ use App\Models\LibroReclamacion\LibroReclamacion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Ticket extends Model
 {
@@ -132,6 +133,11 @@ class Ticket extends Model
         return $this->hasMany(Ticket::class, 'ticket_padre_id');
     }
 
+    public function libroReclamacion()
+    {
+        return $this->hasOne(LibroReclamacion::class, 'ticket_id');
+    }
+
     public function citas()
     {
         return $this->hasMany(Cita::class);
@@ -236,8 +242,8 @@ class Ticket extends Model
     protected static function booted()
     {
         static::creating(function ($ticket) {
-            if (auth()->check()) {
-                $ticket->created_by = auth()->id();
+            if (Auth::check()) {
+                $ticket->created_by = Auth::id();
             }
 
             // Calcular fecha de vencimiento solo si no se ha definido una manualmente
@@ -253,8 +259,8 @@ class Ticket extends Model
         });
 
         static::updating(function ($ticket) {
-            if (auth()->check()) {
-                $ticket->updated_by = auth()->id();
+            if (Auth::check()) {
+                $ticket->updated_by = Auth::id();
             }
         });
 
@@ -266,8 +272,8 @@ class Ticket extends Model
         });
 
         static::deleting(function ($ticket) {
-            if (auth()->check()) {
-                $ticket->deleted_by = auth()->id();
+            if (Auth::check()) {
+                $ticket->deleted_by = Auth::id();
                 $ticket->saveQuietly();
             }
         });

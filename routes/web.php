@@ -3,7 +3,6 @@
 use App\Http\Controllers\CavaliController;
 use App\Http\Controllers\SlinController;
 use App\Livewire\Web\Sesion\ClienteRegistrarLivewire;
-use App\Livewire\Web\LibroReclamacion\LibroReclamacionLivewire;
 use App\Http\Controllers\Web\VerificationController;
 use App\Http\Controllers\Web\ConsultaCodigoClienteController;
 use Illuminate\Support\Facades\Route;
