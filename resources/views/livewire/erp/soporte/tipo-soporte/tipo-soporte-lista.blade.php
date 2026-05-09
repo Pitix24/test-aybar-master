@@ -7,9 +7,9 @@
         <h2>Tipos de Soporte</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('tipo-soporte.vista-crear')
-                <a href="{{ route('erp.tipo-soporte.vista.crear') }}" class="g_boton primary">
-                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            @can('soporte.supervisor')
+            <a href="{{ route('erp.tipo-soporte.vista.crear') }}" class="g_boton primary">
+                Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
         </div>
     </div>
@@ -68,63 +68,63 @@
 
                 <tbody>
                     @foreach ($items as $index => $item)
-                        <tr wire:key="tipo-soporte-{{ $item->id }}">
-                            <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
-                            <td class="g_celda_centro">
-                                <i class="{{ $item->icono ?? 'fa-solid fa-circle' }}"
-                                    style="color: {{ $item->color ?? '#64748b' }};"></i>
-                            </td>
-                            <td class="g_resaltar">{{ $item->nombre }}</td>
-                            <td>
-                                <span class="g_badge g_badge_soft" style="color: {{ $item->color }};">
-                                    {{ strtoupper($item->color) }}
-                                </span>
-                            </td>
-                            <td class="g_celda_centro">
-                                @if($item->activo)
-                                    <span class="g_badge success">Activo</span>
-                                @else
-                                    <span class="g_badge danger">Inactivo</span>
-                                @endif
-                            </td>
+                    <tr wire:key="tipo-soporte-{{ $item->id }}">
+                        <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
+                        <td class="g_celda_centro">
+                            <i class="{{ $item->icono ?? 'fa-solid fa-circle' }}"
+                                style="color: {{ $item->color ?? '#64748b' }};"></i>
+                        </td>
+                        <td class="g_resaltar">{{ $item->nombre }}</td>
+                        <td>
+                            <span class="g_badge g_badge_soft" style="color: {{ $item->color }};">
+                                {{ strtoupper($item->color) }}
+                            </span>
+                        </td>
+                        <td class="g_celda_centro">
+                            @if($item->activo)
+                            <span class="g_badge success">Activo</span>
+                            @else
+                            <span class="g_badge danger">Inactivo</span>
+                            @endif
+                        </td>
 
-                            <td class="g_celda_acciones g_celda_centro centro">
-                                @can('tipo-soporte.vista-ver')
-                                    <a href="{{ route('erp.tipo-soporte.vista.ver', $item->id) }}" class="g_accion ver"
-                                        title="Ver detalle">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </a>
-                                @endcan
+                        <td class="g_celda_acciones g_celda_centro centro">
+                            @can('soporte.supervisor')
+                            <a href="{{ route('erp.tipo-soporte.vista.ver', $item->id) }}" class="g_accion ver"
+                                title="Ver detalle">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            @endcan
 
-                                @can('tipo-soporte.vista-editar')
-                                    <a href="{{ route('erp.tipo-soporte.vista.editar', $item->id) }}" class="g_accion editar"
-                                        title="Editar">
-                                        <i class="fa-solid fa-pencil"></i>
-                                    </a>
-                                @endcan
-                            </td>
-                        </tr>
+                            @can('soporte.supervisor')
+                            <a href="{{ route('erp.tipo-soporte.vista.editar', $item->id) }}" class="g_accion editar"
+                                title="Editar">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            @endcan
+                        </td>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
 
         @if ($items->hasPages())
-            <div class="g_paginacion">
-                {{ $items->links('vendor.pagination.default-livewire') }}
-            </div>
+        <div class="g_paginacion">
+            {{ $items->links('vendor.pagination.default-livewire') }}
+        </div>
         @endif
 
         @if ($items->isEmpty())
-            <div class="g_vacio">
-                <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay registros.' }}</p>
-                <i class="fa-regular fa-face-meh"></i>
-            </div>
+        <div class="g_vacio">
+            <p>{{ $buscar ? 'No se encontraron resultados para "' . $buscar . '"' : 'No hay registros.' }}</p>
+            <i class="fa-regular fa-face-meh"></i>
+        </div>
         @else
-            <div class="g_paginacion">
-                Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
-                de {{ $items->total() }} registros
-            </div>
+        <div class="g_paginacion">
+            Mostrando {{ $items->firstItem() ?? 0 }} – {{ $items->lastItem() ?? 0 }}
+            de {{ $items->total() }} registros
+        </div>
         @endif
     </div>
 </div>

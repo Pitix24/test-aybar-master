@@ -5,9 +5,9 @@
         <h2>Crear Estado de Soporte</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('estado-soporte.vista-lista')
-                <a href="{{ route('erp.estado-soporte.vista.lista') }}" class="g_boton light">
-                    Lista <i class="fa-solid fa-list"></i></a>
+            @can('soporte.supervisor')
+            <a href="{{ route('erp.estado-soporte.vista.lista') }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -37,7 +37,7 @@
                             </span>
 
                             @error('activo')
-                                <p class="mensaje_error">{{ $message }}</p>
+                            <p class="mensaje_error">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                         <input type="text" id="nombre" wire:model.blur="nombre"
                             class="@error('nombre') input-error @enderror" autocomplete="off">
                         @error('nombre')
-                            <p class="mensaje_error">{{ $message }}</p>
+                        <p class="mensaje_error">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -61,7 +61,7 @@
                             <input type="color" id="color" wire:model.blur="color"
                                 class="@error('color') input-error @enderror">
                             @error('color')
-                                <p class="mensaje_error">{{ $message }}</p>
+                            <p class="mensaje_error">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -72,7 +72,7 @@
                             <input type="text" id="icono" wire:model.blur="icono" placeholder="fa-solid fa-circle-info"
                                 class="@error('icono') input-error @enderror" autocomplete="off">
                             @error('icono')
-                                <p class="mensaje_error">{{ $message }}</p>
+                            <p class="mensaje_error">{{ $message }}</p>
                             @enderror
                             <p class="leyenda">Ej: fa-solid fa-folder-open, fa-solid fa-circle-check</p>
                         </div>
@@ -80,14 +80,14 @@
 
                     <div class="formulario_botones">
                         @can('estado-soporte.accion-crear')
-                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
-                                <span wire:loading.remove wire:target="store">
-                                    <i class="fa-solid fa-save"></i> Crear
-                                </span>
-                                <span wire:loading wire:target="store">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Creando...
-                                </span>
-                            </button>
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="store">
+                            <span wire:loading.remove wire:target="store">
+                                <i class="fa-solid fa-save"></i> Crear
+                            </span>
+                            <span wire:loading wire:target="store">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Creando...
+                            </span>
+                        </button>
                         @endcan
 
                         <button type="button" class="g_boton cancelar" onclick="history.back()">

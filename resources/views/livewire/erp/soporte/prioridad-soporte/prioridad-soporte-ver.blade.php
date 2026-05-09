@@ -3,14 +3,14 @@
         <h2>Detalle de Prioridad de Soporte</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('prioridad-soporte.vista-lista')
-                <a href="{{ route('erp.prioridad-soporte.vista.lista') }}" class="g_boton light">
-                    Lista <i class="fa-solid fa-list"></i></a>
+            @can('soporte.supervisor')
+            <a href="{{ route('erp.prioridad-soporte.vista.lista') }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('prioridad-soporte.vista-editar')
-                <a href="{{ route('erp.prioridad-soporte.vista.editar', $prioridad->id) }}" class="g_boton primary">
-                    Editar <i class="fa-solid fa-pencil"></i></a>
+            @can('soporte.supervisor')
+            <a href="{{ route('erp.prioridad-soporte.vista.editar', $prioridad->id) }}" class="g_boton primary">
+                Editar <i class="fa-solid fa-pencil"></i></a>
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -36,9 +36,9 @@
                             <label>Estado</label>
                             <p>
                                 @if($prioridad->activo)
-                                    <span class="g_badge success">Activo</span>
+                                <span class="g_badge success">Activo</span>
                                 @else
-                                    <span class="g_badge danger">Inactivo</span>
+                                <span class="g_badge danger">Inactivo</span>
                                 @endif
                             </p>
                         </div>
@@ -59,7 +59,7 @@
                                     style="width: 30px; height: 30px; background-color: {{ $prioridad->color ?? '#64748b' }}; border-radius: 4px; border: 1px solid #e5e7eb;">
                                 </div>
                                 <span class="g_badge g_badge_soft" style="color: {{ $prioridad->color }};">{{
-    strtoupper($prioridad->color) }}</span>
+                                    strtoupper($prioridad->color) }}</span>
                             </div>
                         </div>
                     </div>
