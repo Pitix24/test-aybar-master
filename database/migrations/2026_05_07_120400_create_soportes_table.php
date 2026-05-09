@@ -8,9 +8,10 @@ return new class extends Migration {
     /**
      * Reemplazar el stub vacío con el schema completo:
      * id, codigo (auto-generado, ej: SP-0001)
-     * tipo (BUG, MEJORA, IMPLEMENTACION, CONSULTA)
-     * prioridad (BAJA, MEDIA, ALTA, CRITICA)
-     * estado (ABIERTO, EN_PROGRESO, EN_REVISION, RESUELTO, CERRADO)
+     * tipo_soporte_id (FK tipo_soportes)
+     * prioridad_soporte_id (FK prioridad_soportes)
+     * estado_soporte_id (FK estado_soportes)
+     * area_id (FK areas)
      * titulo (string 255, required)
      * descripcion (text, required)
      * solicitante_id → FK users (quien crea)
@@ -26,9 +27,10 @@ return new class extends Migration {
         Schema::create('soportes', function (Blueprint $table) {
             $table->id();
             $table->string('codigo')->unique();
-            $table->enum('tipo', ['BUG', 'MEJORA', 'IMPLEMENTACION', 'CONSULTA']);
-            $table->enum('prioridad', ['BAJA', 'MEDIA', 'ALTA', 'CRITICA']);
-            $table->enum('estado', ['ABIERTO', 'EN_PROGRESO', 'EN_REVISION', 'RESUELTO', 'CERRADO']);
+            $table->foreignId('tipo_soporte_id')->nullable()->constrained('tipo_soportes');
+            $table->foreignId('prioridad_soporte_id')->nullable()->constrained('prioridad_soportes');
+            $table->foreignId('estado_soporte_id')->nullable()->constrained('estado_soportes');
+            $table->foreignId('area_id')->nullable()->constrained('areas')->nullOnDelete();
             $table->string('titulo');
             $table->text('descripcion');
             $table->foreignId('solicitante_id')->constrained('users');
