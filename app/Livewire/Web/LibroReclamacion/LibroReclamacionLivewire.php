@@ -583,25 +583,29 @@ class LibroReclamacionLivewire extends Component
 
     protected function resolverTipoSolicitudTicketId(): ?int
     {
-        $tipoSolicitudId = (int) config('libro_reclamacion_ticket.ticket_autocreacion.tipo_solicitud_id', 0);
+        $tipoSolicitudNombres = array_filter(array_map('trim', [
+            (string) config('libro_reclamacion_ticket.ticket_autocreacion.tipo_solicitud_nombre', 'LIBRO DE RECLAMACION'),
+            'LIBRO DE RECLAMACION',
+            'LIBRO DE RECLAMACIONES',
+        ]));
 
-        if ($tipoSolicitudId > 0) {
-            $existe = TipoSolicitud::query()->whereKey($tipoSolicitudId)->exists();
+        foreach ($tipoSolicitudNombres as $tipoSolicitudNombre) {
+            $tipoSolicitudId = TipoSolicitud::query()
+                ->whereRaw('UPPER(nombre) = ?', [mb_strtoupper($tipoSolicitudNombre)])
+                ->value('id');
 
-            if ($existe) {
-                return $tipoSolicitudId;
+            if ($tipoSolicitudId) {
+                return (int) $tipoSolicitudId;
             }
         }
 
-        $tipoSolicitudNombre = trim((string) config('libro_reclamacion_ticket.ticket_autocreacion.tipo_solicitud_nombre', 'LIBRO DE RECLAMACIONES'));
+        $tipoSolicitudId = (int) config('libro_reclamacion_ticket.ticket_autocreacion.tipo_solicitud_id', 0);
 
-        if ($tipoSolicitudNombre === '') {
-            return null;
+        if ($tipoSolicitudId > 0 && TipoSolicitud::query()->whereKey($tipoSolicitudId)->exists()) {
+            return $tipoSolicitudId;
         }
 
-        return TipoSolicitud::query()
-            ->whereRaw('UPPER(nombre) = ?', [mb_strtoupper($tipoSolicitudNombre)])
-            ->value('id');
+        return null;
     }
 
     protected function resolverSubTipoSolicitudTicketId(string $tipoPedido): ?int
