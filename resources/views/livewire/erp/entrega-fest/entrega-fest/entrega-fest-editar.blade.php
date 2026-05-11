@@ -1,25 +1,26 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="update, agregarProyecto, quitarProyecto" message="Procesando..." />
+    <x-loading-overlay wire:loading wire:target="update, agregarProyecto, quitarProyecto, eliminarEntregaFestOn"
+        message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar Entrega Fest</h2>
 
         <div class="cabecera_titulo_botones">
             @can('entrega-fest.lista')
-                <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
-                    Lista <i class="fa-solid fa-list"></i></a>
+            <a href="{{ route('erp.entrega-fest.vista.todo') }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
             @can('entrega-fest.ver-panel')
-                <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
-                    <i class="fa-solid fa-grip"></i> Panel de Gestión
-                </a>
+            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Gestión
+            </a>
             @endcan
 
             @can('entrega-fest.eliminar')
-                <button type="button" class="g_boton danger" onclick="confirmarEliminarCanal()">
-                    Eliminar <i class="fa-solid fa-trash-can"></i>
-                </button>
+            <button type="button" class="g_boton danger" onclick="confirmarEliminarEntregaFest()">
+                Eliminar <i class="fa-solid fa-trash-can"></i>
+            </button>
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -99,7 +100,7 @@
                                 <select wire:model="gestor_id">
                                     <option value="">Seleccione...</option>
                                     @foreach ($gestores as $g)
-                                        <option value="{{ $g->id }}">{{ $g->name }}</option>
+                                    <option value="{{ $g->id }}">{{ $g->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -113,34 +114,34 @@
                     </form>
 
                     @if (!empty($proyectos_agregados))
-                        <div class="g_margin_top_20">
-                            <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Proyectos vinculados</h4>
-                            <div class="g_contenedor_tabla">
-                                <table class="g_tabla">
-                                    <thead>
-                                        <tr>
-                                            <th>Empresa</th>
-                                            <th>Proyecto</th>
-                                            <th class="g_celda_centro">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($proyectos_agregados as $p)
-                                            <tr wire:key="p-agregado-{{ $p['id'] }}">
-                                                <td class="g_negrita">{{ $p['unidad_negocio_nombre'] }}</td>
-                                                <td>ID: {{ $p['id'] }} - {{ $p['nombre'] }} </td>
-                                                <td class="g_celda_centro">
-                                                    <button type="button" wire:click="quitarProyecto({{ $p['id'] }})"
-                                                        class="g_boton danger small">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="g_margin_top_20">
+                        <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Proyectos vinculados</h4>
+                        <div class="g_contenedor_tabla">
+                            <table class="g_tabla">
+                                <thead>
+                                    <tr>
+                                        <th>Empresa</th>
+                                        <th>Proyecto</th>
+                                        <th class="g_celda_centro">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($proyectos_agregados as $p)
+                                    <tr wire:key="p-agregado-{{ $p['id'] }}">
+                                        <td class="g_negrita">{{ $p['unidad_negocio_nombre'] }}</td>
+                                        <td>ID: {{ $p['id'] }} - {{ $p['nombre'] }} </td>
+                                        <td class="g_celda_centro">
+                                            <button type="button" wire:click="quitarProyecto({{ $p['id'] }})"
+                                                class="g_boton danger small">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
                     @endif
                 </div>
 
@@ -176,7 +177,7 @@
                     <select wire:model.live="unidad_negocio_id">
                         <option value="">Seleccione...</option>
                         @foreach ($unidades_negocios as $u)
-                            <option value="{{ $u->id }}">{{ $u->nombre }}</option>
+                        <option value="{{ $u->id }}">{{ $u->nombre }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -185,7 +186,7 @@
                     <select wire:model="proyecto_id" {{ !$unidad_negocio_id ? 'disabled' : '' }}>
                         <option value="">Seleccione proyecto...</option>
                         @foreach ($proyectos as $p)
-                            <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                        <option value="{{ $p->id }}">{{ $p->nombre }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -203,3 +204,24 @@
         </div>
     </div>
 </div>
+
+@script
+<script>
+    window.confirmarEliminarEntregaFest = function () {
+        Swal.fire({
+            title: '¿Quieres eliminar este evento?',
+            text: 'Esta acción eliminará el Entrega Fest y sus datos relacionados. No se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '¡Sí, eliminar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $wire.eliminarEntregaFestOn();
+            }
+        });
+    }
+</script>
+@endscript
