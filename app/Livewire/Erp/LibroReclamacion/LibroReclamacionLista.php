@@ -158,8 +158,8 @@ class LibroReclamacionLista extends Component
 
         $resueltos = !empty($estadosCerrado)
             ? (clone $baseQuery)
-                ->whereHas('ticketRelacionado', fn($q) => $q->whereIn('estado_ticket_id', $estadosCerrado))
-                ->count()
+            ->whereHas('ticketRelacionado', fn($q) => $q->whereIn('estado_ticket_id', $estadosCerrado))
+            ->count()
             : 0;
 
         // Pendientes: tienen ticket relacionado en estados de gestión activa
@@ -187,14 +187,18 @@ class LibroReclamacionLista extends Component
             ->where('clasificacion', 'NO_PROCEDE')
             ->count();
 
-        $minFecha = (clone $baseQuery)->min('created_at');
+        // El promedio por día debe medir la antigüedad real del módulo,
+        // por eso toma el primer libro registrado en toda la tabla.
+        $minFecha = LibroReclamacion::query()->min('created_at');
         $dias = 1;
+        $fechaBasePromedio = null;
         if ($minFecha) {
+            $fechaBasePromedio = Carbon::parse($minFecha);
             // +1 para incluir tanto el día inicial como el día actual en el rango
-            $dias = Carbon::now()->startOfDay()->diffInDays(Carbon::parse($minFecha)->startOfDay()) + 1;
+            $dias = $fechaBasePromedio->copy()->startOfDay()->diffInDays(Carbon::now()->startOfDay(), true) + 1;
         }
         $dias = max(1, $dias);
-        $promedio = round($total / $dias, 2);
+        $promedio = (int) round($total / $dias);
 
         $this->stats = [
             'total' => $total,
@@ -203,6 +207,7 @@ class LibroReclamacionLista extends Component
             'no_procede' => $no_procede,
             'promedio_por_dia' => $promedio,
             'dias' => $dias,
+            'fecha_base_promedio' => $fechaBasePromedio?->format('d/m/Y'),
         ];
     }
 

@@ -47,6 +47,7 @@
                         <span class="informacion_resumen_label">Lote</span>
                         <span class="informacion_resumen_valor">{{ $reclamo_registrado->lote ?: 'N/D' }}</span>
                     </div>
+                    {{-- Si se detecta proyecto elegido por el cliente --}}
                     @if($reclamo_registrado->proyecto_id)
                     <div class="informacion_resumen_item">
                         <span class="informacion_resumen_label">Proyecto</span>
@@ -55,26 +56,36 @@
                     </div>
                     <div class="informacion_resumen_item">
                         <span class="informacion_resumen_label">Proveedor</span>
-                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->unidad?->razon_social ?: 'N/D'
+                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->unidadNegocio?->razon_social ?:
+                            'N/D'
+                            }}</span>
+                    </div>
+                    <div class="informacion_resumen_item">
+                        <span class="informacion_resumen_label">RUC</span>
+                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->unidadNegocio?->ruc ?: 'N/D'
                             }}</span>
                     </div>
                     <div class="informacion_resumen_item">
                         <span class="informacion_resumen_label">Dirección</span>
-                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->direccion ?: 'N/D' }}</span>
+                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->unidadNegocio?->direccion ?:
+                            'N/D' }}</span>
                     </div>
                     <div class="informacion_resumen_item">
                         <span class="informacion_resumen_label">Departamento</span>
-                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->region?->nombre ?: 'N/D'
+                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->unidadNegocio?->region?->nombre
+                            ?: 'N/D'
                             }}</span>
                     </div>
                     <div class="informacion_resumen_item">
                         <span class="informacion_resumen_label">Provincia</span>
-                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->provincia?->nombre ?: 'N/D'
+                        <span class="informacion_resumen_valor">{{
+                            $reclamo_registrado->unidadNegocio?->provincia?->nombre ?: 'N/D'
                             }}</span>
                     </div>
                     <div class="informacion_resumen_item">
                         <span class="informacion_resumen_label">Distrito</span>
-                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->distrito?->nombre ?: 'N/D'
+                        <span class="informacion_resumen_valor">{{
+                            $reclamo_registrado->unidadNegocio?->distrito?->nombre ?: 'N/D'
                             }}</span>
                     </div>
                     @endif
@@ -82,8 +93,8 @@
                     @if($reclamo_registrado->es_cliente_menor == true)
                     <div class="informacion_resumen_item">
                         <span class="informacion_resumen_label">Nombre del representante legal</span>
-                        <span class="informacion_resumen_valor">{{ $reclamo_registrado->representante_legal_nombre ?:
-                            'N/D' }}</span>
+                        <span class="informacion_resumen_valor">{{
+                            $reclamo_registrado->representante_legal_nombre ?: 'N/D' }}</span>
                     </div>
                     <div class="informacion_resumen_item">
                         <span class="informacion_resumen_label">Apellido paterno del representante legal</span>
