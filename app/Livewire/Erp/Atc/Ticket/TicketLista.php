@@ -202,7 +202,7 @@ class TicketLista extends Component
             'creado_por_id',
         ]);
 
-        // Seteamos a string vacío en lugar de null (reset default) 
+        // Seteamos a string vacío en lugar de null (reset default)
         // para que mount() no vuelva a aplicar los filtros automáticos
         $this->usuario_admin_id = '';
         $this->desde = '';
