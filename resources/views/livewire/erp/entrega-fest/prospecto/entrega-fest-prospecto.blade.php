@@ -351,13 +351,11 @@
                             @endforeach
                         </td>
                         <td>{{ $p->proyecto->nombre ?? 'N/A' }}</td>
-                        <td>{{ $p->reubicadoProyecto?->nombre ?? 'N/A' }}</td>
+                        <td>{{ $p->reubicadoProyecto?->nombre }}</td>
                         <td>{{ $p->manzana }}-{{ $p->lote }}</td>
                         <td>
                             @if ($p->reubicado_manzana || $p->reubicado_lote)
                             {{ $p->reubicado_manzana }}-{{ $p->reubicado_lote }}
-                            @else
-                            N/A
                             @endif
                         </td>
                         <td class="g_celda_centro">
