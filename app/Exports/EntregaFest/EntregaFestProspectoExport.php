@@ -48,7 +48,7 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
     public function collection()
     {
         $query = ProspectoEntregaFest::query()
-            ->with(['proyecto', 'user', 'invitado', 'gestor', 'validador', 'estadoCliente'])
+            ->with(['proyecto', 'reubicadoProyecto', 'user', 'invitado', 'gestor', 'validador', 'estadoCliente'])
             ->where('entrega_fest_id', $this->entrega_fest_id);
 
         if (!$this->todo) {
@@ -68,7 +68,12 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
                         });
                 });
             })
-                ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
+                ->when($this->proyecto_id, function ($q) {
+                    $q->where(function ($sub) {
+                        $sub->where('proyecto_id', $this->proyecto_id)
+                            ->orWhere('reubicado_proyecto_id', $this->proyecto_id);
+                    });
+                })
                 ->when($this->estado_backoffice, fn($q) => $q->where('estado_backoffice', $this->estado_backoffice))
                 ->when($this->estado_contrato_preeliminar_emitido, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $this->estado_contrato_preeliminar_emitido))
                 ->when($this->estado_firma_contrato_firmado, fn($q) => $q->where('estado_firma_contrato_firmado', $this->estado_firma_contrato_firmado))
@@ -90,7 +95,7 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
         $index++;
 
         // Helper para booleanos de invitación
-        $formatConfirmacion = function($val) {
+        $formatConfirmacion = function ($val) {
             if (is_null($val)) return 'PENDIENTE';
             return $val ? 'SÍ' : 'NO';
         };
@@ -99,12 +104,14 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
             $index,
             $p->id,
             $p->proyecto->nombre ?? 'N/A',
+            $p->reubicadoProyecto?->nombre ?? 'N/A',
             $p->dni,
             $p->nombres,
             $p->email,
             $p->celular,
             $p->manzana,
             $p->lote,
+            ($p->reubicado_manzana || $p->reubicado_lote) ? (($p->reubicado_manzana ?? '') . '-' . ($p->reubicado_lote ?? '')) : 'N/A',
             $p->estadoCliente->nombre ?? 'ADENDA',
             $formatConfirmacion($p->preinvitacion_confirmada),
             $formatConfirmacion($p->invitacion_confirmada),
@@ -134,12 +141,14 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
             'N°',
             'ID Prospecto',
             'Proyecto',
+            'Proyecto Reubicado',
             'DNI',
             'Propietario',
             'Email',
             'Celular',
             'Manzana',
             'Lote',
+            'Mz-Lt Reubicado',
             'Estado Cliente',
             'Pre-invitación Conf.',
             'Invitación Conf.',

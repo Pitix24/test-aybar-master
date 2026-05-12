@@ -32,6 +32,8 @@ class EntregaFestProspectoEditar extends Component
     // Campos del prospecto
     public $proyecto_id = '', $dni = '', $nombres = '', $email = '', $celular = '';
     public $lote = '', $manzana = '', $estado_cliente_id = '';
+    // Reubicación
+    public $reubicado_proyecto_id = '', $reubicado_lote = '', $reubicado_manzana = '';
 
     // BackOffice
     public $grupo, $gestor_backoffice_id = '', $gestor_fecha_asignacion, $fecha_culminacion_eecc, $link_carpeta_eecc, $link_eecc_firmado;
@@ -142,6 +144,11 @@ class EntregaFestProspectoEditar extends Component
         $this->lote = $this->prospecto->lote;
         $this->manzana = $this->prospecto->manzana;
         $this->estado_cliente_id = $this->prospecto->estado_cliente_id;
+
+        // Reubicación (no sobrescribe los datos originales)
+        $this->reubicado_proyecto_id = $this->prospecto->reubicado_proyecto_id ?? $this->prospecto->proyecto_id;
+        $this->reubicado_lote = $this->prospecto->reubicado_lote;
+        $this->reubicado_manzana = $this->prospecto->reubicado_manzana;
 
         // BackOffice
         $this->grupo = $this->prospecto->grupo;
@@ -412,6 +419,27 @@ class EntregaFestProspectoEditar extends Component
             'manzana' => $this->manzana,
             'estado_cliente_id' => $this->estado_cliente_id,
         ], 'PROSPECTO EDITAR - BASICO');
+    }
+
+    public function updateReubicacion()
+    {
+        $this->authorize('prospecto.editar');
+
+        $rules = [
+            'reubicado_proyecto_id' => 'nullable|exists:proyectos,id',
+            'reubicado_lote' => 'nullable|string|max:20',
+            'reubicado_manzana' => 'nullable|string|max:20',
+        ];
+
+        $this->validate($rules);
+
+        $data = [
+            'reubicado_proyecto_id' => $this->reubicado_proyecto_id ?: null,
+            'reubicado_lote' => $this->reubicado_lote ?: null,
+            'reubicado_manzana' => $this->reubicado_manzana ?: null,
+        ];
+
+        $this->handleUpdate($data, 'PROSPECTO EDITAR - REUBICACION');
     }
 
     public function updateBackoffice()

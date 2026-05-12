@@ -31,7 +31,7 @@
             <select wire:model="proyecto_id" class="@error('proyecto_id') select-error @enderror">
                 <option value="">Seleccione...</option>
                 @foreach ($proyectos as $p)
-                    <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                <option value="{{ $p->id }}">{{ $p->nombre }}</option>
                 @endforeach
             </select>
             @error('proyecto_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -52,7 +52,7 @@
             <select wire:model="estado_cliente_id" class="@error('estado_cliente_id') select-error @enderror">
                 <option value="">Seleccione...</option>
                 @foreach ($estados_cliente as $ec)
-                    <option value="{{ $ec->id }}">{{ $ec->nombre }}</option>
+                <option value="{{ $ec->id }}">{{ $ec->nombre }}</option>
                 @endforeach
             </select>
             @error('estado_cliente_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -61,9 +61,42 @@
 
     <div class="g_tab_form_buttons">
         @can('prospecto.editar')
-            <button type="submit" class="g_boton guardar">
-                <i class="fa-solid fa-save"></i> Actualizar Datos Personales
-            </button>
+        <button type="submit" class="g_boton guardar">
+            <i class="fa-solid fa-save"></i> Actualizar Datos Personales
+        </button>
+        @endcan
+    </div>
+</form>
+
+<div class="g_panel_seccion_divider" style="margin-top:12px"></div>
+<form wire:submit.prevent="updateReubicacion" class="formulario">
+    <h4 class="g_negrita" style="margin-bottom:8px">Reubicación</h4>
+
+    <div class="g_fila">
+        <div class="g_margin_bottom_10 g_columna_4">
+            <label>Proyecto Reubicado</label>
+            <select wire:model="reubicado_proyecto_id">
+                <option value="">Seleccione...</option>
+                @foreach ($proyectos as $p)
+                <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="g_margin_bottom_10 g_columna_4">
+            <label>Manzana Reubicada</label>
+            <input type="text" wire:model="reubicado_manzana">
+        </div>
+        <div class="g_margin_bottom_10 g_columna_4">
+            <label>Lote Reubicado</label>
+            <input type="text" wire:model="reubicado_lote">
+        </div>
+    </div>
+
+    <div class="g_tab_form_buttons">
+        @can('prospecto.editar')
+        <button type="submit" class="g_boton info">
+            <i class="fa-solid fa-location-dot"></i> Registrar Reubicación
+        </button>
         @endcan
     </div>
 </form>
