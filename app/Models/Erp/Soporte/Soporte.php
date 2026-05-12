@@ -118,4 +118,11 @@ class Soporte extends Model
     {
         return $this->belongsTo(User::class, 'deleted_by');
     }
+
+    // ─── Relación Polimórfica con Archivos ─────────────────────────────────────
+
+    public function archivos()
+    {
+        return $this->morphMany(SoporteArchivo::class, 'archivable');
+    }
 }

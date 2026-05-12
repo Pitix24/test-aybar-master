@@ -23,7 +23,7 @@
                 <select wire:model.live="tipo_soporte_id" class="@error('tipo_soporte_id') input-error @enderror">
                     <option value="">Seleccione...</option>
                     @foreach ($tipos as $t)
-                        <option value="{{ $t->id }}">{{ $t->nombre }}</option>
+                    <option value="{{ $t->id }}">{{ $t->nombre }}</option>
                     @endforeach
                 </select>
                 @error('tipo_soporte_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -35,7 +35,7 @@
                     class="@error('prioridad_soporte_id') input-error @enderror">
                     <option value="">Seleccione...</option>
                     @foreach ($prioridades as $p)
-                        <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                    <option value="{{ $p->id }}">{{ $p->nombre }}</option>
                     @endforeach
                 </select>
                 @error('prioridad_soporte_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -46,7 +46,7 @@
                 <select wire:model.live="estado_soporte_id" class="@error('estado_soporte_id') input-error @enderror">
                     <option value="">Seleccione...</option>
                     @foreach ($estados as $e)
-                        <option value="{{ $e->id }}">{{ $e->nombre }}</option>
+                    <option value="{{ $e->id }}">{{ $e->nombre }}</option>
                     @endforeach
                 </select>
                 @error('estado_soporte_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -57,7 +57,7 @@
                 <select wire:model.live="area_id" class="@error('area_id') input-error @enderror">
                     <option value="">Sin área asignada</option>
                     @foreach ($areas as $a)
-                        <option value="{{ $a->id }}">{{ $a->nombre }}</option>
+                    <option value="{{ $a->id }}">{{ $a->nombre }}</option>
                     @endforeach
                 </select>
                 @error('area_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -91,7 +91,7 @@
                     <select wire:model.live="solicitante_id" class="@error('solicitante_id') input-error @enderror">
                         <option value="">Sin solicitante</option>
                         @foreach ($solicitantes as $s)
-                            <option value="{{ $s->id }}">{{ $s->name }}</option>
+                        <option value="{{ $s->id }}">{{ $s->name }}</option>
                         @endforeach
                     </select>
                     @error('solicitante_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -102,7 +102,7 @@
                     <select wire:model.live="gestor_id" class="@error('gestor_id') input-error @enderror">
                         <option value="">Sin asignar</option>
                         @foreach ($gestores as $g)
-                            <option value="{{ $g->id }}">{{ $g->name }}</option>
+                        <option value="{{ $g->id }}">{{ $g->name }}</option>
                         @endforeach
                     </select>
                     @error('gestor_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -112,19 +112,22 @@
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Creado</label>
-                    <input class="input-disabled" type="text" value="{{ $soporte->created_at?->format('d/m/Y H:i') ?? '—' }}"
+                    <input class="input-disabled" type="text"
+                        value="{{ $soporte->created_at?->format('d/m/Y H:i') ?? '—' }}"
                         class="@error('created_at') input-error @enderror" disabled>
                     @error('created_at') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Asignado</label>
-                    <input class="input-disabled" type="text" value="{{ $soporte->assigned_at?->format('d/m/Y H:i') ?? 'Pendiente' }}"
+                    <input class="input-disabled" type="text"
+                        value="{{ $soporte->assigned_at?->format('d/m/Y H:i') ?? 'Pendiente' }}"
                         class="@error('assigned_at') input-error @enderror" disabled>
                     @error('assigned_at') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
                 <div class="g_margin_bottom_10 g_columna_4">
                     <label>Resuelto</label>
-                    <input class="input-disabled" type="text" value="{{ $soporte->resuelto_at?->format('d/m/Y H:i') ?? 'Pendiente' }}"
+                    <input class="input-disabled" type="text"
+                        value="{{ $soporte->resuelto_at?->format('d/m/Y H:i') ?? 'Pendiente' }}"
                         class="@error('resuelto_at') input-error @enderror" disabled>
                     @error('resuelto_at') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
@@ -142,36 +145,36 @@
             </button>
 
             @if ($soporte->estadoSoporte?->nombre === 'ABIERTO')
-                <button type="button" wire:click="asignarGestor" class="g_boton success" wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="asignarGestor">
-                        <i class="fa-solid fa-user-check"></i> Asignarse
-                    </span>
-                    <span wire:loading wire:target="asignarGestor">
-                        <i class="fa-solid fa-spinner fa-spin"></i>
-                    </span>
-                </button>
+            <button type="button" wire:click="asignarGestor" class="g_boton success" wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="asignarGestor">
+                    <i class="fa-solid fa-user-check"></i> Asignarse
+                </span>
+                <span wire:loading wire:target="asignarGestor">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </span>
+            </button>
             @endif
 
             @if ($soporte->estadoSoporte?->nombre === 'EN_PROGRESO' && $soporte->gestor_id === Auth::id())
-                <button type="button" wire:click="marcarResuelto" class="g_boton warning" wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="marcarResuelto">
-                        <i class="fa-solid fa-check"></i> Marcar Resuelto
-                    </span>
-                    <span wire:loading wire:target="marcarResuelto">
-                        <i class="fa-solid fa-spinner fa-spin"></i>
-                    </span>
-                </button>
+            <button type="button" wire:click="marcarResuelto" class="g_boton warning" wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="marcarResuelto">
+                    <i class="fa-solid fa-check"></i> Marcar Resuelto
+                </span>
+                <span wire:loading wire:target="marcarResuelto">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </span>
+            </button>
             @endif
 
             @if (in_array($soporte->estadoSoporte?->nombre, ['RESUELTO', 'EN_PROGRESO']))
-                <button type="button" wire:click="cerrar" class="g_boton danger" wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="cerrar">
-                        <i class="fa-solid fa-lock"></i> Cerrar
-                    </span>
-                    <span wire:loading wire:target="cerrar">
-                        <i class="fa-solid fa-spinner fa-spin"></i>
-                    </span>
-                </button>
+            <button type="button" wire:click="cerrar" class="g_boton danger" wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="cerrar">
+                    <i class="fa-solid fa-lock"></i> Cerrar
+                </span>
+                <span wire:loading wire:target="cerrar">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </span>
+            </button>
             @endif
 
             <button type="button" class="g_boton cancelar" onclick="history.back()">
@@ -179,4 +182,7 @@
             </button>
         </div>
     </form>
+
+    <!-- Componente de Archivos -->
+    <livewire:erp.soporte.soporte-archivo :soporte="$soporte" />
 </div>

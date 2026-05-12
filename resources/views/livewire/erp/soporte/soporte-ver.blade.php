@@ -121,4 +121,7 @@
             </button>
         </div>
     </form>
+
+    <!-- Componente de Archivos -->
+    <livewire:erp.soporte.soporte-archivo :soporte="$soporte" :soloLectura="true" />
 </div>
