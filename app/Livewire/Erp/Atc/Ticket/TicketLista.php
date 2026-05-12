@@ -156,6 +156,62 @@ class TicketLista extends Component
         }
     }
 
+    private function ticketQuery(bool $aplicarGestor = true)
+    {
+        return Ticket::query()
+            ->when($this->buscar, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('id', 'like', "%{$this->buscar}%")
+                        ->orWhere('dni', 'like', "%{$this->buscar}%")
+                        ->orWhere('nombres', 'like', "%{$this->buscar}%");
+                });
+            })
+            ->when($this->unidad_negocio_id, fn($q) => $q->where('unidad_negocio_id', $this->unidad_negocio_id))
+            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
+            ->when($this->estado_id, fn($q) => $q->where('estado_ticket_id', $this->estado_id))
+            ->when($this->area_id, fn($q) => $q->where('area_id', $this->area_id))
+            ->when($this->solicitud_id, fn($q) => $q->where('tipo_solicitud_id', $this->solicitud_id))
+            ->when($this->sub_tipo_solicitud_id, fn($q) => $q->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id))
+            ->when($this->canal_id, fn($q) => $q->where('canal_id', $this->canal_id))
+            ->when($aplicarGestor && $this->usuario_admin_id, fn($q) => $q->where('gestor_id', $this->usuario_admin_id))
+            ->when($this->creado_por_id, fn($q) => $q->where('created_by', $this->creado_por_id))
+            ->when(
+                $this->desde,
+                fn($q) =>
+                $q->whereDate('created_at', '>=', $this->desde)
+            )
+            ->when(
+                $this->hasta,
+                fn($q) =>
+                $q->whereDate('created_at', '<=', $this->hasta)
+            )
+            ->when($this->prioridad_id, fn($q) => $q->where('prioridad_ticket_id', $this->prioridad_id))
+            ->when(
+                $this->con_derivados == '1',
+                fn($q) => $q->whereHas('derivados')
+            )
+            ->when(
+                $this->con_derivados == '0',
+                fn($q) => $q->whereDoesntHave('derivados')
+            )
+            ->when(
+                $this->con_citas == '1',
+                fn($q) => $q->whereHas('citas')
+            )
+            ->when(
+                $this->con_citas == '0',
+                fn($q) => $q->whereDoesntHave('citas')
+            )
+            ->when(
+                $this->con_hijos == '1',
+                fn($q) => $q->whereNotNull('ticket_padre_id')
+            )
+            ->when(
+                $this->con_hijos == '0',
+                fn($q) => $q->whereNull('ticket_padre_id')
+            );
+    }
+
 
     public function updated($property)
     {
@@ -202,7 +258,7 @@ class TicketLista extends Component
             'creado_por_id',
         ]);
 
-        // Seteamos a string vacío en lugar de null (reset default) 
+        // Seteamos a string vacío en lugar de null (reset default)
         // para que mount() no vuelva a aplicar los filtros automáticos
         $this->usuario_admin_id = '';
         $this->desde = '';
@@ -271,60 +327,43 @@ class TicketLista extends Component
 
     public function render()
     {
-        $items = Ticket::query()
-            ->when($this->buscar, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('id', 'like', "%{$this->buscar}%")
-                        ->orWhere('dni', 'like', "%{$this->buscar}%")
-                        ->orWhere('nombres', 'like', "%{$this->buscar}%");
-                });
-            })
-            ->when($this->unidad_negocio_id, fn($q) => $q->where('unidad_negocio_id', $this->unidad_negocio_id))
-            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
-            ->when($this->estado_id, fn($q) => $q->where('estado_ticket_id', $this->estado_id))
-            ->when($this->area_id, fn($q) => $q->where('area_id', $this->area_id))
-            ->when($this->solicitud_id, fn($q) => $q->where('tipo_solicitud_id', $this->solicitud_id))
-            ->when($this->sub_tipo_solicitud_id, fn($q) => $q->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id))
-            ->when($this->canal_id, fn($q) => $q->where('canal_id', $this->canal_id))
+        $baseQuery = $this->ticketQuery(false);
+
+        $items = (clone $baseQuery)
             ->when($this->usuario_admin_id, fn($q) => $q->where('gestor_id', $this->usuario_admin_id))
-            ->when($this->creado_por_id, fn($q) => $q->where('created_by', $this->creado_por_id))
-            ->when(
-                $this->desde,
-                fn($q) =>
-                $q->whereDate('created_at', '>=', $this->desde)
-            )
-            ->when(
-                $this->hasta,
-                fn($q) =>
-                $q->whereDate('created_at', '<=', $this->hasta)
-            )
-            ->when($this->prioridad_id, fn($q) => $q->where('prioridad_ticket_id', $this->prioridad_id))
-            ->when(
-                $this->con_derivados == '1',
-                fn($q) => $q->whereHas('derivados')
-            )
-            ->when(
-                $this->con_derivados == '0',
-                fn($q) => $q->whereDoesntHave('derivados')
-            )
-            ->when(
-                $this->con_citas == '1',
-                fn($q) => $q->whereHas('citas')
-            )
-            ->when(
-                $this->con_citas == '0',
-                fn($q) => $q->whereDoesntHave('citas')
-            )
-            ->when(
-                $this->con_hijos == '1',
-                fn($q) => $q->whereNotNull('ticket_padre_id')
-            )
-            ->when(
-                $this->con_hijos == '0',
-                fn($q) => $q->whereNull('ticket_padre_id')
-            )
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
+
+        $gestorIds = (clone $baseQuery)
+            ->whereNotNull('gestor_id')
+            ->distinct()
+            ->pluck('gestor_id');
+
+        $gestoresDeTickets = User::query()
+            ->withTrashed()
+            ->whereIn('id', $gestorIds)
+            ->get();
+
+        $gestoresConPermiso = User::permission('atc.gestor')->get();
+
+        $this->usuarios_admin = $gestoresConPermiso
+            ->concat($gestoresDeTickets)
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+        if ($this->usuario_admin_id) {
+            $gestorSeleccionado = User::withTrashed()->find($this->usuario_admin_id);
+
+            if ($gestorSeleccionado) {
+                $this->usuarios_admin = $this->usuarios_admin
+                    ->push($gestorSeleccionado)
+                    ->unique('id')
+                    ->sortBy('name')
+                    ->values();
+            }
+        }
+
         $unreadTicketIds = auth()->user()->unreadNotifications()
             ->where('type', 'App\Notifications\TicketActualizadoNotification')
             ->get()

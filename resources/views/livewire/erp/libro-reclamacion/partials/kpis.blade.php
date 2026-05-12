@@ -47,7 +47,10 @@
             <div class="g_panel_dashboard_1">
                 <h4>Promedio por día</h4>
                 <p class="g_negrita">{{ $stats['promedio_por_dia'] ?? 0 }}</p>
-                <small class="g_text_muted">Desde hace {{ $stats['dias'] ?? 0 }} días</small>
+                <small class="g_text_muted">
+                    Desde {{ $stats['fecha_base_promedio'] ?? 'el primer reclamo' }}
+                    | {{ $stats['dias'] ?? 0 }} días
+                </small>
             </div>
             <i class="fa-solid fa-chart-line" style="font-size:28px; color: #2563eb;"></i>
         </div>

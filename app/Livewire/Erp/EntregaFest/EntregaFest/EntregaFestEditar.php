@@ -3,13 +3,18 @@
 namespace App\Livewire\Erp\EntregaFest\EntregaFest;
 
 use App\Models\EntregaFest;
+use App\Models\InvitadoEnvioEntregaFest;
 use App\Models\Proyecto;
 use App\Models\UnidadNegocio;
 use App\Models\User;
+use App\Models\Erp\EntregaFest\EntregaFestHistorialComunicacion;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -125,12 +130,137 @@ class EntregaFestEditar extends Component
                 'title' => '¡Actualizado!',
                 'text' => 'Los cambios generales se han guardado correctamente.'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('entrega-fest')->error('[ENTREGA-FEST] Error en Edición: ' . $e->getMessage());
             $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => $e->getMessage()]);
         }
+    }
+
+    #[On('eliminarEntregaFestOn')]
+    public function eliminarEntregaFestOn()
+    {
+        $this->authorize('entrega-fest.eliminar');
+
+        try {
+            DB::beginTransaction();
+
+            $evento = $this->evento->load(['proyectos', 'prospectos.copropietarios']);
+
+            foreach ($evento->prospectos as $prospecto) {
+                $this->eliminarColeccion($prospecto->historialComunicaciones);
+                $this->eliminarColeccion($prospecto->bancarizaciones);
+                $this->eliminarColeccion($prospecto->acompanantes);
+
+                foreach ($prospecto->copropietarios as $copropietario) {
+                    $this->eliminarColeccion($copropietario->historialComunicaciones);
+
+                    if ($copropietario->invitado) {
+                        $this->eliminarInvitado($copropietario->invitado);
+                    }
+
+                    $this->eliminarModelo($copropietario);
+                }
+
+                if ($prospecto->invitado) {
+                    $this->eliminarInvitado($prospecto->invitado);
+                }
+
+                $this->eliminarModelo($prospecto);
+            }
+
+            $this->eliminarColeccion(EntregaFestHistorialComunicacion::where('entrega_fest_id', $evento->id)->get());
+
+            foreach ($evento->itinerarioBloques as $bloque) {
+                $this->eliminarModelo($bloque);
+            }
+
+            foreach ($evento->mopTareas as $tarea) {
+                $this->eliminarModelo($tarea);
+            }
+
+            foreach ($evento->proveedores as $proveedor) {
+                $this->eliminarColeccion($proveedor->requerimientos);
+                $this->eliminarModelo($proveedor);
+            }
+
+            foreach ($evento->incidencias as $incidencia) {
+                $this->eliminarModelo($incidencia);
+            }
+
+            foreach ($evento->recursos as $recurso) {
+                $this->eliminarModelo($recurso);
+            }
+
+            foreach ($evento->protocolos as $protocolo) {
+                $this->eliminarModelo($protocolo);
+            }
+
+            foreach ($evento->contingencias as $contingencia) {
+                $this->eliminarModelo($contingencia);
+            }
+
+            foreach ($evento->plantillas as $plantilla) {
+                $this->eliminarModelo($plantilla);
+            }
+
+            $evento->proyectos()->detach();
+            $evento->forceDelete();
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => 'El evento y sus relaciones principales se eliminaron correctamente.'
+            ]);
+
+            return redirect()->route('erp.entrega-fest.vista.todo');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::channel('entrega-fest')->error('[ENTREGA-FEST] Error al eliminar: ' . $e->getMessage(), [
+                'usuario_id' => Auth::id(),
+                'evento_id' => $this->evento->id ?? null,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el evento.'
+            ]);
+        }
+    }
+
+    protected function eliminarInvitado($invitado): void
+    {
+        $this->eliminarColeccion($invitado->acompanantes);
+        $this->eliminarColeccion(InvitadoEnvioEntregaFest::where('invitado_entrega_fest_id', $invitado->id)->get());
+        $this->eliminarModelo($invitado->asistencia);
+        $this->eliminarModelo($invitado);
+    }
+
+    protected function eliminarColeccion($registros): void
+    {
+        foreach ($registros as $registro) {
+            $this->eliminarModelo($registro);
+        }
+    }
+
+    protected function eliminarModelo(?Model $registro): void
+    {
+        if (!$registro) {
+            return;
+        }
+
+        if (in_array(SoftDeletes::class, class_uses_recursive($registro))) {
+            $registro->forceDelete();
+
+            return;
+        }
+
+        $registro->delete();
     }
 
     public function render()
