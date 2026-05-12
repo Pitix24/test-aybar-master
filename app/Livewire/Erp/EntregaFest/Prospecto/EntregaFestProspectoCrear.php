@@ -65,6 +65,9 @@ class EntregaFestProspectoCrear extends Component
     {
         $this->authorize('prospecto.crear');
 
+        $lote = strtoupper(trim((string) $this->lote));
+        $manzana = strtoupper(trim((string) $this->manzana));
+
         try {
             $this->validate();
         } catch (ValidationException $e) {
@@ -76,27 +79,12 @@ class EntregaFestProspectoCrear extends Component
             throw $e;
         }
 
-        // Verificar duplicado en este evento
-        $existe = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->where('dni', $this->dni)
-            ->exists();
-
-        if ($existe) {
-            $this->addError('dni', 'Esta persona ya está registrada para este evento.');
-            $this->dispatch('alertaLivewire', [
-                'type' => 'error',
-                'title' => 'DNI Duplicado',
-                'text' => 'El prospecto con DNI ' . $this->dni . ' ya existe en este festival.'
-            ]);
-            return;
-        }
-
         // Verificar duplicado de Lote y Manzana en este evento y proyecto
-        if (!empty($this->lote) || !empty($this->manzana)) {
+        if ($lote !== '' || $manzana !== '') {
             $loteManzanaExiste = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
                 ->where('proyecto_id', $this->proyecto_id)
-                ->where('lote', $this->lote)
-                ->where('manzana', $this->manzana)
+                ->where('lote', $lote)
+                ->where('manzana', $manzana)
                 ->exists();
 
             if ($loteManzanaExiste) {
@@ -105,7 +93,7 @@ class EntregaFestProspectoCrear extends Component
                 $this->dispatch('alertaLivewire', [
                     'type' => 'error',
                     'title' => 'Ubicación Duplicada',
-                    'text' => "El Lote {$this->lote} de la Manzana {$this->manzana} ya está registrado para este proyecto."
+                    'text' => "El Lote {$lote} de la Manzana {$manzana} ya está registrado para este proyecto."
                 ]);
                 return;
             }
@@ -122,8 +110,8 @@ class EntregaFestProspectoCrear extends Component
                 'nombres' => trim($this->nombres),
                 'email' => trim($this->email),
                 'celular' => trim($this->celular),
-                'lote' => $this->lote,
-                'manzana' => $this->manzana,
+                'lote' => $lote !== '' ? $lote : null,
+                'manzana' => $manzana !== '' ? $manzana : null,
             ]);
 
             DB::commit();
@@ -135,7 +123,6 @@ class EntregaFestProspectoCrear extends Component
             ]);
 
             return redirect()->route('erp.entrega-fest.prospecto.todo', $this->evento->id);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('entrega-fest')->error("[PROSPECTO CREAR] Error al registrar: " . $e->getMessage(), [
