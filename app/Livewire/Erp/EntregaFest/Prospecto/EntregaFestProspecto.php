@@ -80,7 +80,12 @@ class EntregaFestProspecto extends Component
     public function cargarStats()
     {
         $baseQuery = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
-            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
+            ->when($this->proyecto_id, function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('proyecto_id', $this->proyecto_id)
+                        ->orWhere('reubicado_proyecto_id', $this->proyecto_id);
+                });
+            })
             ->when($this->estado_cliente_id, fn($q) => $q->where('estado_cliente_id', $this->estado_cliente_id));
 
         $this->stats = [
@@ -171,7 +176,7 @@ class EntregaFestProspecto extends Component
     public function render()
     {
         $items = ProspectoEntregaFest::query()
-            ->with(['proyecto', 'user', 'invitado', 'gestor', 'copropietarios', 'historialComunicaciones', 'copropietarios.historialComunicaciones', 'estadoCliente'])
+            ->with(['proyecto', 'reubicadoProyecto', 'user', 'invitado', 'gestor', 'copropietarios', 'historialComunicaciones', 'copropietarios.historialComunicaciones', 'estadoCliente'])
             ->where('entrega_fest_id', $this->evento->id)
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
@@ -189,7 +194,12 @@ class EntregaFestProspecto extends Component
                         });
                 });
             })
-            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
+            ->when($this->proyecto_id, function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('proyecto_id', $this->proyecto_id)
+                        ->orWhere('reubicado_proyecto_id', $this->proyecto_id);
+                });
+            })
             ->when($this->estado_backoffice, fn($q) => $q->where('estado_backoffice', $this->estado_backoffice))
             ->when($this->estado_gestor_backoffice, fn($q) => $q->where('estado_gestor_backoffice', $this->estado_gestor_backoffice))
             ->when($this->estado_contrato_preeliminar_emitido, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $this->estado_contrato_preeliminar_emitido))

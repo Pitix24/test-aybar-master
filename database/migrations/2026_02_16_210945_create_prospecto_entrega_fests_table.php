@@ -28,6 +28,10 @@ return new class extends Migration {
             $table->string('lote')->nullable()->collation('utf8mb4_bin');
             $table->string('manzana')->nullable()->collation('utf8mb4_bin');
 
+            $table->foreignId('reubicado_proyecto_id')->nullable()->constrained('proyectos')->nullOnDelete();
+            $table->string('reubicado_lote')->nullable()->collation('utf8mb4_bin');
+            $table->string('reubicado_manzana')->nullable()->collation('utf8mb4_bin');
+
             $table->foreignId('estado_cliente_id')->nullable()->constrained('entrega_fest_estado_clientes')->nullOnDelete();
 
             // BackOffice

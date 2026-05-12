@@ -112,6 +112,9 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'estado_firma_contrato_firmado',
         'fecha_firma',
         'fecha_generacion_contrato',
+        'reubicado_proyecto_id',
+        'reubicado_lote',
+        'reubicado_manzana',
         'enviado_preinvitacion',
     ];
 
@@ -137,6 +140,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function proyecto()
     {
         return $this->belongsTo(Proyecto::class);
+    }
+
+    public function reubicadoProyecto()
+    {
+        return $this->belongsTo(Proyecto::class, 'reubicado_proyecto_id');
     }
 
     public function copropietarios()
@@ -198,4 +206,3 @@ class ProspectoEntregaFest extends Model implements HasMedia
         return $this->nombres;
     }
 }
-
