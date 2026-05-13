@@ -10,11 +10,11 @@
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
-            @if (Auth::user()->is_admin || $soporte->solicitante_id === Auth::id())
+            @can('soporte.vista-editar')
             <a href="{{ route('erp.soporte.vista.editar', $soporte) }}" class="g_boton primary">
-                Editar <i class="fa-solid fa-pencil"></i>
+                Editar Ticket<i class="fa-solid fa-pencil"></i>
             </a>
-            @endif
+            @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
@@ -70,6 +70,13 @@
         </div>
 
         <div class="g_margin_bottom_10">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-note-sticky"></i> Notas / Observaciones</h4>
+            <div class="g_vacio" style="align-items: flex-start; text-align: left;">
+                <textarea rows="5" class="input-disabled" disabled>{{ $soporte->observaciones ?? 'Sin Observaciones.' }}</textarea>
+            </div>
+        </div>
+
+        <div class="g_margin_bottom_10">
             <h4 class="g_panel_titulo"><i class="fa-solid fa-circle-info"></i> Información del Ticket</h4>
 
             <div class="g_fila">
@@ -113,12 +120,6 @@
                     @error('resuelto_at') <p class="mensaje_error">{{ $message }}</p> @enderror
                 </div>
             </div>
-        </div>
-
-        <div class="formulario_botones">
-            <button type="button" class="g_boton cancelar" onclick="history.back()">
-                <i class="fa-solid fa-times"></i> Cancelar
-            </button>
         </div>
     </form>
 

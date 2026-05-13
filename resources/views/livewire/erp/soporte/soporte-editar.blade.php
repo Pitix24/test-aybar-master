@@ -10,6 +10,12 @@
                 Lista <i class="fa-solid fa-list"></i>
             </a>
 
+            @can('soporte.vista-ver')
+            <a href="{{ route('erp.soporte.vista.ver', $soporte) }}" class="g_boton warning">
+                Ver Ticket<i class="fa-solid fa-eye"></i>
+            </a>
+            @endcan
+
             <button type="button" class="g_boton dark" onclick="history.back()">
                 <i class="fa-solid fa-arrow-left"></i> Regresar
             </button>
@@ -75,6 +81,13 @@
             <textarea wire:model.blur="descripcion" rows="6"
                 class="@error('descripcion') input-error @enderror"></textarea>
             @error('descripcion') <p class="mensaje_error">{{ $message }}</p> @enderror
+        </div>
+
+        <div class="g_margin_bottom_10">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-note-sticky"></i> Notas / Observaciones</h4>
+            <textarea wire:model.blur="observaciones" rows="5" class="@error('observaciones') input-error @enderror"
+                placeholder="Agregar notas de seguimiento visibles para gestores creadores"></textarea>
+            @error('observaciones') <p class="mensaje_error">{{ $message }}</p> @enderror
         </div>
 
         <div class="g_margin_bottom_10">

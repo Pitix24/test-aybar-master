@@ -14,6 +14,7 @@ return new class extends Migration {
      * area_id (FK areas)
      * titulo (string 255, required)
      * descripcion (text, required)
+     * observaciones (text, nullable)
      * solicitante_id → FK users (quien crea)
      * gestor_id → FK users (quien atiende), nullable
      * assigned_at (datetime), nullable
@@ -33,6 +34,7 @@ return new class extends Migration {
             $table->foreignId('area_id')->nullable()->constrained('areas')->nullOnDelete();
             $table->string('titulo');
             $table->text('descripcion');
+            $table->text('observaciones')->nullable();
             $table->foreignId('solicitante_id')->constrained('users');
             $table->foreignId('gestor_id')->nullable()->constrained('users');
             $table->dateTime('assigned_at')->nullable();

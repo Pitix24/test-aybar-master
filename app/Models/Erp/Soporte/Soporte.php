@@ -22,6 +22,7 @@ class Soporte extends Model
         'estado_soporte_id',
         'titulo',
         'descripcion',
+        'observaciones',
         'solicitante_id',
         'gestor_id',
         'assigned_at',

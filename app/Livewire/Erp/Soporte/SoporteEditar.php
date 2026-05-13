@@ -27,6 +27,7 @@ class SoporteEditar extends Component
     public ?int $gestor_id = null;
     public ?string $titulo = null;
     public ?string $descripcion = null;
+    public ?string $observaciones = null;
 
     public function mount(Soporte $soporte): void
     {
@@ -39,12 +40,13 @@ class SoporteEditar extends Component
         $this->gestor_id = $soporte->gestor_id;
         $this->titulo = $soporte->titulo;
         $this->descripcion = $soporte->descripcion;
+        $this->observaciones = $soporte->observaciones;
     }
 
     public function render()
     {
         $solicitantes = User::where('activo', true)->orderBy('name')->get(['id', 'name']);
-        
+
         $gestoresQuery = User::where('activo', true);
         if ($this->area_id) {
             $gestoresQuery->whereHas('areas', function ($q) {
@@ -74,6 +76,7 @@ class SoporteEditar extends Component
             'gestor_id' => 'nullable|exists:users,id',
             'titulo' => 'required|string|min:3|max:255',
             'descripcion' => 'required|string|min:10',
+            'observaciones' => 'nullable|string|max:2000',
         ];
     }
 
@@ -88,6 +91,7 @@ class SoporteEditar extends Component
         $this->soporte->gestor_id = $this->gestor_id;
         $this->soporte->titulo = $this->titulo;
         $this->soporte->descripcion = $this->descripcion;
+        $this->soporte->observaciones = $this->observaciones;
         $this->soporte->save();
 
         session()->flash('success', 'Ticket actualizado correctamente.');

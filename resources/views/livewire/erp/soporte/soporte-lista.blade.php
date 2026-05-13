@@ -8,9 +8,9 @@
 
         <div class="cabecera_titulo_botones">
             @can('soporte.crear')
-                <a href="{{ route('erp.soporte.vista.crear') }}" class="g_boton primary">
-                    Nuevo Ticket <i class="fa-solid fa-square-plus"></i>
-                </a>
+            <a href="{{ route('erp.soporte.vista.crear') }}" class="g_boton primary">
+                Nuevo Ticket <i class="fa-solid fa-square-plus"></i>
+            </a>
             @endcan
         </div>
     </div>
@@ -28,7 +28,7 @@
                     <select wire:model.live="tipo_id">
                         <option value="">Todos</option>
                         @foreach ($tipos as $t)
-                            <option value="{{ $t->id }}">{{ $t->nombre }}</option>
+                        <option value="{{ $t->id }}">{{ $t->nombre }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -38,7 +38,7 @@
                     <select wire:model.live="estado_id">
                         <option value="">Todos</option>
                         @foreach ($estados as $e)
-                            <option value="{{ $e->id }}">{{ $e->nombre }}</option>
+                        <option value="{{ $e->id }}">{{ $e->nombre }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -48,7 +48,7 @@
                     <select wire:model.live="prioridad_id">
                         <option value="">Todas</option>
                         @foreach ($prioridades as $p)
-                            <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                        <option value="{{ $p->id }}">{{ $p->nombre }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -59,7 +59,7 @@
                     <select wire:model.live="gestor_id">
                         <option value="">Todos</option>
                         @foreach ($gestores as $gestor)
-                            <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
+                        <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -69,7 +69,7 @@
                     <select wire:model.live="area_id">
                         <option value="">Todas</option>
                         @foreach ($areas as $a)
-                            <option value="{{ $a->id }}">{{ $a->nombre }}</option>
+                        <option value="{{ $a->id }}">{{ $a->nombre }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -125,77 +125,77 @@
                 </thead>
                 <tbody>
                     @forelse ($soportes as $index => $soporte)
-                        <tr wire:key="soporte-{{ $soporte->id }}">
-                            <td class="g_celda_centro">{{ $soportes->firstItem() + $index }}</td>
-                            <td class="g_celda_centro g_resaltar">{{ $soporte->codigo }}</td>
-                            <td class="g_negrita g_resumir">{{ $soporte->titulo }}</td>
-                            <td class="g_celda_centro">
-                                @php
-                                    $tipoColor = $soporte->tipoSoporte?->color ?? '#6c757d';
-                                @endphp
-                                <span class="g_badge"
-                                    style="background: #ffffff; color: {{ $tipoColor }}; border: 1px solid {{ $tipoColor }};">
-                                    @if($soporte->tipoSoporte?->icono)
-                                        <i class="{{ $soporte->tipoSoporte->icono }}" style="color: {{ $tipoColor }};"></i>
-                                    @endif
-                                    {{ $soporte->tipoSoporte?->nombre ?? '—' }}
-                                </span>
-                            </td>
-                            <td class="g_celda_centro">
-                                @php
-                                    $prioColor = $soporte->prioridadSoporte?->color ?? '#6c757d';
-                                @endphp
-                                <span class="g_badge" style="background: {{ $prioColor }}; color: #ffffff;">
-                                    @if($soporte->prioridadSoporte?->icono)
-                                        <i class="{{ $soporte->prioridadSoporte->icono }}" style="color: #ffffff;"></i>
-                                    @endif
-                                    {{ $soporte->prioridadSoporte?->nombre ?? '—' }}
-                                </span>
-                            </td>
-                            <td class="g_celda_centro">
-                                @php
-                                    $estadoColor = $soporte->estadoSoporte?->color ?? '#6c757d';
-                                @endphp
-                                <span class="g_badge"
-                                    style="background: #ffffff; color: {{ $estadoColor }}; border: 1px solid {{ $estadoColor }};">
-                                    @if($soporte->estadoSoporte?->icono)
-                                        <i class="{{ $soporte->estadoSoporte->icono }}" style="color: {{ $estadoColor }};"></i>
-                                    @endif
-                                    {{ $soporte->estadoSoporte?->nombre ?? '—' }}
-                                </span>
-                            </td>
-                            <td class="g_resumir">{{ $soporte->area?->nombre ?? '—' }}</td>
-                            <td class="g_resumir">{{ $soporte->gestor?->name ?? '—' }}</td>
-                            <td class="g_resumir g_inferior">{{ $soporte->solicitante?->name ?? '—' }}</td>
-                            <td class="g_inferior g_celda_centro">{{ optional($soporte->created_at)->format('d/m/Y H:i') }}
-                            </td>
-                            <td class="g_celda_acciones g_celda_centro">
-                                @can('soporte.ver')
-                                    <a href="{{ route('erp.soporte.vista.ver', $soporte) }}" class="g_accion ver" title="Ver">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </a>
-                                @endcan
-                                @can('soporte.editar')
-                                    <a href="{{ route('erp.soporte.vista.editar', $soporte) }}" class="g_accion editar"
-                                        title="Editar">
-                                        <i class="fa-solid fa-pencil"></i>
-                                    </a>
-                                @endcan
-                            </td>
-                        </tr>
+                    <tr wire:key="soporte-{{ $soporte->id }}">
+                        <td class="g_celda_centro">{{ $soportes->firstItem() + $index }}</td>
+                        <td class="g_celda_centro g_resaltar">{{ $soporte->codigo }}</td>
+                        <td class="g_negrita g_resumir">{{ $soporte->titulo }}</td>
+                        <td class="g_celda_centro">
+                            @php
+                            $tipoColor = $soporte->tipoSoporte?->color ?? '#6c757d';
+                            @endphp
+                            <span class="g_badge"
+                                style="background: #ffffff; color: {{ $tipoColor }}; border: 1px solid {{ $tipoColor }};">
+                                @if($soporte->tipoSoporte?->icono)
+                                <i class="{{ $soporte->tipoSoporte->icono }}" style="color: {{ $tipoColor }};"></i>
+                                @endif
+                                {{ $soporte->tipoSoporte?->nombre ?? '—' }}
+                            </span>
+                        </td>
+                        <td class="g_celda_centro">
+                            @php
+                            $prioColor = $soporte->prioridadSoporte?->color ?? '#6c757d';
+                            @endphp
+                            <span class="g_badge" style="background: {{ $prioColor }}; color: #ffffff;">
+                                @if($soporte->prioridadSoporte?->icono)
+                                <i class="{{ $soporte->prioridadSoporte->icono }}" style="color: #ffffff;"></i>
+                                @endif
+                                {{ $soporte->prioridadSoporte?->nombre ?? '—' }}
+                            </span>
+                        </td>
+                        <td class="g_celda_centro">
+                            @php
+                            $estadoColor = $soporte->estadoSoporte?->color ?? '#6c757d';
+                            @endphp
+                            <span class="g_badge"
+                                style="background: #ffffff; color: {{ $estadoColor }}; border: 1px solid {{ $estadoColor }};">
+                                @if($soporte->estadoSoporte?->icono)
+                                <i class="{{ $soporte->estadoSoporte->icono }}" style="color: {{ $estadoColor }};"></i>
+                                @endif
+                                {{ $soporte->estadoSoporte?->nombre ?? '—' }}
+                            </span>
+                        </td>
+                        <td class="g_resumir">{{ $soporte->area?->nombre ?? '—' }}</td>
+                        <td class="g_resumir">{{ $soporte->gestor?->name ?? '—' }}</td>
+                        <td class="g_resumir g_inferior">{{ $soporte->solicitante?->name ?? '—' }}</td>
+                        <td class="g_inferior g_celda_centro">{{ optional($soporte->created_at)->format('d/m/Y H:i') }}
+                        </td>
+                        <td class="g_celda_acciones g_celda_centro">
+                            @can('soporte.vista-ver')
+                            <a href="{{ route('erp.soporte.vista.ver', $soporte) }}" class="g_accion ver" title="Ver">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            @endcan
+                            @can('soporte.vista-editar')
+                            <a href="{{ route('erp.soporte.vista.editar', $soporte) }}" class="g_accion editar"
+                                title="Editar">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            @endcan
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="11" class="g_celda_centro">No hay tickets de soporte registrados.</td>
-                        </tr>
+                    <tr>
+                        <td colspan="11" class="g_celda_centro">No hay tickets de soporte registrados.</td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
         @if ($soportes->hasPages())
-            <div class="g_paginacion">
-                {{ $soportes->links('vendor.pagination.default-livewire') }}
-            </div>
+        <div class="g_paginacion">
+            {{ $soportes->links('vendor.pagination.default-livewire') }}
+        </div>
         @endif
     </div>
 </div>
