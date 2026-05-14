@@ -148,7 +148,9 @@
                         <td class="g_negrita g_resumir">{{ $item->cliente_nombre ?: 'N/D' }}</td>
                         <td class="g_resumir g_inferior">{{ $item->proyecto?->nombre ?: 'N/D' }}</td>
                         <td class="g_celda_centro">
-                            <span class="g_badge info">{{ $item->estadoActualNombre() }}</span>
+                            <span class="g_badge g_badge_soft" style="color: {{ $item->estadoActualColor() }};">
+                                {{ $item->estadoActualNombre() }}
+                            </span>
                         </td>
                         <td class="g_celda_centro">
                             @if ($item->clasificacion === 'NO_PROCEDE')

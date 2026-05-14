@@ -139,6 +139,28 @@ class LibroReclamacion extends Model
         return str_replace('_', ' ', $nombre);
     }
 
+    public function estadoActualColor(): string
+    {
+        $colorTicket = (string) ($this->ticketRelacionado?->estado?->color ?? '');
+
+        if ($colorTicket !== '') {
+            return $colorTicket;
+        }
+
+        // Colores por defecto según clasificación
+        $clasificacion = strtoupper(trim((string) $this->clasificacion));
+
+        if ($clasificacion === 'NO_PROCEDE') {
+            return '#dc2626'; // Rojo
+        }
+
+        if ($clasificacion === 'PENDIENTE_REVISION') {
+            return '#f59e0b'; // Ámbar
+        }
+
+        return '#6b7280'; // Gris
+    }
+
     protected static function booted()
     {
         static::saving(function ($reclamacion) {
