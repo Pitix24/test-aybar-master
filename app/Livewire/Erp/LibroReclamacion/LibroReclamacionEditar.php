@@ -59,7 +59,7 @@ class LibroReclamacionEditar extends Component
 
     public function mount($id): void
     {
-        $this->authorize('ticket-libro-reclamacion.editar');
+        $this->authorize('reclamacion.gestor');
 
         $this->ticket_model = LibroReclamacion::with([
             'ticketRelacionado',

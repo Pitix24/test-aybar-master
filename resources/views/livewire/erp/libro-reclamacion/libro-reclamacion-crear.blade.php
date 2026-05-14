@@ -5,7 +5,7 @@
         <h2>Crear Ticket Libro Reclamacion</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('ticket-libro-reclamacion.lista')
+            @can('ticket.gestor')
             <a href="{{ route('erp.libro-reclamacion.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
