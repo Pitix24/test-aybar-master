@@ -342,7 +342,7 @@
                     <div class="formulario">
                         <div class="g_margin_bottom_10">
                             <label>Código del Libro</label>
-                            <input type="text" disabled value="{{ $libro->codigo ?: 'N/D' }}">
+                            <input type="text" disabled value="{{ $libro->codigo_ticket ?: 'N/D' }}">
                         </div>
 
                         <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">

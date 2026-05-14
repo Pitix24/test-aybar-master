@@ -29,7 +29,13 @@ class TicketEmail extends Component
     {
         $this->ticket = $ticket;
         $this->soloLectura = $soloLectura;
-        $this->asunto = "Información sobre su Ticket #{$ticket->id}";
+
+        // Si el ticket tiene un LibroReclamacion relacionado, usar su código completo
+        if ($ticket->libroReclamacion) {
+            $this->asunto = "Información sobre su Ticket N° {$ticket->libroReclamacion->codigo_ticket}";
+        } else {
+            $this->asunto = "Información sobre su Ticket #{$ticket->id}";
+        }
     }
 
     public function quitarArchivo($index)
@@ -121,7 +127,6 @@ class TicketEmail extends Component
 
             // Emitir evento para refrescar la lista de archivos si fuera necesario
             $this->dispatch('archivoSubido');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('ticket')->error('[TICKET] Error TicketEmail@store: ' . $e->getMessage(), [
