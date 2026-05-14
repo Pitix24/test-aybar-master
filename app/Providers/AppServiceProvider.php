@@ -26,8 +26,11 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
-        // NOTA: Gate::before() eliminado para permitir Policies sin bypass de super-admin
-        // Módulos como Soporte requieren autorización explícita incluso para super-admin
+        // Implicitly grant "Super Admin" role all permissions.
+        // This restores the global bypass used across the application.
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('super-admin') ? true : null;
+        });
     }
 
     protected function configureDefaults(): void
