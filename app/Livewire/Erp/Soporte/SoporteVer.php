@@ -19,6 +19,9 @@ class SoporteVer extends Component
 
     public function mount(Soporte $soporte): void
     {
+        // Validar permiso de ver soporte
+        $this->authorize('view', $soporte);
+
         $this->soporte = $soporte->load(['tipoSoporte', 'prioridadSoporte', 'estadoSoporte', 'solicitante', 'gestor', 'creador', 'area']);
     }
 

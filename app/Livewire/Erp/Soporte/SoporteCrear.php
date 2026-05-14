@@ -45,6 +45,9 @@ class SoporteCrear extends Component
 
     public function render()
     {
+        // Validar permiso de crear soporte
+        $this->authorize('create', Soporte::class);
+
         return view('livewire.erp.soporte.soporte-crear', [
             'tipos' => TipoSoporte::orderBy('nombre')->get(),
             'prioridades' => PrioridadSoporte::orderBy('nombre')->get(),

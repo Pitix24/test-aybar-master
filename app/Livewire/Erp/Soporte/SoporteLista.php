@@ -75,10 +75,16 @@ class SoporteLista extends Component
 
     public function render()
     {
+        // Validar permiso de listar soportes
+        $this->authorize('viewAny', Soporte::class);
+
         $soportes = Soporte::query()
             ->with(['solicitante', 'gestor', 'tipoSoporte', 'prioridadSoporte', 'estadoSoporte', 'area'])
-            ->when($this->buscar !== '', fn($q) =>
-                $q->where(fn($sub) =>
+            ->when(
+                $this->buscar !== '',
+                fn($q) =>
+                $q->where(
+                    fn($sub) =>
                     $sub->where('codigo', 'like', "%{$this->buscar}%")
                         ->orWhere('titulo', 'like', "%{$this->buscar}%")
                 )

@@ -98,6 +98,29 @@ Las rutas usan permisos para controlar el acceso. Permisos principales:
 - `soporte.accion-ver-archivo` — permitir descargar/ver archivos
 - `soporte.accion-eliminar-archivo` — permitir eliminar archivos
 
+### Policy (Nueva - Mayo 14, 2026):
+
+Se ha implementado `SoportePolicy` (`app/Policies/SoportePolicy.php`) para validación explícita sin bypaseo de super-admin.
+
+**Métodos disponibles:**
+
+- `viewAny(User $user)` — validar acceso a listar soportes
+- `view(User $user, Soporte $soporte)` — validar acceso a ver un soporte
+- `create(User $user)` — validar acceso a crear soporte
+- `update(User $user, Soporte $soporte)` — validar acceso a editar soporte
+- `delete(User $user, Soporte $soporte)` — validar acceso a eliminar soporte
+- `attachFile(User $user, Soporte $soporte)` — validar acceso a adjuntar archivos
+- `viewFiles(User $user, Soporte $soporte)` — validar acceso a ver archivos
+- `deleteFile(User $user, Soporte $soporte)` — validar acceso a eliminar archivos
+- `manageCatalogues(User $user)` — validar acceso a gestionar catálogos
+
+**Características:**
+
+- ✅ No aplica bypass de super-admin: todos deben tener permiso explícito
+- ✅ Integrada en componentes Livewire (SoporteLista, SoporteVer, SoporteCrear, SoporteEditar)
+- ✅ Usar con `$this->authorize('método', $modelo)` en componentes
+- ✅ Registrada en `AuthServiceProvider`
+
 ## Flujo y relaciones principales
 
 ### Estructura de Datos:
@@ -177,17 +200,21 @@ A los roles correspondientes (ej: `soporte-tecnico`, `supervisor`, `gestor`).
 ## Archivos referenciados (para revisión rápida)
 
 - [Rutas de Soporte](routes/erp/soporte.php)
+- [Policy de Soporte](app/Policies/SoportePolicy.php) (Nueva - Autorización sin bypass)
+- [AuthServiceProvider](app/Providers/AuthServiceProvider.php) (Registro de policies)
 - [Componente SoporteArchivo](app/Livewire/Erp/Soporte/SoporteArchivo.php)
 - [Vista SoporteArchivo](resources/views/livewire/erp/soporte/soporte-archivo.blade.php)
 - [Modelo SoporteArchivo](app/Models/Erp/Soporte/SoporteArchivo.php)
-- [Migraciones Soporte](database/migrations) (filtrar por 2026_05_07 y 2026_05_12)
+- [Migraciones Soporte](database/migrations) (filtrar por 2026_05_07, 2026_05_12, 2026_05_13)
 - [Livewire Soporte](app/Livewire/Erp/Soporte)
 - [Modelos Soporte](app/Models/Erp/Soporte)
 - [Seeders Soporte](database/seeders)
 
 ---
 
-## Cambios Recientes (Mayo 12, 2026):
+## Cambios Recientes
+
+### Mayo 12, 2026:
 
 ✅ **Sistema de Archivos Adjuntos Implementado**
 
@@ -196,6 +223,25 @@ A los roles correspondientes (ej: `soporte-tecnico`, `supervisor`, `gestor`).
 - Integración en vistas de Editar y Ver Soporte
 - Permisos específicos para gestión de archivos
 - Soporte para múltiples tipos de archivo (PDF, Office, imágenes)
+
+### Mayo 13, 2026:
+
+✅ **Campo de Observaciones/Notas Agregado**
+
+- Nueva columna `observaciones` en tabla `soportes`
+- Visible solo en vistas de Editar y Ver
+- Bloque destacado para seguimiento interno del caso
+- Soporte para texto de hasta 2000 caracteres
+
+### Mayo 14, 2026:
+
+✅ **Policy de Autorización Implementada (Sin Bypass de Super-admin)**
+
+- Nueva `SoportePolicy` con validaciones explícitas de permiso
+- Integrada en componentes Livewire (SoporteLista, SoporteVer, SoporteCrear, SoporteEditar)
+- Super-admin debe tener permisos explícitos para acceder a soportes
+- Métodos para validar: listar, ver, crear, editar, eliminar, adjuntar archivos
+- Registrada en `AuthServiceProvider`
 
 ---
 

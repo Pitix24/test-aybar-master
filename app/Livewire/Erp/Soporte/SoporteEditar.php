@@ -31,6 +31,9 @@ class SoporteEditar extends Component
 
     public function mount(Soporte $soporte): void
     {
+        // Validar permiso de editar soporte
+        $this->authorize('update', $soporte);
+
         $this->soporte = $soporte;
         $this->tipo_soporte_id = $soporte->tipo_soporte_id;
         $this->prioridad_soporte_id = $soporte->prioridad_soporte_id;
