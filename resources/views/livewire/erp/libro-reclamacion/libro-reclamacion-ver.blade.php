@@ -9,12 +9,6 @@
             </a>
             @endcan
 
-            @can('ticket-libro-reclamacion.editar')
-            <a href="{{ route('erp.libro-reclamacion.vista.editar', $ticket->ticket) }}" class="g_boton primary">
-                Editar <i class="fa-solid fa-pencil"></i>
-            </a>
-            @endcan
-
             @can('ticket.ver')
             @if ($ticket->ticketRelacionado)
             <a href="{{ route('erp.ticket.vista.ver', $ticket->ticketRelacionado->id) }}" class="g_boton warning">

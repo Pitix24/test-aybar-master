@@ -193,13 +193,6 @@
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             @endcan
-
-                            @can('ticket-libro-reclamacion.editar')
-                            <a href="{{ route('erp.libro-reclamacion.vista.editar', $item->ticket) }}"
-                                class="g_accion editar" title="Editar">
-                                <i class="fa-solid fa-pencil"></i>
-                            </a>
-                            @endcan
                         </td>
                     </tr>
                     @empty
