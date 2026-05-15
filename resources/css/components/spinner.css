@@ -1,7 +1,7 @@
 .contenedor_spiner_load {
     position: fixed;
     inset: 0;
-    z-index: 2147483647;
+    z-index: 1000;
     background-color: rgba(0, 0, 0, 0.55);
 }
 
