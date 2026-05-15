@@ -136,14 +136,22 @@ class ClienteAntiguoCrear extends Component
             ]);
 
             return redirect()->route('erp.cliente-antiguo.vista.todo');
-
         } catch (Throwable $e) {
             DB::rollBack();
-            Log::channel('clientes-antiguo')->error("[CLIENTE_ANTIGUO] Error al crear: " . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
-                'datos' => $this->all(),
-                'trace' => $e->getTraceAsString()
-            ]);
+
+            try {
+                $datos = method_exists($this, 'all') ? $this->all() : [];
+                Log::channel('clientes-antiguo')->error("[CLIENTE_ANTIGUO] Error al crear: " . $e->getMessage(), [
+                    'usuario_id' => auth()->id(),
+                    'datos' => $datos,
+                    'trace' => $e->getTraceAsString()
+                ]);
+            } catch (Throwable $logEx) {
+                Log::error("[CLIENTE_ANTIGUO] Error al crear (log fallo): " . $e->getMessage(), [
+                    'usuario_id' => auth()->id(),
+                    'log_error' => $logEx->getMessage()
+                ]);
+            }
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'error',
