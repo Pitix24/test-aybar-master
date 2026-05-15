@@ -3,16 +3,18 @@
 namespace App\Livewire\Erp\EntregaFest\Prospecto;
 
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
-use App\Events\EntregaFest\EntregaFestCitaAgendar;
 use App\Events\EntregaFest\EntregaFestCitaRecordatorio;
 use App\Events\EntregaFest\EntregaFestContratoPreliminar;
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
+use App\Models\InvitadoEnvioEntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Models\EntregaFestEstadoCliente;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
@@ -380,7 +382,7 @@ class EntregaFestProspectoEditar extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('entrega-fest')->error("[$logContext] Error: " . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'prospecto_id' => $this->prospecto->id,
                 'datos' => $data,
                 'trace' => $e->getTraceAsString()
@@ -496,7 +498,7 @@ class EntregaFestProspectoEditar extends Component
     public function updateBackofficeSupervisor()
     {
         // Auto-asignar si están vacíos al momento de validar
-        $this->validador_backoffice_id = auth()->id();
+        $this->validador_backoffice_id = Auth::id();
         $this->fecha_validacion_eecc = now()->format('Y-m-d\TH:i');
 
         $rules = [
@@ -601,6 +603,85 @@ class EntregaFestProspectoEditar extends Component
             'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
             'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
         ], 'PROSPECTO EDITAR - LEGAL SUPERVISOR');
+    }
+
+    public function solicitarEliminarProspecto()
+    {
+        $this->dispatch('alertaConfirmar', [
+            'event' => 'eliminarProspectoOn',
+            'titulo' => '¿Quieres eliminar este prospecto?',
+            'texto' => 'Esta acción eliminará el prospecto y sus datos relacionados. No se puede deshacer.',
+        ]);
+    }
+
+    #[On('eliminarProspectoOn')]
+    public function eliminarProspectoOn()
+    {
+        $this->authorize('prospecto.eliminar');
+
+        try {
+            DB::beginTransaction();
+
+            $prospecto = $this->prospecto->load([
+                'copropietarios.invitado.asistencia',
+                'copropietarios.invitado.acompanantes',
+                'invitado.asistencia',
+                'invitado.acompanantes',
+            ]);
+
+            $prospecto->historialComunicaciones()->delete();
+            $prospecto->bancarizaciones()->delete();
+            $prospecto->acompanantes()->delete();
+
+            if ($prospecto->invitado) {
+                $this->eliminarInvitado($prospecto->invitado);
+            }
+
+            foreach ($prospecto->copropietarios as $copropietario) {
+                $copropietario->historialComunicaciones()->delete();
+
+                if ($copropietario->invitado) {
+                    $this->eliminarInvitado($copropietario->invitado);
+                }
+
+                $copropietario->delete();
+            }
+
+            $prospecto->delete();
+
+            DB::commit();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => '¡Eliminado!',
+                'text' => 'El prospecto y sus relaciones se eliminaron correctamente.',
+            ]);
+
+            return redirect()->route('erp.entrega-fest.prospecto.todo', $this->evento->id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::channel('entrega-fest')->error('[PROSPECTO ELIMINAR] ' . $e->getMessage(), [
+                'usuario_id' => Auth::id(),
+                'evento_id' => $this->evento->id,
+                'prospecto_id' => $this->prospecto->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el prospecto.',
+            ]);
+        }
+    }
+
+    protected function eliminarInvitado($invitado): void
+    {
+        $invitado->asistencia()?->delete();
+        $invitado->acompanantes()->delete();
+        InvitadoEnvioEntregaFest::where('invitado_entrega_fest_id', $invitado->id)->delete();
+        $invitado->delete();
     }
 
     // ──────────────────────────────────────────────────────────────────
