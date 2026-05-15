@@ -14,7 +14,7 @@
                 <li data-id="{{ $n1->id }}" @click="toogleNivel_1($event, {{ $n1->id }})"
                     :class="{'nav_icono_seleccionado': seleccionadoNivel_1 == Number($el.dataset.id)}">
 
-                    <a href="{{ $n1->ruta ? route($n1->ruta) : ($n1->url ?? '#') }}">
+                    <a href="{{ $n1->ruta ? (\Illuminate\Support\Facades\Route::has($n1->ruta) ? route($n1->ruta) : '#') : ($n1->url ?? '#') }}">
                         <i class="{{ $n1->icono }}"></i>
                     </a>
                 </li>
@@ -48,7 +48,7 @@
                                             @click.stop="toogleNivel_2($event, {{ $n2->id }})"
                                             :class="{'sidebar_nav_seleccionado': seleccionadoNivel_2 === Number($el.dataset.id)}">
 
-                                            <a href="{{ $n2->ruta ? route($n2->ruta) : ($n2->url ?? '#') }}">
+                                            <a href="{{ $n2->ruta ? (\Illuminate\Support\Facades\Route::has($n2->ruta) ? route($n2->ruta) : '#') : ($n2->url ?? '#') }}">
                                                 <i class="{{ $n2->icono }}"></i>
                                                 {{ $n2->nombre }}
                                             </a>
@@ -68,7 +68,7 @@
                                                             @click.stop="toogleNivel_3($event, {{ $n3->id }})"
                                                             :class="{'sidebar_item_seleccionado': seleccionadoNivel_3 === Number($el.dataset.id)}">
 
-                                                            <a href="{{ $n3->ruta ? route($n3->ruta) : ($n3->url ?? '#') }}">
+                                                            <a href="{{ $n3->ruta ? (\Illuminate\Support\Facades\Route::has($n3->ruta) ? route($n3->ruta) : '#') : ($n3->url ?? '#') }}">
 
                                                                 <span class="punto_item">
                                                                     <i class="fa-solid fa-circle"></i>
@@ -92,7 +92,7 @@
                                                                             @click.stop="toogleNivel_4($event, {{ $n4->id }})"
                                                                             :class="{'sidebar_item_seleccionado': seleccionadoNivel_4 === Number($el.dataset.id)}">
 
-                                                                            <a href="{{ $n4->ruta ? route($n4->ruta) : ($n4->url ?? '#') }}">
+                                                                            <a href="{{ $n4->ruta ? (\Illuminate\Support\Facades\Route::has($n4->ruta) ? route($n4->ruta) : '#') : ($n4->url ?? '#') }}">
                                                                                 <span class="punto_item"><i class="fa-solid fa-circle"></i></span>
                                                                                 {{ $n4->nombre }}
                                                                             </a>

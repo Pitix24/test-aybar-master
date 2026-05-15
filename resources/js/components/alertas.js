@@ -59,7 +59,7 @@ Livewire.on("alertaLivewire", (data) => {
         payload.showConfirmButton !== undefined
             ? payload.showConfirmButton
             : errorTitles.includes(payload.title) ||
-            warningTitles.includes(payload.title);
+              warningTitles.includes(payload.title);
 
     // 3. Regla UX: si hay confirmación, no hay timer
     if (showConfirmButton === true) {
@@ -75,3 +75,21 @@ Livewire.on("alertaLivewire", (data) => {
     });
 });
 
+Livewire.on("alertaConfirmar", (data) => {
+    const payload = data[0];
+
+    Swal.fire({
+        title: payload.titulo ?? "¿Confirmar acción?",
+        text: payload.texto ?? "Esta acción no se puede deshacer.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: payload.confirmText ?? "¡Sí, eliminar!",
+        cancelButtonText: payload.cancelText ?? "Cancelar",
+    }).then((result) => {
+        if (result.isConfirmed && payload.event) {
+            Livewire.dispatch(payload.event);
+        }
+    });
+});
