@@ -20,6 +20,11 @@
         <i class="fa-solid fa-chevron-right"></i>
     </a>
 
+    <a href="{{ route('cliente.reglamento') }}" class="{{ request()->routeIs('cliente.reglamento') ? 'active' : '' }}">
+        <span><i class="fa-solid fa-scale-balanced"></i> Reglamentos</span>
+        <i class="fa-solid fa-chevron-right"></i>
+    </a>
+
     <a href="{{ route('cliente.avance-proyecto') }}"
         class="{{ request()->routeIs('cliente.avance-proyecto') ? 'active' : '' }}">
         <span><i class="fa-solid fa-person-digging"></i> Avances de Proyecto</span>
