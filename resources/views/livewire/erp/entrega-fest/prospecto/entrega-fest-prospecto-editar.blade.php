@@ -1,25 +1,27 @@
 <div class="g_gap_pagina" x-data="{ activeTab: 'prospecto' }">
-    <x-loading-overlay wire:loading message="Procesando..." />
+    <x-loading-overlay wire:loading
+        wire:target="updateProspecto, updateReubicacion, updateBackoffice, updateBackofficeSupervisor, updateLegal, updateLegalSupervisor, updateLlamada, solicitarEliminarProspecto, eliminarProspectoOn"
+        message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Evaluación de Prospecto</h2>
 
         <div class="cabecera_titulo_botones">
             @can('prospecto.lista')
-                <a href="{{ route('erp.entrega-fest.prospecto.todo', $evento->id) }}" class="g_boton light">
-                    Lista <i class="fa-solid fa-list"></i>
-                </a>
+            <a href="{{ route('erp.entrega-fest.prospecto.todo', $evento->id) }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i>
+            </a>
             @endcan
 
             @can('entrega-fest.ver-panel')
-                <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
-                    <i class="fa-solid fa-grip"></i> Panel de Gestión
-                </a>
+            <a href="{{ route('erp.entrega-fest.vista.panel', $evento->id) }}" class="g_boton info">
+                <i class="fa-solid fa-grip"></i> Panel de Gestión
+            </a>
             @endcan
             @can('prospecto.eliminar')
-                <button type="button" class="g_boton danger" onclick="confirmarEliminarProspecto()">
-                    Eliminar <i class="fa-solid fa-trash-can"></i>
-                </button>
+            <button type="button" class="g_boton danger" wire:click="solicitarEliminarProspecto">
+                Eliminar <i class="fa-solid fa-trash-can"></i>
+            </button>
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
