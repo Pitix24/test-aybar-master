@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
     <x-loading-overlay wire:loading
-        wire:target="buscar, tipo_id, estado_id, prioridad_id, gestor_id, desde, hasta, perPage, resetFiltros, gotoPage, nextPage, previousPage"
+        wire:target="buscar, tipo_id, estado_id, prioridad_id, gestor_id, desde, hasta, perPage, resetFiltros, gotoPage, nextPage, previousPage, filterTotal, filterPendientes, filterResueltos, filterCerrados"
         message="Cargando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
@@ -96,6 +96,8 @@
             </div>
         </div>
     </div>
+
+    @include('livewire.erp.soporte.partials.kpis')
 
     <div class="g_panel">
         <div class="g_tabla_cabecera">
