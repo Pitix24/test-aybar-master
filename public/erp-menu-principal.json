@@ -822,6 +822,35 @@
                         "submenus": []
                     }
                 ]
+            },
+            {
+                "id": 51,
+                "nombre": "Reglamentos",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-scale-balanced",
+                "nivel": 2,
+                "permiso": "reglamento.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.reglamento.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reglamento.lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.reglamento.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reglamento.crear",
+                        "submenus": []
+                    }
+                ]
             }
         ]
     },

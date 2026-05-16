@@ -305,6 +305,13 @@ return [
             'days' => 14,
         ],
 
+        'reglamento' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/reglamento.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'avance_proyecto' => [
             'driver' => 'daily',
             'path' => storage_path('logs/avance_proyecto.log'),
