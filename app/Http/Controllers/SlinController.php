@@ -333,7 +333,7 @@ class SlinController extends Controller
             'mtooperacion' => $request->mtooperacion,
         ];
 
-        $response = Http::withBasicAuth($this->user, $this->password)
+        $response = Http::withBasicAuth($this->user, "S!lin_AyB@r2025#SecureX")
             ->acceptJson()
             ->contentType('application/json')
             ->timeout(30)
