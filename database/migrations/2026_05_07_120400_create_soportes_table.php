@@ -31,6 +31,7 @@ return new class extends Migration {
             $table->foreignId('tipo_soporte_id')->nullable()->constrained('tipo_soportes');
             $table->foreignId('prioridad_soporte_id')->nullable()->constrained('prioridad_soportes');
             $table->foreignId('estado_soporte_id')->nullable()->constrained('estado_soportes');
+            $table->foreignId('cierre_soporte_id')->nullable()->constrained('cierre_soportes')->nullOnDelete();
             $table->foreignId('area_id')->nullable()->constrained('areas')->nullOnDelete();
             $table->string('titulo');
             $table->text('descripcion');

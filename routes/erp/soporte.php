@@ -17,6 +17,10 @@ use App\Livewire\Erp\Soporte\EstadoSoporte\EstadoSoporteLista;
 use App\Livewire\Erp\Soporte\EstadoSoporte\EstadoSoporteCrear;
 use App\Livewire\Erp\Soporte\EstadoSoporte\EstadoSoporteVer;
 use App\Livewire\Erp\Soporte\EstadoSoporte\EstadoSoporteEditar;
+use App\Livewire\Erp\Soporte\CierreSoporte\CierreSoporteLista;
+use App\Livewire\Erp\Soporte\CierreSoporte\CierreSoporteCrear;
+use App\Livewire\Erp\Soporte\CierreSoporte\CierreSoporteVer;
+use App\Livewire\Erp\Soporte\CierreSoporte\CierreSoporteEditar;
 
 Route::group(['middleware' => ['permission:modulo-soporte.ver']], function () {
     Route::group(['middleware' => ['permission:soporte.navegacion']], function () {
@@ -60,6 +64,17 @@ Route::group(['middleware' => ['permission:modulo-soporte.ver']], function () {
                 Route::get('/ver/{id}', EstadoSoporteVer::class)->middleware('permission:soporte.supervisor')->name('ver');
                 Route::get('/crear', EstadoSoporteCrear::class)->middleware('permission:soporte.supervisor')->name('crear');
                 Route::get('/editar/{id}', EstadoSoporteEditar::class)->middleware('permission:soporte.supervisor')->name('editar');
+            });
+    });
+
+    Route::group(['middleware' => ['permission:soporte.supervisor']], function () {
+        Route::prefix('cierre-soporte')
+            ->name('cierre-soporte.vista.')
+            ->group(function () {
+                Route::get('/', CierreSoporteLista::class)->middleware('permission:soporte.supervisor')->name('lista');
+                Route::get('/ver/{id}', CierreSoporteVer::class)->middleware('permission:soporte.supervisor')->name('ver');
+                Route::get('/crear', CierreSoporteCrear::class)->middleware('permission:soporte.supervisor')->name('crear');
+                Route::get('/editar/{id}', CierreSoporteEditar::class)->middleware('permission:soporte.supervisor')->name('editar');
             });
     });
 });
