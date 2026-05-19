@@ -31,12 +31,12 @@
         </div>
     </button>
 
-    <button wire:click="filterCerrados" class="g_panel"
+    <button wire:click="filterNoProcedentes" class="g_panel"
         style="background:none; border:none; padding:0; text-align:left;">
         <div class="g_panel_dashboard">
             <div class="g_panel_dashboard_1">
-                <h4>Tickets Cerrados</h4>
-                <p class="g_negrita">{{ $stats['cerrados'] ?? 0 }}</p>
+                <h4>Tickets No Procedentes</h4>
+                <p class="g_negrita">{{ $stats['no_procedentes'] ?? 0 }}</p>
             </div>
             <i class="fa-solid fa-xmark" style="font-size:28px; color: #dc2626;"></i>
         </div>
