@@ -8,6 +8,7 @@ use App\Models\Erp\Soporte\EstadoSoporte;
 use App\Models\Erp\Soporte\PrioridadSoporte;
 use App\Models\Erp\Soporte\Soporte;
 use App\Models\Erp\Soporte\TipoSoporte;
+use App\Models\Erp\Soporte\CierreSoporte;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -22,6 +23,7 @@ class SoporteEditar extends Component
     public ?int $tipo_soporte_id = null;
     public ?int $prioridad_soporte_id = null;
     public ?int $estado_soporte_id = null;
+    public ?int $cierre_soporte_id = null;
     public ?int $area_id = null;
     public ?int $solicitante_id = null;
     public ?int $gestor_id = null;
@@ -38,6 +40,7 @@ class SoporteEditar extends Component
         $this->tipo_soporte_id = $soporte->tipo_soporte_id;
         $this->prioridad_soporte_id = $soporte->prioridad_soporte_id;
         $this->estado_soporte_id = $soporte->estado_soporte_id;
+        $this->cierre_soporte_id = $soporte->cierre_soporte_id;
         $this->area_id = $soporte->area_id;
         $this->solicitante_id = $soporte->solicitante_id;
         $this->gestor_id = $soporte->gestor_id;
@@ -62,6 +65,7 @@ class SoporteEditar extends Component
             'tipos' => TipoSoporte::where('activo', true)->get(),
             'prioridades' => PrioridadSoporte::where('activo', true)->get(),
             'estados' => EstadoSoporte::where('activo', true)->get(),
+            'cierres' => CierreSoporte::where('activo', true)->get(),
             'areas' => Area::where('activo', true)->orderBy('nombre')->get(['id', 'nombre']),
             'solicitantes' => $solicitantes,
             'gestores' => $gestores,
@@ -74,6 +78,7 @@ class SoporteEditar extends Component
             'tipo_soporte_id' => 'required|exists:tipo_soportes,id',
             'prioridad_soporte_id' => 'required|exists:prioridad_soportes,id',
             'estado_soporte_id' => 'required|exists:estado_soportes,id',
+            'cierre_soporte_id' => 'nullable|exists:cierre_soportes,id',
             'area_id' => 'nullable|exists:areas,id',
             'solicitante_id' => 'nullable|exists:users,id',
             'gestor_id' => 'nullable|exists:users,id',
@@ -89,6 +94,7 @@ class SoporteEditar extends Component
         $this->soporte->tipo_soporte_id = $this->tipo_soporte_id;
         $this->soporte->prioridad_soporte_id = $this->prioridad_soporte_id;
         $this->soporte->estado_soporte_id = $this->estado_soporte_id;
+        $this->soporte->cierre_soporte_id = $this->cierre_soporte_id;
         $this->soporte->area_id = $this->area_id;
         $this->soporte->solicitante_id = $this->solicitante_id;
         $this->soporte->gestor_id = $this->gestor_id;
