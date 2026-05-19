@@ -61,7 +61,7 @@ class CierreSoporteEditar extends Component
 
     public function update()
     {
-        $this->authorize('cierre-soporte.accion-editar');
+        $this->authorize('soporte.supervisor');
 
         try {
             $this->validate();
@@ -106,7 +106,7 @@ class CierreSoporteEditar extends Component
     #[On('eliminarCierreSoporteOn')]
     public function eliminarCierreSoporteOn()
     {
-        $this->authorize('cierre-soporte.accion-eliminar');
+        $this->authorize('soporte.supervisor');
 
         try {
             DB::beginTransaction();
