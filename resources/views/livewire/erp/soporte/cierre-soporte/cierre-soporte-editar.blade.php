@@ -1,11 +1,11 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="update, eliminarCierreSoporteOn" message="Procesando..." />
+    <x-loading-overlay wire:loading wire:target="update, eliminarTipoSoporteOn" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar Cierre de Soporte</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('cierre-soporte.vista-lista')
+            @can('soporte.supervisor')
             <a href="{{ route('erp.cierre-soporte.vista.lista') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i></a>
             @endcan
@@ -44,7 +44,7 @@
 
                     <div class="g_margin_bottom_10">
                         <label for="nombre">
-                            Nombre del Cierre <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
+                            Nombre del Tipo <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span>
                         </label>
                         <input type="text" id="nombre" wire:model.blur="nombre"
                             class="@error('nombre') input-error @enderror" autocomplete="off">
@@ -74,12 +74,12 @@
                             @error('icono')
                             <p class="mensaje_error">{{ $message }}</p>
                             @enderror
-                            <p class="leyenda">Ej: fa-solid fa-check, fa-solid fa-circle-check</p>
+                            <p class="leyenda">Ej: fa-solid fa-bug, fa-solid fa-wand-magic-sparkles</p>
                         </div>
                     </div>
 
                     <div class="formulario_botones">
-                        @can('cierre-soporte.accion-editar')
+                        @can('soporte.supervisor')
                         <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                             <span wire:loading.remove wire:target="update">
                                 <i class="fa-solid fa-save"></i> Guardar
@@ -90,9 +90,9 @@
                         </button>
                         @endcan
 
-                        @can('cierre-soporte.accion-eliminar')
+                        @can('soporte.supervisor')
                         <button type="button" class="g_boton eliminar"
-                            onclick="if(confirm('¿Está seguro que desea eliminar este cierre de soporte?')) { Livewire.dispatch('eliminarCierreSoporteOn'); }"
+                            onclick="if(confirm('¿Está seguro que desea eliminar este tipo de cierre?')) { Livewire.dispatch('eliminarCierreSoporteOn'); }"
                             wire:loading.attr="disabled" wire:target="eliminarCierreSoporteOn">
                             <span wire:loading.remove wire:target="eliminarCierreSoporteOn">
                                 <i class="fa-solid fa-trash"></i> Eliminar

@@ -3,13 +3,13 @@
         <h2>Detalle de Cierre de Soporte</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('cierre-soporte.vista-lista')
+            @can('soporte.supervisor')
             <a href="{{ route('erp.cierre-soporte.vista.lista') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('cierre-soporte.vista-editar')
-            <a href="{{ route('soporte.supervisor', $cierre->id) }}" class="g_boton primary">
+            @can('soporte.supervisor')
+            <a href="{{ route('erp.cierre-soporte.vista.editar', $cierre->id) }}" class="g_boton primary">
                 Editar <i class="fa-solid fa-pencil"></i></a>
             @endcan
 

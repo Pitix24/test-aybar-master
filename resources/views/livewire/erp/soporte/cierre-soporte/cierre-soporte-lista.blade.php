@@ -4,10 +4,10 @@
         message="Cargando información..." />
 
     <div class="g_panel cabecera_titulo_pagina">
-        <h2>Cierres de Soporte</h2>
+        <h2>Tipos de Cierre de Soporte</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('cierre-soporte.vista-crear')
+            @can('soporte.supervisor')
             <a href="{{ route('erp.cierre-soporte.vista.crear') }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
@@ -68,7 +68,7 @@
 
                 <tbody>
                     @foreach ($items as $index => $item)
-                    <tr wire:key="cierre-soporte-{{ $item->id }}">
+                    <tr wire:key="tipo-soporte-{{ $item->id }}">
                         <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
                         <td class="g_celda_centro">
                             <i class="{{ $item->icono ?? 'fa-solid fa-circle' }}"
@@ -89,15 +89,15 @@
                         </td>
 
                         <td class="g_celda_acciones g_celda_centro centro">
-                            @can('cierre-soporte.vista-ver')
-                            <a href="{{ route('erp.cierre-soporte.vista.crear', $item->id) }}" class="g_accion ver"
+                            @can('soporte.supervisor')
+                            <a href="{{ route('erp.cierre-soporte.vista.ver', $item->id) }}" class="g_accion ver"
                                 title="Ver detalle">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             @endcan
 
-                            @can('cierre-soporte.vista-editar')
-                            <a href="{{ route('erp.cierre-soporte.vista.crear', $item->id) }}" class="g_accion editar"
+                            @can('soporte.supervisor')
+                            <a href="{{ route('erp.cierre-soporte.vista.editar', $item->id) }}" class="g_accion editar"
                                 title="Editar">
                                 <i class="fa-solid fa-pencil"></i>
                             </a>
