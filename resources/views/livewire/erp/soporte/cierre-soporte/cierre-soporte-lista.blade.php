@@ -8,7 +8,7 @@
 
         <div class="cabecera_titulo_botones">
             @can('cierre-soporte.vista-crear')
-            <a href="{{ route('soporte.supervisor') }}" class="g_boton primary">
+            <a href="{{ route('erp.cierre-soporte.vista.crear') }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
         </div>
@@ -90,14 +90,14 @@
 
                         <td class="g_celda_acciones g_celda_centro centro">
                             @can('cierre-soporte.vista-ver')
-                            <a href="{{ route('soporte.supervisor', $item->id) }}" class="g_accion ver"
+                            <a href="{{ route('erp.cierre-soporte.vista.crear', $item->id) }}" class="g_accion ver"
                                 title="Ver detalle">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             @endcan
 
                             @can('cierre-soporte.vista-editar')
-                            <a href="{{ route('soporte.supervisor', $item->id) }}" class="g_accion editar"
+                            <a href="{{ route('erp.cierre-soporte.vista.crear', $item->id) }}" class="g_accion editar"
                                 title="Editar">
                                 <i class="fa-solid fa-pencil"></i>
                             </a>

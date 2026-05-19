@@ -4,7 +4,7 @@
 
         <div class="cabecera_titulo_botones">
             @can('cierre-soporte.vista-lista')
-            <a href="{{ route('erp.cierre-soporte.lista') }}" class="g_boton light">
+            <a href="{{ route('erp.cierre-soporte.vista.lista') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 

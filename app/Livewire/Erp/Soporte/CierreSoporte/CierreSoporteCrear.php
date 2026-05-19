@@ -79,7 +79,7 @@ class CierreSoporteCrear extends Component
                 'text' => 'El cierre de soporte se creó correctamente.'
             ]);
 
-            return redirect()->route('erp.cierre-soporte.lista');
+            return redirect()->route('erp.cierre-soporte.vista.lista');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('cierre_soporte')->error("[CIERRE SOPORTE] Error al crear: " . $e->getMessage());

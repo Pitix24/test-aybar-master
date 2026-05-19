@@ -122,7 +122,7 @@ class CierreSoporteEditar extends Component
                 'text' => "El cierre de soporte '$nombre' ha sido eliminado."
             ]);
 
-            return redirect()->route('erp.cierre-soporte.lista');
+            return redirect()->route('erp.cierre-soporte.vista.lista');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('cierre_soporte')->error("[CIERRE SOPORTE] Error al eliminar: " . $e->getMessage());
