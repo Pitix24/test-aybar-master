@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             TipoSoporteSeeder::class,
             PrioridadSoporteSeeder::class,
             EstadoSoporteSeeder::class,
+            CierreSoporteSeeder::class,
             EntregaFestEstadoClienteSeeder::class,
             EntregaFestSeeder::class,
             /*TipoSolicitudSeeder::class,
