@@ -133,4 +133,14 @@ class SoporteEditar extends Component
         session()->flash('success', 'Ticket cerrado.');
         $this->redirectRoute('erp.soporte.vista.todo', navigate: true);
     }
+
+    public function marcarNoProcede(): void
+    {
+        $estadoNoProcede = EstadoSoporte::where('nombre', 'NO PROCEDE')->first();
+        $this->soporte->estado_soporte_id = $estadoNoProcede?->id;
+        $this->soporte->save();
+
+        session()->flash('success', 'Ticket marcado como no procedente.');
+        $this->redirectRoute('erp.soporte.vista.todo', navigate: true);
+    }
 }

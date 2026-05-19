@@ -179,12 +179,12 @@
             </button>
             @endif
 
-            @if (in_array($soporte->estadoSoporte?->nombre, ['RESUELTO', 'EN_PROGRESO']))
-            <button type="button" wire:click="cerrar" class="g_boton danger" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="cerrar">
-                    <i class="fa-solid fa-lock"></i> Cerrar
+            @if ($soporte->estadoSoporte?->nombre === 'EN_PROGRESO' && $soporte->gestor_id === Auth::id())
+            <button type="button" wire:click="marcarNoProcede" class="g_boton danger" wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="marcarNoProcede">
+                    <i class="fa-solid fa-check"></i> Marcar No Procedente
                 </span>
-                <span wire:loading wire:target="cerrar">
+                <span wire:loading wire:target="marcarNoProcede">
                     <i class="fa-solid fa-spinner fa-spin"></i>
                 </span>
             </button>
