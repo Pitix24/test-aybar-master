@@ -85,6 +85,18 @@
 
         <div class="g_margin_bottom_10">
             <h4 class="g_panel_titulo"><i class="fa-solid fa-note-sticky"></i> Notas / Observaciones</h4>
+            <div class="g_margin_bottom_10 g_columna_3">
+                <label>Cierre</label>
+                <select wire:model.live="cierre_soporte_id" class="@error('cierre_soporte_id') input-error @enderror">
+                    <option value="">Sin asignar</option>
+                    @foreach ($cierres as $c)
+                    <option value="{{ $c->id }}">{{ $c->nombre }}</option>
+                    @endforeach
+                </select>
+                @error('cierre_soporte_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+            </div>
+
+            <label>Notas</label>
             <textarea wire:model.blur="observaciones" rows="5" class="@error('observaciones') input-error @enderror"
                 placeholder="Agregar notas de seguimiento visibles para gestores creadores"></textarea>
             @error('observaciones') <p class="mensaje_error">{{ $message }}</p> @enderror
