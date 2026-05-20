@@ -8,9 +8,20 @@ Crear un módulo completo para gestionar Expedientes INDECOPI con recepción aut
 ## FASES (5 bloques independientes para desarrollo paralelo)
 
 ### FASE 1: Base de Datos & Modelos ✅ (Parcialmente completada)
-1. Completar migration con campos: `unidad_negocio_id`, `tipo_origen` (RECEPCION_CORREO/CREACION_MANUAL), `origen` (INDECOPI/MIGRACION), `tipo_registro` (EXPEDIENTE_NUEVO/NOTIFICACION/INCOMPLETO), `codigo_expediente_original`, `empresa_id`, `gestor_id`, `responsable_id`, `fecha_notificacion`, `fecha_vencimiento`, `tarea`, `estado` (NUEVO/EN_PROCESO/EN_ESPERA/GESTIONADO/CERRADO), `alerta` (JSON), + auditoría
-2. Crear Modelo `Expediente` con relaciones: `unidadNegocio()`, `empresa()`, `gestor()`, `ticketsHijos()`
-3. Crear Modelo `TemplateTicketHijo` para gestionar plantillas de subtareas
+
+1. Completar migration expedientes con campos: 
+-   `unidad_negocio_id` -> Razón Social (Empresa): Completado según el correo remitente.
+-	`fecha_notificacion`-> Fecha de Notificación: Se coloca la fecha de llegada de la notificación
+-	`codigo_expediente` -> Código de Expediente: “Ejem:447-2025/CC2”
+-   `cuerpo`            -> Cuerpo del correo con link incluidos
+-   `gestor_id`         -> Gestor encargado de la Gestión Interna del Expediente
+-   `responsable_id`    -> Gestor encargado de la Gestión Legal del Expediente
+-	`origen`            -> Origen: Correo Indecopi o Migracion (Por defecto Indecopi, para los creados automaticamente)
+-	`tipo_expediente_id`-> Expediente Nuevo o Notificación
+-   `alerta`            -> JSON + Auditoría
+-   `ticket_id`         -> Una vez generado el Expediente, este deberá generar un Ticket Asociado.
+
+2. Crear Modelo `Expediente` con relaciones: `unidadNegocio()`, `gestor()`, `ticket()`
 
 ### FASE 2: Recepción Automática de Correos (Job + Service)
 1. **Job** `ProcessExpedienteEmail`: Recibe correo, extrae código (regex: `NNN-YYYY/XX2`), mapea unidad por email remitente, verifica si expediente existe
@@ -25,9 +36,12 @@ Crear un módulo completo para gestionar Expedientes INDECOPI con recepción aut
 4. **ExpedienteEditar**: Cambiar código si incompleto, reasignar gestor, cambiar estado, agregar notas
 
 ### FASE 4: Tickets Hijos & Plantillas (depende de FASE 1)
-1. **GestionPlantillasTicketHijo**: CRUD de plantillas por expediente (nombre, área, canal, prioridad, orden)
-2. **GeneradorTicketsHijos**: Service que crea N tickets desde plantilla al hacer clic en "Crear Tickets"
-3. **Relación many-to-many**: Tabla pivot `expediente_ticket`
+1. Completar migration TemplateTicketHijo:
+-   Deberá de tener los campos iguales para el Formulario al crear un Ticket Hijo/Asociado, en espera. De esta manera, se heredarán ciertos campos del Ticket ASOCIADO al Expediente, para crear el Hijo de manera rápida. EX: Solicitar un Estado de Cuenta a Backoffice es algo repetitivo, por lo que tener Listo una Plantilla que me permita directamente Crear un Ticket Hijo para el Ticket ASOCIADO al Expediente agilizaría el trabajo del Gestor.
+2. Crear Modelo `TemplateTicketHijo` para gestionar plantillas de subtareas
+3. **GestionPlantillasTicketHijo**: CRUD de plantillas por expediente (nombre, área, canal, prioridad, orden)
+4. **GeneradorTicketsHijos**: Service que crea N tickets desde plantilla al hacer clic en "Crear Tickets"
+5. **Relación many-to-many**: Tabla pivot `expediente_ticket`
 
 ### FASE 5: Notificaciones Mejoradas (depende de FASE 1)
 1. **Job** `NotificarExpedienteVencimientoCercano`: Corre cada 15 min, busca vencimientos próximos
