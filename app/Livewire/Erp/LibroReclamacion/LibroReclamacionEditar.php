@@ -59,7 +59,7 @@ class LibroReclamacionEditar extends Component
 
     public function mount($id): void
     {
-        $this->authorize('libro-reclamacion.gestor');
+        $this->authorize('libro-reclamacion.editar');
 
         $this->ticket_model = LibroReclamacion::with([
             'ticketRelacionado',
@@ -320,7 +320,7 @@ class LibroReclamacionEditar extends Component
 
     public function update(): void
     {
-        $this->authorize('ticket-libro-reclamacion.editar');
+        $this->authorize('libro-reclamacion.editar');
 
         try {
             $this->validate();
@@ -427,7 +427,7 @@ class LibroReclamacionEditar extends Component
     #[On('eliminarLibroTicketOn')]
     public function eliminarLibroTicketOn()
     {
-        $this->authorize('ticket-libro-reclamacion.eliminar');
+        $this->authorize('libro-reclamacion.eliminar');
 
         try {
             DB::beginTransaction();

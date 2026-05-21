@@ -8,7 +8,7 @@
 
         <div class="cabecera_titulo_botones">
             @if (config('libro_reclamacion.crear_erp_habilitado'))
-            @can('libro-reclamacion.gestor')
+            @can('libro-reclamacion.crear')
             <a href="{{ route('erp.libro-reclamacion.vista.crear') }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i>
             </a>
@@ -188,14 +188,21 @@
                             <span class="g_badge light">Mayor</span>
                             @endif
                         </td>
-                        <td class="g_celda_acciones g_celda_centro centro">
-                            @can('libro-reclamacion.gestor')
+                        <td class="g_celda_acciones g_celda_centro">
+                            @can('libro-reclamacion.ver')
                             <a href="{{ route('erp.libro-reclamacion.vista.ver', $item->ticket) }}" class="g_accion ver"
                                 title="Ver">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             @endcan
                         </td>
+                        <td class="g_celda_acciones g_celda_centro">
+                            @can('libro-reclamacion.editar')
+                            <a href="{{ route('erp.libro-reclamacion.vista.editar', $item->ticket) }}" class="g_accion editar"
+                                title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            @endcan
                     </tr>
                     @empty
                     <tr>

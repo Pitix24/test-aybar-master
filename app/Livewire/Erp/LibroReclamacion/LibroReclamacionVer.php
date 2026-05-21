@@ -17,7 +17,7 @@ class LibroReclamacionVer extends Component
 
     public function mount($id): void
     {
-        $this->authorize('libro-reclamacion.gestor');
+        $this->authorize('libro-reclamacion.ver');
 
         $this->ticket = LibroReclamacion::with([
             'ticketRelacionado.estado',
