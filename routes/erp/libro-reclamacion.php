@@ -11,14 +11,14 @@ Route::group(['middleware' => ['permission:modulo-legal.ver']], function () {
         Route::prefix('libro-reclamacion')
             ->name('libro-reclamacion.vista.')
             ->group(function () {
-                Route::get('/', LibroReclamacionLista::class)->middleware('permission:libro-reclamacion.gestor')->name('todo');
-                Route::get('/ver/{id}', LibroReclamacionVer::class)->middleware('permission:libro-reclamacion.gestor')->name('ver');
+                Route::get('/', LibroReclamacionLista::class)->middleware('permission:libro-reclamacion.lista')->name('todo');
+                Route::get('/ver/{id}', LibroReclamacionVer::class)->middleware('permission:libro-reclamacion.ver')->name('ver');
 
                 if (config('libro_reclamacion.crear_erp_habilitado')) {
-                    Route::get('/crear', LibroReclamacionCrear::class)->middleware('permission:libro-reclamacion.gestor')->name('crear');
+                    Route::get('/crear', LibroReclamacionCrear::class)->middleware('permission:libro-reclamacion.crear')->name('crear');
                 }
 
-                Route::get('/editar/{id}', LibroReclamacionEditar::class)->middleware('permission:libro-reclamacion.gestor')->name('editar');
+                Route::get('/editar/{id}', LibroReclamacionEditar::class)->middleware('permission:libro-reclamacion.editar')->name('editar');
             });
     });
 });
