@@ -6,13 +6,13 @@
         <h2>Editar Ticket Reclamacion #{{ $ticket_model->ticket }}</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('reclamacion.gestor')
+            @can('libro-reclamacion.gestor')
             <a href="{{ route('erp.libro-reclamacion.vista.ver', $ticket_model->ticket) }}" class="g_boton warning">
                 Ver <i class="fa-solid fa-eye"></i>
             </a>
             @endcan
 
-            @can('reclamacion.gestor')
+            @can('libro-reclamacion.gestor')
             <a href="{{ route('erp.libro-reclamacion.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>
@@ -32,7 +32,7 @@
         @include('livewire.erp.libro-reclamacion.libro-reclamacion-form', ['submitAction' => 'update'])
 
         <div class="formulario_botones">
-            @can('reclamacion.gestor')
+            @can('libro-reclamacion.gestor')
             <button type="button" class="g_boton guardar" wire:loading.attr="disabled"
                 onclick="document.querySelector('.libro-reclamacion-form button[wire\\:click]').click()">
                 <span wire:loading.remove wire:target="update"><i class="fa-solid fa-floppy-disk"></i> Guardar
@@ -41,7 +41,7 @@
             </button>
             @endcan
 
-            @can('reclamacion.gestor')
+            @can('libro-reclamacion.gestor')
             <button type="button" class="g_boton danger" onclick="alertaEliminarLibroTicket()">
                 Eliminar <i class="fa-solid fa-trash"></i>
             </button>
@@ -234,7 +234,7 @@
 </div>
 
 <div class="formulario_botones">
-    @can('reclamacion.gestor')
+    @can('libro-reclamacion.gestor')
     <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
         <span wire:loading.remove wire:target="update"><i class="fa-solid fa-floppy-disk"></i> Guardar
             cambios</span>
@@ -242,7 +242,7 @@
     </button>
     @endcan
 
-    @can('reclamacion.gestor')
+    @can('libro-reclamacion.gestor')
     <button type="button" class="g_boton danger" onclick="alertaEliminarLibroTicket()">
         Eliminar <i class="fa-solid fa-trash"></i>
     </button>
