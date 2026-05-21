@@ -46,7 +46,7 @@ class TicketEmail extends Component
 
     public function store()
     {
-        $this->authorize('ticket.accion-enviar-correo');
+        $this->authorize('ticket.enviar-correo');
 
         try {
             $this->validate([
