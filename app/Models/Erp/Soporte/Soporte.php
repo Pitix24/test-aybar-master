@@ -20,6 +20,7 @@ class Soporte extends Model
         'prioridad_soporte_id',
         'area_id',
         'estado_soporte_id',
+        'cierre_soporte_id',
         'titulo',
         'descripcion',
         'observaciones',
@@ -52,6 +53,11 @@ class Soporte extends Model
     public function estadoSoporte()
     {
         return $this->belongsTo(EstadoSoporte::class, 'estado_soporte_id');
+    }
+
+    public function cierreSoporte()
+    {
+        return $this->belongsTo(CierreSoporte::class, 'cierre_soporte_id');
     }
 
     // ─── Auto-generación de código SP-XXXX ───────────────────────────────────

@@ -22,7 +22,7 @@ class SoporteVer extends Component
         // Validar permiso de ver soporte
         $this->authorize('view', $soporte);
 
-        $this->soporte = $soporte->load(['tipoSoporte', 'prioridadSoporte', 'estadoSoporte', 'solicitante', 'gestor', 'creador', 'area']);
+        $this->soporte = $soporte->load(['tipoSoporte', 'prioridadSoporte', 'estadoSoporte', 'cierreSoporte', 'solicitante', 'gestor', 'creador', 'area']);
     }
 
     public function render()

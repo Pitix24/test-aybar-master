@@ -5,6 +5,8 @@ PERMISO BASADO EN ROLES:
 usuario.gestor
 usuario.supervisor
 
+PERMISOS APLICADOS
+
 ADMIN
 admin.navegacion
 admin.vista-lista
@@ -16,7 +18,6 @@ admin.accion-editar
 admin.accion-eliminar
 admin.accion-exportar-filtro
 admin.accion-exportar-todo
-admin.accion-cambiar-clave
 
 CLIENTE
 cliente.navegacion
@@ -30,10 +31,7 @@ cliente.accion-eliminar
 cliente.accion-exportar-filtro
 cliente.accion-exportar-todo
 cliente.accion-enviar-recuperar-clave
-cliente.vista-ver-consulta
-cliente.accion-consultar
-cliente.vista-ver-movimientos
-cliente.vista-ver-modo-cliente
+cliente.consultar
 
 CLIENTE ANTIGUO
 cliente-antiguo.navegacion
@@ -46,3 +44,12 @@ cliente-antiguo.accion-editar
 cliente-antiguo.accion-eliminar
 cliente-antiguo.accion-exportar-filtro
 cliente-antiguo.accion-exportar-todo
+
+PERMISOS NO APLICADOS
+admin.accion-cambiar-clave
+cliente.vista-ver-consulta
+cliente.accion-consultar
+cliente.vista-ver-movimientos
+cliente.vista-ver-modo-cliente
+cliente-antiguo.vista-lista
+cliente-antiguo.vista-ver

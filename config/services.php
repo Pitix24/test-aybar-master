@@ -45,6 +45,7 @@ return [
         'url' => env('SLIN_URL'),
         'user' => env('SLIN_USER'),
         'password' => env('SLIN_PASSWORD'),
+        'base_password' => env('SLIN_BASEPASSWORD'),
     ],
 
     'canvia' => [

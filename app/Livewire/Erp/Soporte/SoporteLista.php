@@ -103,10 +103,10 @@ class SoporteLista extends Component
         $this->cargarStats();
     }
 
-    public function filterCerrados(): void
+    public function filterNoProcedentes(): void
     {
         $this->estado_id = optional(
-            EstadoSoporte::whereIn('nombre', ['CERRADO'])->first()
+            EstadoSoporte::whereIn('nombre', ['NO PROCEDE'])->first()
         )->id;
         $this->resetPage();
         $this->cargarStats();
@@ -130,7 +130,7 @@ class SoporteLista extends Component
 
         $pendienteIds = EstadoSoporte::whereIn('nombre', ['NUEVO', 'ABIERTO', 'EN_PROGRESO', 'EN_REVISION'])->pluck('id');
         $resueltoId   = optional(EstadoSoporte::where('nombre', 'RESUELTO')->first())->id;
-        $cerradoId    = optional(EstadoSoporte::where('nombre', 'CERRADO')->first())->id;
+        $noProcedentesId    = optional(EstadoSoporte::where('nombre', 'NO PROCEDE')->first())->id;
 
         $pendientes = (clone $base)->whereIn('estado_soporte_id', $pendienteIds)->count();
 
@@ -138,8 +138,8 @@ class SoporteLista extends Component
             ? (clone $base)->where('estado_soporte_id', $resueltoId)->count()
             : 0;
 
-        $cerrados = $cerradoId
-            ? (clone $base)->where('estado_soporte_id', $cerradoId)->count()
+        $noProcedentes = $noProcedentesId
+            ? (clone $base)->where('estado_soporte_id', $noProcedentesId)->count()
             : 0;
 
         $minFecha = Soporte::query()->min('created_at');
@@ -157,7 +157,7 @@ class SoporteLista extends Component
             'total'              => $total,
             'pendientes'         => $pendientes,
             'resueltos'          => $resueltos,
-            'cerrados'           => $cerrados,
+            'no_procedentes'     => $noProcedentes,
             'promedio_por_dia'   => $promedio,
             'dias'               => $dias,
             'fecha_base_promedio'=> $fechaBasePromedio?->format('d/m/Y'),
@@ -241,13 +241,13 @@ class SoporteLista extends Component
     public function cerrarTicket(int $id): void
     {
         $ticket = Soporte::findOrFail($id);
-        $estadoCerrado = \App\Models\Erp\Soporte\EstadoSoporte::where('nombre', 'CERRADO')->first();
-        $ticket->update(['estado_soporte_id' => $estadoCerrado?->id]);
+        $estadoNoProcede = \App\Models\Erp\Soporte\EstadoSoporte::where('nombre', 'NO PROCEDE')->first();
+        $ticket->update(['estado_soporte_id' => $estadoNoProcede?->id]);
 
         $this->dispatch('alertaLivewire', [
             'type' => 'success',
-            'title' => 'Cerrado',
-            'text' => 'El ticket fue cerrado.',
+            'title' => 'No Procede',
+            'text' => 'El ticket fue marcado como NO PROCEDE.',
         ]);
 
         $this->js('window.location.reload()');
