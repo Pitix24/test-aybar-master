@@ -111,3 +111,14 @@ invitado.accion-agregar-acompanante
 invitado.accion-eliminar-acompanante
 invitado.accion-editar-acompanante
 asistencia.accion-marcar
+
+PERMISOS DETECTADOS SOLO EN CODIGO
+entrega-fest.staff
+invitado-entrega-fest.crear
+
+USO EN CODIGO
+app/Livewire/Erp/EntregaFest/Recurso/StaffRecursos.php
+app/Livewire/Erp/EntregaFest/Invitado/EntregaFestInvitadoCrear.php
+
+NOTA
+Estos permisos controlan la gestion de recursos y la generacion de invitados desde el flujo de Entrega Fest.

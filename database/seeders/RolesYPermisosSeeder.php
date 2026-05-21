@@ -299,12 +299,13 @@ class RolesYPermisosSeeder extends Seeder
                 'reporte-letra.letra.ver', //ok
             ],
             'Módulo Legal' => [
-                'modulo-legal.ver',
-                'libro-reclamacion.navegar',
-                'libro-reclamacion.gestor',
-                'ticket-libro-reclamacion.ver',
-                'ticket-libro-reclamacion.editar',
-                'ticket-libro-reclamacion.eliminar',
+                'modulo-legal.ver', //ok
+                /* LIBRO DE RECLAMACIONES */
+                'libro-reclamacion.navegacion', //ok
+                'libro-reclamacion.lista', //ok
+                'libro-reclamacion.ver', //ok
+                'libro-reclamacion.editar', //ok
+                'libro-reclamacion.eliminar', //ok
             ],
             'Módulo Marketing' => [
                 'modulo-marketing.ver', //ok
@@ -619,8 +620,8 @@ class RolesYPermisosSeeder extends Seeder
 
         $asesor_libro_reclamacion = Role::findByName('asesor-libro-reclamacion');
         // Sincronizar con el módulo correcto y asegurar permiso de ver tickets
-        $asesor_libro_reclamacion->syncPermissions(Permission::where('module', 'Módulo Legal')->get());
-        $asesor_libro_reclamacion->givePermissionTo('ticket.%');
+        $asesor_libro_reclamacion->syncPermissions(Permission::where('name', 'like', 'ticket.%')->get());
+        $asesor_libro_reclamacion->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
         $this->command->info("✓ Asesor Libro Reclamacion: Configurado");
 
         // Staff Operativo (supervisor-entrega-fest)
