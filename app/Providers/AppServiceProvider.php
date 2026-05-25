@@ -26,9 +26,8 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
-        // Implicitly grant "Super Admin" role all permissions
-        // This works in the app by intercepting gate checks without needing 
-        // to assign every individual permission to the role in the database.
+        // Implicitly grant "Super Admin" role all permissions.
+        // This restores the global bypass used across the application.
         Gate::before(function ($user, $ability) {
             return $user->hasRole('super-admin') ? true : null;
         });
@@ -44,13 +43,13 @@ class AppServiceProvider extends ServiceProvider
 
         Password::defaults(
             fn(): ?Password => app()->isProduction()
-            ? Password::min(12)
+                ? Password::min(12)
                 ->mixedCase()
                 ->letters()
                 ->numbers()
                 ->symbols()
                 ->uncompromised()
-            : null
+                : null
         );
     }
 }

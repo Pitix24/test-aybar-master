@@ -62,7 +62,7 @@ class LibroReclamacionCrear extends Component
             abort(404);
         }
 
-        $this->authorize('ticket-libro-reclamacion.crear');
+        $this->authorize('libro-reclamacion.crear');
         $this->unidades = UnidadNegocio::query()->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
         $this->proyectos = collect();
         $this->usuarios = User::query()->where('activo', true)->orderBy('name')->get(['id', 'name']);
@@ -339,7 +339,7 @@ class LibroReclamacionCrear extends Component
             abort(404);
         }
 
-        $this->authorize('ticket-libro-reclamacion.crear');
+        $this->authorize('libro-reclamacion.administrador');
 
         try {
             $this->validate();

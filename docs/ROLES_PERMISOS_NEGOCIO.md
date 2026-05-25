@@ -5,6 +5,8 @@ PERMISO BASADO EN ROLES:
 negocio.gestor
 negocio.supervisor
 
+PERMISOS APLICADOS
+
 UNIDAD NEGOCIO
 unidad-negocio.navegacion
 unidad-negocio.vista-lista
@@ -73,3 +75,6 @@ proyecto.accion-editar
 proyecto.accion-eliminar
 proyecto.accion-exportar-filtro
 proyecto.accion-exportar-todo
+
+PERMISOS NO APLICADOS
+Ninguno detectado en el codigo actual de Negocio.

@@ -68,6 +68,14 @@
                             </li>
 
                             <li class="menu_item menu_cliente">
+                                <a href="{{ route('cliente.reglamento') }}"
+                                    class="boton_personalizado boton_personalizado_amarillo_v2">
+                                    <i class="fa-solid fa-balance-scale"></i>
+                                    REGLAMENTOS
+                                </a>
+                            </li>
+
+                            <li class="menu_item menu_cliente">
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="boton_personalizado boton_personalizado_negro">

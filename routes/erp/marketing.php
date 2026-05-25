@@ -8,6 +8,10 @@ use App\Livewire\Erp\Marketing\AvanceProyecto\AvanceProyectoCrear;
 use App\Livewire\Erp\Marketing\AvanceProyecto\AvanceProyectoEditar;
 use App\Livewire\Erp\Marketing\AvanceProyecto\AvanceProyectoLista;
 use App\Livewire\Erp\Marketing\AvanceProyecto\AvanceProyectoVer;
+use App\Livewire\Erp\Marketing\Reglamento\ReglamentoCrear;
+use App\Livewire\Erp\Marketing\Reglamento\ReglamentoEditar;
+use App\Livewire\Erp\Marketing\Reglamento\ReglamentoLista;
+use App\Livewire\Erp\Marketing\Reglamento\ReglamentoVer;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-marketing.ver']], function () {
@@ -26,6 +30,15 @@ Route::group(['middleware' => ['permission:modulo-marketing.ver']], function () 
             Route::get('/ver/{id}', AvanceProyectoVer::class)->name('ver');
             Route::get('/crear', AvanceProyectoCrear::class)->name('crear');
             Route::get('/editar/{id}', AvanceProyectoEditar::class)->name('editar');
+        });
+    });
+
+    Route::group(['middleware' => []], function () {
+        Route::prefix('reglamento')->name('reglamento.vista.')->group(function () {
+            Route::get('/', ReglamentoLista::class)->middleware('permission:reglamento.lista')->name('todo');
+            Route::get('/ver/{id}', ReglamentoVer::class)->middleware('permission:reglamento.ver')->name('ver');
+            Route::get('/crear', ReglamentoCrear::class)->middleware('permission:reglamento.crear')->name('crear');
+            Route::get('/editar/{id}', ReglamentoEditar::class)->middleware('permission:reglamento.editar')->name('editar');
         });
     });
 });

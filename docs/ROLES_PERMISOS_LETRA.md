@@ -5,6 +5,8 @@ PERMISO BASADO EN ROLES:
 letras.gestor
 letras.supervisor
 
+PERMISOS APLICADOS
+
 ESTADO SOLICITUD DIGITALIZAR LETRA
 estado-solicitud-digitalizar-letra.navegacion ->OK
 estado-solicitud-digitalizar-letra.vista-lista
@@ -49,4 +51,27 @@ envio-cavali.accion-validar-cron
 CONSULTAR LETRA
 consultar-letra.navegacion ->OK
 consultar-letra.vista-ver
+consultar-letra.accion-consultar-letra
+
+PERMISOS NO APLICADOS
+estado-solicitud-digitalizar-letra.vista-lista
+estado-solicitud-digitalizar-letra.vista-ver
+estado-solicitud-digitalizar-letra.vista-crear
+estado-solicitud-digitalizar-letra.vista-editar
+solicitud-digitalizar-letra.vista-lista
+solicitud-digitalizar-letra.vista-crear
+solicitud-digitalizar-letra.accion-crear
+solicitud-digitalizar-letra.vista-editar
+solicitud-digitalizar-letra.accion-editar
+solicitud-digitalizar-letra.accion-eliminar
+solicitud-digitalizar-letra.accion-enviar-digitalizar
+envio-cavali.vista-lista
+envio-cavali.vista-ver
+envio-cavali.vista-crear
+envio-cavali.accion-crear
+envio-cavali.vista-editar
+envio-cavali.accion-editar
+envio-cavali.accion-eliminar
+envio-cavali.accion-exportar-filtro
+envio-cavali.accion-detalle-exportar
 consultar-letra.accion-consultar-letra

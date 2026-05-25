@@ -20,8 +20,10 @@ class Soporte extends Model
         'prioridad_soporte_id',
         'area_id',
         'estado_soporte_id',
+        'cierre_soporte_id',
         'titulo',
         'descripcion',
+        'observaciones',
         'solicitante_id',
         'gestor_id',
         'assigned_at',
@@ -51,6 +53,11 @@ class Soporte extends Model
     public function estadoSoporte()
     {
         return $this->belongsTo(EstadoSoporte::class, 'estado_soporte_id');
+    }
+
+    public function cierreSoporte()
+    {
+        return $this->belongsTo(CierreSoporte::class, 'cierre_soporte_id');
     }
 
     // ─── Auto-generación de código SP-XXXX ───────────────────────────────────
@@ -117,5 +124,12 @@ class Soporte extends Model
     public function eliminador()
     {
         return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+    // ─── Relación Polimórfica con Archivos ─────────────────────────────────────
+
+    public function archivos()
+    {
+        return $this->morphMany(SoporteArchivo::class, 'archivable');
     }
 }

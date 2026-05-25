@@ -5,6 +5,8 @@ PERMISO BASADO EN ROLES:
 sistema.gestor
 sistema.supervisor
 
+PERMISOS APLICADOS
+
 ROL
 rol.navegacion
 rol.vista-lista
@@ -40,3 +42,6 @@ menu.accion-editar
 menu.accion-eliminar
 menu.accion-exportar-filtro
 menu.accion-exportar-todo
+
+PERMISOS NO APLICADOS
+Ninguno detectado en el codigo actual de Sistema.

@@ -284,6 +284,13 @@ return [
             'days' => 14,
         ],
 
+        'soporte' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/soporte.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'letra' => [
             'driver' => 'daily',
             'path' => storage_path('logs/letra.log'),
@@ -294,6 +301,13 @@ return [
         'tutorial' => [
             'driver' => 'daily',
             'path' => storage_path('logs/tutorial.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'reglamento' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/reglamento.log'),
             'level' => 'debug',
             'days' => 14,
         ],

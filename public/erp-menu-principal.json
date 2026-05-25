@@ -822,6 +822,35 @@
                         "submenus": []
                     }
                 ]
+            },
+            {
+                "id": 51,
+                "nombre": "Reglamentos",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-scale-balanced",
+                "nivel": 2,
+                "permiso": "reglamento.navegacion",
+                "submenus": [
+                    {
+                        "id": 111,
+                        "nombre": "Lista",
+                        "ruta": "erp.reglamento.vista.todo",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reglamento.lista",
+                        "submenus": []
+                    },
+                    {
+                        "id": 112,
+                        "nombre": "Crear",
+                        "ruta": "erp.reglamento.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "reglamento.crear",
+                        "submenus": []
+                    }
+                ]
             }
         ]
     },
@@ -1046,6 +1075,122 @@
                         "url": null,
                         "nivel": 3,
                         "permiso": "soporte.vista-crear",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 119,
+                "nombre": "Tipo Solicitud Soporte",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-tag",
+                "nivel": 2,
+                "permiso": "soporte.supervisor",
+                "submenus": [
+                    {
+                        "id": 120,
+                        "nombre": "Lista tipo",
+                        "ruta": "erp.tipo-soporte.vista.lista",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.supervisor",
+                        "submenus": []
+                    },
+                    {
+                        "id": 121,
+                        "nombre": "Crear Tipo",
+                        "ruta": "erp.tipo-soporte.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.supervisor",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 122,
+                "nombre": "Prioridad Ticket Soporte",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-bolt",
+                "nivel": 2,
+                "permiso": "soporte.supervisor",
+                "submenus": [
+                    {
+                        "id": 123,
+                        "nombre": "Lista prioridad",
+                        "ruta": "erp.prioridad-soporte.vista.lista",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.supervisor",
+                        "submenus": []
+                    },
+                    {
+                        "id": 124,
+                        "nombre": "Crear prioridad",
+                        "ruta": "erp.prioridad-soporte.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.supervisor",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 125,
+                "nombre": "Estados Ticket Soporte",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-lock-open",
+                "nivel": 2,
+                "permiso": "soporte.supervisor",
+                "submenus": [
+                    {
+                        "id": 126,
+                        "nombre": "Lista estado",
+                        "ruta": "erp.estado-soporte.vista.lista",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.supervisor",
+                        "submenus": []
+                    },
+                    {
+                        "id": 127,
+                        "nombre": "Crear estado",
+                        "ruta": "erp.estado-soporte.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.supervisor",
+                        "submenus": []
+                    }
+                ]
+            },
+            {
+                "id": 128,
+                "nombre": "Cierres Ticket Soporte",
+                "ruta": null,
+                "url": null,
+                "icono": "fa-solid fa-bullhorn",
+                "nivel": 2,
+                "permiso": "soporte.supervisor",
+                "submenus": [
+                    {
+                        "id": 129,
+                        "nombre": "Lista cierre",
+                        "ruta": "erp.cierre-soporte.vista.lista",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.supervisor",
+                        "submenus": []
+                    },
+                    {
+                        "id": 130,
+                        "nombre": "Crear cierre",
+                        "ruta": "erp.cierre-soporte.vista.crear",
+                        "url": null,
+                        "nivel": 3,
+                        "permiso": "soporte.supervisor",
                         "submenus": []
                     }
                 ]

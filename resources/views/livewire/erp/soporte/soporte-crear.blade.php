@@ -22,7 +22,7 @@
                 <select wire:model.live="tipo_soporte_id" class="@error('tipo_soporte_id') input-error @enderror">
                     <option value="">Seleccione...</option>
                     @foreach ($tipos as $t)
-                        <option value="{{ $t->id }}">{{ $t->nombre }}</option>
+                    <option value="{{ $t->id }}">{{ $t->nombre }}</option>
                     @endforeach
                 </select>
                 @error('tipo_soporte_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -34,7 +34,7 @@
                     class="@error('prioridad_soporte_id') input-error @enderror">
                     <option value="">Seleccione...</option>
                     @foreach ($prioridades as $p)
-                        <option value="{{ $p->id }}">{{ $p->nombre }}</option>
+                    <option value="{{ $p->id }}">{{ $p->nombre }}</option>
                     @endforeach
                 </select>
                 @error('prioridad_soporte_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -45,7 +45,7 @@
                 <select wire:model.live="area_id" class="@error('area_id') input-error @enderror">
                     <option value="">Sin área asignada</option>
                     @foreach ($areas as $a)
-                        <option value="{{ $a->id }}">{{ $a->nombre }}</option>
+                    <option value="{{ $a->id }}">{{ $a->nombre }}</option>
                     @endforeach
                 </select>
                 @error('area_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -64,6 +64,42 @@
                 class="@error('descripcion') input-error @enderror"></textarea>
             @error('descripcion') <p class="mensaje_error">{{ $message }}</p> @enderror
         </div>
+
+        @can('soporte.accion-agregar-archivo')
+        <div class="g_margin_bottom_10">
+            <h4 class="g_panel_titulo"><i class="fa-solid fa-paperclip"></i> Archivos Adjuntos</h4>
+
+            <input type="file" id="soporteArchivosCrear" wire:model="archivos" multiple
+                accept=".pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png" style="display: none;">
+
+            <div class="contenedor_dropzone" onclick="document.getElementById('soporteArchivosCrear').click()"
+                wire:loading.class="g_deshabilitado" wire:target="archivos">
+                <div wire:loading.remove wire:target="archivos">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Haz clic para seleccionar uno o varios archivos</p>
+                </div>
+                <div wire:loading wire:target="archivos">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Cargando archivos...</p>
+                </div>
+            </div>
+
+            @error('archivos') <p class="mensaje_error">{{ $message }}</p> @enderror
+            @error('archivos.*') <p class="mensaje_error">{{ $message }}</p> @enderror
+
+            @if (!empty($archivos))
+            <div class="g_margin_top_10">
+                <div class="g_negrita g_margin_bottom_10">Archivos listos para adjuntar:</div>
+                @foreach ($archivos as $index => $archivo)
+                <div class="dropzone_item g_margin_bottom_10" wire:key="archivo-crear-{{ $index }}">
+                    <i class="fa-solid fa-file"></i>
+                    <span>{{ $archivo->getClientOriginalName() }}</span>
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </div>
+        @endcan
 
         <div class="formulario_botones">
             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">

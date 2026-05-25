@@ -22,47 +22,47 @@ class RolesYPermisosSeeder extends Seeder
         // 1. ESTRUCTURA DE PERMISOS POR MÓDULO
         // ----------------------------------------
         $modulos = [
-            'Módulo Sistema' => [//ok
-                'modulo-sistema.ver',//ok
+            'Módulo Sistema' => [ //ok
+                'modulo-sistema.ver', //ok
                 /* ROLES */
-                'rol.navegacion',//ok
-                'rol.lista',//ok
-                'rol.ver',//ok
-                'rol.crear',//ok
-                'rol.editar',//ok
-                'rol.eliminar',//ok
-                'rol.exportar-filtro',//ok
-                'rol.exportar-todo',//ok
+                'rol.navegacion', //ok
+                'rol.lista', //ok
+                'rol.ver', //ok
+                'rol.crear', //ok
+                'rol.editar', //ok
+                'rol.eliminar', //ok
+                'rol.exportar-filtro', //ok
+                'rol.exportar-todo', //ok
                 /* PERMISOS */
-                'permiso.navegacion',//ok
-                'permiso.lista',//ok
-                'permiso.ver',//ok
-                'permiso.crear',//ok
-                'permiso.editar',//ok
-                'permiso.eliminar',//ok
-                'permiso.exportar-filtro',//ok
-                'permiso.exportar-todo',//ok
+                'permiso.navegacion', //ok
+                'permiso.lista', //ok
+                'permiso.ver', //ok
+                'permiso.crear', //ok
+                'permiso.editar', //ok
+                'permiso.eliminar', //ok
+                'permiso.exportar-filtro', //ok
+                'permiso.exportar-todo', //ok
                 /* MENUS */
-                'menu.navegacion',//ok
-                'menu.lista',//ok
-                'menu.ver',//ok
-                'menu.crear',//ok
-                'menu.editar',//ok
-                'menu.eliminar',//ok
-                'menu.exportar-filtro',//ok
-                'menu.exportar-todo',//ok
+                'menu.navegacion', //ok
+                'menu.lista', //ok
+                'menu.ver', //ok
+                'menu.crear', //ok
+                'menu.editar', //ok
+                'menu.eliminar', //ok
+                'menu.exportar-filtro', //ok
+                'menu.exportar-todo', //ok
             ],
             'Módulo Usuario' => [
-                'modulo-usuarios.ver',//ok
-                'admin.navegacion',//ok
-                'admin.lista',//ok
-                'admin.ver',//ok
-                'admin.crear',//ok
-                'admin.editar',//ok
-                'admin.eliminar',//ok
-                'admin.exportar-filtro',//ok
-                'admin.exportar-todo',//ok
-                'admin.cambiar-clave',//ok
+                'modulo-usuarios.ver', //ok
+                'admin.navegacion', //ok
+                'admin.lista', //ok
+                'admin.ver', //ok
+                'admin.crear', //ok
+                'admin.editar', //ok
+                'admin.eliminar', //ok
+                'admin.exportar-filtro', //ok
+                'admin.exportar-todo', //ok
+                'admin.cambiar-clave', //ok
                 'cliente.navegacion',
                 'cliente.lista',
                 'cliente.ver',
@@ -83,171 +83,171 @@ class RolesYPermisosSeeder extends Seeder
                 'cliente-antiguo.exportar-filtro',
                 'cliente-antiguo.exportar-todo',
             ],
-            'Módulo Negocio' => [//ok
+            'Módulo Negocio' => [ //ok
                 'modulo-negocio.ver',
                 /* ROLES */
-                'unidad-negocio.navegacion',//ok
-                'unidad-negocio.lista',//ok
-                'unidad-negocio.ver',//ok
-                'unidad-negocio.crear',//ok
-                'unidad-negocio.editar',//ok
-                'unidad-negocio.eliminar',//ok
-                'unidad-negocio.exportar-filtro',//ok
-                'unidad-negocio.exportar-todo',//ok
+                'unidad-negocio.navegacion', //ok
+                'unidad-negocio.lista', //ok
+                'unidad-negocio.ver', //ok
+                'unidad-negocio.crear', //ok
+                'unidad-negocio.editar', //ok
+                'unidad-negocio.eliminar', //ok
+                'unidad-negocio.exportar-filtro', //ok
+                'unidad-negocio.exportar-todo', //ok
                 /* GRUPOS PROYECTOS */
-                'grupo-proyecto.navegacion',//ok
-                'grupo-proyecto.lista',//ok
-                'grupo-proyecto.ver',//ok
-                'grupo-proyecto.crear',//ok
-                'grupo-proyecto.editar',//ok
-                'grupo-proyecto.eliminar',//ok
-                'grupo-proyecto.exportar-filtro',//ok
-                'grupo-proyecto.exportar-todo',//ok
+                'grupo-proyecto.navegacion', //ok
+                'grupo-proyecto.lista', //ok
+                'grupo-proyecto.ver', //ok
+                'grupo-proyecto.crear', //ok
+                'grupo-proyecto.editar', //ok
+                'grupo-proyecto.eliminar', //ok
+                'grupo-proyecto.exportar-filtro', //ok
+                'grupo-proyecto.exportar-todo', //ok
                 /* PROYECTOS */
-                'proyecto.navegacion',//ok
-                'proyecto.lista',//ok
-                'proyecto.ver',//ok
-                'proyecto.crear',//ok
-                'proyecto.editar',//ok
-                'proyecto.eliminar',//ok
-                'proyecto.exportar-filtro',//ok
-                'proyecto.exportar-todo',//ok
+                'proyecto.navegacion', //ok
+                'proyecto.lista', //ok
+                'proyecto.ver', //ok
+                'proyecto.crear', //ok
+                'proyecto.editar', //ok
+                'proyecto.eliminar', //ok
+                'proyecto.exportar-filtro', //ok
+                'proyecto.exportar-todo', //ok
                 /* SEDES */
-                'sede.navegacion',//ok
-                'sede.lista',//ok
-                'sede.ver',//ok
-                'sede.crear',//ok
-                'sede.editar',//ok
-                'sede.eliminar',//ok
-                'sede.exportar-filtro',//ok
-                'sede.exportar-todo',//ok
+                'sede.navegacion', //ok
+                'sede.lista', //ok
+                'sede.ver', //ok
+                'sede.crear', //ok
+                'sede.editar', //ok
+                'sede.eliminar', //ok
+                'sede.exportar-filtro', //ok
+                'sede.exportar-todo', //ok
                 /* AREAS */
-                'area.navegacion',//ok
-                'area.lista',//ok
-                'area.ver',//ok
-                'area.crear',//ok
-                'area.editar',//ok
-                'area.eliminar',//ok
-                'area.exportar-filtro',//ok
-                'area.exportar-todo',//ok
-                'area.ver-usuarios',//ok
-                'area.ver-solicitudes',//ok
-                'area.agregar-usuarios',//ok
-                'area.marcar-principal-usuario',//ok
-                'area.agregar-solicitudes',//ok
-                'area.eliminar-usuarios',//ok
-                'area.eliminar-solicitudes',//ok
-                'area.exportar-usuarios',//ok
-                'area.exportar-solicitudes',//ok
+                'area.navegacion', //ok
+                'area.lista', //ok
+                'area.ver', //ok
+                'area.crear', //ok
+                'area.editar', //ok
+                'area.eliminar', //ok
+                'area.exportar-filtro', //ok
+                'area.exportar-todo', //ok
+                'area.ver-usuarios', //ok
+                'area.ver-solicitudes', //ok
+                'area.agregar-usuarios', //ok
+                'area.marcar-principal-usuario', //ok
+                'area.agregar-solicitudes', //ok
+                'area.eliminar-usuarios', //ok
+                'area.eliminar-solicitudes', //ok
+                'area.exportar-usuarios', //ok
+                'area.exportar-solicitudes', //ok
             ],
-            'Módulo ATC' => [//ok
-                'modulo-atc.ver',//ok
-                'tipo-solicitud.navegacion',//ok
-                'tipo-solicitud.lista',//ok
-                'tipo-solicitud.ver',//ok
-                'tipo-solicitud.crear',//ok
-                'tipo-solicitud.editar',//ok
-                'tipo-solicitud.eliminar',//ok
-                'tipo-solicitud.exportar-filtro',//ok
-                'tipo-solicitud.exportar-todo',//ok
-                'sub-tipo-solicitud.navegacion',//ok
-                'sub-tipo-solicitud.lista',//ok
-                'sub-tipo-solicitud.ver',//ok
-                'sub-tipo-solicitud.crear',//ok
-                'sub-tipo-solicitud.editar',//ok
-                'sub-tipo-solicitud.eliminar',//ok
-                'sub-tipo-solicitud.exportar-filtro',//ok
-                'sub-tipo-solicitud.exportar-todo',//ok
-                'prioridad-ticket.navegacion',//ok
-                'prioridad-ticket.lista',//ok
-                'prioridad-ticket.ver',//ok
-                'prioridad-ticket.crear',//ok
-                'prioridad-ticket.editar',//ok
-                'prioridad-ticket.eliminar',//ok
-                'prioridad-ticket.exportar-filtro',//ok
-                'prioridad-ticket.exportar-todo',//ok
-                'estado-ticket.navegacion',//ok
-                'estado-ticket.lista',//ok
-                'estado-ticket.ver',//ok
-                'estado-ticket.crear',//ok
-                'estado-ticket.editar',//ok
-                'estado-ticket.eliminar',//ok
-                'estado-ticket.exportar-filtro',//ok
+            'Módulo ATC' => [ //ok
+                'modulo-atc.ver', //ok
+                'tipo-solicitud.navegacion', //ok
+                'tipo-solicitud.lista', //ok
+                'tipo-solicitud.ver', //ok
+                'tipo-solicitud.crear', //ok
+                'tipo-solicitud.editar', //ok
+                'tipo-solicitud.eliminar', //ok
+                'tipo-solicitud.exportar-filtro', //ok
+                'tipo-solicitud.exportar-todo', //ok
+                'sub-tipo-solicitud.navegacion', //ok
+                'sub-tipo-solicitud.lista', //ok
+                'sub-tipo-solicitud.ver', //ok
+                'sub-tipo-solicitud.crear', //ok
+                'sub-tipo-solicitud.editar', //ok
+                'sub-tipo-solicitud.eliminar', //ok
+                'sub-tipo-solicitud.exportar-filtro', //ok
+                'sub-tipo-solicitud.exportar-todo', //ok
+                'prioridad-ticket.navegacion', //ok
+                'prioridad-ticket.lista', //ok
+                'prioridad-ticket.ver', //ok
+                'prioridad-ticket.crear', //ok
+                'prioridad-ticket.editar', //ok
+                'prioridad-ticket.eliminar', //ok
+                'prioridad-ticket.exportar-filtro', //ok
+                'prioridad-ticket.exportar-todo', //ok
+                'estado-ticket.navegacion', //ok
+                'estado-ticket.lista', //ok
+                'estado-ticket.ver', //ok
+                'estado-ticket.crear', //ok
+                'estado-ticket.editar', //ok
+                'estado-ticket.eliminar', //ok
+                'estado-ticket.exportar-filtro', //ok
                 'estado-ticket.exportar-todo',
-                'canal.navegacion',//ok
-                'canal.lista',//ok
-                'canal.ver',//ok
-                'canal.crear',//ok
-                'canal.editar',//ok
-                'canal.eliminar',//ok
-                'canal.exportar-filtro',//ok
-                'canal.exportar-todo',//ok
-                'ticket.navegacion',//ok
-                'ticket.lista',//ok
-                'ticket.gestor',//ok
-                'ticket.ver',//ok
-                'ticket.crear',//ok
-                'ticket.editar',//ok
-                'ticket.eliminar',//ok
-                'ticket.exportar-filtro',//ok
-                'ticket.exportar-todo',//ok
-                'ticket.derivar',//ok
-                'ticket.agregar-archivo',//ok
-                'ticket.eliminar-archivo',//ok
-                'ticket.ver-archivo',//ok
-                'ticket.enviar-correo',//ok
-                'ticket.chat',//ok
+                'canal.navegacion', //ok
+                'canal.lista', //ok
+                'canal.ver', //ok
+                'canal.crear', //ok
+                'canal.editar', //ok
+                'canal.eliminar', //ok
+                'canal.exportar-filtro', //ok
+                'canal.exportar-todo', //ok
+                'ticket.navegacion', //ok
+                'ticket.lista', //ok
+                'ticket.gestor', //ok
+                'ticket.ver', //ok
+                'ticket.crear', //ok
+                'ticket.editar', //ok
+                'ticket.eliminar', //ok
+                'ticket.exportar-filtro', //ok
+                'ticket.exportar-todo', //ok
+                'ticket.derivar', //ok
+                'ticket.agregar-archivo', //ok
+                'ticket.eliminar-archivo', //ok
+                'ticket.ver-archivo', //ok
+                'ticket.enviar-correo', //ok
+                'ticket.chat', //ok
             ],
-            'Módulo Cita' => [//ok
-                'modulo-cita.ver',//ok
-                'estado-cita.navegacion',//ok
-                'estado-cita.lista',//ok
-                'estado-cita.ver',//ok
-                'estado-cita.crear',//ok
-                'estado-cita.editar',//ok
-                'estado-cita.eliminar',//ok
-                'estado-cita.exportar-filtro',//ok
-                'estado-cita.exportar-todo',//ok
-                'motivo-cita.navegacion',//ok
-                'motivo-cita.lista',//ok
-                'motivo-cita.ver',//ok
-                'motivo-cita.crear',//ok
-                'motivo-cita.editar',//ok
-                'motivo-cita.eliminar',//ok
-                'motivo-cita.exportar-filtro',//ok
-                'motivo-cita.exportar-todo',//ok
-                'cita.navegacion',//ok
-                'cita.lista',//ok
-                'cita.gestor',//ok
-                'cita.ver',//ok
-                'cita.crear',//ok
-                'cita.editar',//ok
-                'cita.eliminar',//ok
-                'cita.exportar-filtro',//ok
-                'cita.exportar-todo',//ok
-                'cita.enviar-correo',//ok
-                'cita.calendario',//ok
+            'Módulo Cita' => [ //ok
+                'modulo-cita.ver', //ok
+                'estado-cita.navegacion', //ok
+                'estado-cita.lista', //ok
+                'estado-cita.ver', //ok
+                'estado-cita.crear', //ok
+                'estado-cita.editar', //ok
+                'estado-cita.eliminar', //ok
+                'estado-cita.exportar-filtro', //ok
+                'estado-cita.exportar-todo', //ok
+                'motivo-cita.navegacion', //ok
+                'motivo-cita.lista', //ok
+                'motivo-cita.ver', //ok
+                'motivo-cita.crear', //ok
+                'motivo-cita.editar', //ok
+                'motivo-cita.eliminar', //ok
+                'motivo-cita.exportar-filtro', //ok
+                'motivo-cita.exportar-todo', //ok
+                'cita.navegacion', //ok
+                'cita.lista', //ok
+                'cita.gestor', //ok
+                'cita.ver', //ok
+                'cita.crear', //ok
+                'cita.editar', //ok
+                'cita.eliminar', //ok
+                'cita.exportar-filtro', //ok
+                'cita.exportar-todo', //ok
+                'cita.enviar-correo', //ok
+                'cita.calendario', //ok
             ],
             'Módulo Backoffice' => [
-                'modulo-backoffice.ver',//ok
-                'estado-solicitud-evidencia-pago.navegacion',//ok
-                'estado-solicitud-evidencia-pago.lista',//ok
-                'estado-solicitud-evidencia-pago.ver',//ok
-                'estado-solicitud-evidencia-pago.crear',//ok
-                'estado-solicitud-evidencia-pago.editar',//ok
-                'estado-solicitud-evidencia-pago.eliminar',//ok
-                'estado-solicitud-evidencia-pago.exportar-filtro',//ok
-                'estado-solicitud-evidencia-pago.exportar-todo',//ok
-                'solicitud-evidencia-pago.navegacion',//ok
-                'solicitud-evidencia-pago.lista',//ok
-                'solicitud-evidencia-pago.gestor',//ok
-                'solicitud-evidencia-pago.ver',//ok
-                'solicitud-evidencia-pago.editar',//ok
-                'solicitud-evidencia-pago.exportar-filtro',//ok
-                'solicitud-evidencia-pago.exportar-todo',//ok
-                'solicitud-evidencia-pago.validar',//ok
-                'solicitud-evidencia-pago.enviar-correo',//ok
-                'solicitud-evidencia-pago.chat',//ok
+                'modulo-backoffice.ver', //ok
+                'estado-solicitud-evidencia-pago.navegacion', //ok
+                'estado-solicitud-evidencia-pago.lista', //ok
+                'estado-solicitud-evidencia-pago.ver', //ok
+                'estado-solicitud-evidencia-pago.crear', //ok
+                'estado-solicitud-evidencia-pago.editar', //ok
+                'estado-solicitud-evidencia-pago.eliminar', //ok
+                'estado-solicitud-evidencia-pago.exportar-filtro', //ok
+                'estado-solicitud-evidencia-pago.exportar-todo', //ok
+                'solicitud-evidencia-pago.navegacion', //ok
+                'solicitud-evidencia-pago.lista', //ok
+                'solicitud-evidencia-pago.gestor', //ok
+                'solicitud-evidencia-pago.ver', //ok
+                'solicitud-evidencia-pago.editar', //ok
+                'solicitud-evidencia-pago.exportar-filtro', //ok
+                'solicitud-evidencia-pago.exportar-todo', //ok
+                'solicitud-evidencia-pago.validar', //ok
+                'solicitud-evidencia-pago.enviar-correo', //ok
+                'solicitud-evidencia-pago.chat', //ok
                 'evidencia-pago-antiguo.navegacion',
                 'evidencia-pago-antiguo.lista',
                 'evidencia-pago-antiguo.ver',
@@ -256,65 +256,84 @@ class RolesYPermisosSeeder extends Seeder
                 'evidencia-pago-antiguo.exportar-todo',
                 'evidencia-pago-antiguo.validar',
             ],
-            'Módulo Letras' => [//ok
-                'modulo-letras.ver',//ok
-                'estado-solicitud-digitalizar-letra.navegacion',//ok
-                'estado-solicitud-digitalizar-letra.lista',//ok
-                'estado-solicitud-digitalizar-letra.ver',//ok
-                'estado-solicitud-digitalizar-letra.crear',//ok
-                'estado-solicitud-digitalizar-letra.editar',//ok
-                'estado-solicitud-digitalizar-letra.eliminar',//ok
-                'estado-solicitud-digitalizar-letra.exportar-filtro',//ok
-                'estado-solicitud-digitalizar-letra.exportar-todo',//ok
-                'solicitud-digitalizar-letra.navegacion',//ok
-                'solicitud-digitalizar-letra.lista',//ok
-                'solicitud-digitalizar-letra.gestor',//ok
-                'solicitud-digitalizar-letra.ver',//ok
-                'solicitud-digitalizar-letra.exportar-filtro',//ok
-                'solicitud-digitalizar-letra.exportar-todo',//ok
-                'solicitud-digitalizar-letra.ejecutar-cron-letra',//ok
-                'solicitud-digitalizar-letra.validar-cron-letra',//ok
-                'envio-cavali.navegacion',//ok
-                'envio-cavali.lista',//ok
-                'envio-cavali.detalle',//ok
-                'envio-cavali.exportar-filtro',//ok
-                'envio-cavali.exportar-todo',//ok
-                'envio-cavali.exportar-envios',//ok
+            'Módulo Letras' => [ //ok
+                'modulo-letras.ver', //ok
+                'estado-solicitud-digitalizar-letra.navegacion', //ok
+                'estado-solicitud-digitalizar-letra.lista', //ok
+                'estado-solicitud-digitalizar-letra.ver', //ok
+                'estado-solicitud-digitalizar-letra.crear', //ok
+                'estado-solicitud-digitalizar-letra.editar', //ok
+                'estado-solicitud-digitalizar-letra.eliminar', //ok
+                'estado-solicitud-digitalizar-letra.exportar-filtro', //ok
+                'estado-solicitud-digitalizar-letra.exportar-todo', //ok
+                'solicitud-digitalizar-letra.navegacion', //ok
+                'solicitud-digitalizar-letra.lista', //ok
+                'solicitud-digitalizar-letra.gestor', //ok
+                'solicitud-digitalizar-letra.ver', //ok
+                'solicitud-digitalizar-letra.exportar-filtro', //ok
+                'solicitud-digitalizar-letra.exportar-todo', //ok
+                'solicitud-digitalizar-letra.ejecutar-cron-letra', //ok
+                'solicitud-digitalizar-letra.validar-cron-letra', //ok
+                'envio-cavali.navegacion', //ok
+                'envio-cavali.lista', //ok
+                'envio-cavali.detalle', //ok
+                'envio-cavali.exportar-filtro', //ok
+                'envio-cavali.exportar-todo', //ok
+                'envio-cavali.exportar-envios', //ok
             ],
-            'Módulo Reportes' => [//ok
-                'modulo-reporte.ver',//ok
-                'reporte-usuario.navegacion',//ok
-                'reporte-usuario.admin.ver',//ok
-                'reporte-usuario.cliente.ver',//ok
-                'reporte-usuario.direccion.ver',//ok
-                'reporte-backoffice.navegacion',//ok
-                'reporte-backoffice.solicitud-evidencia-pago.ver',//ok
-                'reporte-backoffice.evidencia-pago.ver',//ok
-                'reporte-backoffice.evidencia-pago-antiguo.ver',//ok
-                'reporte-atc.navegacion',//ok
-                'reporte-atc.ticket.ver',//ok
-                'reporte-cita.navegacion',//ok
-                'reporte-cita.cita.ver',//ok
-                'reporte-letra.navegacion',//ok
-                'reporte-letra.letra.ver',//ok
+            'Módulo Reportes' => [ //ok
+                'modulo-reporte.ver', //ok
+                'reporte-usuario.navegacion', //ok
+                'reporte-usuario.admin.ver', //ok
+                'reporte-usuario.cliente.ver', //ok
+                'reporte-usuario.direccion.ver', //ok
+                'reporte-backoffice.navegacion', //ok
+                'reporte-backoffice.solicitud-evidencia-pago.ver', //ok
+                'reporte-backoffice.evidencia-pago.ver', //ok
+                'reporte-backoffice.evidencia-pago-antiguo.ver', //ok
+                'reporte-atc.navegacion', //ok
+                'reporte-atc.ticket.ver', //ok
+                'reporte-cita.navegacion', //ok
+                'reporte-cita.cita.ver', //ok
+                'reporte-letra.navegacion', //ok
+                'reporte-letra.letra.ver', //ok
+            ],
+            'Módulo Legal' => [
+                'modulo-legal.ver', //ok
+                /* LIBRO DE RECLAMACIONES */
+                'libro-reclamacion.navegacion', //ok
+                'libro-reclamacion.lista', //ok
+                'libro-reclamacion.ver', //ok
+                'libro-reclamacion.editar', //ok
+                'libro-reclamacion.eliminar', //ok
             ],
             'Módulo Marketing' => [
-                'modulo-marketing.ver',//ok
-                'tutorial.navegacion',//ok
-                'tutorial.lista',//ok
-                'tutorial.ver',//ok
-                'tutorial.crear',//ok
-                'tutorial.editar',//ok
-                'tutorial.eliminar',//ok
-                'tutorial.exportar-filtro',//ok
-                'tutorial.exportar-todo',//ok
+                'modulo-marketing.ver', //ok
+                /* TUTORIALES */
+                'tutorial.navegacion', //ok
+                'tutorial.lista', //ok
+                'tutorial.ver', //ok
+                'tutorial.crear', //ok
+                'tutorial.editar', //ok
+                'tutorial.eliminar', //ok
+                'tutorial.exportar-filtro', //ok
+                'tutorial.exportar-todo', //ok
+                /* REGLAMENTOS */
+                'reglamento.navegacion',
+                'reglamento.lista',
+                'reglamento.ver',
+                'reglamento.crear',
+                'reglamento.editar',
+                'reglamento.eliminar',
+                'reglamento.exportar-filtro',
+                'reglamento.exportar-todo',
             ],
             'Módulo Entrega Fest' => [
                 'modulo-entrega-fest.ver',
                 /* ENTREGA FEST */
                 'entrega-fest.navegacion',
                 'entrega-fest.lista',
-                'entrega-fest.gestor',//ok
+                'entrega-fest.gestor', //ok
                 'entrega-fest.ver',
                 'entrega-fest.crear',
                 'entrega-fest.editar',
@@ -435,6 +454,13 @@ class RolesYPermisosSeeder extends Seeder
             ],
         ];
 
+        // Normalizar permisos por módulo: eliminar duplicados y ordenar alfabéticamente
+        foreach ($modulos as $moduloNombre => $permisosArray) {
+            $permisosArray = array_values(array_unique($permisosArray));
+            sort($permisosArray, SORT_STRING);
+            $modulos[$moduloNombre] = $permisosArray;
+        }
+
         $created = 0;
         $existing = 0;
 
@@ -479,6 +505,7 @@ class RolesYPermisosSeeder extends Seeder
             'asesor-entrega-fest' => 'Staff de Lectura',
             'supervisor-legal' => 'Supervisor Legal',
             'asesor-legal' => 'Asesor Legal',
+            'asesor-libro-reclamacion' => 'Asesor Libro de Reclamaciones',
             'staff-asistencia' => 'Proveedor Externo',
             'staff-itinerario' => 'Proveedor Externo',
             'staff-mop' => 'Proveedor Externo',
@@ -556,8 +583,11 @@ class RolesYPermisosSeeder extends Seeder
             'tutorial.navegacion',
             'tutorial.lista',
             'tutorial.ver',
+            'reglamento.navegacion',
+            'reglamento.lista',
+            'reglamento.ver',
         ]);
-        $this->command->info("✓ Asesor Marketing: 4 permisos");
+        $this->command->info("✓ Asesor Marketing: 7 permisos");
 
         // Backoffice
         $supervisor_backoffice = Role::findByName('supervisor-backoffice');
@@ -581,11 +611,18 @@ class RolesYPermisosSeeder extends Seeder
         // Legal
         $supervisor_legal = Role::findByName('supervisor-legal');
         $supervisor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
+        $supervisor_legal->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
         $this->command->info("✓ Supervisor Legal: Configurado");
 
         $asesor_legal = Role::findByName('asesor-legal');
         $asesor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
         $this->command->info("✓ Asesor Legal: Configurado");
+
+        $asesor_libro_reclamacion = Role::findByName('asesor-libro-reclamacion');
+        // Sincronizar con el módulo correcto y asegurar permiso de ver tickets
+        $asesor_libro_reclamacion->syncPermissions(Permission::where('name', 'like', 'ticket.%')->get());
+        $asesor_libro_reclamacion->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
+        $this->command->info("✓ Asesor Libro Reclamacion: Configurado");
 
         // Staff Operativo (supervisor-entrega-fest)
         $staff_operativo = Role::findByName('supervisor-entrega-fest');

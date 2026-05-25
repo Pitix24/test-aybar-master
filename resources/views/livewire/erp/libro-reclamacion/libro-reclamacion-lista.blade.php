@@ -8,7 +8,7 @@
 
         <div class="cabecera_titulo_botones">
             @if (config('libro_reclamacion.crear_erp_habilitado'))
-            @can('ticket-libro-reclamacion.crear')
+            @can('libro-reclamacion.crear')
             <a href="{{ route('erp.libro-reclamacion.vista.crear') }}" class="g_boton primary">
                 Crear <i class="fa-solid fa-square-plus"></i>
             </a>
@@ -148,7 +148,9 @@
                         <td class="g_negrita g_resumir">{{ $item->cliente_nombre ?: 'N/D' }}</td>
                         <td class="g_resumir g_inferior">{{ $item->proyecto?->nombre ?: 'N/D' }}</td>
                         <td class="g_celda_centro">
-                            <span class="g_badge info">{{ $item->estadoActualNombre() }}</span>
+                            <span class="g_badge g_badge_soft" style="color: {{ $item->estadoActualColor() }};">
+                                {{ $item->estadoActualNombre() }}
+                            </span>
                         </td>
                         <td class="g_celda_centro">
                             @if ($item->clasificacion === 'NO_PROCEDE')
@@ -186,21 +188,21 @@
                             <span class="g_badge light">Mayor</span>
                             @endif
                         </td>
-                        <td class="g_celda_acciones g_celda_centro centro">
-                            @can('ticket-libro-reclamacion.ver')
+                        <td class="g_celda_acciones g_celda_centro">
+                            @can('libro-reclamacion.ver')
                             <a href="{{ route('erp.libro-reclamacion.vista.ver', $item->ticket) }}" class="g_accion ver"
                                 title="Ver">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             @endcan
-
-                            @can('ticket-libro-reclamacion.editar')
-                            <a href="{{ route('erp.libro-reclamacion.vista.editar', $item->ticket) }}"
-                                class="g_accion editar" title="Editar">
-                                <i class="fa-solid fa-pencil"></i>
+                        </td>
+                        <td class="g_celda_acciones g_celda_centro">
+                            @can('libro-reclamacion.editar')
+                            <a href="{{ route('erp.libro-reclamacion.vista.editar', $item->ticket) }}" class="g_accion editar"
+                                title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                             @endcan
-                        </td>
                     </tr>
                     @empty
                     <tr>

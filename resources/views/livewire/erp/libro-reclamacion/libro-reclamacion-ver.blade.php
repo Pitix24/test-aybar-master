@@ -3,15 +3,9 @@
         <h2>Detalle Ticket Reclamacion #{{ $ticket->ticket }}</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('ticket-libro-reclamacion.lista')
+            @can('libro-reclamacion.lista')
             <a href="{{ route('erp.libro-reclamacion.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
-            </a>
-            @endcan
-
-            @can('ticket-libro-reclamacion.editar')
-            <a href="{{ route('erp.libro-reclamacion.vista.editar', $ticket->ticket) }}" class="g_boton primary">
-                Editar <i class="fa-solid fa-pencil"></i>
             </a>
             @endcan
 

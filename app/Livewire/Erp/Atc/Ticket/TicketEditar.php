@@ -28,7 +28,7 @@ class TicketEditar extends Component
     public $estado_ticket_id;
     public $asunto_respuesta;
     public $descripcion_respuesta;
-    
+
     public $modalHijosMasivos = false;
 
     // Catálogos y datos para UI
@@ -73,15 +73,33 @@ class TicketEditar extends Component
     {
         $this->authorize('ticket.accion-editar');
 
+        // Validar y, si hay errores, notificar pero NO relanzar la excepción
+        // para que Livewire pueda pintar los errores por campo en la vista.
         try {
             $this->validate();
         } catch (ValidationException $e) {
+            $errors = $e->validator->errors()->getMessages();
+
+            // Enviar alerta al frontend
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => 'Advertencia',
                 'text' => 'Verifique los errores de los campos resaltados.'
             ]);
-            throw $e;
+
+            // Añadir cada error al error bag de Livewire para que se resalten los campos
+            foreach ($errors as $field => $messages) {
+                $this->addError($field, implode(' | ', $messages));
+            }
+
+            // Registrar para diagnóstico en logs de ticket
+            Log::channel('ticket')->warning('[TICKET] Validación fallida en edición', [
+                'ticket_id' => $this->ticket->id ?? null,
+                'usuario_id' => auth()->id(),
+                'errors' => $errors,
+            ]);
+
+            return; // detener ejecución
         }
 
         try {
