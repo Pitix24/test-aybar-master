@@ -75,6 +75,28 @@
                                             <tr>
                                                 <td style="padding-bottom: 10px;">
                                                     <span
+                                                        style="font-size: 12px; color: rgba(255,255,255,0.6); text-transform: uppercase;">Sede
+                                                        principal:</span>
+                                                </td>
+                                                <td style="padding-bottom: 10px;">
+                                                    <span
+                                                        style="font-size: 14px; color: #ffffff; font-weight: 700;">{{ $sedeNombre ?? 'N/D' }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-bottom: 10px;">
+                                                    <span
+                                                        style="font-size: 12px; color: rgba(255,255,255,0.6); text-transform: uppercase;">Dirección
+                                                        de sede:</span>
+                                                </td>
+                                                <td style="padding-bottom: 10px;">
+                                                    <span
+                                                        style="font-size: 14px; color: #ffffff; font-weight: 700;">{{ $direccionSede ?? 'N/D' }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-bottom: 10px;">
+                                                    <span
                                                         style="font-size: 12px; color: rgba(255,255,255,0.6); text-transform: uppercase;">Terreno
                                                         / Mz:</span>
                                                 </td>
