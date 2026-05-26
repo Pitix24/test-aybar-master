@@ -57,7 +57,7 @@ class LibroReclamacionLista extends Component
 
     public function mount(): void
     {
-        $this->authorize('reclamacion.gestor');
+        $this->authorize('libro-reclamacion.lista');
 
         $this->gestores = User::query()
             ->where('activo', true)

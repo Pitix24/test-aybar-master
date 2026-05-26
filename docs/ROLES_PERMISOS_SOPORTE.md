@@ -3,6 +3,8 @@ modulo-soporte.ver
 modulo-soporte.gestor
 modulo-soporte.supervisor
 
+PERMISOS APLICADOS
+
 TICKET
 soporte.ver
 soporte.vista.lista
@@ -54,3 +56,15 @@ prioridad-ticket.accion.editar
 prioridad-ticket.accion.eliminar
 prioridad-ticket.accion.exportar-filtro
 prioridad-ticket.accion.exportar-todo
+
+PERMISOS NO APLICADOS
+soporte.accion.agregar-usuario
+soporte.accion.quitar-usuario
+soporte.accion.marcar-principal-usuario
+soporte.vista.flujo
+soporte.accion.agregar-flujo
+soporte.accion.quitar-flujo
+soporte.vista.lista
+soporte.vista.ver
+soporte.vista.crear
+soporte.vista.editar

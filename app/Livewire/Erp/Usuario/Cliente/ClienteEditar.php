@@ -120,7 +120,7 @@ class ClienteEditar extends Component
 
     public function enviarRecuperarClave()
     {
-        $this->authorize('cambiar-clave');
+        $this->authorize('cliente.enviar-recuperar-clave');
 
         try {
             $this->validateOnly('email');

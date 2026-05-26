@@ -27,7 +27,8 @@ function alertaNormal(mensaje) {
 }
 
 Livewire.on("alertaLivewire", (data) => {
-    const payload = data[0];
+    const payload = Array.isArray(data) ? data[0] : data;
+    if (!payload) return;
 
     const successTitles = [
         "Creado",
@@ -76,7 +77,8 @@ Livewire.on("alertaLivewire", (data) => {
 });
 
 Livewire.on("alertaConfirmar", (data) => {
-    const payload = data[0];
+    const payload = Array.isArray(data) ? data[0] : data;
+    if (!payload) return;
 
     Swal.fire({
         title: payload.titulo ?? "¿Confirmar acción?",

@@ -11,7 +11,7 @@ class EntregaFestCitaConfirmacionN8N
 {
     public function handle(EntregaFestCitaConfirmacion $event): void
     {
-        $prospecto = $event->prospecto->load(['entregaFest', 'proyecto', 'historialComunicaciones']);
+        $prospecto = $event->prospecto->load(['entregaFest', 'proyecto.unidadNegocio', 'historialComunicaciones']);
         $evento = $prospecto->entregaFest;
 
         // Solo procesamos si ya tiene fecha de firma agendada
@@ -45,6 +45,8 @@ class EntregaFestCitaConfirmacionN8N
             'dni' => $prospecto->dni,
             'tipo' => 'Propietario',
             'proyecto' => $prospecto->proyecto?->nombre,
+            'sede_nombre' => $prospecto->proyecto?->unidadNegocio?->nombre,
+            'direccion_sede' => $prospecto->proyecto?->unidadNegocio?->direccion,
             'fecha_firma' => $prospecto->fecha_firma,
             'fecha_firma_formateada' => $mail->fechaFormateada,
             'html' => $mail->render(),

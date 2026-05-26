@@ -71,9 +71,16 @@
 
         <div class="g_margin_bottom_10">
             <h4 class="g_panel_titulo"><i class="fa-solid fa-note-sticky"></i> Notas / Observaciones</h4>
-            <div class="g_vacio" style="align-items: flex-start; text-align: left;">
-                <textarea rows="5" class="input-disabled" disabled>{{ $soporte->observaciones ?? 'Sin Observaciones.' }}</textarea>
+
+            <div class="g_margin_bottom_10 g_columna_3">
+                <label>Cierre</label>
+                <select disabled>
+                    <option value="{{ $soporte->cierre_soporte_id }}">{{ $soporte->cierreSoporte?->nombre ?? 'Sin asignar' }}</option>
+                </select>
             </div>
+
+            <label>Notas</label>
+            <textarea rows="5" class="input-disabled" disabled>{{ $soporte->observaciones ?? 'Sin Observaciones.' }}</textarea>
         </div>
 
         <div class="g_margin_bottom_10">

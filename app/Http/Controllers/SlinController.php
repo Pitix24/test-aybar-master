@@ -15,6 +15,7 @@ class SlinController extends Controller
     private string $remoteBase;
     private string $user;
     private string $password;
+    private string $basePassword;
 
     public function __construct()
     {
@@ -27,6 +28,7 @@ class SlinController extends Controller
 
         $this->user = config('services.slin.user');
         $this->password = config('services.slin.password');
+        $this->basePassword = config('services.slin.base_password');
     }
 
     public function verComprobante(Request $request)
@@ -282,7 +284,7 @@ class SlinController extends Controller
                 $data['comprobante']
             );
 
-            $response = Http::withBasicAuth($this->user, $this->password)
+            $response = Http::withBasicAuth($this->user, $this->basePassword)
                 ->acceptJson()
                 ->timeout(20)
                 ->get($url);
@@ -333,7 +335,7 @@ class SlinController extends Controller
             'mtooperacion' => $request->mtooperacion,
         ];
 
-        $response = Http::withBasicAuth($this->user, $this->password)
+        $response = Http::withBasicAuth($this->user, $this->basePassword)
             ->acceptJson()
             ->contentType('application/json')
             ->timeout(30)

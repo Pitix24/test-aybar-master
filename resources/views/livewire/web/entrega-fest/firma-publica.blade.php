@@ -6,103 +6,119 @@
 
     <div class="ef_container">
         @if (!$enviado)
-            <div class="ef_header" style="background: var(--ef-primary); padding: 40px 20px;">
-                <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
-                    class="ef_logo_main" style="width: 240px; margin-bottom: 20px;">
-                <h2 style="color: #ffffff; font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: -0.5px;">
-                    Programación de cita para firma de contrato</h2>
+        <div class="ef_header" style="background: var(--ef-primary); padding: 40px 20px;">
+            <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
+                class="ef_logo_main" style="width: 240px; margin-bottom: 20px;">
+            <h2 style="color: #ffffff; font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: -0.5px;">
+                Programación de cita para firma de contrato</h2>
+        </div>
+
+        <div class="ef_body">
+            @if (session()->has('error'))
+            <div class="alert-error"
+                style="margin-bottom: 20px; padding: 15px; background: #fee2e2; color: #dc2626; border-radius: 12px; font-weight: 600;">
+                {{ session('error') }}
+            </div>
+            @endif
+
+            <div class="ef_info_card">
+                <div class="ef_info_group">
+                    <label>Nombre Completo</label>
+                    <span>{{ $prospecto->nombres }}</span>
+                </div>
+                <div class="ef_info_group">
+                    <label>DNI/Documento de Identidad</label>
+                    <span>{{ $prospecto->dni }}</span>
+                </div>
+                <div class="ef_info_group">
+                    <label>Proyecto</label>
+                    <span>{{ $prospecto->proyecto?->nombre ?? 'N/A' }}</span>
+                </div>
+                <div class="ef_info_group">
+                    <label>Dirección de la Sede Principal</label>
+                    <span>{{ $direccion_sede ?: 'N/A' }}</span>
+                </div>
+                <div class="ef_info_group">
+                    <label>Terreno / MZ</label>
+                    <span>{{ $prospecto->lote }} - {{ $prospecto->manzana }}</span>
+                </div>
             </div>
 
-            <div class="ef_body">
-                @if (session()->has('error'))
-                    <div class="alert-error"
-                        style="margin-bottom: 20px; padding: 15px; background: #fee2e2; color: #dc2626; border-radius: 12px; font-weight: 600;">
-                        {{ session('error') }}
+            <form wire:submit.prevent="save">
+                <div class="ef_input_group">
+                    <label for="fecha_firma" style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        Selecciona el día y hora para tu cita de firma de contrato
+                    </label>
+                    <div style="position: relative;">
+                        <input type="datetime-local" id="fecha_firma" wire:model="fecha_firma" class="ef_input"
+                            min="{{ now()->addDay()->format('Y-m-d\TH:i') }}"
+                            style="padding: 18px 20px; font-size: 1.1rem; border: 2px solid var(--ef-primary); border-radius: 40px;">
                     </div>
-                @endif
-
-                <div class="ef_info_card">
-                    <div class="ef_info_group">
-                        <label>Nombre Completo</label>
-                        <span>{{ $prospecto->nombres }}</span>
-                    </div>
-                    <div class="ef_info_group">
-                        <label>DNI/Documento de Identidad</label>
-                        <span>{{ $prospecto->dni }}</span>
-                    </div>
-                    <div class="ef_info_group">
-                        <label>Proyecto</label>
-                        <span>{{ $prospecto->proyecto?->nombre ?? 'N/A' }}</span>
-                    </div>
-                    <div class="ef_info_group">
-                        <label>Terreno / MZ</label>
-                        <span>{{ $prospecto->lote }} - {{ $prospecto->manzana }}</span>
-                    </div>
+                    @error('fecha_firma')
+                    <span class="mensaje_error"
+                        style="color: #dc2626; font-size: 0.85rem; margin-top: 8px; display: block; font-weight: 600;">
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                    </span>
+                    @enderror
+                    <p style="font-size: 0.85rem; color: #888; margin-top: 10px; text-align: center;">Por favor,
+                        selecciona el día y la hora en que podrás acudir a firmar tu contrato.</p>
                 </div>
 
-                <form wire:submit.prevent="save">
-                    <div class="ef_input_group">
-                        <label for="fecha_firma" style="display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            Selecciona el día y hora para tu cita de firma de contrato
-                        </label>
-                        <div style="position: relative;">
-                            <input type="datetime-local" id="fecha_firma" wire:model="fecha_firma" class="ef_input"
-                                min="{{ now()->addDay()->format('Y-m-d\TH:i') }}"
-                                style="padding: 18px 20px; font-size: 1.1rem; border: 2px solid var(--ef-primary); border-radius: 40px;">
-                        </div>
-                        @error('fecha_firma')
-                            <span class="mensaje_error"
-                                style="color: #dc2626; font-size: 0.85rem; margin-top: 8px; display: block; font-weight: 600;">
-                                <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
-                            </span>
-                        @enderror
-                        <p style="font-size: 0.85rem; color: #888; margin-top: 10px; text-align: center;">Por favor,
-                            selecciona el día y la hora en que podrás acudir a firmar tu contrato.</p>
-                    </div>
-
-                    <button type="submit" class="ef_btn_submit" wire:loading.attr="disabled"
-                        style="margin-top: 30px; background: linear-gradient(135deg, #f8cc00 0%, #ff7e33 100%); border-radius: 30px; padding: 20px; box-shadow: 0 10px 20px rgba(255,126,51,0.3);">
-                        <span wire:loading.remove style="display: flex; align-items: center; gap: 10px;">
-                            Confirmar mi cita <i class="fa-solid fa-circle-check"></i>
-                        </span>
-                        <span wire:loading>Guardando... <i class="fa-solid fa-circle-notch fa-spin"></i></span>
-                    </button>
-                </form>
-            </div>
+                <button type="submit" class="ef_btn_submit" wire:loading.attr="disabled"
+                    style="margin-top: 30px; background: linear-gradient(135deg, #f8cc00 0%, #ff7e33 100%); border-radius: 30px; padding: 20px; box-shadow: 0 10px 20px rgba(255,126,51,0.3);">
+                    <span wire:loading.remove style="display: flex; align-items: center; gap: 10px;">
+                        Confirmar mi cita <i class="fa-solid fa-circle-check"></i>
+                    </span>
+                    <span wire:loading>Guardando... <i class="fa-solid fa-circle-notch fa-spin"></i></span>
+                </button>
+            </form>
+        </div>
 
         @else
-            <div class="ef_header" style="background: var(--ef-primary); padding: 40px 20px;">
-                <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
-                    class="ef_logo_main" style="width: 200px; margin-bottom: 20px;">
-                <h2 style="color: #ffffff; font-size: 1.4rem; font-weight: 700; margin: 0;">¡Cita Agendada!</h2>
-            </div>
+        <div class="ef_header" style="background: var(--ef-primary); padding: 40px 20px;">
+            <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
+                class="ef_logo_main" style="width: 200px; margin-bottom: 20px;">
+            <h2 style="color: #ffffff; font-size: 1.4rem; font-weight: 700; margin: 0;">¡Cita Agendada!</h2>
+        </div>
 
-            <div class="ef_body">
-                <div class="ef_success_body" style="padding: 20px 0;">
-                    <div style="font-size: 80px; color: #15803d; margin-bottom: 20px;">
-                        <i class="fa-solid fa-calendar-check"></i>
-                    </div>
-                    <p class="ef_success_text" style="font-size: 1.2rem; margin-bottom: 30px;">
-                        {{ $mensaje_exito }}
+        <div class="ef_body">
+            <div class="ef_success_body" style="padding: 20px 0;">
+                <div style="font-size: 80px; color: #15803d; margin-bottom: 20px;">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <p class="ef_success_text" style="font-size: 1.2rem; margin-bottom: 30px;">
+                    {{ $mensaje_exito }}
+                </p>
+
+                @if($fecha_firma)
+                <div class="ef_ticket_dashed" style="padding: 30px;">
+                    <span class="ef_ticket_label">Tu fecha programada</span>
+                    <p class="ef_ticket_code" style="font-size: 1.6rem; letter-spacing: 0;">
+                        <i class="fa-solid fa-clock" style="margin-right: 10px; opacity: 0.5;"></i>
+                        {{ \Carbon\Carbon::parse($fecha_firma)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY [a
+                        las] HH:mm') }}
                     </p>
+                </div>
+                @endif
 
-                    @if($fecha_firma)
-                        <div class="ef_ticket_dashed" style="padding: 30px;">
-                            <span class="ef_ticket_label">Tu fecha programada</span>
-                            <p class="ef_ticket_code" style="font-size: 1.6rem; letter-spacing: 0;">
-                                <i class="fa-solid fa-clock" style="margin-right: 10px; opacity: 0.5;"></i>
-                                {{ \Carbon\Carbon::parse($fecha_firma)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY [a las] HH:mm') }}
-                            </p>
-                        </div>
-                    @endif
+                @if($direccion_sede)
+                <div class="ef_ticket_dashed"
+                    style="padding: 24px; margin-top: 20px; background: #f8fafc; border-color: #004d55;">
+                    <span class="ef_ticket_label">Dirección de la sede principal</span>
+                    <p class="ef_ticket_code" style="font-size: 1.05rem; letter-spacing: 0; line-height: 1.6;">
+                        <i class="fa-solid fa-location-dot" style="margin-right: 10px; opacity: 0.5;"></i>
+                        {{ $direccion_sede }}
+                    </p>
+                </div>
+                @endif
 
-                    <div
-                        style="margin-top: 30px; padding: 20px; background: #fff1f2; border-radius: 15px; color: #d32f2f; font-weight: 700; display: inline-block;">
-                        <i class="fa-solid fa-circle-info"></i> Recuerda llevar tu DNI original físico el día de la cita.
-                    </div>
+                <div
+                    style="margin-top: 30px; padding: 20px; background: #fff1f2; border-radius: 15px; color: #d32f2f; font-weight: 700; display: inline-block;">
+                    <i class="fa-solid fa-circle-info"></i> Recuerda llevar tu DNI original físico el día de la cita.
                 </div>
             </div>
+        </div>
         @endif
     </div>
 

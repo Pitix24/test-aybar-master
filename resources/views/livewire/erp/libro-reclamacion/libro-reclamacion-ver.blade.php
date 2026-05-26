@@ -3,7 +3,7 @@
         <h2>Detalle Ticket Reclamacion #{{ $ticket->ticket }}</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('reclamacion.gestor')
+            @can('libro-reclamacion.lista')
             <a href="{{ route('erp.libro-reclamacion.vista.todo') }}" class="g_boton light">
                 Lista <i class="fa-solid fa-list"></i>
             </a>

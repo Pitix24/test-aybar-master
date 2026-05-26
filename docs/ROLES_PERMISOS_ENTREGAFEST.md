@@ -5,6 +5,8 @@ PERMISO BASADO EN ROLES:
 entrega-fest.gestor
 entrega-fest.supervisor
 
+PERMISOS APLICADOS
+
 ENTREGA FEST
 entrega-fest.navegacion ->OK
 entrega-fest.vista-lista
@@ -86,3 +88,37 @@ itinerario.accion-eliminar
 itinerario.accion-exportar-filtro
 itinerario.accion-exportar-todo
 itinerario.vista-panel-gestion
+
+PERMISOS NO APLICADOS
+prospecto.accion-crear
+prospecto.accion-editar
+prospecto.accion-eliminar
+prospecto.accion-enviar-preinvitacion
+prospecto.accion-guardar-avance-bo
+prospecto.accion-guardar-seguimiento-legal
+prospecto.accion-confirmar-legal
+prospecto.accion-agregar-copropietario
+prospecto.accion-eliminar-copropietario
+prospecto.accion-editar-copropietario
+prospecto.accion-agregar-bancarizacion
+prospecto.accion-eliminar-bancarizacion
+prospecto.accion-editar-bancarizacion
+prospecto.accion-enviar-recordatorio-cita
+invitado.accion-crear
+invitado.accion-editar
+invitado.accion-eliminar
+invitado.accion-agregar-acompanante
+invitado.accion-eliminar-acompanante
+invitado.accion-editar-acompanante
+asistencia.accion-marcar
+
+PERMISOS DETECTADOS SOLO EN CODIGO
+entrega-fest.staff
+invitado-entrega-fest.crear
+
+USO EN CODIGO
+app/Livewire/Erp/EntregaFest/Recurso/StaffRecursos.php
+app/Livewire/Erp/EntregaFest/Invitado/EntregaFestInvitadoCrear.php
+
+NOTA
+Estos permisos controlan la gestion de recursos y la generacion de invitados desde el flujo de Entrega Fest.

@@ -298,6 +298,15 @@ class RolesYPermisosSeeder extends Seeder
                 'reporte-letra.navegacion', //ok
                 'reporte-letra.letra.ver', //ok
             ],
+            'Módulo Legal' => [
+                'modulo-legal.ver', //ok
+                /* LIBRO DE RECLAMACIONES */
+                'libro-reclamacion.navegacion', //ok
+                'libro-reclamacion.lista', //ok
+                'libro-reclamacion.ver', //ok
+                'libro-reclamacion.editar', //ok
+                'libro-reclamacion.eliminar', //ok
+            ],
             'Módulo Marketing' => [
                 'modulo-marketing.ver', //ok
                 /* TUTORIALES */
@@ -445,6 +454,13 @@ class RolesYPermisosSeeder extends Seeder
             ],
         ];
 
+        // Normalizar permisos por módulo: eliminar duplicados y ordenar alfabéticamente
+        foreach ($modulos as $moduloNombre => $permisosArray) {
+            $permisosArray = array_values(array_unique($permisosArray));
+            sort($permisosArray, SORT_STRING);
+            $modulos[$moduloNombre] = $permisosArray;
+        }
+
         $created = 0;
         $existing = 0;
 
@@ -489,6 +505,7 @@ class RolesYPermisosSeeder extends Seeder
             'asesor-entrega-fest' => 'Staff de Lectura',
             'supervisor-legal' => 'Supervisor Legal',
             'asesor-legal' => 'Asesor Legal',
+            'asesor-libro-reclamacion' => 'Asesor Libro de Reclamaciones',
             'staff-asistencia' => 'Proveedor Externo',
             'staff-itinerario' => 'Proveedor Externo',
             'staff-mop' => 'Proveedor Externo',
@@ -594,11 +611,18 @@ class RolesYPermisosSeeder extends Seeder
         // Legal
         $supervisor_legal = Role::findByName('supervisor-legal');
         $supervisor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
+        $supervisor_legal->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
         $this->command->info("✓ Supervisor Legal: Configurado");
 
         $asesor_legal = Role::findByName('asesor-legal');
         $asesor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
         $this->command->info("✓ Asesor Legal: Configurado");
+
+        $asesor_libro_reclamacion = Role::findByName('asesor-libro-reclamacion');
+        // Sincronizar con el módulo correcto y asegurar permiso de ver tickets
+        $asesor_libro_reclamacion->syncPermissions(Permission::where('name', 'like', 'ticket.%')->get());
+        $asesor_libro_reclamacion->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
+        $this->command->info("✓ Asesor Libro Reclamacion: Configurado");
 
         // Staff Operativo (supervisor-entrega-fest)
         $staff_operativo = Role::findByName('supervisor-entrega-fest');
