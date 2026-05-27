@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Models\LibroReclamacion\LibroReclamacion;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Config;
 
 class Ticket extends Model
 {
@@ -179,6 +181,53 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
+    public function scopeCartasNotariales($query)
+    {
+        $tipoSolicitudIds = static::cartasNotarialesTipoSolicitudIds();
+
+        if (empty($tipoSolicitudIds)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->whereIn('tipo_solicitud_id', $tipoSolicitudIds);
+    }
+
+    public function scopeSinCartasNotariales($query)
+    {
+        $tipoSolicitudIds = static::cartasNotarialesTipoSolicitudIds();
+
+        if (empty($tipoSolicitudIds)) {
+            return $query;
+        }
+
+        return $query->where(function ($subQuery) use ($tipoSolicitudIds) {
+            $subQuery->whereNull('tipo_solicitud_id')
+                ->orWhereNotIn('tipo_solicitud_id', $tipoSolicitudIds);
+        });
+    }
+
+    public function esCartaNotarial(): bool
+    {
+        $tipoSolicitud = TipoSolicitud::withTrashed()->find($this->tipo_solicitud_id)?->nombre;
+
+        if (!is_string($tipoSolicitud)) {
+            return false;
+        }
+
+        $tipoNormalizado = mb_strtoupper(trim($tipoSolicitud));
+
+        return str_contains($tipoNormalizado, 'NOTARIAL');
+    }
+
+    protected static function cartasNotarialesTipoSolicitudIds(): array
+    {
+        return TipoSolicitud::withTrashed()
+            ->whereRaw('UPPER(nombre) LIKE ?', ['%NOTARIAL%'])
+            ->pluck('id')
+            ->map(fn($id) => (int) $id)
+            ->all();
+    }
+
     public function pasos()
     {
         return $this->hasMany(TicketPaso::class);
@@ -233,6 +282,51 @@ class Ticket extends Model
         ];
     }
 
+    protected static function calcularFechaVencimiento(CarbonInterface $fechaInicio, $horasSolucion)
+    {
+        $horarios = Config::get('horarios.laboral');
+        $fechaVencimiento = $fechaInicio->copy();
+        $horasRestantes = (float) $horasSolucion;
+
+        $intentos = 0;
+
+        while ($horasRestantes > 0 && $intentos < 30) {
+            $intentos++;
+            $diaSemana = $fechaVencimiento->dayOfWeek;
+            $horarioHoy = $horarios[$diaSemana] ?? null;
+
+            if (!$horarioHoy) {
+                $fechaVencimiento = $fechaVencimiento->addDay()->startOfDay();
+                continue;
+            }
+
+            $inicioJornada = $fechaVencimiento->copy()->setTimeFromTimeString($horarioHoy['start']);
+            $finJornada = $fechaVencimiento->copy()->setTimeFromTimeString($horarioHoy['end']);
+
+            if ($fechaVencimiento->lt($inicioJornada)) {
+                $fechaVencimiento = $inicioJornada;
+            }
+
+            if ($fechaVencimiento->gte($finJornada)) {
+                $fechaVencimiento = $fechaVencimiento->addDay()->startOfDay();
+                continue;
+            }
+
+            $segundosDisponiblesHoy = $fechaVencimiento->diffInSeconds($finJornada);
+            $horasDisponiblesHoy = $segundosDisponiblesHoy / 3600;
+
+            if ($horasRestantes <= $horasDisponiblesHoy) {
+                $fechaVencimiento = $fechaVencimiento->addSeconds(round($horasRestantes * 3600));
+                $horasRestantes = 0;
+            } else {
+                $horasRestantes -= $horasDisponiblesHoy;
+                $fechaVencimiento = $fechaVencimiento->addDay()->startOfDay();
+            }
+        }
+
+        return $fechaVencimiento;
+    }
+
     protected static function booted()
     {
         static::creating(function ($ticket) {
@@ -244,7 +338,7 @@ class Ticket extends Model
             if (!$ticket->fecha_vencimiento && $ticket->tipo_solicitud_id) {
                 $tipoSolicitud = \App\Models\TipoSolicitud::find($ticket->tipo_solicitud_id);
                 if ($tipoSolicitud && $tipoSolicitud->tiempo_solucion) {
-                    $ticket->fecha_vencimiento = \App\Services\TicketService::calcularFechaVencimiento(
+                    $ticket->fecha_vencimiento = self::calcularFechaVencimiento(
                         now(),
                         $tipoSolicitud->tiempo_solucion
                     );

@@ -13,6 +13,7 @@ use App\Models\SubTipoSolicitud;
 use App\Models\Canal;
 use App\Models\EstadoTicket;
 use App\Models\PrioridadTicket;
+use App\Models\TipoSolicitud;
 use App\Services\ConsultaClienteService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -67,6 +68,8 @@ class TicketCrear extends Component
 
     public Collection $informaciones;
 
+    protected bool $prefillCartaNotarial = false;
+
     protected function rules()
     {
         $rules = [
@@ -116,6 +119,8 @@ class TicketCrear extends Component
 
     public function mount($ticketPadre = null)
     {
+        $this->prefillCartaNotarial = request()->routeIs('erp.ticket-notarial.vista.crear');
+
         if ($ticketPadre) {
             // Si ya es una instancia de Ticket (Route Model Binding)
             if ($ticketPadre instanceof Ticket) {
@@ -173,6 +178,10 @@ class TicketCrear extends Component
 
         if ($this->area_id) {
             $this->cargarDatosArea($this->area_id);
+        }
+
+        if ($this->prefillCartaNotarial) {
+            $this->aplicarTipoSolicitudCartaNotarial();
         }
     }
 
@@ -242,6 +251,10 @@ class TicketCrear extends Component
     public function updatedAreaId($value)
     {
         $this->cargarDatosArea($value);
+
+        if ($this->prefillCartaNotarial) {
+            $this->aplicarTipoSolicitudCartaNotarial();
+        }
     }
 
     public function updatedTipoSolicitudId($value)
@@ -270,14 +283,15 @@ class TicketCrear extends Component
 
         $lotesConTicket = [];
         foreach ($this->lotes_agregados as $lote) {
-            if (
-                \App\Services\TicketService::existeTicketSimilar(
-                    $this->dni,
-                    $lote['id'],
-                    $this->tipo_solicitud_id,
-                    $this->sub_tipo_solicitud_id
-                )
-            ) {
+            $existeTicketSimilar = Ticket::query()
+                ->where('dni', $this->dni)
+                ->where('tipo_solicitud_id', $this->tipo_solicitud_id)
+                ->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id)
+                ->whereJsonContains('lotes', ['id' => (int) $lote['id']])
+                ->whereNotIn('estado_ticket_id', [EstadoTicket::id(EstadoTicket::CERRADO)])
+                ->exists();
+
+            if ($existeTicketSimilar) {
                 $lotesConTicket[] = $lote['numero_lote'];
             }
         }
@@ -303,6 +317,20 @@ class TicketCrear extends Component
                 ->orderBy('nombre')
                 ->get();
         }
+    }
+
+    protected function aplicarTipoSolicitudCartaNotarial(): void
+    {
+        $tipoSolicitud = TipoSolicitud::where('nombre', 'like', '%CARTAS NOTARIALES%')
+            ->where('activo', true)
+            ->first();
+
+        if (!$tipoSolicitud) {
+            return;
+        }
+
+        $this->tipo_solicitud_id = $tipoSolicitud->id;
+        $this->loadSubTipoSolicitudes();
     }
 
     public function buscarCliente(ConsultaClienteService $service)
@@ -400,7 +428,11 @@ class TicketCrear extends Component
 
     public function store($confirmado = false)
     {
-        $this->authorize('ticket.accion-crear');
+        $permisoCrear = request()->routeIs('erp.ticket-notarial.vista.crear')
+            ? 'ticket-notarial.accion-crear'
+            : 'ticket.accion-crear';
+
+        $this->authorize($permisoCrear);
 
         try {
             $this->validate();
