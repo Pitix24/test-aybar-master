@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    @include('livewire.erp.libro-reclamacion.partials.kpis', ['stats' => $stats])
+    @include('livewire.erp.legal.libro-reclamacion.partials.kpis', ['stats' => $stats])
 
     <div class="g_panel">
         <div class="g_tabla_cabecera">
@@ -198,8 +198,8 @@
                         </td>
                         <td class="g_celda_acciones g_celda_centro">
                             @can('libro-reclamacion.editar')
-                            <a href="{{ route('erp.libro-reclamacion.vista.editar', $item->ticket) }}" class="g_accion editar"
-                                title="Editar">
+                            <a href="{{ route('erp.libro-reclamacion.vista.editar', $item->ticket) }}"
+                                class="g_accion editar" title="Editar">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                             @endcan

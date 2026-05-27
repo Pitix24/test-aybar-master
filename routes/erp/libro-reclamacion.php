@@ -1,9 +1,9 @@
 <?php
 
-use App\Livewire\Erp\LibroReclamacion\LibroReclamacionCrear;
-use App\Livewire\Erp\LibroReclamacion\LibroReclamacionEditar;
-use App\Livewire\Erp\LibroReclamacion\LibroReclamacionLista;
-use App\Livewire\Erp\LibroReclamacion\LibroReclamacionVer;
+use App\Livewire\Erp\Legal\LibroReclamacion\LibroReclamacionCrear;
+use App\Livewire\Erp\Legal\LibroReclamacion\LibroReclamacionEditar;
+use App\Livewire\Erp\Legal\LibroReclamacion\LibroReclamacionLista;
+use App\Livewire\Erp\Legal\LibroReclamacion\LibroReclamacionVer;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['permission:modulo-legal.ver']], function () {

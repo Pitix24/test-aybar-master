@@ -233,7 +233,7 @@
                     @endif
                 </div>
 
-                @include('livewire.erp.libro-reclamacion.libro-reclamacion-form')
+                @include('livewire.erp.legal.libro-reclamacion.libro-reclamacion-form')
             </form>
         </div>
 
