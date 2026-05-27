@@ -306,6 +306,16 @@ class RolesYPermisosSeeder extends Seeder
                 'libro-reclamacion.ver', //ok
                 'libro-reclamacion.editar', //ok
                 'libro-reclamacion.eliminar', //ok
+                /* CARTAS NOTARIALES */
+                'ticket-notarial.navegacion', //ok
+                'ticket-notarial.lista', //ok
+                'ticket-notarial.crear', //ok
+                'ticket-notarial.accion-crear', //ok
+                'ticket-notarial.ver', //ok
+                'ticket-notarial.editar', //ok
+                'ticket-notarial.accion-editar', //ok
+                'ticket-notarial.accion-exportar-filtro', //ok
+                'ticket-notarial.accion-exportar-todo', //ok
             ],
             'Módulo Marketing' => [
                 'modulo-marketing.ver', //ok
