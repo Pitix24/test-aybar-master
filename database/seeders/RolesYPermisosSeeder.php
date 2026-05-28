@@ -187,8 +187,11 @@ class RolesYPermisosSeeder extends Seeder
                 'ticket.gestor', //ok
                 'ticket.ver', //ok
                 'ticket.crear', //ok
+                'ticket.accion-crear', //ok
                 'ticket.editar', //ok
+                'ticket.accion-editar', //ok
                 'ticket.eliminar', //ok
+                'ticket.accion-eliminar', //ok
                 'ticket.exportar-filtro', //ok
                 'ticket.exportar-todo', //ok
                 'ticket.derivar', //ok
