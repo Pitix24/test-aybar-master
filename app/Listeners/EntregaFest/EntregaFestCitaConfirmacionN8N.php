@@ -4,6 +4,7 @@ namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestCitaConfirmacion;
 use App\Mail\EntregaFest\CitaConfirmacionMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -41,7 +42,7 @@ class EntregaFestCitaConfirmacionN8N
             'id' => $prospecto->id,
             'nombres' => $prospecto->nombres,
             'email' => $prospecto->email,
-            'celular' => $prospecto->celular,
+            'celular' => EntregaFestCelular::peru($prospecto->celular),
             'dni' => $prospecto->dni,
             'tipo' => 'Propietario',
             'proyecto' => $prospecto->proyecto?->nombre,
@@ -78,7 +79,6 @@ class EntregaFestCitaConfirmacionN8N
             ]);
 
             Log::channel('entrega-fest')->info("[CITA-CONFIRMACION-PAQUETE-N8N] Enviada exitosamente para Prospecto #{$contacto['id']}");
-
         } catch (\Exception $e) {
             Log::error("[CITA-CONFIRMACION-PAQUETE-N8N] Error: " . $e->getMessage());
         }

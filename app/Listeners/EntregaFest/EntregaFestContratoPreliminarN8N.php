@@ -5,6 +5,7 @@ namespace App\Listeners\EntregaFest;
 use App\Events\EntregaFest\EntregaFestContratoPreliminar;
 use App\Events\EntregaFest\EntregaFestCitaAgendar;
 use App\Mail\EntregaFest\ContratoPreliminarMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -48,7 +49,7 @@ class EntregaFestContratoPreliminarN8N
             'id' => $prospecto->id,
             'nombres' => $prospecto->nombres,
             'email' => $prospecto->email,
-            'celular' => $prospecto->celular,
+            'celular' => EntregaFestCelular::peru($prospecto->celular),
             'dni' => $prospecto->dni,
             'tipo' => 'Propietario',
             'proyecto' => $prospecto->proyecto?->nombre,

@@ -4,6 +4,7 @@ namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestCitaRecordatorio;
 use App\Mail\EntregaFest\CitaRecordatorioMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -41,7 +42,7 @@ class EntregaFestCitaRecordatorioN8N
             'id' => $prospecto->id,
             'nombres' => $prospecto->nombres,
             'email' => $prospecto->email,
-            'celular' => $prospecto->celular,
+            'celular' => EntregaFestCelular::peru($prospecto->celular),
             'dni' => $prospecto->dni,
             'tipo' => 'Propietario',
             'proyecto' => $prospecto->proyecto?->nombre,
@@ -72,11 +73,10 @@ class EntregaFestCitaRecordatorioN8N
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
                     'link_boton' => $plantilla?->link_boton ?? '',
                 ],
-                'etapa' => $etapa 
+                'etapa' => $etapa
             ]);
 
             Log::channel('entrega-fest')->info("[CITA-RECORDATORIO-PAQUETE-N8N] Enviada exitosamente para Prospecto #{$contacto['id']}");
-
         } catch (\Exception $e) {
             Log::error("[CITA-RECORDATORIO-PAQUETE-N8N] Error: " . $e->getMessage());
         }

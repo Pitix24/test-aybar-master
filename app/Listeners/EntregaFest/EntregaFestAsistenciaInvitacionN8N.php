@@ -5,6 +5,7 @@ namespace App\Listeners\EntregaFest;
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
 use App\Mail\EntregaFest\AsistenciaInvitacionCopropietarioMail;
 use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -33,7 +34,7 @@ class EntregaFestAsistenciaInvitacionN8N
                 'id' => $prospecto->id,
                 'nombres' => $prospecto->nombres,
                 'email' => $prospecto->email,
-                'celular' => $prospecto->celular,
+                'celular' => EntregaFestCelular::peru($prospecto->celular),
                 'dni' => $prospecto->dni,
                 'link' => $mailPropietario->link,
                 'html' => $mailPropietario->render(),
@@ -60,7 +61,7 @@ class EntregaFestAsistenciaInvitacionN8N
                 'id' => $cop->id,
                 'nombres' => $cop->nombres,
                 'email' => $cop->email,
-                'celular' => $cop->celular,
+                'celular' => EntregaFestCelular::peru($cop->celular),
                 'dni' => $cop->dni,
                 'link' => $mailCopro->link,
                 'html' => $mailCopro->render(),
@@ -98,7 +99,6 @@ class EntregaFestAsistenciaInvitacionN8N
 
             $idPropietario = $propietario['id'] ?? 'N/A';
             Log::channel('entrega-fest')->info("[INVITACION-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$idPropietario} con " . count($copropietarios) . " copropietarios.");
-
         } catch (\Exception $e) {
             Log::error("[INVITACION-PAQUETE-N8N] Error: " . $e->getMessage());
         }

@@ -3,10 +3,10 @@
 namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacionMasivo;
-use App\Models\CopropietarioEntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
 use App\Mail\EntregaFest\AsistenciaInvitacionCopropietarioMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -42,16 +42,16 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                 })
                     // ...o algún copropietario necesita algo y NO ha respondido
                     ->orWhereHas('copropietarios', function ($cq) use ($etapa) {
-                    $cq->whereNull('invitacion_confirmada')
-                        ->where(function ($qq) use ($etapa) {
-                            $qq->whereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
-                                $h->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
-                            })
-                                ->orWhereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
-                                    $h->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
-                                });
-                        });
-                });
+                        $cq->whereNull('invitacion_confirmada')
+                            ->where(function ($qq) use ($etapa) {
+                                $qq->whereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                                    $h->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
+                                })
+                                    ->orWhereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                                        $h->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
+                                    });
+                            });
+                    });
             })
             ->with(['copropietarios.historialComunicaciones', 'entregaFest', 'historialComunicaciones'])
             ->get()
@@ -72,7 +72,7 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                     'id' => $prospecto->id,
                     'nombres' => $prospecto->nombres,
                     'email' => $prospecto->email,
-                    'celular' => $prospecto->celular,
+                    'celular' => EntregaFestCelular::peru($prospecto->celular),
                     'dni' => $prospecto->dni,
                     'link' => $mailPropietario->link,
                     'html' => $mailPropietario->render(),
@@ -98,7 +98,7 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                                 'id' => $copro->id,
                                 'nombres' => $copro->nombres,
                                 'email' => $copro->email,
-                                'celular' => $copro->celular,
+                                'celular' => EntregaFestCelular::peru($copro->celular),
                                 'dni' => $copro->dni,
                                 'link' => $mailCopro->link,
                                 'html' => $mailCopro->render(),
