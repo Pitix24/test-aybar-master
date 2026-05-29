@@ -7,43 +7,43 @@
 
         <div class="cabecera_titulo_botones">
             @can('ticket.vista-lista')
-                <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
-                    Lista <i class="fa-solid fa-list"></i>
-                </a>
+            <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i>
+            </a>
             @endcan
 
             @can('ticket.vista-crear')
-                <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton primary">
-                    Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
+            <a href="{{ route('erp.ticket.vista.crear', $ticket->id) }}" class="g_boton primary">
+                Ticket asociado <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
             @can('ticket.vista-derivar')
-                <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton success">
-                    Derivar <i class="fa-solid fa-route"></i>
-                </a>
+            <a href="{{ route('erp.ticket.vista.derivar', $ticket->id) }}" class="g_boton success">
+                Derivar <i class="fa-solid fa-route"></i>
+            </a>
             @endcan
 
             @can('ticket.vista-crear')
-                <button type="button" class="g_boton secondary" wire:click="abrirHijosMasivos">
-                    Hijos múltiples <i class="fa-solid fa-layer-group"></i>
-                </button>
+            <button type="button" class="g_boton secondary" wire:click="abrirHijosMasivos">
+                Hijos múltiples <i class="fa-solid fa-layer-group"></i>
+            </button>
             @endcan
 
             @can('ticket.vista-crear-cita')
-                <a href="{{ route('erp.cita.vista.crear', $ticket->id) }}" class="g_boton cancelar">
-                    Crear cita <i class="fa-solid fa-calendar-days"></i></a>
+            <a href="{{ route('erp.cita.vista.crear', $ticket->id) }}" class="g_boton cancelar">
+                Crear cita <i class="fa-solid fa-calendar-days"></i></a>
             @endcan
 
             @can('ticket.accion-eliminar')
-                <button type="button" class="g_boton danger" onclick="alertaEliminarTicket()">
-                    Eliminar <i class="fa-solid fa-trash-can"></i>
-                </button>
+            <button type="button" class="g_boton danger" onclick="alertaEliminarTicket()">
+                Eliminar <i class="fa-solid fa-trash-can"></i>
+            </button>
             @endcan
 
             @can('ticket.vista-chat')
-                <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
-                    Chat <i class="fa-solid fa-comments"></i>
-                </button>
+            <button type="button" class="g_boton info" wire:click="$dispatch('toggleChat')">
+                Chat <i class="fa-solid fa-comments"></i>
+            </button>
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -91,31 +91,6 @@
                 </div>
 
                 <div x-show="activeTab === 'general'" x-transition class="g_tab_content">
-                    <div class="g_margin_bottom_20"
-                        style="padding: 15px; border-radius: 10px; background-color: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.05);">
-                        <div class="g_fila_flex g_centro_vertical"
-                            style="justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <i class="fa-solid fa-calendar-check" style="color: #6366f1; font-size: 1.2rem;"></i>
-                                <div>
-                                    <div class="g_negrita" style="font-size: 0.95rem; color: #374151;">Fecha Límite de
-                                        Solución (SLA)</div>
-                                    <div class="g_inferior" style="font-size: 0.85rem; opacity: 0.8;">
-                                        {{ $ticket->fecha_vencimiento ? $ticket->fecha_vencimiento->format('d/m/Y - h:i A') : 'No establecida' }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if($ticket->sla_status)
-                                <span class="g_badge g_badge_soft"
-                                    style="color: {{ $ticket->sla_status['color'] }}; font-size: 0.9rem; padding: 6px 15px; border: 1px solid {{ $ticket->sla_status['color'] }}44;">
-                                    <i class="fa-solid fa-clock"></i> {{ $ticket->sla_status['texto'] }}
-                                </span>
-                            @else
-                                <span class="g_badge light" style="font-size: 0.85rem;">Sin tiempo de solución</span>
-                            @endif
-                        </div>
-                    </div>
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_4">
                             <label>Empresa</label>
@@ -168,7 +143,7 @@
                                 class="@error('estado_ticket_id') input-error @enderror">
                                 <option value="">Seleccionar...</option>
                                 @foreach($estados as $es)
-                                    <option value="{{ $es->id }}">{{ $es->nombre }}</option>
+                                <option value="{{ $es->id }}">{{ $es->nombre }}</option>
                                 @endforeach
                             </select>
                             @error('estado_ticket_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -186,30 +161,30 @@
                     </div>
 
                     @if (!empty($ticket->lotes))
-                        <div class="g_margin_bottom_10">
-                            <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+                    <div class="g_margin_bottom_10">
+                        <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
 
-                            <div class="g_contenedor_tabla">
-                                <table class="g_tabla">
-                                    <thead>
-                                        <tr>
-                                            <th>Razón Social</th>
-                                            <th>Proyecto</th>
-                                            <th>Mz./Lt.</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($ticket->lotes as $index => $l)
-                                            <tr class="sorteable_item" wire:key="lote-{{ $index }}">
-                                                <td> {{ $l['razon_social'] }} </td>
-                                                <td> {{ $l['proyecto'] }} </td>
-                                                <td> {{ $l['numero_lote'] }} </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="g_contenedor_tabla">
+                            <table class="g_tabla">
+                                <thead>
+                                    <tr>
+                                        <th>Razón Social</th>
+                                        <th>Proyecto</th>
+                                        <th>Mz./Lt.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($ticket->lotes as $index => $l)
+                                    <tr class="sorteable_item" wire:key="lote-{{ $index }}">
+                                        <td> {{ $l['razon_social'] }} </td>
+                                        <td> {{ $l['proyecto'] }} </td>
+                                        <td> {{ $l['numero_lote'] }} </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
                     @endif
 
                     <div>
@@ -236,17 +211,17 @@
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
                     <div class="g_margin_bottom_10">
                         @can('ticket.vista-portal-cliente')
-                            <a href="{{ route('erp.cliente.vista.consultar', $ticket->dni) }}" class="g_boton primary">
-                                <i class="fa-solid fa-border-all"></i> Portal cliente
-                            </a>
+                        <a href="{{ route('erp.cliente.vista.consultar', $ticket->dni) }}" class="g_boton primary">
+                            <i class="fa-solid fa-border-all"></i> Portal cliente
+                        </a>
                         @endcan
 
                         @can('ticket.vista-ver-cliente')
-                            @if(isset($ticket->userCliente))
-                                <a href="{{ route('erp.cliente.vista.ver', $ticket->userCliente->id) }}" class="g_boton info">
-                                    <i class="fa-solid fa-circle-user"></i> Perfil
-                                </a>
-                            @endif
+                        @if(isset($ticket->userCliente))
+                        <a href="{{ route('erp.cliente.vista.ver', $ticket->userCliente->id) }}" class="g_boton info">
+                            <i class="fa-solid fa-circle-user"></i> Perfil
+                        </a>
+                        @endif
                         @endcan
                     </div>
                     <div class="g_fila">
@@ -286,20 +261,16 @@
                     @livewire('erp.atc.ticket.ticket-historial', ['ticket' => $ticket])
                 </div>
 
-                <div x-show="activeTab === 'pasos'" x-transition class="g_tab_content g_margin_bottom_10">
-                    @livewire('erp.atc.ticket.ticket-pasos', ['ticket' => $ticket])
-                </div>
-
                 <div class="formulario_botones">
                     @can('ticket.accion-editar')
-                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
-                            <span wire:loading.remove wire:target="update">
-                                <i class="fa-solid fa-pencil"></i> Actualizar
-                            </span>
-                            <span wire:loading wire:target="update">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                            </span>
-                        </button>
+                    <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                        <span wire:loading.remove wire:target="update">
+                            <i class="fa-solid fa-pencil"></i> Actualizar
+                        </span>
+                        <span wire:loading wire:target="update">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                        </span>
+                    </button>
                     @endcan
 
                     <button type="button" class="g_boton cancelar" onclick="history.back()">
@@ -317,230 +288,233 @@
             @livewire('erp.atc.ticket.ticket-archivo', ['ticket' => $ticket])
 
             @if ($ticket->libroReclamacion)
-                @php
-                    $libro = $ticket->libroReclamacion;
-                    $razonSocial = $libro->proyecto?->unidadNegocio?->razon_social ?: ($libro->proyecto?->unidadNegocio?->nombre ?: 'Sin proveedor definido');
-                    $proyectoLibro = $libro->proyecto?->nombre ?: 'Sin proyecto definido';
-                    $lotesLibro = ($libro->manzana || $libro->lote) ? trim(($libro->manzana ?: '-') . '/' . ($libro->lote ?: '-')) : 'Sin lote';
+            @php
+            $libro = $ticket->libroReclamacion;
+            $razonSocial = $libro->proyecto?->unidadNegocio?->razon_social ?: ($libro->proyecto?->unidadNegocio?->nombre
+            ?: 'Sin proveedor definido');
+            $proyectoLibro = $libro->proyecto?->nombre ?: 'Sin proyecto definido';
+            $lotesLibro = ($libro->manzana || $libro->lote) ? trim(($libro->manzana ?: '-') . '/' . ($libro->lote ?:
+            '-')) : 'Sin lote';
 
-                    $clienteCompleto = trim((string) ($libro->cliente_nombre ?: trim(($libro->nombre ?: '') . ' ' . ($libro->apellido_paterno ?: '') . ' ' . ($libro->apellido_materno ?: ''))));
-                    $clienteCompleto = $clienteCompleto !== '' ? $clienteCompleto : 'Sin nombre registrado';
-                    $documentoCliente = $libro->cliente_documento ?: $libro->numero_documento ?: 'N/D';
-                    $tipoDocumentoCliente = $libro->cliente_tipo_documento ?: $libro->tipo_documento ?: 'N/D';
-                    $correoCliente = $libro->cliente_email ?: $libro->email ?: 'N/D';
-                    $celularCliente = $libro->cliente_celular ?: $libro->telefono ?: 'N/D';
-                    $direccionCliente = $libro->cliente_direccion ?: $libro->domicilio ?: 'N/D';
+            $clienteCompleto = trim((string) ($libro->cliente_nombre ?: trim(($libro->nombre ?: '') . ' ' .
+            ($libro->apellido_paterno ?: '') . ' ' . ($libro->apellido_materno ?: ''))));
+            $clienteCompleto = $clienteCompleto !== '' ? $clienteCompleto : 'Sin nombre registrado';
+            $documentoCliente = $libro->cliente_documento ?: $libro->numero_documento ?: 'N/D';
+            $tipoDocumentoCliente = $libro->cliente_tipo_documento ?: $libro->tipo_documento ?: 'N/D';
+            $correoCliente = $libro->cliente_email ?: $libro->email ?: 'N/D';
+            $celularCliente = $libro->cliente_celular ?: $libro->telefono ?: 'N/D';
+            $direccionCliente = $libro->cliente_direccion ?: $libro->domicilio ?: 'N/D';
 
-                    $detalleLibre = trim(implode("\n", array_filter([
-                        'Detalle de la reclamación: ' . ($libro->detalle ?: 'N/D'),
-                        'Pedido del consumidor: ' . ($libro->pedido ?: 'N/D'),
-                    ])));
-                @endphp
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Libro de Reclamaciones Vinculado</h4>
+            $detalleLibre = trim(implode("\n", array_filter([
+            'Detalle de la reclamación: ' . ($libro->detalle ?: 'N/D'),
+            'Pedido del consumidor: ' . ($libro->pedido ?: 'N/D'),
+            ])));
+            @endphp
+            <div class="g_panel">
+                <h4 class="g_panel_titulo">Libro de Reclamaciones Vinculado</h4>
 
-                    <div class="formulario">
-                        <div class="g_margin_bottom_10">
-                            <label>Código del Libro</label>
-                            <input type="text" disabled value="{{ $libro->codigo_ticket ?: 'N/D' }}">
-                        </div>
-
-                        <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
-                            <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Identificación del Proveedor</h5>
-
-                            <div class="g_fila">
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Razón social</label>
-                                    <input type="text" disabled value="{{ $razonSocial }}">
-                                </div>
-
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Proyecto</label>
-                                    <input type="text" disabled value="{{ $proyectoLibro }}">
-                                </div>
-                            </div>
-
-                            <div class="g_fila">
-                                <div class="g_columna_12 g_margin_bottom_10">
-                                    <label>Lotes</label>
-                                    <input type="text" disabled value="{{ $lotesLibro }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
-                            <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Datos del Consumidor Reclamante</h5>
-
-                            <div class="g_fila">
-                                <div class="g_columna_12 g_margin_bottom_10">
-                                    <label>Nombre completo</label>
-                                    <input type="text" disabled value="{{ $clienteCompleto }}">
-                                </div>
-                            </div>
-
-                            <div class="g_fila">
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Tipo de documento</label>
-                                    <input type="text" disabled value="{{ $tipoDocumentoCliente }}">
-                                </div>
-
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>N° de documento</label>
-                                    <input type="text" disabled value="{{ $documentoCliente }}">
-                                </div>
-                            </div>
-
-                            <div class="g_fila">
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Correo</label>
-                                    <input type="text" disabled value="{{ $correoCliente }}">
-                                </div>
-
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Celular</label>
-                                    <input type="text" disabled value="{{ $celularCliente }}">
-                                </div>
-                            </div>
-
-                            <div class="g_fila">
-                                <div class="g_columna_12 g_margin_bottom_10">
-                                    <label>Dirección</label>
-                                    <input type="text" disabled value="{{ $direccionCliente }}">
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
-                            <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Tipo de Pedido y Bien Contratado</h5>
-
-                            <div class="g_fila">
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Tipo de pedido</label>
-                                    <input type="text" disabled
-                                        value="{{ $libro->tipo_pedido ? str_replace('_', ' ', $libro->tipo_pedido) : 'N/D' }}">
-                                </div>
-
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Bien contratado</label>
-                                    <input type="text" disabled
-                                        value="{{ $libro->tipo_bien_contratado ? str_replace('_', ' ', $libro->tipo_bien_contratado) : 'N/D' }}">
-                                </div>
-                            </div>
-
-                            <div class="g_fila">
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Monto reclamado</label>
-                                    <input type="text" disabled
-                                        value="{{ $libro->monto_reclamado !== null ? $libro->monto_reclamado : 'N/D' }}">
-                                </div>
-
-                                <div class="g_columna_6 g_margin_bottom_10">
-                                    <label>Clasificación</label>
-                                    <input type="text" disabled
-                                        value="{{ $libro->clasificacion ? str_replace('_', ' ', $libro->clasificacion) : 'N/D' }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class=" g_margin_bottom_10">
-                            <label>Descripción del bien</label>
-                            <textarea rows="3" disabled>{{ $libro->descripcion ?: 'N/D' }}</textarea>
-                        </div>
-
-                        <div class="g_margin_bottom_10">
-                            <label>Detalle de la Reclamación</label>
-                            <textarea rows="7" disabled>{{ $detalleLibre }}</textarea>
-                        </div>
-
-                        @can('ticket-libro-reclamacion.ver')
-                            <div class="formulario_botones">
-                                <a href="{{ route('erp.libro-reclamacion.vista.ver', $libro->ticket) }}"
-                                    class="g_boton warning">
-                                    Ver Libro <i class="fa-solid fa-book"></i>
-                                </a>
-                            </div>
-                        @endcan
+                <div class="formulario">
+                    <div class="g_margin_bottom_10">
+                        <label>Código del Libro</label>
+                        <input type="text" disabled value="{{ $libro->codigo_ticket ?: 'N/D' }}">
                     </div>
+
+                    <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
+                        <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Identificación del Proveedor</h5>
+
+                        <div class="g_fila">
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Razón social</label>
+                                <input type="text" disabled value="{{ $razonSocial }}">
+                            </div>
+
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Proyecto</label>
+                                <input type="text" disabled value="{{ $proyectoLibro }}">
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_columna_12 g_margin_bottom_10">
+                                <label>Lotes</label>
+                                <input type="text" disabled value="{{ $lotesLibro }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
+                        <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Datos del Consumidor Reclamante</h5>
+
+                        <div class="g_fila">
+                            <div class="g_columna_12 g_margin_bottom_10">
+                                <label>Nombre completo</label>
+                                <input type="text" disabled value="{{ $clienteCompleto }}">
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Tipo de documento</label>
+                                <input type="text" disabled value="{{ $tipoDocumentoCliente }}">
+                            </div>
+
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>N° de documento</label>
+                                <input type="text" disabled value="{{ $documentoCliente }}">
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Correo</label>
+                                <input type="text" disabled value="{{ $correoCliente }}">
+                            </div>
+
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Celular</label>
+                                <input type="text" disabled value="{{ $celularCliente }}">
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_columna_12 g_margin_bottom_10">
+                                <label>Dirección</label>
+                                <input type="text" disabled value="{{ $direccionCliente }}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="g_panel" style="padding: 12px; margin-bottom: 12px;">
+                        <h5 class="g_panel_titulo" style="margin-bottom: 12px;">Tipo de Pedido y Bien Contratado</h5>
+
+                        <div class="g_fila">
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Tipo de pedido</label>
+                                <input type="text" disabled
+                                    value="{{ $libro->tipo_pedido ? str_replace('_', ' ', $libro->tipo_pedido) : 'N/D' }}">
+                            </div>
+
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Bien contratado</label>
+                                <input type="text" disabled
+                                    value="{{ $libro->tipo_bien_contratado ? str_replace('_', ' ', $libro->tipo_bien_contratado) : 'N/D' }}">
+                            </div>
+                        </div>
+
+                        <div class="g_fila">
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Monto reclamado</label>
+                                <input type="text" disabled
+                                    value="{{ $libro->monto_reclamado !== null ? $libro->monto_reclamado : 'N/D' }}">
+                            </div>
+
+                            <div class="g_columna_6 g_margin_bottom_10">
+                                <label>Clasificación</label>
+                                <input type="text" disabled
+                                    value="{{ $libro->clasificacion ? str_replace('_', ' ', $libro->clasificacion) : 'N/D' }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class=" g_margin_bottom_10">
+                        <label>Descripción del bien</label>
+                        <textarea rows="3" disabled>{{ $libro->descripcion ?: 'N/D' }}</textarea>
+                    </div>
+
+                    <div class="g_margin_bottom_10">
+                        <label>Detalle de la Reclamación</label>
+                        <textarea rows="7" disabled>{{ $detalleLibre }}</textarea>
+                    </div>
+
+                    @can('ticket-libro-reclamacion.ver')
+                    <div class="formulario_botones">
+                        <a href="{{ route('erp.libro-reclamacion.vista.ver', $libro->ticket) }}"
+                            class="g_boton warning">
+                            Ver Libro <i class="fa-solid fa-book"></i>
+                        </a>
+                    </div>
+                    @endcan
                 </div>
+            </div>
             @endif
 
             @if ($ticket->padre)
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Ticket Principal (Padre)</h4>
-                    <div class="g_contenedor_tabla">
-                        <table class="g_tabla g_tabla_pequena">
-                            <thead>
-                                <tr>
-                                    <th>Ticket</th>
-                                    <th>Gestor</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="g_negrita">#{{ $ticket->padre->id }}</td>
-                                    <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
-                                    <td class="g_celda_centro">
-                                        @can('ticket.vista-ver')
-                                            <a href="{{ route('erp.ticket.vista.ver', $ticket->padre->id) }}"
-                                                class="g_accion ver" title="Ver detalle">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </a>
-                                        @endcan
+            <div class="g_panel">
+                <h4 class="g_panel_titulo">Ticket Principal (Padre)</h4>
+                <div class="g_contenedor_tabla">
+                    <table class="g_tabla g_tabla_pequena">
+                        <thead>
+                            <tr>
+                                <th>Ticket</th>
+                                <th>Gestor</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="g_negrita">#{{ $ticket->padre->id }}</td>
+                                <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
+                                <td class="g_celda_centro">
+                                    @can('ticket.vista-ver')
+                                    <a href="{{ route('erp.ticket.vista.ver', $ticket->padre->id) }}"
+                                        class="g_accion ver" title="Ver detalle">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    @endcan
 
-                                        @can('ticket.vista-editar')
-                                            <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}"
-                                                class="g_accion editar" title="Editar">
-                                                <i class="fa-solid fa-pencil"></i>
-                                            </a>
-                                        @endcan
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                    @can('ticket.vista-editar')
+                                    <a href="{{ route('erp.ticket.vista.editar', $ticket->padre->id) }}"
+                                        class="g_accion editar" title="Editar">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                    @endcan
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
             @endif
 
             @if (!$ticket->hijos->isEmpty())
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Tickets Asociados (Hijos)</h4>
-                    <div class="g_contenedor_tabla">
-                        <table class="g_tabla g_tabla_pequena">
-                            <thead>
-                                <tr>
-                                    <th>Ticket</th>
-                                    <th>Gestor</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($ticket->hijos as $hijo)
-                                    <tr>
-                                        <td class="g_negrita">#{{ $hijo->id }}</td>
-                                        <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
-                                        <td class="g_celda_centro">
-                                            @can('ticket.vista-ver')
-                                                <a href="{{ route('erp.ticket.vista.ver', $hijo->id) }}" class="g_accion ver"
-                                                    title="Ver Ticket Hijo">
-                                                    <i class="fa-solid fa-eye"></i>
-                                                </a>
-                                            @endcan
+            <div class="g_panel">
+                <h4 class="g_panel_titulo">Tickets Asociados (Hijos)</h4>
+                <div class="g_contenedor_tabla">
+                    <table class="g_tabla g_tabla_pequena">
+                        <thead>
+                            <tr>
+                                <th>Ticket</th>
+                                <th>Gestor</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($ticket->hijos as $hijo)
+                            <tr>
+                                <td class="g_negrita">#{{ $hijo->id }}</td>
+                                <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
+                                <td class="g_celda_centro">
+                                    @can('ticket.vista-ver')
+                                    <a href="{{ route('erp.ticket.vista.ver', $hijo->id) }}" class="g_accion ver"
+                                        title="Ver Ticket Hijo">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    @endcan
 
-                                            @can('ticket.vista-editar')
-                                                <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion editar"
-                                                    title="Editar Ticket Hijo">
-                                                    <i class="fa-solid fa-pencil"></i>
-                                                </a>
-                                            @endcan
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                    @can('ticket.vista-editar')
+                                    <a href="{{ route('erp.ticket.vista.editar', $hijo->id) }}" class="g_accion editar"
+                                        title="Editar Ticket Hijo">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+                                    @endcan
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
+            </div>
             @endif
         </div>
     </div>
@@ -569,8 +543,8 @@
     @livewire('erp.atc.ticket.ticket-chat', ['ticket' => $ticket])
 
     @if ($modalHijosMasivos)
-        <x-modal title="Crear Tickets Hijos (Masivo)" wireClose="cerrarHijosMasivos" maxWidth="1200px">
-            @livewire('erp.atc.ticket.ticket-hijos-masivos', ['ticket' => $ticket])
-        </x-modal>
+    <x-modal title="Crear Tickets Hijos (Masivo)" wireClose="cerrarHijosMasivos" maxWidth="1200px">
+        @livewire('erp.atc.ticket.ticket-hijos-masivos', ['ticket' => $ticket])
+    </x-modal>
     @endif
 </div>

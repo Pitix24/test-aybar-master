@@ -70,7 +70,7 @@
             </div>
 
             <div class="formulario g_panel">
-                @include('livewire.erp.libro-reclamacion.libro-reclamacion-form', ['isView' => true])
+                @include('livewire.erp.legal.libro-reclamacion.libro-reclamacion-form', ['isView' => true])
             </div>
         </div>
     </div>

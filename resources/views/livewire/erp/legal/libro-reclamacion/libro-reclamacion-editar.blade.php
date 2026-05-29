@@ -29,7 +29,7 @@
     </div>
 
     <form wire:submit.prevent="update" class="formulario g_panel">
-        @include('livewire.erp.libro-reclamacion.libro-reclamacion-form', ['submitAction' => 'update'])
+        @include('livewire.erp.legal.libro-reclamacion.libro-reclamacion-form', ['submitAction' => 'update'])
 
         <div class="formulario_botones">
             @can('libro-reclamacion.editar')

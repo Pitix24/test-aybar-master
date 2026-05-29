@@ -159,6 +159,7 @@ class TicketLista extends Component
     private function ticketQuery(bool $aplicarGestor = true)
     {
         return Ticket::query()
+            ->sinCartasNotariales()
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
                     $q->where('id', 'like', "%{$this->buscar}%")
@@ -346,7 +347,7 @@ class TicketLista extends Component
 
         $gestoresConPermiso = User::permission('atc.gestor')->get();
 
-        $this->usuarios_admin = $gestoresConPermiso
+        $this->usuarios_admin = collect($gestoresConPermiso)
             ->concat($gestoresDeTickets)
             ->unique('id')
             ->sortBy('name')
@@ -356,7 +357,7 @@ class TicketLista extends Component
             $gestorSeleccionado = User::withTrashed()->find($this->usuario_admin_id);
 
             if ($gestorSeleccionado) {
-                $this->usuarios_admin = $this->usuarios_admin
+                $this->usuarios_admin = collect($this->usuarios_admin)
                     ->push($gestorSeleccionado)
                     ->unique('id')
                     ->sortBy('name')
@@ -364,16 +365,8 @@ class TicketLista extends Component
             }
         }
 
-        $unreadTicketIds = auth()->user()->unreadNotifications()
-            ->where('type', 'App\Notifications\TicketActualizadoNotification')
-            ->get()
-            ->pluck('data.ticket_id')
-            ->unique()
-            ->toArray();
-
         return view('livewire.erp.atc.ticket.ticket-lista', [
-            'items' => $items,
-            'unreadTicketIds' => $unreadTicketIds
+            'items' => $items
         ]);
     }
 

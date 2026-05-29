@@ -6,6 +6,7 @@ use App\Models\LibroReclamacion\LibroReclamacion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Ticket extends Model
 {
@@ -16,10 +17,8 @@ class Ticket extends Model
         'unidad_negocio_id',
         'proyecto_id',
         'cliente_id',
-
         'area_id',
         'ticket_padre_id',
-
         'tipo_solicitud_id',
         'sub_tipo_solicitud_id',
         'canal_id',
@@ -31,21 +30,14 @@ class Ticket extends Model
         'lotes',
         'asunto_respuesta',
         'descripcion_respuesta',
-        'fecha_vencimiento',
-
-        //DB ANTIGUO
         'dni',
         'nombres',
         'email',
         'celular',
         'direccion',
         'origen',
-
-        //SUPERVISOR
         'usuario_valida_id',
         'fecha_validacion',
-
-        //AUDITORIA
         'created_by',
         'updated_by',
         'deleted_by',
@@ -53,7 +45,6 @@ class Ticket extends Model
 
     protected $casts = [
         'fecha_validacion' => 'datetime',
-        'fecha_vencimiento' => 'datetime',
         'lotes' => 'array',
     ];
 
@@ -179,9 +170,51 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'deleted_by');
     }
 
-    public function pasos()
+    public function scopeCartasNotariales($query)
     {
-        return $this->hasMany(TicketPaso::class);
+        $tipoSolicitudIds = static::cartasNotarialesTipoSolicitudIds();
+
+        if (empty($tipoSolicitudIds)) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->whereIn('tipo_solicitud_id', $tipoSolicitudIds);
+    }
+
+    public function scopeSinCartasNotariales($query)
+    {
+        $tipoSolicitudIds = static::cartasNotarialesTipoSolicitudIds();
+
+        if (empty($tipoSolicitudIds)) {
+            return $query;
+        }
+
+        return $query->where(function ($subQuery) use ($tipoSolicitudIds) {
+            $subQuery->whereNull('tipo_solicitud_id')
+                ->orWhereNotIn('tipo_solicitud_id', $tipoSolicitudIds);
+        });
+    }
+
+    public function esCartaNotarial(): bool
+    {
+        $tipoSolicitud = TipoSolicitud::withTrashed()->find($this->tipo_solicitud_id)?->nombre;
+
+        if (!is_string($tipoSolicitud)) {
+            return false;
+        }
+
+        $tipoNormalizado = mb_strtoupper(trim($tipoSolicitud));
+
+        return str_contains($tipoNormalizado, 'NOTARIAL');
+    }
+
+    protected static function cartasNotarialesTipoSolicitudIds(): array
+    {
+        return TipoSolicitud::withTrashed()
+            ->whereRaw('UPPER(nombre) LIKE ?', ['%NOTARIAL%'])
+            ->pluck('id')
+            ->map(fn($id) => (int) $id)
+            ->all();
     }
 
     public function getTieneDerivadosAttribute()
@@ -194,80 +227,23 @@ class Ticket extends Model
         return $this->archivos()->exists();
     }
 
-    public function getSlaStatusAttribute()
-    {
-        if (!$this->fecha_vencimiento || $this->estado_ticket_id == 4) { // 4 assumed as 'Cerrado'
-            return null;
-        }
-
-        $ahora = now();
-        $vencido = $ahora->gt($this->fecha_vencimiento);
-        $diferencia = $ahora->diffForHumans($this->fecha_vencimiento, [
-            'parts' => 2,
-            'short' => true,
-            'join' => true,
-        ]);
-
-        if ($vencido) {
-            return [
-                'texto' => "Vencido hace $diferencia",
-                'color' => '#ef4444', // Rojo
-                'clase' => 'danger'
-            ];
-        }
-
-        // Si falta menos de 4 horas, poner en naranja
-        $horasRestantes = $ahora->diffInHours($this->fecha_vencimiento);
-        if ($horasRestantes <= 4) {
-            return [
-                'texto' => "Vence en $diferencia",
-                'color' => '#f59e0b', // Naranja
-                'clase' => 'warning'
-            ];
-        }
-
-        return [
-            'texto' => "Vence en $diferencia",
-            'color' => '#10b981', // Verde
-            'clase' => 'success'
-        ];
-    }
-
     protected static function booted()
     {
         static::creating(function ($ticket) {
-            if (auth()->check()) {
-                $ticket->created_by = auth()->id();
-            }
-
-            // Calcular fecha de vencimiento solo si no se ha definido una manualmente
-            if (!$ticket->fecha_vencimiento && $ticket->tipo_solicitud_id) {
-                $tipoSolicitud = \App\Models\TipoSolicitud::find($ticket->tipo_solicitud_id);
-                if ($tipoSolicitud && $tipoSolicitud->tiempo_solucion) {
-                    $ticket->fecha_vencimiento = \App\Services\TicketService::calcularFechaVencimiento(
-                        now(),
-                        $tipoSolicitud->tiempo_solucion
-                    );
-                }
+            if (Auth::check()) {
+                $ticket->created_by = Auth::id();
             }
         });
 
         static::updating(function ($ticket) {
-            if (auth()->check()) {
-                $ticket->updated_by = auth()->id();
-            }
-        });
-
-        static::updated(function ($ticket) {
-            // Notificar al creador del ticket si existe
-            if ($ticket->creadoPor && $ticket->created_by !== auth()->id()) {
-                $ticket->creadoPor->notify(new \App\Notifications\TicketActualizadoNotification($ticket));
+            if (Auth::check()) {
+                $ticket->updated_by = Auth::id();
             }
         });
 
         static::deleting(function ($ticket) {
-            if (auth()->check()) {
-                $ticket->deleted_by = auth()->id();
+            if (Auth::check()) {
+                $ticket->deleted_by = Auth::id();
                 $ticket->saveQuietly();
             }
         });

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\LibroReclamacion;
+namespace App\Livewire\Erp\Legal\LibroReclamacion;
 
 use App\Models\EstadoTicket;
 use App\Models\LibroReclamacion\LibroReclamacion;
@@ -281,7 +281,7 @@ class LibroReclamacionLista extends Component
             ->orderByDesc('ticket')
             ->paginate($this->perPage);
 
-        return view('livewire.erp.libro-reclamacion.libro-reclamacion-lista', compact('items'));
+        return view('livewire.erp.legal.libro-reclamacion.libro-reclamacion-lista', compact('items'));
     }
 
     public function placeholder()

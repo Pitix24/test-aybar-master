@@ -538,6 +538,37 @@
     },
     {
         "id": 5,
+        "nombre": "Módulo Legal",
+        "ruta": null,
+        "url": null,
+        "icono": "fa-solid fa-scale-balanced",
+        "nivel": 1,
+        "permiso": "modulo-legal.ver",
+        "submenus": [
+            {
+                "id": 61,
+                "nombre": "Libro Reclamación",
+                "ruta": "erp.libro-reclamacion.vista.todo",
+                "url": null,
+                "icono": "fa-solid fa-book-bookmark",
+                "nivel": 2,
+                "permiso": "libro-reclamacion.lista",
+                "submenus": []
+            },
+            {
+                "id": 62,
+                "nombre": "Cartas Notariales",
+                "ruta": "erp.ticket-notarial.vista.todo",
+                "url": null,
+                "icono": "fa-solid fa-file-contract",
+                "nivel": 2,
+                "permiso": "ticket-notarial.lista",
+                "submenus": []
+            }
+        ]
+    },
+    {
+        "id": 6,
         "nombre": "Módulo Cita",
         "ruta": null,
         "url": null,
