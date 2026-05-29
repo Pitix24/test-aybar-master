@@ -362,6 +362,7 @@ class RolesYPermisosSeeder extends Seeder
                 'prospecto.crear',
                 'prospecto.editar',
                 'prospecto.eliminar',
+                'contrato-preliminar.eliminar',
                 'prospecto.exportar-filtro',
                 'prospecto.exportar-todo',
                 /* INVITADO */
@@ -625,6 +626,7 @@ class RolesYPermisosSeeder extends Seeder
         $supervisor_legal = Role::findByName('supervisor-legal');
         $supervisor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
         $supervisor_legal->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
+        $supervisor_legal->givePermissionTo('contrato-preliminar.eliminar');
         $this->command->info("✓ Supervisor Legal: Configurado");
 
         $asesor_legal = Role::findByName('asesor-legal');

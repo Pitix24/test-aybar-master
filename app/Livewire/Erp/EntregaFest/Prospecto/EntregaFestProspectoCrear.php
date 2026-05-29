@@ -102,7 +102,7 @@ class EntregaFestProspectoCrear extends Component
         try {
             DB::beginTransaction();
 
-            ProspectoEntregaFest::create([
+            $prospecto = ProspectoEntregaFest::create([
                 'entrega_fest_id' => $this->evento->id,
                 'proyecto_id' => $this->proyecto_id,
                 'user_id' => Auth::id(),
@@ -112,6 +112,12 @@ class EntregaFestProspectoCrear extends Component
                 'celular' => trim($this->celular),
                 'lote' => $lote !== '' ? $lote : null,
                 'manzana' => $manzana !== '' ? $manzana : null,
+            ]);
+
+            Log::channel('entrega-fest')->info('[PROSPECTO CREAR] Registro exitoso', [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $prospecto->id,
+                'evento_id' => $this->evento->id,
             ]);
 
             DB::commit();
@@ -126,7 +132,7 @@ class EntregaFestProspectoCrear extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('entrega-fest')->error("[PROSPECTO CREAR] Error al registrar: " . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'datos' => $this->all(),
                 'trace' => $e->getTraceAsString()
             ]);
