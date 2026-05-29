@@ -14,9 +14,14 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
     protected $buscar;
     protected $proyecto_id;
     protected $estado_backoffice;
+    protected $estado_gestor_backoffice;
     protected $estado_contrato_preeliminar_emitido;
     protected $estado_firma_contrato_firmado;
     protected $grupo;
+    protected $filtro_confirmacion;
+    protected $filtro_invitacion;
+    protected $gestor_id;
+    protected $estado_cliente_id;
     protected $todo;
     protected $perPage;
     protected $page;
@@ -26,9 +31,14 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
         $buscar = '',
         $proyecto_id = '',
         $estado_backoffice = '',
+        $estado_gestor_backoffice = '',
         $estado_contrato_preeliminar_emitido = '',
         $estado_firma_contrato_firmado = '',
         $grupo = '',
+        $filtro_confirmacion = '',
+        $filtro_invitacion = '',
+        $gestor_id = '',
+        $estado_cliente_id = '',
         $todo = false,
         $perPage = null,
         $page = null
@@ -37,9 +47,14 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
         $this->buscar = $buscar;
         $this->proyecto_id = $proyecto_id;
         $this->estado_backoffice = $estado_backoffice;
+        $this->estado_gestor_backoffice = $estado_gestor_backoffice;
         $this->estado_contrato_preeliminar_emitido = $estado_contrato_preeliminar_emitido;
         $this->estado_firma_contrato_firmado = $estado_firma_contrato_firmado;
         $this->grupo = $grupo;
+        $this->filtro_confirmacion = $filtro_confirmacion;
+        $this->filtro_invitacion = $filtro_invitacion;
+        $this->gestor_id = $gestor_id;
+        $this->estado_cliente_id = $estado_cliente_id;
         $this->todo = $todo;
         $this->perPage = $perPage;
         $this->page = $page;
@@ -75,9 +90,26 @@ class EntregaFestProspectoExport implements FromCollection, WithHeadings, Should
                     });
                 })
                 ->when($this->estado_backoffice, fn($q) => $q->where('estado_backoffice', $this->estado_backoffice))
+                ->when($this->estado_gestor_backoffice, fn($q) => $q->where('estado_gestor_backoffice', $this->estado_gestor_backoffice))
                 ->when($this->estado_contrato_preeliminar_emitido, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $this->estado_contrato_preeliminar_emitido))
                 ->when($this->estado_firma_contrato_firmado, fn($q) => $q->where('estado_firma_contrato_firmado', $this->estado_firma_contrato_firmado))
-                ->when($this->grupo, fn($q) => $q->where('grupo', $this->grupo));
+                ->when($this->grupo, fn($q) => $q->where('grupo', $this->grupo))
+                ->when($this->filtro_confirmacion !== '', function ($query) {
+                    if ($this->filtro_confirmacion === 'pendiente') {
+                        $query->whereNull('preinvitacion_confirmada');
+                    } else {
+                        $query->where('preinvitacion_confirmada', $this->filtro_confirmacion);
+                    }
+                })
+                ->when($this->filtro_invitacion !== '', function ($query) {
+                    if ($this->filtro_invitacion === 'pendiente') {
+                        $query->whereNull('invitacion_confirmada');
+                    } else {
+                        $query->where('invitacion_confirmada', $this->filtro_invitacion);
+                    }
+                })
+                ->when($this->gestor_id, fn($q) => $q->where('gestor_backoffice_id', $this->gestor_id))
+                ->when($this->estado_cliente_id, fn($q) => $q->where('estado_cliente_id', $this->estado_cliente_id));
         }
 
         $query->orderBy('id', 'desc');
