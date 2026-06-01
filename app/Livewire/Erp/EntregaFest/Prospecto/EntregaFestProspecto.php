@@ -154,6 +154,7 @@ class EntregaFestProspecto extends Component
                 '',
                 '',
                 '',
+                '',
                 true
             ),
             'prospectos_todo_' . $this->evento->codigo . '.xlsx'
