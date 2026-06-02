@@ -271,7 +271,7 @@ class TicketLista extends Component
 
     public function exportExcelFiltro()
     {
-        $this->authorize('ticket.accion-exportar-filtro');
+        $this->authorize('ticket.exportar-filtro');
 
         return Excel::download(
             new TicketExport(
@@ -301,7 +301,7 @@ class TicketLista extends Component
 
     public function exportExcelTodo()
     {
-        $this->authorize('ticket.accion-exportar-todo');
+        $this->authorize('ticket.exportar-todo');
 
         return Excel::download(
             new TicketExport(
