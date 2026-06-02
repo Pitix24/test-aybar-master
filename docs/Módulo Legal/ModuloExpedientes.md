@@ -1,19 +1,16 @@
 # Plan: Módulo Expedientes (Sistema INDECOPI)
 
-## TL;DR
-
 Crear un módulo completo para gestionar Expedientes INDECOPI con recepción automática de correos, asignación de gestores, generación de Tickets Hijos desde plantillas, y notificaciones automáticas. Basado en la arquitectura de Libro_Reclamaciones pero más robusto.
 
 ---
 
-## FASES (5 bloques independientes para desarrollo paralelo)
+## FASES
 
 ### FASE 1: Base de Datos & Modelos ✅ (Parcialmente completada)
 
 1. Completar migration expedientes con campos:
 
 - `unidad_negocio_id` -> Razón Social (Empresa): Completado según el correo remitente.
-- `fecha_notificacion`-> Fecha de Notificación: Se coloca la fecha de llegada de la notificación
 - `codigo_expediente` -> Código de Expediente: “Ejem:447-2025/CC2”
 - `cuerpo` -> Cuerpo del correo con link incluidos
 - `gestor_id` -> Gestor encargado de la Gestión Interna del Expediente
@@ -22,6 +19,9 @@ Crear un módulo completo para gestionar Expedientes INDECOPI con recepción aut
 - `tipo_expediente_id`-> Expediente Nuevo o Notificación
 - `alerta` -> JSON + Auditoría
 - `ticket_id` -> Una vez generado el Expediente, este deberá generar un Ticket Asociado.
+- `fecha_notificacion`-> Fecha de Notificación: Se coloca la fecha de llegada de la notificación
+- timestamps: `created_at`, `updated_at`, `deleted_at`
+- auditoría: `created_by`, `updated_by`, `deleted_by`
 
 2. Crear Modelo `Expediente` con relaciones: `unidadNegocio()`, `gestor()`, `ticket()`
 
