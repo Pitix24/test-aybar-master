@@ -29,7 +29,7 @@
                                 <select wire:model.live="area_id" class="@error('area_id') input-error @enderror">
                                     <option value="">Seleccione...</option>
                                     @foreach($areas as $area)
-                                        <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                    <option value="{{ $area->id }}">{{ $area->nombre }}</option>
                                     @endforeach
                                 </select>
                                 @error('area_id') <span class="g_error">{{ $message }}</span> @enderror
@@ -43,7 +43,7 @@
                                     class="@error('tipo_solicitud_id') input-error @enderror">
                                     <option value="">Seleccione...</option>
                                     @foreach($tiposSolicitud as $ts)
-                                        <option value="{{ $ts->id }}">{{ $ts->nombre }}</option>
+                                    <option value="{{ $ts->id }}">{{ $ts->nombre }}</option>
                                     @endforeach
                                 </select>
                                 @error('tipo_solicitud_id') <span class="g_error">{{ $message }}</span> @enderror
@@ -53,7 +53,7 @@
                                 <select wire:model.live="sub_tipo_solicitud_id">
                                     <option value="">Seleccione...</option>
                                     @foreach($subTiposSolicitud as $sts)
-                                        <option value="{{ $sts->id }}">{{ $sts->nombre }}</option>
+                                    <option value="{{ $sts->id }}">{{ $sts->nombre }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -62,7 +62,7 @@
                                 <select wire:model="canal_id" class="@error('canal_id') input-error @enderror">
                                     <option value="">Seleccione...</option>
                                     @foreach($canales as $canal)
-                                        <option value="{{ $canal->id }}">{{ $canal->nombre }}</option>
+                                    <option value="{{ $canal->id }}">{{ $canal->nombre }}</option>
                                     @endforeach
                                 </select>
                                 @error('canal_id') <span class="g_error">{{ $message }}</span> @enderror
@@ -76,20 +76,26 @@
                                     class="@error('prioridad_ticket_id') input-error @enderror">
                                     <option value="">Seleccionar...</option>
                                     @foreach($prioridades as $pr)
-                                        <option value="{{ $pr->id }}">{{ $pr->nombre }}</option>
+                                    <option value="{{ $pr->id }}">{{ $pr->nombre }}</option>
                                     @endforeach
                                 </select>
                                 @error('prioridad_ticket_id') <span class="g_error">{{ $message }}</span> @enderror
                             </div>
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Gestor Origen*</label>
-                                <select wire:model="gestor_id" class="@error('gestor_id') input-error @enderror">
+                                <select wire:model="gestor_id" class="@error('gestor_id') input-error @enderror"
+                                    @if(count($gestoresDisponibles)===0) disabled @endif>
                                     <option value="">Seleccione...</option>
                                     @foreach($gestoresDisponibles as $gestor)
-                                        <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
+                                    <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('gestor_id') <span class="g_error">{{ $message }}</span> @enderror
+                                @if($area_id && count($gestoresDisponibles) === 0)
+                                <div class="g_margin_top_10 g_alerta warning">
+                                    No hay gestores disponibles para el área seleccionada.
+                                </div>
+                                @endif
                             </div>
                             <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Estado</label>
@@ -132,69 +138,69 @@
     <div class="g_fila">
         {{-- Lista de espera --}}
         @if(!empty($hijosParaCrear))
-            <div class="g_columna_12 g_margin_top_20">
-                <div class="g_panel">
-                    <h4 class="g_panel_titulo">Tickets por crear ({{ count($hijosParaCrear) }})</h4>
-                    <div class="g_contenedor_tabla">
-                        <table class="g_tabla">
-                            <thead>
-                                <tr>
-                                    <th>Asunto</th>
-                                    <th>Área Origen</th>
-                                    <th>Gestor Origen</th>
-                                    <th>Tipo / Subtipo</th>
-                                    <th>Área Destino</th>
-                                    <th>Gestor Destino</th>
-                                    <th class="g_celda_centro">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($hijosParaCrear as $index => $h)
-                                    <tr wire:key="hijo-prev-{{ $index }}">
-                                        <td class="g_negrita">{{ $h['asunto'] }}</td>
-                                        <td>
-                                            <span class="g_badge light">{{ $h['area_origen_nombre'] }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="text-muted small">{{ $h['gestor_origen_nombre'] }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="g_badge info tiny">{{ $h['tipo_solicitud_nombre'] }}</span>
-                                        </td>
-                                        <td>
-                                            <select wire:model.live="hijosParaCrear.{{ $index }}.area_id" class="small_select">
-                                                <option value="">Seleccione...</option>
-                                                @foreach($areas as $area)
-                                                    <option value="{{ $area->id }}">{{ $area->nombre }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select wire:model="hijosParaCrear.{{ $index }}.gestor_id" class="small_select">
-                                                <option value="">Seleccione...</option>
-                                                @foreach($this->getGestoresPorArea($h['area_id'], $h['tipo_solicitud_id']) as $gestor)
-                                                    <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td class="g_celda_centro">
-                                            <button wire:click="quitarDeLista({{ $index }})" class="g_boton danger">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+        <div class="g_columna_12 g_margin_top_20">
+            <div class="g_panel">
+                <h4 class="g_panel_titulo">Tickets por crear ({{ count($hijosParaCrear) }})</h4>
+                <div class="g_contenedor_tabla">
+                    <table class="g_tabla">
+                        <thead>
+                            <tr>
+                                <th>Asunto</th>
+                                <th>Área Origen</th>
+                                <th>Gestor Origen</th>
+                                <th>Tipo / Subtipo</th>
+                                <th>Área Destino</th>
+                                <th>Gestor Destino</th>
+                                <th class="g_celda_centro">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($hijosParaCrear as $index => $h)
+                            <tr wire:key="hijo-prev-{{ $index }}">
+                                <td class="g_negrita">{{ $h['asunto'] }}</td>
+                                <td>
+                                    <span class="g_badge light">{{ $h['area_origen_nombre'] }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted small">{{ $h['gestor_origen_nombre'] }}</span>
+                                </td>
+                                <td>
+                                    <span class="g_badge info tiny">{{ $h['tipo_solicitud_nombre'] }}</span>
+                                </td>
+                                <td>
+                                    <select wire:model.live="hijosParaCrear.{{ $index }}.area_id" class="small_select">
+                                        <option value="">Seleccione...</option>
+                                        @foreach($areas as $area)
+                                        <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <select wire:model="hijosParaCrear.{{ $index }}.gestor_id" class="small_select">
+                                        <option value="">Seleccione...</option>
+                                        @foreach($this->getGestoresPorArea($h['area_id'], $h['tipo_solicitud_id']) as $gestor)
+                                        <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="g_celda_centro">
+                                    <button wire:click="quitarDeLista({{ $index }})" class="g_boton danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="g_margin_top_20" style="display: flex; justify-content: flex-end;">
-                        <button type="button" wire:click="crearHijosMasivos" class="g_boton success big">
-                            CREAR HIJOS MASIVOS Y DERIVAR <i class="fa-solid fa-check-double"></i>
-                        </button>
-                    </div>
+                <div class="g_margin_top_20" style="display: flex; justify-content: flex-end;">
+                    <button type="button" wire:click="crearHijosMasivos" class="g_boton success big">
+                        CREAR HIJOS MASIVOS Y DERIVAR <i class="fa-solid fa-check-double"></i>
+                    </button>
                 </div>
             </div>
+        </div>
         @endif
     </div>
 </div>
