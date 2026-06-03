@@ -14,6 +14,7 @@ use App\Models\TipoSolicitud;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class TicketHijosMasivos extends Component
@@ -41,32 +42,101 @@ class TicketHijosMasivos extends Component
     public $prioridades = [];
     public $gestoresDisponibles = [];
 
+    protected function obtenerTiposSolicitudPorArea($areaId)
+    {
+        $area = Area::find($areaId);
+
+        if (!$area) {
+            return collect();
+        }
+
+        return $area->tiposSolicitud()
+            ->where('activo', true)
+            ->orderBy('nombre')
+            ->get();
+    }
+
+    protected function obtenerGestoresPorArea($areaId, $tipoSolicitudId = null)
+    {
+        $area = Area::find($areaId);
+
+        if (!$area) {
+            return collect();
+        }
+
+        $idsDeArea = $area->users()->where('activo', true)->pluck('users.id')->toArray();
+
+        if ($tipoSolicitudId && !empty($idsDeArea)) {
+            $idsDeTipoSolicitud = DB::table('tipo_solicitud_user')
+                ->where('tipo_solicitud_id', $tipoSolicitudId)
+                ->whereIn('user_id', $idsDeArea)
+                ->pluck('user_id')
+                ->toArray();
+
+            $idsFinales = !empty($idsDeTipoSolicitud) ? $idsDeTipoSolicitud : $idsDeArea;
+        } else {
+            $idsFinales = $idsDeArea;
+        }
+
+        return $area->users()
+            ->whereIn('users.id', $idsFinales)
+            ->where('activo', true)
+            ->withPivot('is_principal')
+            ->orderByDesc('area_user.is_principal')
+            ->orderBy('users.name')
+            ->get();
+    }
+
+    protected function resolverGestorPorDefecto($gestores)
+    {
+        $principal = $gestores->first(fn($usuario) => (bool) $usuario->pivot->is_principal);
+
+        return $principal?->id ?? $gestores->first()?->id;
+    }
+
+    protected function gestorPerteneceAArea($areaId, $gestorId, $tipoSolicitudId = null): bool
+    {
+        if (!$gestorId) {
+            return false;
+        }
+
+        return $this->obtenerGestoresPorArea($areaId, $tipoSolicitudId)
+            ->contains('id', (int) $gestorId);
+    }
+
     public function mount(Ticket $ticket)
     {
         $this->parentTicket = $ticket;
         $this->areas = Area::where('activo', true)->orderBy('nombre')->get();
-        $this->tiposSolicitud = TipoSolicitud::where('activo', true)->orderBy('nombre')->get();
         $this->canales = Canal::orderBy('nombre')->get();
         $this->prioridades = PrioridadTicket::orderBy('id')->get();
-        
+
         // Defaults desde el padre
         $this->area_id = (string)$this->parentTicket->area_id;
         $this->canal_id = (string)$this->parentTicket->canal_id;
         $this->prioridad_ticket_id = (string)$this->parentTicket->prioridad_ticket_id;
         $this->asunto = "HIJO: " . $this->parentTicket->asunto_inicial;
 
+        $this->tiposSolicitud = $this->obtenerTiposSolicitudPorArea($this->area_id);
+
         $this->cargarGestores();
-        $this->gestor_id = (string)$this->parentTicket->gestor_id;
+        $this->gestor_id = (string) ($this->resolverGestorPorDefecto($this->gestoresDisponibles) ?? '');
     }
 
     public function updatedAreaId($value)
     {
+        $this->tiposSolicitud = $this->obtenerTiposSolicitudPorArea($value);
+        $this->tipo_solicitud_id = '';
+        $this->subTiposSolicitud = [];
+        $this->sub_tipo_solicitud_id = '';
         $this->cargarGestores();
     }
 
     public function updatedTipoSolicitudId($value)
     {
-        $this->subTiposSolicitud = SubTipoSolicitud::where('tipo_solicitud_id', $value)->get();
+        $this->subTiposSolicitud = $value
+            ? SubTipoSolicitud::where('tipo_solicitud_id', $value)->where('activo', true)->orderBy('nombre')->get()
+            : [];
         $this->sub_tipo_solicitud_id = '';
         $this->cargarGestores();
     }
@@ -78,41 +148,11 @@ class TicketHijosMasivos extends Component
 
         if (!$this->area_id) return;
 
-        $area = Area::find($this->area_id);
-        if (!$area) return;
+        $this->tiposSolicitud = $this->obtenerTiposSolicitudPorArea($this->area_id);
+        $this->gestoresDisponibles = $this->obtenerGestoresPorArea($this->area_id, $this->tipo_solicitud_id);
 
-        $idsDeArea = $area->users()->where('activo', true)->pluck('users.id')->toArray();
-
-        // Si hay tipo solicitud, filtrar por ella también
-        if ($this->tipo_solicitud_id && !empty($idsDeArea)) {
-            $idsDeTipoSolicitud = DB::table('tipo_solicitud_user')
-                ->where('tipo_solicitud_id', $this->tipo_solicitud_id)
-                ->whereIn('user_id', $idsDeArea)
-                ->pluck('user_id')
-                ->toArray();
-            
-            $idsFinales = !empty($idsDeTipoSolicitud) ? $idsDeTipoSolicitud : $idsDeArea;
-        } else {
-            $idsFinales = $idsDeArea;
-        }
-
-        $this->gestoresDisponibles = User::whereIn('id', $idsFinales)
-            ->where('activo', true)
-            ->orderBy('name')
-            ->get();
-
-        // Preselección de gestor principal si hay
-        if ($this->tipo_solicitud_id) {
-             $principal = DB::table('tipo_solicitud_user')
-                ->where('tipo_solicitud_id', $this->tipo_solicitud_id)
-                ->where('is_principal', true)
-                ->whereIn('user_id', $idsFinales)
-                ->value('user_id');
-             if ($principal) $this->gestor_id = $principal;
-        }
-
-        if (!$this->gestor_id && $this->gestoresDisponibles->count() > 0) {
-            $this->gestor_id = $this->gestoresDisponibles->first()->id;
+        if (collect($this->gestoresDisponibles)->count() > 0) {
+            $this->gestor_id = $this->resolverGestorPorDefecto($this->gestoresDisponibles) ?? '';
         }
     }
 
@@ -152,7 +192,7 @@ class TicketHijosMasivos extends Component
         ];
 
         $this->reset(['asunto', 'descripcion', 'sub_tipo_solicitud_id', 'tipo_solicitud_id']);
-        
+
         // Restaurar los defaults del padre para agilizar la carga del siguiente
         $this->area_id = (string)$this->parentTicket->area_id;
         $this->prioridad_ticket_id = (string)$this->parentTicket->prioridad_ticket_id;
@@ -160,7 +200,7 @@ class TicketHijosMasivos extends Component
         $this->asunto = "HIJO: " . $this->parentTicket->asunto_inicial;
 
         $this->cargarGestores();
-        $this->gestor_id = (string)$this->parentTicket->gestor_id;
+        $this->gestor_id = (string) ($this->resolverGestorPorDefecto($this->gestoresDisponibles) ?? '');
     }
 
     public function updated($name, $value)
@@ -223,12 +263,29 @@ class TicketHijosMasivos extends Component
             return;
         }
 
+        foreach ($this->hijosParaCrear as $index => $h) {
+            if (!$this->gestorPerteneceAArea($h['area_id'], $h['gestor_id'], $h['tipo_solicitud_id'])) {
+                $this->addError("hijosParaCrear.$index.gestor_id", 'El gestor debe pertenecer al área seleccionada.');
+                $this->dispatch('alertaLivewire', [
+                    'type' => 'warning',
+                    'title' => 'Advertencia',
+                    'text' => 'Hay un ticket hijo con un gestor que no pertenece al área seleccionada.'
+                ]);
+                return;
+            }
+        }
+
         try {
             DB::beginTransaction();
 
             $estadoDerivadoId = EstadoTicket::id(EstadoTicket::DERIVADO);
 
             foreach ($this->hijosParaCrear as $h) {
+                $gestorDestinoId = $h['gestor_id'];
+                if (!$this->gestorPerteneceAArea($h['area_id'], $gestorDestinoId, $h['tipo_solicitud_id'])) {
+                    $gestorDestinoId = $this->resolverGestorPorDefecto($this->obtenerGestoresPorArea($h['area_id'], $h['tipo_solicitud_id']));
+                }
+
                 $ticketHijo = Ticket::create([
                     'id_empresa' => $this->parentTicket->id_empresa,
                     'unidad_negocio_id' => $this->parentTicket->unidad_negocio_id,
@@ -240,19 +297,19 @@ class TicketHijosMasivos extends Component
                     'celular' => $this->parentTicket->celular,
                     'direccion' => $this->parentTicket->direccion,
                     'atencion_id' => $this->parentTicket->atencion_id,
-                    
+
                     'ticket_padre_id' => $this->parentTicket->id,
-                    
+
                     'area_id' => $h['area_id'],
                     'tipo_solicitud_id' => $h['tipo_solicitud_id'],
                     'sub_tipo_solicitud_id' => $h['sub_tipo_solicitud_id'],
                     'canal_id' => $h['canal_id'],
                     'prioridad_ticket_id' => $h['prioridad_ticket_id'],
-                    'gestor_id' => $h['gestor_id'],
+                    'gestor_id' => $gestorDestinoId,
                     'asunto_inicial' => $h['asunto'],
                     'descripcion_inicial' => $h['descripcion'],
                     'estado_ticket_id' => $estadoDerivadoId,
-                    'created_by' => auth()->id(),
+                    'created_by' => Auth::id(),
                     'lotes' => $this->parentTicket->lotes,
                     'origen' => $this->parentTicket->origen,
                 ]);
@@ -261,21 +318,21 @@ class TicketHijosMasivos extends Component
                 TicketDerivado::create([
                     'ticket_id' => $ticketHijo->id,
                     'de_area_id' => $h['area_origen_id'],
-                    'a_area_id' => $h['area_id'],
-                    'usuario_deriva_id' => auth()->id(),
-                    'usuario_recibe_id' => $h['gestor_id'],
+                    'a_area_id' => $ticketHijo->area_id,
+                    'usuario_deriva_id' => Auth::id(),
+                    'usuario_recibe_id' => $ticketHijo->gestor_id,
                     'motivo' => "Derivación automática en creación masiva de hijo.",
                 ]);
 
                 // Registrar participantes
                 $ticketHijo->usuariosParticipantes()->syncWithoutDetaching([
-                    auth()->id(),
-                    (int) $h['gestor_id']
+                    Auth::id(),
+                    (int) $ticketHijo->gestor_id
                 ]);
 
                 TicketHistorial::create([
                     'ticket_id' => $ticketHijo->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::id(),
                     'accion' => 'Creación y Derivación',
                     'detalle' => "Ticket creado como hijo masivo. Derivado de {$h['area_origen_nombre']} por cuenta del gestor {$h['gestor_origen_nombre']}.",
                 ]);
@@ -283,7 +340,7 @@ class TicketHijosMasivos extends Component
 
             TicketHistorial::create([
                 'ticket_id' => $this->parentTicket->id,
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'accion' => 'Hijos Masivos',
                 'detalle' => "Se crearon " . count($this->hijosParaCrear) . " tickets hijos asociados.",
             ]);
