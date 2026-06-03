@@ -34,7 +34,7 @@
                 Crear cita <i class="fa-solid fa-calendar-days"></i></a>
             @endcan
 
-            @can('ticket.accion-eliminar')
+            @can('ticket.vista-eliminar')
             <button type="button" class="g_boton danger" onclick="alertaEliminarTicket()">
                 Eliminar <i class="fa-solid fa-trash-can"></i>
             </button>
