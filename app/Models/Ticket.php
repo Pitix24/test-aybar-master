@@ -244,6 +244,7 @@ class Ticket extends Model
         static::deleting(function ($ticket) {
             if (Auth::check()) {
                 $ticket->deleted_by = Auth::id();
+                $ticket->estado_ticket_id = 7;
                 $ticket->saveQuietly();
             }
         });
