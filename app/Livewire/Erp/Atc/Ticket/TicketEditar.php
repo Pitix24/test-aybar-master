@@ -29,22 +29,10 @@ class TicketEditar extends Component
     public $estado_ticket_id;
     public $asunto_respuesta;
     public $descripcion_respuesta;
-
     public $modalHijosMasivos = false;
 
     // Catálogos y datos para UI
     public $mapEstados = [];
-
-    protected function resolverAreaPrincipalDelGestor(?int $gestorId): ?int
-    {
-        if (!$gestorId) {
-            return null;
-        }
-
-        $gestor = User::find($gestorId);
-
-        return $gestor?->areaPrincipalId();
-    }
 
     protected function rules()
     {
@@ -66,7 +54,6 @@ class TicketEditar extends Component
         $this->estado_ticket_id = $this->ticket->estado_ticket_id;
         $this->asunto_respuesta = $this->ticket->asunto_respuesta;
         $this->descripcion_respuesta = $this->ticket->descripcion_respuesta;
-
         $this->mapEstados = EstadoTicket::pluck('nombre', 'id')->toArray();
     }
 
@@ -91,7 +78,6 @@ class TicketEditar extends Component
             $this->validate();
         } catch (ValidationException $e) {
             $errors = $e->validator->errors()->getMessages();
-
             // Enviar alerta al frontend
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
@@ -110,7 +96,7 @@ class TicketEditar extends Component
                 'usuario_id' => Auth::id(),
                 'errors' => $errors,
             ]);
-
+            
             return; // detener ejecución
         }
 
@@ -120,12 +106,6 @@ class TicketEditar extends Component
             $old = $this->ticket->fresh();
             $cambios = [];
             $areaTicket = $old->area_id;
-            $areaPrincipalGestor = $this->resolverAreaPrincipalDelGestor($old->gestor_id);
-
-            if ($areaPrincipalGestor && $areaPrincipalGestor !== $areaTicket) {
-                $cambios[] = 'Área normalizada para coincidir con el gestor asignado';
-                $areaTicket = $areaPrincipalGestor;
-            }
 
             if ($this->estado_ticket_id != $old->estado_ticket_id) {
                 $viejo = $this->mapEstados[$old->estado_ticket_id] ?? 'N/A';

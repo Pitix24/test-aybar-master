@@ -66,13 +66,6 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    public function areaPrincipalId(): ?int
-    {
-        return $this->areas()
-            ->orderByDesc('area_user.is_principal')
-            ->value('areas.id');
-    }
-
     /**
      * Get the address associated with the user.
      */
