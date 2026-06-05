@@ -171,10 +171,11 @@
                             class="@error('descripcion_inicial') input-error @enderror"></textarea>
                         @error('descripcion_inicial') <p class="mensaje_error">{{ $message }}</p> @enderror
                     </div>
-
                     @if (!empty($lotes_agregados))
                     <div class="g_margin_bottom_10">
-                        <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+                        <h4 class="g_panel_titulo">
+                            <i class="fa-solid fa-layer-group"></i> Lotes vinculados
+                        </h4>
 
                         <div class="g_contenedor_tabla">
                             <table class="g_tabla">
@@ -183,28 +184,41 @@
                                         <th>Razón Social</th>
                                         <th>Proyecto</th>
                                         <th>Mz./Lt.</th>
-                                        <th class="g_celda_centro">Acciones</th>
+                                        <th class="g_text_center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($lotes_agregados as $index => $l)
-                                    <tr wire:key="lote-{{ $index }}">
-                                        <td>{{ $l['razon_social'] }}</td>
-                                        <td>{{ $l['proyecto'] }}</td>
-                                        <td>{{ $l['numero_lote'] }}</td>
-                                        <td class="g_celda_acciones g_celda_centro">
-                                            @if (!$ticket_padre_id)
-                                            <button type="button" wire:click="quitarLote('{{ $l['id'] }}')"
-                                                class="g_boton danger" title="Quitar">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                            @endif
-                                        </td>
-                                    </tr>
+                                    @foreach ($lotes_agregados as $index => $lote)
+                                        <tr wire:key="lote-agregado-{{ $lote['id'] }}">
+                                            <td>{{ $lote['razon_social'] }}</td>
+                                            <td>{{ $lote['proyecto'] }}</td>
+                                            <td>{{ $lote['numero_lote'] }}</td>
+                                            <td class="g_text_center">
+                                                <button type="button"
+                                                        wire:click="quitarLote({{ $lote['id'] }})"
+                                                        class="g_boton danger g_boton_pequeno"
+                                                        wire:loading.attr="disabled"
+                                                        title="Quitar lote">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
+
+                        @error('lotes_agregados')
+                            <p class="mensaje_error">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    @else
+                    <div class="g_margin_bottom_10">
+                        @error('lotes_agregados')
+                            <div class="g_alerta danger">
+                                <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     @endif
                 </div>
