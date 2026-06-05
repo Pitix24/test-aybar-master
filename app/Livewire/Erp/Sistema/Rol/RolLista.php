@@ -6,7 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
-use Spatie\Permission\Models\Role;
+use App\Models\Rol;
 use Livewire\Attributes\Lazy;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Sistema\RolesExport;
@@ -85,8 +85,9 @@ class RolLista extends Component
 
     public function render()
     {
-        $items = Role::query()
+        $items = Rol::query()
             ->withCount('permissions')
+            ->with('superior')
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', "%{$this->buscar}%");
