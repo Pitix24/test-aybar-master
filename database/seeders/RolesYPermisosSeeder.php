@@ -31,6 +31,7 @@ class RolesYPermisosSeeder extends Seeder
                 'rol.crear', //ok
                 'rol.editar', //ok
                 'rol.eliminar', //ok
+                'rol.jerarquia', //ok
                 'rol.exportar-filtro', //ok
                 'rol.exportar-todo', //ok
                 /* PERMISOS */
