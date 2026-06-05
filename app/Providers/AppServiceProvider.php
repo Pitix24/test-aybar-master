@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Auth\ActiveEloquentUserProvider;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -16,7 +18,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        Auth::provider('active-eloquent', function ($app, array $config) {
+            return new ActiveEloquentUserProvider($app['hash'], $config['model']);
+        });
     }
 
     /**

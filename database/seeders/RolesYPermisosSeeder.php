@@ -31,6 +31,7 @@ class RolesYPermisosSeeder extends Seeder
                 'rol.crear', //ok
                 'rol.editar', //ok
                 'rol.eliminar', //ok
+                'rol.jerarquia', //ok
                 'rol.exportar-filtro', //ok
                 'rol.exportar-todo', //ok
                 /* PERMISOS */
@@ -184,22 +185,33 @@ class RolesYPermisosSeeder extends Seeder
                 'canal.exportar-todo', //ok
                 'ticket.navegacion', //ok
                 'ticket.lista', //ok
+                'ticket.vista-lista', //ok
                 'ticket.gestor', //ok
                 'ticket.ver', //ok
+                'ticket.accion-ver', //ok
+                'ticket.vista-ver', //ok
                 'ticket.crear', //ok
                 'ticket.accion-crear', //ok
+                'ticket.vista-crear', //ok
                 'ticket.editar', //ok
                 'ticket.accion-editar', //ok
+                'ticket.vista-editar', //ok
                 'ticket.eliminar', //ok
                 'ticket.accion-eliminar', //ok
+                'ticket.vista-eliminar', //ok
+                'ticket.accion-exportar-filtro', //ok
                 'ticket.exportar-filtro', //ok
+                'ticket.accion-exportar-todo', //ok
                 'ticket.exportar-todo', //ok
                 'ticket.derivar', //ok
+                'ticket.vista-derivar', //ok
                 'ticket.agregar-archivo', //ok
                 'ticket.eliminar-archivo', //ok
                 'ticket.ver-archivo', //ok
                 'ticket.enviar-correo', //ok
+                'ticket.vista-crear-cita', //ok
                 'ticket.chat', //ok
+                'ticket.vista-chat', //ok
             ],
             'Módulo Cita' => [ //ok
                 'modulo-cita.ver', //ok

@@ -4,12 +4,16 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\FailedPasswordResetLinkRequestResponse;
 use Laravel\Fortify\Contracts\VerifyEmailResponse;
 use Laravel\Fortify\Fortify;
 
@@ -20,6 +24,22 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->input('email'))->first();
+
+            if (! $user) {
+                return null;
+            }
+
+            if (! $user->activo) {
+                throw ValidationException::withMessages([
+                    'email' => 'Las cuentas desactivadas no pueden iniciar sesión ni solicitar recuperación de contraseña.',
+                ]);
+            }
+
+            return Hash::check($request->input('password'), $user->password) ? $user : null;
+        });
+
         // Redirección personalizada después de login
         $this->app->singleton(LoginResponse::class, function () {
             return new class implements LoginResponse {
@@ -50,6 +70,24 @@ class FortifyServiceProvider extends ServiceProvider
                     }
 
                     return '/';
+                }
+            };
+        });
+
+        $this->app->singleton(FailedPasswordResetLinkRequestResponse::class, function () {
+            return new class implements FailedPasswordResetLinkRequestResponse {
+                public function toResponse($request)
+                {
+                    $email = $request->input('email');
+                    $user = User::where('email', $email)->first();
+
+                    $message = $user && ! $user->activo
+                        ? 'Las cuentas desactivadas no pueden iniciar sesión ni solicitar recuperación de contraseña.'
+                        : trans('passwords.user');
+
+                    return back()
+                        ->withInput($request->only('email'))
+                        ->withErrors(['email' => $message]);
                 }
             };
         });

@@ -5,21 +5,21 @@
 
         <div class="cabecera_titulo_botones">
             @can('rol.lista')
-                <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton light">
-                    Lista <i class="fa-solid fa-list"></i></a>
+            <a href="{{ route('erp.rol.vista.todo') }}" class="g_boton light">
+                Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
             @can('rol.crear')
-                <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton primary">
-                    Crear <i class="fa-solid fa-square-plus"></i></a>
+            <a href="{{ route('erp.rol.vista.crear') }}" class="g_boton primary">
+                Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
             @if($role->name !== 'super-admin')
-                @can('rol.eliminar')
-                    <button type="button" class="g_boton danger" onclick="alertaEliminarRol()">
-                        Eliminar <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                @endcan
+            @can('rol.eliminar')
+            <button type="button" class="g_boton danger" onclick="alertaEliminarRol()">
+                Eliminar <i class="fa-solid fa-trash-can"></i>
+            </button>
+            @endcan
             @endif
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -40,10 +40,41 @@
                         <input type="text" id="name" wire:model.blur="name" class="@error('name') input-error @enderror"
                             autocomplete="off">
                         @error('name')
-                            <p class="mensaje_error">{{ $message }}</p>
+                        <p class="mensaje_error">{{ $message }}</p>
                         @enderror
                         <p class="leyenda">Ej: supervisor-backoffice.</p>
                     </div>
+
+                    <div class="g_fila">
+                        <div class="g_columna_6 g_margin_bottom_10">
+                            <label for="area_id">Área</label>
+                            <select id="area_id" wire:model.live="area_id" class="@error('area_id') input-error @enderror">
+                                <option value="">Sin área</option>
+                                @foreach($areas as $area)
+                                <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                @endforeach
+                            </select>
+                            @error('area_id')
+                            <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                            <p class="leyenda">Selecciona un área para filtrar los roles disponibles.</p>
+                        </div>
+
+                        <div class="g_columna_6 g_margin_bottom_10">
+                            <label for="upper_id">Rol Superior</label>
+                            <select id="upper_id" wire:model="upper_id" class="@error('upper_id') input-error @enderror">
+                                <option value="">Sin superior (Rol Raíz)</option>
+                                @foreach($rolesDisponibles as $r)
+                                <option value="{{ $r->id }}">{{ $r->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('upper_id')
+                            <p class="mensaje_error">{{ $message }}</p>
+                            @enderror
+                            <p class="leyenda">Selecciona un rol superior directo. Si no tiene superior, déjalo vacío.</p>
+                        </div>
+                    </div>
+
 
                     <div class="g_margin_bottom_10">
                         <label>
@@ -53,70 +84,74 @@
                         <div class="g_cajas_input" x-data="{ moduloAbierto: null }">
                             <div class="g_grid_modulos">
                                 @foreach($allPermissions as $module => $permissionsGroup)
-                                    @php
-                                        $permisosAsignadosEnModulo = $permissionsGroup->filter(function ($permission) {
-                                            return in_array($permission->name, $this->permissions);
-                                        });
-                                    @endphp
-                                    <div class="modulo_acordeon" :class="{ 'abierto': moduloAbierto === '{{ $module }}' }">
-                                        <div class="modulo_cabecera"
-                                            @click="moduloAbierto = (moduloAbierto === '{{ $module }}' ? null : '{{ $module }}')">
-                                            <h5>
-                                                <i class="fa-solid fa-folder-open"></i> {{ $module }}
-                                                <small class="g_badge info">
-                                                    {{ $permisosAsignadosEnModulo->count() }} /
-                                                    {{ $permissionsGroup->count() }}
-                                                    permisos
-                                                </small>
-                                            </h5>
-                                            <i class="fa-solid fa-chevron-down chevron"></i>
-                                        </div>
+                                @php
+                                $permisosAsignadosEnModulo = $permissionsGroup->filter(function ($permission) {
+                                return in_array($permission->name, $this->permissions);
+                                });
+                                @endphp
+                                <div class="modulo_acordeon" :class="{ 'abierto': moduloAbierto === '{{ $module }}' }">
+                                    <div class="modulo_cabecera"
+                                        @click="moduloAbierto = (moduloAbierto === '{{ $module }}' ? null : '{{ $module }}')">
+                                        <h5>
+                                            <i class="fa-solid fa-folder-open"></i> {{ $module }}
+                                            <small class="g_badge info">
+                                                {{ $permisosAsignadosEnModulo->count() }} /
+                                                {{ $permissionsGroup->count() }}
+                                                permisos
+                                            </small>
+                                        </h5>
+                                        <i class="fa-solid fa-chevron-down chevron"></i>
+                                    </div>
 
-                                        <div class="modulo_contenido">
-                                            <div class="recursos_grid">
-                                                @php
-                                                    $recursos = $permissionsGroup->groupBy(fn($p) => explode('.', $p->name)[0]);
-                                                @endphp
+                                    <div class="modulo_contenido">
+                                        <div class="recursos_grid">
+                                            @php
+                                            $recursos = $permissionsGroup->groupBy(fn($p) => explode('.', $p->name)[0]);
+                                            @endphp
 
-                                                @foreach($recursos as $recurso => $items)
-                                                    <div class="recurso_grupo">
-                                                        <div class="recurso_titulo">
-                                                            {{ str_replace('-', ' ', $recurso) }}
-                                                        </div>
-                                                        <div class="permisos_lista">
-                                                            @foreach($items as $permission)
-                                                                <div class="permiso_item">
-                                                                    <input type="checkbox" id="perm_{{ $permission->id }}"
-                                                                        value="{{ $permission->name }}" wire:model="permissions">
-                                                                    <label for="perm_{{ $permission->id }}">
-                                                                        {{ explode('.', $permission->name)[1] ?? $permission->name }}
-                                                                    </label>
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
+                                            @foreach($recursos as $recurso => $items)
+                                            <div class="recurso_grupo">
+                                                <div class="recurso_titulo">
+                                                    {{ str_replace('-', ' ', $recurso) }}
+                                                </div>
+                                                <div class="permisos_lista">
+                                                    @foreach($items as $permission)
+                                                    <div class="permiso_item">
+                                                        <input type="checkbox" id="perm_{{ $permission->id }}"
+                                                            value="{{ $permission->name }}" wire:model="permissions">
+                                                        <label for="perm_{{ $permission->id }}">
+                                                            {{ explode('.', $permission->name)[1] ?? $permission->name
+                                                            }}
+                                                        </label>
                                                     </div>
-                                                @endforeach
+                                                    @endforeach
+                                                </div>
                                             </div>
+                                            @endforeach
                                         </div>
                                     </div>
+                                </div>
                                 @endforeach
                             </div>
                         </div>
                         @error('permissions')
-                            <p class="mensaje_error">{{ $message }}</p>
+                        <p class="mensaje_error">{{ $message }}</p>
                         @enderror
                     </div>
 
+                    <p class="leyenda">Estos campos habilitan la herencia de permisos por nivel dentro del área
+                        seleccionada.</p>
+
                     <div class="formulario_botones">
                         @can('rol.editar')
-                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
-                                <span wire:loading.remove wire:target="update">
-                                    <i class="fa-solid fa-save"></i> Actualizar
-                                </span>
-                                <span wire:loading wire:target="update">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
-                                </span>
-                            </button>
+                        <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
+                            <span wire:loading.remove wire:target="update">
+                                <i class="fa-solid fa-save"></i> Actualizar
+                            </span>
+                            <span wire:loading wire:target="update">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+                            </span>
+                        </button>
                         @endcan
 
                         <button type="button" class="g_boton cancelar" onclick="history.back()">

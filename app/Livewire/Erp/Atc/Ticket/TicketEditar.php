@@ -8,6 +8,7 @@ use App\Models\EstadoTicket;
 use App\Models\TicketHistorial;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -28,7 +29,6 @@ class TicketEditar extends Component
     public $estado_ticket_id;
     public $asunto_respuesta;
     public $descripcion_respuesta;
-
     public $modalHijosMasivos = false;
 
     // Catálogos y datos para UI
@@ -54,7 +54,6 @@ class TicketEditar extends Component
         $this->estado_ticket_id = $this->ticket->estado_ticket_id;
         $this->asunto_respuesta = $this->ticket->asunto_respuesta;
         $this->descripcion_respuesta = $this->ticket->descripcion_respuesta;
-
         $this->mapEstados = EstadoTicket::pluck('nombre', 'id')->toArray();
     }
 
@@ -79,7 +78,6 @@ class TicketEditar extends Component
             $this->validate();
         } catch (ValidationException $e) {
             $errors = $e->validator->errors()->getMessages();
-
             // Enviar alerta al frontend
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
@@ -95,10 +93,10 @@ class TicketEditar extends Component
             // Registrar para diagnóstico en logs de ticket
             Log::channel('ticket')->warning('[TICKET] Validación fallida en edición', [
                 'ticket_id' => $this->ticket->id ?? null,
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'errors' => $errors,
             ]);
-
+            
             return; // detener ejecución
         }
 
@@ -107,6 +105,7 @@ class TicketEditar extends Component
 
             $old = $this->ticket->fresh();
             $cambios = [];
+            $areaTicket = $old->area_id;
 
             if ($this->estado_ticket_id != $old->estado_ticket_id) {
                 $viejo = $this->mapEstados[$old->estado_ticket_id] ?? 'N/A';
@@ -131,21 +130,22 @@ class TicketEditar extends Component
             }
 
             $this->ticket->update([
+                'area_id' => $areaTicket,
                 'email' => $this->email,
                 'celular' => $this->celular,
                 'estado_ticket_id' => $this->estado_ticket_id,
                 'asunto_respuesta' => $this->asunto_respuesta,
                 'descripcion_respuesta' => $this->descripcion_respuesta,
-                'updated_by' => auth()->id(),
+                'updated_by' => Auth::id(),
             ]);
 
             // Registrar al usuario que edita como participante
-            $this->ticket->usuariosParticipantes()->syncWithoutDetaching([auth()->id()]);
+            $this->ticket->usuariosParticipantes()->syncWithoutDetaching([Auth::id()]);
 
             if (!empty($cambios)) {
                 TicketHistorial::create([
                     'ticket_id' => $this->ticket->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::id(),
                     'accion' => 'Edición',
                     'detalle' => implode(" | ", $cambios),
                 ]);
@@ -161,7 +161,7 @@ class TicketEditar extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('ticket')->error('[TICKET] Error en Edición: ' . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'ticket_id' => $this->ticket->id,
                 'trace' => $e->getTraceAsString()
             ]);
@@ -194,7 +194,7 @@ class TicketEditar extends Component
             return redirect()->route('erp.ticket.vista.todo');
         } catch (\Exception $e) {
             Log::channel('ticket')->error('[TICKET] Error en Eliminación: ' . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'ticket_id' => $this->ticket->id,
                 'trace' => $e->getTraceAsString()
             ]);

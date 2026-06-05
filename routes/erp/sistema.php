@@ -8,6 +8,7 @@ use App\Livewire\Erp\Sistema\Rol\RolCrear;
 use App\Livewire\Erp\Sistema\Rol\RolEditar;
 use App\Livewire\Erp\Sistema\Rol\RolLista;
 use App\Livewire\Erp\Sistema\Rol\RolVer;
+use App\Livewire\Erp\Sistema\Rol\RolJerarquia;
 use App\Livewire\Erp\Sistema\Menu\MenuCrear;
 use App\Livewire\Erp\Sistema\Menu\MenuEditar;
 use App\Livewire\Erp\Sistema\Menu\MenuLista;
@@ -20,6 +21,7 @@ Route::group(['middleware' => ['permission:modulo-sistema.ver']], function () {
             Route::get('/', RolLista::class)->middleware('permission:rol.lista')->name('todo');
             Route::get('/ver/{id}', RolVer::class)->middleware('permission:rol.ver')->name('ver');
             Route::get('/crear', RolCrear::class)->middleware('permission:rol.crear')->name('crear');
+            Route::get('/jerarquia', RolJerarquia::class)->middleware('permission:rol.jerarquia')->name('jerarquia');
             Route::get('/editar/{id}', RolEditar::class)->middleware('permission:rol.editar')->name('editar');
         });
     });
