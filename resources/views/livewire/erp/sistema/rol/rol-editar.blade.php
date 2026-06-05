@@ -45,7 +45,7 @@
                         <p class="leyenda">Ej: supervisor-backoffice.</p>
                     </div>
 
-                                        <div class="g_fila">
+                    <div class="g_fila">
                         <div class="g_columna_6 g_margin_bottom_10">
                             <label for="area_id">Área</label>
                             <select id="area_id" wire:model.live="area_id" class="@error('area_id') input-error @enderror">
