@@ -185,19 +185,33 @@ class RolesYPermisosSeeder extends Seeder
                 'canal.exportar-todo', //ok
                 'ticket.navegacion', //ok
                 'ticket.lista', //ok
+                'ticket.vista-lista', //ok
                 'ticket.gestor', //ok
                 'ticket.ver', //ok
+                'ticket.accion-ver', //ok
+                'ticket.vista-ver', //ok
                 'ticket.crear', //ok
+                'ticket.accion-crear', //ok
+                'ticket.vista-crear', //ok
                 'ticket.editar', //ok
+                'ticket.accion-editar', //ok
+                'ticket.vista-editar', //ok
                 'ticket.eliminar', //ok
+                'ticket.accion-eliminar', //ok
+                'ticket.vista-eliminar', //ok
+                'ticket.accion-exportar-filtro', //ok
                 'ticket.exportar-filtro', //ok
+                'ticket.accion-exportar-todo', //ok
                 'ticket.exportar-todo', //ok
                 'ticket.derivar', //ok
+                'ticket.vista-derivar', //ok
                 'ticket.agregar-archivo', //ok
                 'ticket.eliminar-archivo', //ok
                 'ticket.ver-archivo', //ok
                 'ticket.enviar-correo', //ok
+                'ticket.vista-crear-cita', //ok
                 'ticket.chat', //ok
+                'ticket.vista-chat', //ok
             ],
             'Módulo Cita' => [ //ok
                 'modulo-cita.ver', //ok
@@ -307,6 +321,16 @@ class RolesYPermisosSeeder extends Seeder
                 'libro-reclamacion.ver', //ok
                 'libro-reclamacion.editar', //ok
                 'libro-reclamacion.eliminar', //ok
+                /* CARTAS NOTARIALES */
+                'ticket-notarial.navegacion', //ok
+                'ticket-notarial.lista', //ok
+                'ticket-notarial.crear', //ok
+                'ticket-notarial.accion-crear', //ok
+                'ticket-notarial.ver', //ok
+                'ticket-notarial.editar', //ok
+                'ticket-notarial.accion-editar', //ok
+                'ticket-notarial.accion-exportar-filtro', //ok
+                'ticket-notarial.accion-exportar-todo', //ok
             ],
             'Módulo Marketing' => [
                 'modulo-marketing.ver', //ok
@@ -350,6 +374,7 @@ class RolesYPermisosSeeder extends Seeder
                 'prospecto.crear',
                 'prospecto.editar',
                 'prospecto.eliminar',
+                'contrato-preliminar.eliminar',
                 'prospecto.exportar-filtro',
                 'prospecto.exportar-todo',
                 /* INVITADO */
@@ -613,6 +638,7 @@ class RolesYPermisosSeeder extends Seeder
         $supervisor_legal = Role::findByName('supervisor-legal');
         $supervisor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
         $supervisor_legal->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
+        $supervisor_legal->givePermissionTo('contrato-preliminar.eliminar');
         $this->command->info("✓ Supervisor Legal: Configurado");
 
         $asesor_legal = Role::findByName('asesor-legal');

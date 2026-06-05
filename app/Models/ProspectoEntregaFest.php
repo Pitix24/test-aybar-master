@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -86,6 +87,8 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'entrega_fest_id',
         'proyecto_id',
         'user_id',
+        'created_by',
+        'updated_by',
         'dni',
         'nombres',
         'email',
@@ -137,6 +140,26 @@ class ProspectoEntregaFest extends Model implements HasMedia
         return $this->belongsTo(EntregaFest::class);
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $prospecto): void {
+            $userId = Auth::id();
+
+            if ($userId) {
+                $prospecto->created_by = $prospecto->created_by ?: $userId;
+                $prospecto->updated_by = $userId;
+            }
+        });
+
+        static::updating(function (self $prospecto): void {
+            $userId = Auth::id();
+
+            if ($userId) {
+                $prospecto->updated_by = $userId;
+            }
+        });
+    }
+
     public function proyecto()
     {
         return $this->belongsTo(Proyecto::class);
@@ -170,6 +193,16 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function creador()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function actualizador()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     public function gestor()

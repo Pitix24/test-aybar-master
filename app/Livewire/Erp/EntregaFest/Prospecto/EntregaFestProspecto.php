@@ -121,9 +121,14 @@ class EntregaFestProspecto extends Component
                 $this->buscar,
                 $this->proyecto_id,
                 $this->estado_backoffice,
+                $this->estado_gestor_backoffice,
                 $this->estado_contrato_preeliminar_emitido,
                 $this->estado_firma_contrato_firmado,
                 $this->grupo,
+                $this->filtro_confirmacion,
+                $this->filtro_invitacion,
+                $this->gestor_id,
+                $this->estado_cliente_id,
                 false,
                 $this->perPage,
                 $this->getPage()
@@ -139,6 +144,11 @@ class EntregaFestProspecto extends Component
         return Excel::download(
             new EntregaFestProspectoExport(
                 $this->evento->id,
+                '',
+                '',
+                '',
+                '',
+                '',
                 '',
                 '',
                 '',

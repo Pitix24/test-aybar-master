@@ -5,6 +5,7 @@ namespace App\Livewire\Erp\EntregaFest\Prospecto;
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
 use App\Events\EntregaFest\EntregaFestCitaRecordatorio;
 use App\Events\EntregaFest\EntregaFestContratoPreliminar;
+use App\Models\AuditoriaProspectoContrato;
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\InvitadoEnvioEntregaFest;
@@ -365,14 +366,58 @@ class EntregaFestProspectoEditar extends Component
     // PROSPECTO — helpers de actualización
     // ════════════════════════════════════════════════════════════════════
 
+    private function registrarAuditoriaContrato(string $accion, ?array $mediaData = null, array $payload = []): void
+    {
+        try {
+            AuditoriaProspectoContrato::create([
+                'prospecto_entrega_fest_id' => $this->prospecto->id,
+                'user_id' => Auth::id(),
+                'media_id' => $mediaData['id'] ?? null,
+                'accion' => $accion,
+                'collection_name' => 'contrato-preliminar',
+                'file_name' => $mediaData['file_name'] ?? null,
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent(),
+                'payload' => $payload,
+            ]);
+        } catch (\Exception $e) {
+            Log::channel('entrega-fest')->error('[AUDITORIA CONTRATO PRELIMINAR] Error registrando auditoria: ' . $e->getMessage(), [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $this->prospecto->id,
+                'accion' => $accion,
+            ]);
+        }
+    }
+
     private function handleUpdate(array $data, string $logContext)
     {
         $this->authorize('prospecto-entrega-fest.editar');
+
+        $antes = [];
+        foreach ($data as $campo => $valorNuevo) {
+            $antes[$campo] = $this->prospecto->{$campo} ?? null;
+        }
 
         try {
             DB::beginTransaction();
             $this->prospecto->update($data);
             DB::commit();
+
+            $cambios = [];
+            foreach ($data as $campo => $valorNuevo) {
+                if (($antes[$campo] ?? null) != $valorNuevo) {
+                    $cambios[$campo] = [
+                        'antes' => $antes[$campo] ?? null,
+                        'despues' => $valorNuevo,
+                    ];
+                }
+            }
+
+            Log::channel('entrega-fest')->info("[$logContext] Actualización exitosa", [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $this->prospecto->id,
+                'cambios' => $cambios,
+            ]);
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
@@ -559,11 +604,33 @@ class EntregaFestProspectoEditar extends Component
         // 3. Subir archivo si ha sido seleccionado
         if ($this->archivo_contrato_preeliminar) {
             try {
+                $mediaAnterior = $this->prospecto->getFirstMedia('contrato-preliminar');
+                $mediaAnteriorData = $mediaAnterior ? [
+                    'id' => $mediaAnterior->id,
+                    'file_name' => $mediaAnterior->file_name,
+                    'size' => $mediaAnterior->size,
+                ] : null;
+
                 // Reemplazar colección anterior
                 $this->prospecto->clearMediaCollection('contrato-preliminar');
-                $this->prospecto->addMedia($this->archivo_contrato_preeliminar->getRealPath())
+
+                $mediaNueva = $this->prospecto->addMedia($this->archivo_contrato_preeliminar->getRealPath())
                     ->usingFileName('CONTRATO_PRELIMINAR_' . $this->prospecto->dni . '.pdf')
                     ->toMediaCollection('contrato-preliminar');
+
+                $this->registrarAuditoriaContrato($mediaAnterior ? 'reemplazado' : 'subido', [
+                    'id' => $mediaNueva->id,
+                    'file_name' => $mediaNueva->file_name,
+                ], [
+                    'media_anterior' => $mediaAnteriorData,
+                ]);
+
+                Log::channel('entrega-fest')->info('[LEGAL UPLOAD] Contrato preliminar guardado', [
+                    'usuario_id' => Auth::id(),
+                    'prospecto_id' => $this->prospecto->id,
+                    'accion' => $mediaAnterior ? 'reemplazado' : 'subido',
+                    'media_id' => $mediaNueva->id,
+                ]);
 
                 $this->archivo_contrato_preeliminar = null;
                 $this->prospecto->refresh(); // Refrescar para que el Blade vea la media inmediatamente
@@ -603,6 +670,93 @@ class EntregaFestProspectoEditar extends Component
             'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
             'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
         ], 'PROSPECTO EDITAR - LEGAL SUPERVISOR');
+    }
+
+    public function solicitarEliminarContratoPreliminar()
+    {
+        $this->authorize('contrato-preliminar.eliminar');
+
+        if (!$this->prospecto->hasMedia('contrato-preliminar')) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Sin archivo',
+                'text' => 'El prospecto no tiene contrato preliminar adjunto.',
+            ]);
+            return;
+        }
+
+        $this->dispatch('alertaConfirmar', [
+            'event' => 'eliminarContratoPreliminarOn',
+            'titulo' => '¿Eliminar contrato preliminar?',
+            'texto' => 'Se eliminará el PDF adjunto de forma permanente. Esta acción no se puede deshacer.',
+        ]);
+    }
+
+    #[On('eliminarContratoPreliminarOn')]
+    public function eliminarContratoPreliminarOn()
+    {
+        $this->authorize('contrato-preliminar.eliminar');
+
+        if (!$this->prospecto->hasMedia('contrato-preliminar')) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Sin archivo',
+                'text' => 'El contrato preliminar ya fue eliminado.',
+            ]);
+            return;
+        }
+
+        try {
+            $mediaActual = $this->prospecto->getFirstMedia('contrato-preliminar');
+            $mediaActualData = $mediaActual ? [
+                'id' => $mediaActual->id,
+                'file_name' => $mediaActual->file_name,
+                'size' => $mediaActual->size,
+            ] : null;
+
+            $this->prospecto->clearMediaCollection('contrato-preliminar');
+
+            $this->registrarAuditoriaContrato('eliminado', $mediaActualData, [
+                'motivo' => 'eliminacion_manual',
+            ]);
+
+            // Restablecer estado del contrato a PENDIENTE
+            try {
+                $this->prospecto->update(['estado_contrato_preeliminar_emitido' => 'PENDIENTE']);
+            } catch (\Exception $e) {
+                Log::channel('entrega-fest')->warning('[LEGAL DELETE] No se pudo actualizar estado a PENDIENTE: ' . $e->getMessage(), [
+                    'usuario_id' => Auth::id(),
+                    'prospecto_id' => $this->prospecto->id,
+                ]);
+            }
+
+            Log::channel('entrega-fest')->info('[LEGAL DELETE CONTRATO PRELIMINAR] Eliminación exitosa', [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $this->prospecto->id,
+                'media_eliminada' => $mediaActualData,
+            ]);
+
+            $this->archivo_contrato_preeliminar = null;
+            $this->prospecto->refresh();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Eliminado',
+                'text' => 'El contrato preliminar fue eliminado correctamente y su estado quedó en Pendiente.',
+            ]);
+        } catch (\Exception $e) {
+            Log::channel('entrega-fest')->error('[LEGAL DELETE CONTRATO PRELIMINAR] ' . $e->getMessage(), [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $this->prospecto->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el contrato preliminar.',
+            ]);
+        }
     }
 
     public function solicitarEliminarProspecto()
@@ -647,7 +801,28 @@ class EntregaFestProspectoEditar extends Component
                 $copropietario->delete();
             }
 
+            $mediaContrato = $prospecto->getFirstMedia('contrato-preliminar');
+            if ($mediaContrato) {
+                $mediaContratoData = [
+                    'id' => $mediaContrato->id,
+                    'file_name' => $mediaContrato->file_name,
+                    'size' => $mediaContrato->size,
+                ];
+
+                $this->registrarAuditoriaContrato('eliminado_por_prospecto', $mediaContratoData, [
+                    'motivo' => 'eliminacion_de_prospecto',
+                ]);
+
+                $prospecto->clearMediaCollection('contrato-preliminar');
+            }
+
             $prospecto->delete();
+
+            Log::channel('entrega-fest')->info('[PROSPECTO ELIMINAR] Eliminación exitosa', [
+                'usuario_id' => Auth::id(),
+                'evento_id' => $this->evento->id,
+                'prospecto_id' => $prospecto->id,
+            ]);
 
             DB::commit();
 

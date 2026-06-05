@@ -13,6 +13,7 @@ use App\Models\SubTipoSolicitud;
 use App\Models\Canal;
 use App\Models\EstadoTicket;
 use App\Models\PrioridadTicket;
+use App\Models\TipoSolicitud;
 use App\Services\ConsultaClienteService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -67,6 +68,8 @@ class TicketCrear extends Component
 
     public Collection $informaciones;
 
+    protected bool $prefillCartaNotarial = false;
+
     protected function rules()
     {
         $rules = [
@@ -116,6 +119,8 @@ class TicketCrear extends Component
 
     public function mount($ticketPadre = null)
     {
+        $this->prefillCartaNotarial = request()->routeIs('erp.ticket-notarial.vista.crear');
+
         if ($ticketPadre) {
             // Si ya es una instancia de Ticket (Route Model Binding)
             if ($ticketPadre instanceof Ticket) {
@@ -144,11 +149,16 @@ class TicketCrear extends Component
             $this->loadProyectos();
         }
 
-        $user = auth()->user();
+        $user = User::find(Auth::id());
+        $userId = Auth::id();
 
         // Determinar área inicial
-        if ($user->areas()->exists()) {
-            $this->area_id = $user->areas()->orderBy('area_user.created_at')->value('areas.id');
+        if ($userId && DB::table('area_user')->where('user_id', $userId)->exists()) {
+            $this->area_id = DB::table('area_user')
+                ->where('user_id', $userId)
+                ->orderByDesc('is_principal')
+                ->orderBy('created_at')
+                ->value('area_id');
         } else {
             $this->area_id = Area::where('activo', true)->orderBy('id')->value('id');
         }
@@ -161,7 +171,8 @@ class TicketCrear extends Component
 
         // Valores por defecto
         if (!$this->ticket_padre_id) {
-            $this->prioridad_ticket_id = $this->prioridades->firstWhere('nombre', 'Media')?->id ?? $this->prioridades->first()?->id;
+            $prioridadCollection = collect($this->prioridades);
+            $this->prioridad_ticket_id = $prioridadCollection->firstWhere('nombre', 'Media')?->id ?? $prioridadCollection->first()?->id;
         }
 
         // Añadir al creador como participante por defecto
@@ -173,6 +184,10 @@ class TicketCrear extends Component
 
         if ($this->area_id) {
             $this->cargarDatosArea($this->area_id);
+        }
+
+        if ($this->prefillCartaNotarial) {
+            $this->aplicarTipoSolicitudCartaNotarial();
         }
     }
 
@@ -194,6 +209,57 @@ class TicketCrear extends Component
         }
     }
 
+    protected function obtenerGestoresPorArea($areaId, $tipoSolicitudId = null)
+    {
+        $area = Area::find($areaId);
+
+        if (!$area) {
+            return collect();
+        }
+
+        $idsDeArea = $area->users()
+            ->where('activo', true)
+            ->pluck('users.id')
+            ->toArray();
+
+        if ($tipoSolicitudId && !empty($idsDeArea)) {
+            $idsDeTipoSolicitud = DB::table('tipo_solicitud_user')
+                ->where('tipo_solicitud_id', $tipoSolicitudId)
+                ->whereIn('user_id', $idsDeArea)
+                ->pluck('user_id')
+                ->toArray();
+
+            $idsFinales = !empty($idsDeTipoSolicitud) ? $idsDeTipoSolicitud : $idsDeArea;
+        } else {
+            $idsFinales = $idsDeArea;
+        }
+
+        return $area->users()
+            ->whereIn('users.id', $idsFinales)
+            ->where('activo', true)
+            ->withPivot('is_principal')
+            ->orderByDesc('area_user.is_principal')
+            ->orderBy('users.name')
+            ->get();
+    }
+
+    protected function resolverGestorPorDefecto($gestores)
+    {
+        $principal = $gestores->first(fn($usuario) => (bool) $usuario->pivot->is_principal);
+
+        return $principal?->id ?? $gestores->first()?->id;
+    }
+
+    protected function gestorPerteneceAArea($areaId, $gestorId, $tipoSolicitudId = null): bool
+    {
+        if (!$gestorId) {
+            return true;
+        }
+
+        return $this->obtenerGestoresPorArea($areaId, $tipoSolicitudId)
+            ->contains('id', (int) $gestorId);
+    }
+
     public function cargarDatosArea($areaId)
     {
         $area = Area::find($areaId);
@@ -213,26 +279,14 @@ class TicketCrear extends Component
             ->where('activo', true)
             ->get();
 
-        $this->gestores = $area->users()
-            ->where('activo', true)
-            ->withPivot('is_principal')
-            ->orderByDesc('area_user.is_principal')
-            ->orderBy('users.name')
-            ->get();
+        $this->gestores = $this->obtenerGestoresPorArea($areaId);
 
         $user = Auth::user();
 
-        if ($this->gestores->contains('id', $user->id)) {
+        if ($user && collect($this->gestores)->contains('id', $user->id)) {
             $this->gestor_id = $user->id;
         } else {
-            $principal = $this->gestores
-                ->first(fn($u) => (bool) $u->pivot->is_principal);
-
-            if ($principal) {
-                $this->gestor_id = $principal->id;
-            } else {
-                $this->gestor_id = $this->gestores->first()?->id;
-            }
+            $this->gestor_id = $this->resolverGestorPorDefecto($this->gestores);
         }
 
         $this->tipo_solicitud_id = '';
@@ -242,6 +296,10 @@ class TicketCrear extends Component
     public function updatedAreaId($value)
     {
         $this->cargarDatosArea($value);
+
+        if ($this->prefillCartaNotarial) {
+            $this->aplicarTipoSolicitudCartaNotarial();
+        }
     }
 
     public function updatedTipoSolicitudId($value)
@@ -261,6 +319,20 @@ class TicketCrear extends Component
         $this->verificarDuplicados();
     }
 
+    public function updatedGestorId($value)
+    {
+        if (!$value || !$this->area_id) {
+            return;
+        }
+
+        if ($this->gestorPerteneceAArea($this->area_id, $value, $this->tipo_solicitud_id)) {
+            return;
+        }
+
+        $gestoresArea = $this->obtenerGestoresPorArea($this->area_id, $this->tipo_solicitud_id);
+        $this->gestor_id = $this->resolverGestorPorDefecto($gestoresArea) ?? '';
+    }
+
     public function verificarDuplicados()
     {
         if (!$this->dni || !$this->tipo_solicitud_id || !$this->sub_tipo_solicitud_id || empty($this->lotes_agregados)) {
@@ -270,14 +342,15 @@ class TicketCrear extends Component
 
         $lotesConTicket = [];
         foreach ($this->lotes_agregados as $lote) {
-            if (
-                \App\Services\TicketService::existeTicketSimilar(
-                    $this->dni,
-                    $lote['id'],
-                    $this->tipo_solicitud_id,
-                    $this->sub_tipo_solicitud_id
-                )
-            ) {
+            $existeTicketSimilar = Ticket::query()
+                ->where('dni', $this->dni)
+                ->where('tipo_solicitud_id', $this->tipo_solicitud_id)
+                ->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id)
+                ->whereJsonContains('lotes', ['id' => (int) $lote['id']])
+                ->whereNotIn('estado_ticket_id', [EstadoTicket::id(EstadoTicket::CERRADO)])
+                ->exists();
+
+            if ($existeTicketSimilar) {
                 $lotesConTicket[] = $lote['numero_lote'];
             }
         }
@@ -303,6 +376,20 @@ class TicketCrear extends Component
                 ->orderBy('nombre')
                 ->get();
         }
+    }
+
+    protected function aplicarTipoSolicitudCartaNotarial(): void
+    {
+        $tipoSolicitud = TipoSolicitud::where('nombre', 'like', '%CARTAS NOTARIALES%')
+            ->where('activo', true)
+            ->first();
+
+        if (!$tipoSolicitud) {
+            return;
+        }
+
+        $this->tipo_solicitud_id = $tipoSolicitud->id;
+        $this->loadSubTipoSolicitudes();
     }
 
     public function buscarCliente(ConsultaClienteService $service)
@@ -400,7 +487,11 @@ class TicketCrear extends Component
 
     public function store($confirmado = false)
     {
-        $this->authorize('ticket.accion-crear');
+        $permisoCrear = request()->routeIs('erp.ticket-notarial.vista.crear')
+            ? 'ticket-notarial.accion-crear'
+            : 'ticket.accion-crear';
+
+        $this->authorize($permisoCrear);
 
         try {
             $this->validate();
@@ -422,6 +513,16 @@ class TicketCrear extends Component
         // 1. Validación de contacto (Confirmación opcional via JS)
         if (!$confirmado && (empty($this->email) || empty($this->celular))) {
             $this->dispatch('confirmarTicketSinDatos');
+            return;
+        }
+
+        if (!$this->gestorPerteneceAArea($this->area_id, $this->gestor_id, $this->tipo_solicitud_id)) {
+            $this->addError('gestor_id', 'El gestor seleccionado no pertenece al área elegida.');
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'El gestor seleccionado no pertenece al área elegida.'
+            ]);
             return;
         }
 
@@ -456,7 +557,7 @@ class TicketCrear extends Component
                     'celular' => $this->celular,
                     'origen' => $this->origen,
                     'lotes' => $lotesParaTicket,
-                    'created_by' => auth()->id(),
+                    'created_by' => Auth::id(),
                 ]);
 
                 // Asegurar que el creador y el gestor sean participantes
@@ -471,7 +572,7 @@ class TicketCrear extends Component
 
                 TicketHistorial::create([
                     'ticket_id' => $ticket->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::id(),
                     'accion' => 'Creación',
                     'detalle' => 'Ticket creado con estado inicial: ' . ($ticket->estado?->nombre ?? 'N/A'),
                 ]);
@@ -495,7 +596,7 @@ class TicketCrear extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('ticket')->error('[TICKET] Error en Creación: ' . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'trace' => $e->getTraceAsString()
             ]);
             $this->dispatch('alertaLivewire', [

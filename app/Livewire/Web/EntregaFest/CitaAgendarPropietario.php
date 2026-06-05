@@ -16,6 +16,7 @@ class CitaAgendarPropietario extends Component
     public $slug;
     public $prospecto;
     public $evento;
+    public string $direccion_sede = '';
 
     // Campo del formulario
     public string $fecha_firma = '';
@@ -25,10 +26,11 @@ class CitaAgendarPropietario extends Component
 
     public function mount($slug, $propietarioId)
     {
-        $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto'])
+        $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto.unidadNegocio'])
             ->findOrFail($propietarioId);
 
         $this->evento = $this->prospecto->entregaFest;
+        $this->direccion_sede = $this->prospecto->proyecto?->unidadNegocio?->direccion ?? '';
 
         // Validar que el slug corresponda al evento
         if ($this->evento->slug !== $slug) {
@@ -85,7 +87,6 @@ class CitaAgendarPropietario extends Component
                 'prospecto_id' => $this->prospecto->id,
                 'fecha_firma' => $this->fecha_firma,
             ]);
-
         } catch (\Exception $e) {
             Log::error('[CITA AGENDAR PUBLICA] Error: ' . $e->getMessage());
             session()->flash('error', 'Ocurrió un error al guardar tu cita. Por favor intenta más tarde.');

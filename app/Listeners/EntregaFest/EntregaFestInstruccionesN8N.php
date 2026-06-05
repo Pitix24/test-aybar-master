@@ -4,6 +4,7 @@ namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestInstrucciones;
 use App\Mail\EntregaFest\InstruccionesEventoMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -47,7 +48,7 @@ class EntregaFestInstruccionesN8N
             'id' => $invitado->prospecto_entrega_fest_id ?? $invitado->copropietario_entrega_fest_id,
             'nombres' => $invitado->nombre_completo,
             'email' => $invitado->email,
-            'celular' => $invitado->celular,
+            'celular' => EntregaFestCelular::peru($invitado->celular),
             'dni' => $invitado->dni,
             'tipo' => $invitado->prospecto_entrega_fest_id ? 'Propietario' : 'Copropietario',
             'html' => $mail->render(),

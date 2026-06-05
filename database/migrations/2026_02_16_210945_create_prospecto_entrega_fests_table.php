@@ -17,6 +17,10 @@ return new class extends Migration {
             $table->foreignId('proyecto_id')->nullable()->constrained();
             $table->foreignId('user_id')->nullable()->constrained(); // quien lo registró
 
+            // Auditoría: usuario que creó/actualizó el prospecto
+            $table->foreignId('created_by')->nullable()->after('user_id')->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->after('created_by')->constrained('users')->nullOnDelete();
+
             $table->string('dni', 15);
             $table->string('nombres');
             $table->string('email')->nullable();

@@ -55,6 +55,13 @@ class EstadoTicketSeeder extends Seeder
                 'activo' => true,
                 'created_at' => now(),
             ],
+            [
+                'nombre' => 'Eliminado',
+                'color' => '#e74c3c', // Rojo
+                'icono' => 'fa-solid fa-trash',
+                'activo' => true,
+                'created_at' => now(),
+            ],
         ]);
     }
 }

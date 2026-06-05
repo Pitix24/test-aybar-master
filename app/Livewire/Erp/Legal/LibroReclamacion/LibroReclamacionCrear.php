@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Erp\LibroReclamacion;
+namespace App\Livewire\Erp\Legal\LibroReclamacion;
 
 use App\Models\Cliente;
 use App\Models\LibroReclamacion\LibroReclamacion;
@@ -452,7 +452,7 @@ class LibroReclamacionCrear extends Component
 
     public function render()
     {
-        return view('livewire.erp.libro-reclamacion.libro-reclamacion-crear');
+        return view('livewire.erp.legal.libro-reclamacion.libro-reclamacion-crear');
     }
 
     public function placeholder()

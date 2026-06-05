@@ -7,6 +7,7 @@ use App\Events\EntregaFest\EntregaFestInstrucciones;
 use App\Mail\EntregaFest\AsistenciaConfirmacionMail;
 use App\Mail\EntregaFest\AsistenciaInvitacionCopropietarioMail;
 use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -25,7 +26,7 @@ class EntregaFestAsistenciaConfirmacionN8N
 
         // Solo procesamos si la persona confirmó su asistencia (invitacion_confirmada = true)
         if ($persona?->invitacion_confirmada) {
-            
+
             // 1. Obtenemos el link dinámico desde la mailable original de invitación
             $linkTicket = $invitado->prospecto_entrega_fest_id
                 ? (new AsistenciaInvitacionPropietarioMail($invitado->prospecto))->link
@@ -52,7 +53,7 @@ class EntregaFestAsistenciaConfirmacionN8N
                 'id' => $invitado->prospecto_entrega_fest_id ?? $invitado->copropietario_entrega_fest_id,
                 'nombres' => $invitado->nombre_completo,
                 'email' => $invitado->email,
-                'celular' => $invitado->celular,
+                'celular' => EntregaFestCelular::peru($invitado->celular),
                 'dni' => $invitado->dni,
                 'tipo' => $invitado->prospecto_entrega_fest_id ? 'Propietario' : 'Copropietario',
                 'lote' => $invitado->lote,
@@ -70,7 +71,6 @@ class EntregaFestAsistenciaConfirmacionN8N
 
             // 6. EMITIMOS EVENTO HIJO: Instrucciones
             EntregaFestInstrucciones::dispatch($invitado);
-
         } else {
             Log::channel('entrega-fest')->info("[CONFIRMACION] Saltado para {$invitado->nombre_completo} (No confirmó)");
         }
