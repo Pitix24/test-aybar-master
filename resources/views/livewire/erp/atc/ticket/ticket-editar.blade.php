@@ -1,6 +1,6 @@
 <div class="g_gap_pagina">
-    <x-loading-overlay wire:loading wire:target="store, adjuntar, eliminarTicketOn, eliminarArchivo"
-        message="Guardando cambios..." />
+    <x-loading-overlay wire:loading
+        wire:target="store, adjuntar, eliminarTicketOn, eliminarArchivo, update, buscarLotesCliente, agregarLote, quitarLote" message="Procesando..." />
 
     <div class="g_panel cabecera_titulo_pagina">
         <h2>Editar ticket</h2>
@@ -162,31 +162,48 @@
 
                     @if (!empty($ticket->lotes))
                     <div class="g_margin_bottom_10">
-                        <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+                        <h4 class="g_panel_titulo">
+                            <i class="fa-solid fa-layer-group"></i> Lotes vinculados
+                        </h4>
 
-                        <div class="g_contenedor_tabla">
-                            <table class="g_tabla">
-                                <thead>
-                                    <tr>
-                                        <th>Razón Social</th>
-                                        <th>Proyecto</th>
-                                        <th>Mz./Lt.</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($ticket->lotes as $index => $l)
-                                    <tr class="sorteable_item" wire:key="lote-{{ $index }}">
-                                        <td> {{ $l['razon_social'] }} </td>
-                                        <td> {{ $l['proyecto'] }} </td>
-                                        <td> {{ $l['numero_lote'] }} </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                        @if (!empty($lotes_agregados))
+                            <div class="g_contenedor_tabla">
+                                <table class="g_tabla">
+                                    <thead>
+                                        <tr>
+                                            <th>Razón Social</th>
+                                            <th>Proyecto</th>
+                                            <th>Mz./Lt.</th>
+                                            <th class="g_text_center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($lotes_agregados as $index => $l)
+                                            <tr wire:key="lote-editar-{{ $l['id'] }}">
+                                                <td>{{ $l['razon_social'] }}</td>
+                                                <td>{{ $l['proyecto'] }}</td>
+                                                <td>{{ $l['numero_lote'] }}</td>
+                                                <td class="g_text_center">
+                                                    <button type="button"
+                                                            wire:click="quitarLote({{ $l['id'] }})"
+                                                            class="g_boton danger g_boton_pequeno"
+                                                            title="Quitar lote">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="g_alerta info">
+                                <i class="fa-solid fa-circle-info"></i>
+                                No hay lotes vinculados a este ticket. Puedes agregarlos desde la pestaña <b>Cliente</b>.
+                            </div>
+                        @endif
                     </div>
                     @endif
-
                     <div>
                         <h4 class="g_panel_titulo"><i class="fa-solid fa-reply"></i> Respuesta</h4>
 
@@ -246,6 +263,70 @@
                             <label>Celular</label>
                             <input type="text" wire:model="celular">
                         </div>
+                    </div>
+
+                    {{-- ====== Gestión de Lotes del Cliente ====== --}}
+                    <div class="g_margin_top_10">
+                        <h4 class="g_panel_titulo">
+                            <i class="fa-solid fa-layer-group"></i> Gestión de Lotes
+                        </h4>
+
+                        <div class="g_alerta info g_margin_bottom_10">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Los lotes que agregues se mostrarán en la pestaña Información General.
+                            Los cambios se guardarán al hacer clic en Actualizar.
+                        </div>
+
+                        {{-- Botón para consultar los lotes del cliente --}}
+                        <div class="formulario_botones g_margin_bottom_10">
+                            <button type="button"
+                                    wire:click="buscarLotesCliente"
+                                    class="g_boton primary"
+                                    wire:loading.attr="disabled"
+                                    wire:target="buscarLotesCliente">
+                                <span wire:loading.remove wire:target="buscarLotesCliente">
+                                    <i class="fa-solid fa-search"></i> Consultar lotes del cliente
+                                </span>
+                                <span wire:loading wire:target="buscarLotesCliente">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Consultando...
+                                </span>
+                            </button>
+                        </div>
+
+                        {{-- Selector de lotes disponibles --}}
+                        @if ($informaciones->isNotEmpty())
+                            <div class="g_margin_bottom_10">
+                                <label>Lotes disponibles del cliente</label>
+                                <select wire:model.live="lote_id">
+                                    <option value="">Seleccionar lote...</option>
+                                    @foreach ($informaciones as $lote)
+                                        <option value="{{ $lote['id'] }}">
+                                            {{ $lote['razon_social'] }} - {{ $lote['proyecto'] }} - {{ $lote['numero_lote'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="formulario_botones g_margin_bottom_10">
+                                <button type="button"
+                                        wire:click="agregarLote"
+                                        class="g_boton guardar"
+                                        wire:loading.attr="disabled"
+                                        wire:target="agregarLote">
+                                    <span wire:loading.remove wire:target="agregarLote">
+                                        <i class="fa-solid fa-plus"></i> Agregar a la lista
+                                    </span>
+                                    <span wire:loading wire:target="agregarLote">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Agregando...
+                                    </span>
+                                </button>
+                            </div>
+                        @elseif ($lotesBuscados)
+                            <div class="g_alerta warning">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                No se encontraron lotes vinculados al DNI/RUC del cliente.
+                            </div>
+                        @endif
                     </div>
                 </div>
 
