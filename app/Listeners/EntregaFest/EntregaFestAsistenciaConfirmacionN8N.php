@@ -10,9 +10,11 @@ use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
 use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Support\VerificaEventoVigente;
 
 class EntregaFestAsistenciaConfirmacionN8N
 {
+    use VerificaEventoVigente; // Importamos el trait para verificar si el evento sigue vigente antes de enviar a n8n
     /**
      * Handle the event.
      */
@@ -20,6 +22,11 @@ class EntregaFestAsistenciaConfirmacionN8N
     {
         $invitado = $event->invitado->load(['prospecto.historialComunicaciones', 'copropietario.historialComunicaciones', 'entregaFest']);
         $evento = $invitado->entregaFest;
+
+        // 🛑 FILTRO (también previene el dispatch del evento hijo de Instrucciones)
+        if (!$this->eventoVigente($evento, 'ASISTENCIA-CONFIRMACION-N8N')) {
+            return;
+        }
 
         // Definimos la persona (Titular o Copropietario)
         $persona = $invitado->prospecto ?? $invitado->copropietario;

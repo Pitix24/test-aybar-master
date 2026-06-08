@@ -9,15 +9,22 @@ use App\Mail\EntregaFest\PreInvitacionCopropietarioMail;
 use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Support\VerificaEventoVigente;
 
 class EntregaFestPreInvitacionN8N
 {
+    use VerificaEventoVigente; // Importamos el trait para verificar si el evento sigue vigente antes de enviar a n8n
     /**
      * Handle the event.
      */
     public function handle(EntregaFestPreInvitacion $event): void
     {
         $evento = $event->evento;
+
+        // 🛑 FILTRO: Si el evento ya pasó, NO enviamos a n8n
+        if (!$this->eventoVigente($evento, 'PRE-INVITACION-N8N')) {
+            return;
+        }
 
         // 1. Buscamos la plantilla configurada para este evento
         $plantilla = $evento->plantillas()->where('tipo', 'pre-invitacion')->first();

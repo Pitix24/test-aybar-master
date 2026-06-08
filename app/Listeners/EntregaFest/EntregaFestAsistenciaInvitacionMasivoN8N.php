@@ -9,15 +9,22 @@ use App\Mail\EntregaFest\AsistenciaInvitacionCopropietarioMail;
 use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Support\VerificaEventoVigente;
 
 class EntregaFestAsistenciaInvitacionMasivoN8N
 {
+    use VerificaEventoVigente; // Importamos el trait para verificar si el evento sigue vigente antes de enviar a n8n
     /**
      * Handle the event.
      */
     public function handle(EntregaFestAsistenciaInvitacionMasivo $event): void
     {
         $evento = $event->evento;
+
+        // 🛑 FILTRO: Si el evento ya pasó, NO enviamos a n8n
+        if (!$this->eventoVigente($evento, 'ASISTENCIA-INVITACION-MASIVO-N8N')) {
+            return;
+        }
 
         // 1. Buscamos la plantilla configurada para este evento (tipo asistencia-invitacion)
         $plantilla = $evento->plantillas()->where('tipo', 'asistencia-invitacion')->first();
