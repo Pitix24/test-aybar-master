@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Web\EntregaFest;
 
+use App\Support\RedirigeSiEventoConcluido;
 use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
 use App\Models\InvitadoEntregaFest;
 use App\Models\ProspectoEntregaFest;
@@ -36,6 +37,9 @@ class AsistenciaInvitacionPropietario extends Component
     public $mensaje_exito = '';
     public $codigo_invitado = '';
 
+    // Para mostrar info adicional en el view
+    use RedirigeSiEventoConcluido;
+
     public function mount($slug, $propietarioId)
     {
         $this->slug = $slug;
@@ -46,7 +50,10 @@ class AsistenciaInvitacionPropietario extends Component
 
         $this->evento = $this->prospecto->entregaFest;
 
-        // Validar que el slug coincida con el evento del prospecto
+        // 🛑 Si el evento ya se realizó → redirigir
+        if ($redir = $this->redirigirSiConcluido($this->evento)) return $redir;
+
+        // Validar slug
         if ($this->evento->slug !== $slug) {
             abort(404, 'Evento no encontrado o link inválido.');
         }

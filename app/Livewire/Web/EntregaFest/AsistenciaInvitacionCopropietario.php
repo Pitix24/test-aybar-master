@@ -10,6 +10,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
+use App\Support\RedirigeSiEventoConcluido;
 
 #[Layout('layouts.web.layout-web')]
 #[Title('Formulario de Asistencia - Entrega Fest')]
@@ -35,6 +36,8 @@ class AsistenciaInvitacionCopropietario extends Component
     public $mensaje_exito = '';
     public $codigo_invitado = '';
 
+    use RedirigeSiEventoConcluido;
+
     public function mount($slug, $copropietarioId)
     {
         $this->copropietario = CopropietarioEntregaFest::with([
@@ -45,7 +48,10 @@ class AsistenciaInvitacionCopropietario extends Component
 
         $this->evento = $this->copropietario->prospecto->entregaFest;
 
-        // Validar que el slug corresponda al evento del lote
+        // 🛑 Si el evento ya se realizó → redirigir
+        if ($redir = $this->redirigirSiConcluido($this->evento)) return $redir;
+
+        // Validar slug
         if ($this->evento->slug !== $slug) {
             abort(404, 'Evento no encontrado o link inválido.');
         }
