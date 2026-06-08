@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Carbon\Carbon;
 
 class EntregaFest extends Model implements HasMedia
 {
@@ -96,4 +97,33 @@ class EntregaFest extends Model implements HasMedia
     {
         return $this->hasMany(EntregaFestPlantilla::class, 'entrega_fest_id');
     }
+
+    /**
+     * Determina si el evento ya se realizó (o se realiza HOY).
+     *
+     * Regla de negocio: Las invitaciones se desactivan EL DÍA del evento.
+     * Es decir, el último día válido para enviar comunicaciones es
+     * el día ANTERIOR a fecha_entrega.
+     *
+     * @return bool
+     */
+    public function realizado(): bool
+    {
+        if (!$this->fecha_entrega) {
+            return false; // Defensivo: sin fecha, no bloqueamos
+        }
+
+        // fecha_entrega es DATE (Carbon ya lo castea por $casts)
+        // Si la fecha del evento es HOY o anterior → bloqueamos
+        return $this->fecha_entrega->startOfDay()->lte(now()->startOfDay());
+    }
+
+    /**
+     * Inverso semántico, útil para legibilidad en los Listeners.
+     */
+    public function vigente(): bool
+    {
+        return !$this->realizado();
+    }
+
 }
