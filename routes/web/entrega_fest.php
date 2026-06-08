@@ -6,6 +6,7 @@ use App\Livewire\Web\EntregaFest\AsistenciaInvitacionPropietario;
 use App\Livewire\Web\EntregaFest\AsistenciaInvitacionCopropietario;
 use App\Livewire\Web\EntregaFest\CitaAgendarPropietario;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Web\EntregaFest\EventoConcluido;
 
 Route::get('/pre-invitacion-propietario/{slug}/{propietarioId}', PreInvitacionPropietario::class)
     ->name('entrega-fest.pre-invitacion.propietario');
@@ -21,3 +22,6 @@ Route::get('/asistencia-invitacion-copropietario/{slug}/{copropietarioId}', Asis
 
 Route::get('/cita-agendar-propietario/{slug}/{propietarioId}', CitaAgendarPropietario::class)
     ->name('entrega-fest.cita-agendar.propietario');
+
+Route::get('/entrega-fest/{slug}/concluido', EventoConcluido::class)
+    ->name('entrega-fest.concluido');
