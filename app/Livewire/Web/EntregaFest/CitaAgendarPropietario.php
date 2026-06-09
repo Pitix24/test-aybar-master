@@ -18,6 +18,7 @@ class CitaAgendarPropietario extends Component
     public const HORA_FIN    = '17:00';      // Hora máxima (inclusive)
     public const INTERVALO_MIN = 30;          // Intervalo en minutos entre slots
     public const DIAS_ANTICIPACION = 3;       // Días mínimos de anticipación
+    public const CUPO_POR_HORARIO   = 2;   // Máx. citas simultáneas por slot
     // =====================================================
 
     public $slug;
@@ -47,15 +48,12 @@ class CitaAgendarPropietario extends Component
         $this->evento = $this->prospecto->entregaFest;
         $this->direccion_sede = $this->prospecto->proyecto?->unidadNegocio?->direccion ?? '';
 
-        if ($this->evento->slug !== $slug) {
-            abort(404, 'Evento no encontrado o link inválido.');
-        }
+        if ($this->evento->slug !== $slug) abort(404);
 
         if ($this->prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
             abort(403, 'Tu contrato aún no ha sido aprobado para agendar firma.');
         }
 
-        // Si ya tiene cita, mostrar confirmación
         if ($this->prospecto->fecha_firma) {
             $this->enviado = true;
             $this->fecha_firma = $this->prospecto->fecha_firma;
@@ -63,10 +61,9 @@ class CitaAgendarPropietario extends Component
             return;
         }
 
-        // Calcular fecha mínima (hoy + N días, saltando fines de semana si cae en sábado/domingo)
         $this->fechaMinima = $this->calcularFechaMinima();
 
-        // Generar slots de horario disponibles
+        // 🆕 Inicializa con todos los slots libres (aún no hay fecha seleccionada)
         $this->horariosDisponibles = $this->generarHorarios();
     }
 
@@ -87,28 +84,91 @@ class CitaAgendarPropietario extends Component
     }
 
     /**
-     * Genera la lista de horarios disponibles entre HORA_INICIO y HORA_FIN
-     * en intervalos de INTERVALO_MIN minutos.
+     * Genera la lista de horarios entre HORA_INICIO y HORA_FIN.
+     * Si se pasa una fecha, marca los slots llenos como no disponibles.
+     *
+     * @param  string|null  $fecha  Fecha en formato Y-m-d
+     * @return array  [['hora' => 'HH:MM', 'disponible' => bool, 'ocupados' => int], ...]
      */
-    protected function generarHorarios(): array
+    protected function generarHorarios(?string $fecha = null): array
     {
+        $ocupacion = $fecha ? $this->obtenerOcupacionDelDia($fecha) : [];
+
         $horarios = [];
         $inicio = \Carbon\Carbon::createFromFormat('H:i', self::HORA_INICIO);
         $fin    = \Carbon\Carbon::createFromFormat('H:i', self::HORA_FIN);
 
         while ($inicio->lte($fin)) {
-            $horarios[] = $inicio->format('H:i');
+            $horaStr  = $inicio->format('H:i');
+            $ocupados = $ocupacion[$horaStr] ?? 0;
+
+            $horarios[] = [
+                'hora'       => $horaStr,
+                'ocupados'   => $ocupados,
+                'disponible' => $ocupados < self::CUPO_POR_HORARIO,
+            ];
+
             $inicio->addMinutes(self::INTERVALO_MIN);
         }
 
         return $horarios;
     }
 
+    /**
+     * Cuenta cuántas citas hay por slot horario en una fecha dada.
+     * IMPORTANTE: Considera prospectos de TODOS los EntregaFest, ya que el equipo
+     * legal es compartido entre eventos.
+     *
+     * @param  string  $fecha  Y-m-d
+     * @return array  ['HH:MM' => cantidad, ...]
+     */
+    protected function obtenerOcupacionDelDia(string $fecha): array
+    {
+        return ProspectoEntregaFest::query()
+            ->whereDate('fecha_firma', $fecha)
+            ->whereNotNull('fecha_firma')
+            // Excluimos al propio prospecto (por si está reagendando)
+            ->where('id', '!=', $this->prospecto->id)
+            ->pluck('fecha_firma')
+            ->groupBy(fn ($f) => \Carbon\Carbon::parse($f)->format('H:i'))
+            ->map(fn ($items) => $items->count())
+            ->toArray();
+    }
+
+
+    /**
+     * Hook de Livewire: se dispara automáticamente cuando $fecha cambia
+     * (gracias a wire:model.live="fecha").
+     */
+    public function updatedFecha($value): void
+    {
+        // Si el usuario limpió o seleccionó algo inválido, regeneramos sin restricciones
+        if (!$value) {
+            $this->horariosDisponibles = $this->generarHorarios();
+            return;
+        }
+
+        $this->horariosDisponibles = $this->generarHorarios($value);
+
+        // 🛡️ Si la hora previamente seleccionada quedó ocupada al cambiar de fecha, la limpiamos
+        if ($this->hora) {
+            $slot = collect($this->horariosDisponibles)->firstWhere('hora', $this->hora);
+            if (!$slot || !$slot['disponible']) {
+                $this->hora = '';
+            }
+        }
+    }
+
     protected function rules(): array
     {
+        $horariosValidos = collect($this->horariosDisponibles)
+            ->where('disponible', true)
+            ->pluck('hora')
+            ->toArray();
+
         return [
             'fecha' => 'required|date|after_or_equal:' . $this->fechaMinima,
-            'hora'  => ['required', 'date_format:H:i', \Illuminate\Validation\Rule::in($this->horariosDisponibles)],
+            'hora'  => ['required', 'date_format:H:i', \Illuminate\Validation\Rule::in($horariosValidos)],
         ];
     }
 
@@ -127,14 +187,12 @@ class CitaAgendarPropietario extends Component
     {
         $this->validate();
 
-        // 🛡️ VALIDACIÓN ADICIONAL: día hábil (no permitir sábado/domingo)
         $fechaCarbon = \Carbon\Carbon::parse($this->fecha);
         if ($fechaCarbon->isWeekend()) {
             $this->addError('fecha', 'Solo puedes agendar de Lunes a Viernes.');
             return;
         }
 
-        // 🛡️ VALIDACIÓN ADICIONAL: la combinación fecha+hora no esté en el pasado
         $fechaFirmaCompleta = "{$this->fecha} {$this->hora}:00";
         $fechaCompletaCarbon = \Carbon\Carbon::parse($fechaFirmaCompleta);
 
@@ -143,10 +201,24 @@ class CitaAgendarPropietario extends Component
             return;
         }
 
+        // 🆕 RE-VALIDACIÓN DE CUPO (defensa contra concurrencia)
+        $ocupados = ProspectoEntregaFest::whereDate('fecha_firma', $this->fecha)
+            ->whereTime('fecha_firma', "{$this->hora}:00")
+            ->where('id', '!=', $this->prospecto->id)
+            ->count();
+
+        if ($ocupados >= self::CUPO_POR_HORARIO) {
+            // Refrescar la UI con los slots actualizados
+            $this->horariosDisponibles = $this->generarHorarios($this->fecha);
+            $this->hora = '';
+            $this->addError('hora',
+                'Lo sentimos, este horario acaba de ser tomado por otro cliente. ' .
+                'Por favor selecciona otro horario disponible.');
+            return;
+        }
+
         try {
-            $this->prospecto->update([
-                'fecha_firma' => $fechaFirmaCompleta,
-            ]);
+            $this->prospecto->update(['fecha_firma' => $fechaFirmaCompleta]);
 
             EntregaFestCitaConfirmacion::dispatch($this->prospecto->refresh());
 

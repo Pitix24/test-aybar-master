@@ -1,5 +1,4 @@
 <div class="ef_page">
-    @vite('resources/css/erp/entregafest/invitacion.css')
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
     </style>
@@ -73,8 +72,8 @@
                         <i class="fa-solid fa-circle-info"></i> Sobre nuestros horarios
                     </p>
                     <ul style="margin: 0; padding-left: 22px; line-height: 1.7;">
-                        <li>Debemos recordar que nuestros horarios de atención son de <strong>Lunes a Viernes</strong>.</li>
-                        <li>Horario: <strong>10:00 AM a 5:00 PM</strong>.</li>
+                        <li>Debemos recordar que nuestros horarios de atención son los siguientes. <strong></strong>.</li>
+                        <li>Lunes a Viernes: <strong>10:00 AM a 5:00 PM</strong>.</li>
                     </ul>
                 </div>
 
@@ -107,10 +106,24 @@
                     </label>
 
                     <div class="ef_select_wrapper">
-                        <select id="hora" wire:model="hora" class="ef_input" required>
-                            <option value="">-- Elige un horario --</option>
+                        <select id="hora" wire:model="hora" class="ef_input" required
+                                @if(empty($fecha)) disabled @endif>
+                            <option value="">
+                                @if(empty($fecha))
+                                    -- Primero selecciona una fecha --
+                                @else
+                                    -- Elige un horario --
+                                @endif
+                            </option>
+
                             @foreach($horariosDisponibles as $slot)
-                                <option value="{{ $slot }}">{{ $slot }} hrs</option>
+                                <option value="{{ $slot['hora'] }}"
+                                        @disabled(!$slot['disponible'])>
+                                    {{ $slot['hora'] }} hrs
+                                    @if(!$slot['disponible'])
+                                        — No disponible
+                                    @endif
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -122,9 +135,21 @@
                         </span>
                     @enderror
 
-                    <p style="font-size: 0.85rem; color: #888; margin-top: 10px; text-align: center;">
-                        Recuerda llegar puntualmente para tu cita.
-                    </p>
+                    {{-- Mensajito informativo cuando hay slots ocupados --}}
+                    @if(!empty($fecha) && collect($horariosDisponibles)->where('disponible', false)->isNotEmpty())
+                        <p style="font-size: 0.8rem; color: #b45309; margin-top: 10px; text-align: center;
+                                background: #fef3c7; padding: 8px 12px; border-radius: 8px;">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Algunos horarios no están disponibles porque nuestro equipo legal ya
+                            tiene la capacidad máxima de atención.
+                        </p>
+                    @else
+                        <p style="font-size: 0.85rem; color: #888; margin-top: 10px; text-align: center;">
+                            Le recordamos llegar puntualmente a su cita y portar su DNI vigente.
+                            En caso de contar con un copropietario, será necesario que este también
+                            asista y presente su documento de identidad para la atención correspondiente.
+                        </p>
+                    @endif
                 </div>
 
                 <button type="submit" class="ef_btn_submit" wire:loading.attr="disabled"
