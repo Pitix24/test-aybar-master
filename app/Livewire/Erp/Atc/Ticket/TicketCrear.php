@@ -117,39 +117,51 @@ class TicketCrear extends Component
         ];
     }
 
+    public function messages()
+    {
+        return [
+            'lotes_agregados.required' => 'No se ha vinculado ningún lote al ticket. Por favor, agréguelos manualmente desde el panel de "Cliente" o, en su defecto, derive el ticket al área de origen correspondiente.',
+            'lotes_agregados.array'    => 'El formato de los lotes vinculados no es válido.',
+            'lotes_agregados.min'      => 'Debe vincular al menos un lote para continuar con la creación del ticket.',
+        ];
+    }
+
     public function mount($ticketPadre = null)
     {
         $this->prefillCartaNotarial = request()->routeIs('erp.ticket-notarial.vista.crear');
 
         if ($ticketPadre) {
-            // Si ya es una instancia de Ticket (Route Model Binding)
+            // Resolver el ticket padre según el tipo recibido
             if ($ticketPadre instanceof Ticket) {
                 $this->ticketPadre = $ticketPadre;
-            }
-            // Si es un array (a veces Livewire pasa los parámetros así)
-            elseif (is_array($ticketPadre)) {
+            } elseif (is_array($ticketPadre)) {
                 $id = $ticketPadre['id'] ?? reset($ticketPadre);
                 $this->ticketPadre = Ticket::findOrFail($id);
-            }
-            // Si es un ID (string o int)
-            else {
+            } else {
                 $this->ticketPadre = Ticket::findOrFail($ticketPadre);
             }
 
-            $this->ticket_padre_id = $this->ticketPadre->id;
+            $this->ticket_padre_id   = $this->ticketPadre->id;
             $this->unidad_negocio_id = $this->ticketPadre->unidad_negocio_id;
-            $this->proyecto_id = $this->ticketPadre->proyecto_id;
-            $this->canal_id = $this->ticketPadre->canal_id;
-            $this->dni = $this->ticketPadre->dni;
-            $this->nombres = $this->ticketPadre->nombres;
-            $this->email = $this->ticketPadre->email;
-            $this->celular = $this->ticketPadre->celular;
-            $this->origen = $this->ticketPadre->origen;
-            $this->lotes_agregados = $this->ticketPadre->lotes ?? [];
+            $this->proyecto_id       = $this->ticketPadre->proyecto_id;
+            $this->canal_id          = $this->ticketPadre->canal_id;
+            $this->dni               = $this->ticketPadre->dni;
+            $this->nombres           = $this->ticketPadre->nombres;
+            $this->email             = $this->ticketPadre->email;
+            $this->celular           = $this->ticketPadre->celular;
+            $this->origen            = $this->ticketPadre->origen;
+
+            // 🔧 FIX: Asegurar que lotes_agregados sea siempre un array válido
+            $lotesPadre = $this->ticketPadre->lotes;
+            if (is_string($lotesPadre)) {
+                $lotesPadre = json_decode($lotesPadre, true) ?? [];
+            }
+            $this->lotes_agregados = is_array($lotesPadre) ? array_values($lotesPadre) : [];
+
             $this->loadProyectos();
         }
 
-        $user = User::find(Auth::id());
+        $user   = User::find(Auth::id());
         $userId = Auth::id();
 
         // Determinar área inicial
@@ -164,19 +176,18 @@ class TicketCrear extends Component
         }
 
         // Cargar catálogos activos
-        $this->areas = Area::where('activo', true)->orderBy('nombre')->get();
-        $this->canales = Canal::where('activo', true)->orderBy('nombre')->get();
-        $this->unidades_negocios = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
-        $this->prioridades = PrioridadTicket::where('activo', true)->get();
+        $this->areas              = Area::where('activo', true)->orderBy('nombre')->get();
+        $this->canales            = Canal::where('activo', true)->orderBy('nombre')->get();
+        $this->unidades_negocios  = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
+        $this->prioridades        = PrioridadTicket::where('activo', true)->get();
 
-        // Valores por defecto
-        if (!$this->ticket_padre_id) {
-            $prioridadCollection = collect($this->prioridades);
-            $this->prioridad_ticket_id = $prioridadCollection->firstWhere('nombre', 'Media')?->id ?? $prioridadCollection->first()?->id;
-        }
+        // 🔧 FIX: Asignar prioridad por defecto SIEMPRE (también en modo asociado)
+        $prioridadCollection = collect($this->prioridades);
+        $this->prioridad_ticket_id = $prioridadCollection->firstWhere('nombre', 'Media')?->id
+            ?? $prioridadCollection->first()?->id;
 
         // Añadir al creador como participante por defecto
-        if (!in_array($user->id, $this->selectedParticipants)) {
+        if ($user && !in_array($user->id, $this->selectedParticipants)) {
             $this->selectedParticipants[] = $user->id;
         }
 
@@ -496,11 +507,36 @@ class TicketCrear extends Component
         try {
             $this->validate();
         } catch (ValidationException $e) {
+            $errores = array_keys($e->errors());
+
+            // Detectar tab con error
+            $camposClienteTab = ['nombres', 'email', 'celular', 'dni'];
+            $tabConError = collect($errores)->intersect($camposClienteTab)->isNotEmpty()
+                ? 'cliente'
+                : 'general';
+
+            // Mensaje contextual según el tipo de error
+            if (in_array('lotes_agregados', $errores) && count($errores) === 1) {
+                $titulo = 'Sin lotes vinculados';
+                $texto  = 'No se ha agregado ningún lote al ticket. Agréguelos manualmente o derive el ticket al área de origen.';
+            } else {
+                $labels = $this->validationAttributes();
+                $camposLegibles = collect($errores)
+                    ->map(fn($campo) => $labels[$campo] ?? $campo)
+                    ->implode(', ');
+
+                $titulo = 'Advertencia';
+                $texto  = 'Verifique los siguientes campos: ' . $camposLegibles;
+            }
+
             $this->dispatch('alertaLivewire', [
-                'type' => 'warning',
-                'title' => 'Advertencia',
-                'text' => 'Verifique los errores de los campos resaltados.'
+                'type'  => 'warning',
+                'title' => $titulo,
+                'text'  => $texto,
             ]);
+
+            $this->dispatch('cambiarTabFormulario', tab: $tabConError);
+
             throw $e;
         }
 
