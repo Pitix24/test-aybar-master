@@ -79,6 +79,58 @@ class ProspectoEntregaFest extends Model implements HasMedia
     {
         return self::ESTADO_FIRMA[$this->estado_firma_contrato_firmado]['color'] ?? '#000000';
     }
+    
+    public function scopeFiltrado($query, array $f)
+    {
+        return $query
+            ->where('entrega_fest_id', $f['evento_id'])
+
+            ->when($f['buscar'] ?? null, function ($q) use ($f) {
+                $q->where(function ($sub) use ($f) {
+                    $sub->where('nombres', 'like', "%{$f['buscar']}%")
+                        ->orWhere('dni', 'like', "%{$f['buscar']}%")
+                        ->orWhere('email', 'like', "%{$f['buscar']}%")
+                        ->orWhere('celular', 'like', "%{$f['buscar']}%")
+                        ->orWhereHas('copropietarios', function ($cop) use ($f) {
+                            $cop->where('nombres', 'like', "%{$f['buscar']}%")
+                                ->orWhere('dni', 'like', "%{$f['buscar']}%")
+                                ->orWhere('email', 'like', "%{$f['buscar']}%")
+                                ->orWhere('celular', 'like', "%{$f['buscar']}%");
+                        });
+                });
+            })
+
+            ->when($f['proyecto_id'] ?? null, function ($q) use ($f) {
+                $q->where(function ($sub) use ($f) {
+                    $sub->where('proyecto_id', $f['proyecto_id'])
+                        ->orWhere('reubicado_proyecto_id', $f['proyecto_id']);
+                });
+            })
+
+            ->when($f['estado_backoffice']                    ?? null, fn($q) => $q->where('estado_backoffice', $f['estado_backoffice']))
+            ->when($f['estado_gestor_backoffice']             ?? null, fn($q) => $q->where('estado_gestor_backoffice', $f['estado_gestor_backoffice']))
+            ->when($f['estado_contrato_preeliminar_emitido']  ?? null, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $f['estado_contrato_preeliminar_emitido']))
+            ->when($f['estado_firma_contrato_firmado']        ?? null, fn($q) => $q->where('estado_firma_contrato_firmado', $f['estado_firma_contrato_firmado']))
+            ->when($f['grupo']                                ?? null, fn($q) => $q->where('grupo', $f['grupo']))
+            ->when($f['gestor_id']                            ?? null, fn($q) => $q->where('gestor_backoffice_id', $f['gestor_id']))
+            ->when($f['estado_cliente_id']                    ?? null, fn($q) => $q->where('estado_cliente_id', $f['estado_cliente_id']))
+
+            ->when(($f['filtro_confirmacion'] ?? '') !== '', function ($q) use ($f) {
+                $f['filtro_confirmacion'] === 'pendiente'
+                    ? $q->whereNull('preinvitacion_confirmada')
+                    : $q->where('preinvitacion_confirmada', $f['filtro_confirmacion']);
+            })
+
+            ->when(($f['filtro_invitacion'] ?? '') !== '', function ($q) use ($f) {
+                $f['filtro_invitacion'] === 'pendiente'
+                    ? $q->whereNull('invitacion_confirmada')
+                    : $q->where('invitacion_confirmada', $f['filtro_invitacion']);
+            })
+
+            // Rango de fechas (campo: fecha_firma)
+            ->when($f['fecha_firma_desde'] ?? null, fn($q) => $q->whereDate('fecha_firma', '>=', $f['fecha_firma_desde']))
+            ->when($f['fecha_firma_hasta'] ?? null, fn($q) => $q->whereDate('fecha_firma', '<=', $f['fecha_firma_hasta']));
+    }
 
     // ---------------------------------------------------------------
     // Fillable
