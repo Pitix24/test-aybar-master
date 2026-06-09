@@ -57,9 +57,9 @@
                             tener alguna consulta sobre el contrato, por favor comuníquese con el
                             Área de Formalización de Contratos al siguiente correo:</li>
                         <li style="margin-top: 8px;">
-                            <a href="mailto: legalcontratos@aybarsac.com" style="color: #004d55;
+                            <a href="mailto: formalizacioncontratos@aybarsac.com" style="color: #004d55;
                             font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 6px;">
-                                legalcontratos@aybarsac.com
+                                formalizacioncontratos@aybarsac.com
                             </a>
                         </li>
                     </ul>
@@ -203,7 +203,8 @@
 
                 <div
                     style="margin-top: 30px; padding: 20px; background: #fff1f2; border-radius: 15px; color: #d32f2f; font-weight: 700; display: inline-block;">
-                    <i class="fa-solid fa-circle-info"></i> Recuerda llevar tu DNI original físico el día de la cita.
+                    <i class="fa-solid fa-circle-info"></i> Le recordamos llegar puntualmente a su cita y portar su DNI vigente.
+                    En caso de contar con un copropietario, será necesario que este también asista y presente su documento de identidad para la atención correspondiente.
                 </div>
             </div>
         </div>
