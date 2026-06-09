@@ -45,28 +45,119 @@
             </div>
 
             <form wire:submit.prevent="save">
-                <div class="ef_input_group">
-                    <label for="fecha_firma" style="display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        Selecciona el día y hora para tu cita de firma de contrato
-                    </label>
-                    <div style="position: relative;">
-                        <input type="datetime-local" id="fecha_firma" wire:model="fecha_firma" class="ef_input"
-                            min="{{ now()->addDay()->format('Y-m-d\TH:i') }}"
-                            style="padding: 18px 20px; font-size: 1.1rem; border: 2px solid var(--ef-primary); border-radius: 40px;">
-                    </div>
-                    @error('fecha_firma')
-                    <span class="mensaje_error"
-                        style="color: #dc2626; font-size: 0.85rem; margin-top: 8px; display: block; font-weight: 600;">
-                        <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
-                    </span>
-                    @enderror
-                    <p style="font-size: 0.85rem; color: #888; margin-top: 10px; text-align: center;">Por favor,
-                        selecciona el día y la hora en que podrás acudir a firmar tu contrato.</p>
+                {{-- Aviso informativo --}}
+                <div style="background: #f0fdfa; border: 1px dashed #99f6e4; border-radius: 15px;
+                            padding: 16px; margin-bottom: 25px; color: #004d55; font-size: 0.9rem;">
+                    <p style="margin: 0 0 8px 0; font-weight: 700;">
+                        <i class="fa-solid fa-circle-info"></i> Información importante
+                    </p>
+                    <ul style="margin: 0; padding-left: 22px; line-height: 1.7;">
+                        <li>Le informamos que su contrato correspondiente al proyecto {{ $prospecto->proyecto?->nombre ?? 'N/A' }}
+                            ya se encuentra listo para firma. Le agradeceremos revisar el documento y
+                            programar su cita únicamente si no presenta observaciones. En caso de
+                            tener alguna consulta sobre el contrato, por favor comuníquese con el
+                            Área de Formalización de Contratos al siguiente correo:</li>
+                        <li style="margin-top: 8px;">
+                            <a href="mailto: legalcontratos@aybarsac.com" style="color: #004d55;
+                            font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 6px;">
+                                legalcontratos@aybarsac.com
+                            </a>
+                        </li>
+                    </ul>
                 </div>
 
+                {{-- Aviso informativo --}}
+                <div style="background: #f0fdfa; border: 1px dashed #99f6e4; border-radius: 15px;
+                            padding: 16px; margin-bottom: 25px; color: #004d55; font-size: 0.9rem;">
+                    <p style="margin: 0 0 8px 0; font-weight: 700;">
+                        <i class="fa-solid fa-circle-info"></i> Sobre nuestros horarios
+                    </p>
+                    <ul style="margin: 0; padding-left: 22px; line-height: 1.7;">
+                        <li>Debemos recordar que nuestros horarios de atención son de <strong>Lunes a Viernes</strong>.</li>
+                        <li>Horario: <strong>10:00 AM a 5:00 PM</strong>.</li>
+                    </ul>
+                </div>
+
+                {{-- Campo: FECHA --}}
+                <div class="ef_input_group">
+                    <label for="fecha" style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        Selecciona el día (Lunes a Viernes)
+                    </label>
+                    <input type="date"
+                        id="fecha"
+                        wire:model.live="fecha"
+                        class="ef_input"
+                        min="{{ $fechaMinima }}"
+                        onkeydown="return false"
+                        style="padding: 18px 20px; font-size: 1.1rem; border: 2px solid var(--ef-primary); border-radius: 40px;">
+                    @error('fecha')
+                        <span class="mensaje_error"
+                            style="color: #dc2626; font-size: 0.85rem; margin-top: 8px; display: block; font-weight: 600;">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                        </span>
+                    @enderror
+                </div>
+
+                {{-- Campo: HORA --}}
+                <div class="ef_input_group" style="margin-top: 20px;">
+                    <label for="hora" style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-clock"></i>
+                        Selecciona el horario disponible
+                    </label>
+
+                    {{-- 🆕 Wrapper con flecha custom --}}
+                    <div style="position: relative;">
+                        <select id="hora"
+                                wire:model="hora"
+                                class="ef_input"
+                                style="
+                                    padding: 18px 50px 18px 25px;
+                                    font-size: 1.1rem;
+                                    border: 2px solid var(--ef-primary);
+                                    border-radius: 40px;
+                                    background: #fff;
+                                    cursor: pointer;
+                                    width: 100%;
+                                    -webkit-appearance: none;
+                                    -moz-appearance: none;
+                                    appearance: none;
+                                ">
+                            <option value="">-- Elige un horario --</option>
+                            @foreach($horariosDisponibles as $slot)
+                                <option value="{{ $slot }}">{{ $slot }} hrs</option>
+                            @endforeach
+                        </select>
+
+                        {{-- 🆕 Flecha custom posicionada perfectamente --}}
+                        <i class="fa-solid fa-chevron-down"
+                        style="
+                            position: absolute;
+                            right: 25px;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            color: var(--ef-primary);
+                            pointer-events: none;
+                            font-size: 0.9rem;
+                        "></i>
+                    </div>
+
+                    @error('hora')
+                        <span class="mensaje_error"
+                            style="color: #dc2626; font-size: 0.85rem; margin-top: 8px; display: block; font-weight: 600;">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ $message }}
+                        </span>
+                    @enderror
+
+                    <p style="font-size: 0.85rem; color: #888; margin-top: 10px; text-align: center;">
+                        Recuerda llegar puntualmente para tu cita.
+                    </p>
+                </div>
+
+
                 <button type="submit" class="ef_btn_submit" wire:loading.attr="disabled"
-                    style="margin-top: 30px; background: linear-gradient(135deg, #f8cc00 0%, #ff7e33 100%); border-radius: 30px; padding: 20px; box-shadow: 0 10px 20px rgba(255,126,51,0.3);">
+                        style="margin-top: 30px; background: linear-gradient(135deg, #f8cc00 0%, #ff7e33 100%);
+                            border-radius: 30px; padding: 20px; box-shadow: 0 10px 20px rgba(255,126,51,0.3);">
                     <span wire:loading.remove style="display: flex; align-items: center; gap: 10px;">
                         Confirmar mi cita <i class="fa-solid fa-circle-check"></i>
                     </span>
@@ -125,5 +216,26 @@
     <div style="text-align: center; margin-top: 20px; padding-bottom: 40px; font-size: 13px; color: #888;">
         &copy; {{ date('Y') }} Aybar Corp - Todos los derechos reservados.
     </div>
-</div>
+
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            const fechaInput = document.getElementById('fecha');
+            if (!fechaInput) return;
+
+            fechaInput.addEventListener('change', function (e) {
+                const valor = e.target.value;
+                if (!valor) return;
+
+                const [yyyy, mm, dd] = valor.split('-').map(Number);
+                const fecha = new Date(yyyy, mm - 1, dd);
+                const dia = fecha.getDay();
+
+                if (dia === 0 || dia === 6) {
+                    alert('⚠️ Solo puedes agendar de Lunes a Viernes. Por favor selecciona otro día.');
+                    e.target.value = '';
+                    @this.set('fecha', '');
+                }
+            });
+        });
+    </script>
 </div>
