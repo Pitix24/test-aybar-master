@@ -191,6 +191,17 @@
                     </select>
                 </div>
             </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha Firma Desde</label>
+                    <input type="date" wire:model.live="fechaFirmaDesde">
+                </div>
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Fecha Firma Hasta</label>
+                    <input type="date" wire:model.live="fechaFirmaHasta">
+                </div>
+            </div>
         </div>
     </div>
 
