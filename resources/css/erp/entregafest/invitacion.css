@@ -299,6 +299,60 @@
     color: #333;
 }
 
+/* =================================================
+   SELECT CUSTOM con chevron alineado
+   ================================================= */
+.ef_select_wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.ef_select_wrapper .ef_input {
+    /* Mismo look que el input de fecha */
+    width: 100%;
+    padding: 18px 50px 18px 25px;
+    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+    color: #1f2937;
+    border: 2px solid var(--ef-primary);
+    border-radius: 40px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+
+    /* Oculta la flecha nativa del navegador */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* Transición suave para el focus */
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ef_select_wrapper .ef_input:focus {
+    box-shadow: 0 0 0 4px rgba(0, 77, 85, 0.12);
+}
+
+/* Flecha custom usando Font Awesome via pseudo-elemento */
+.ef_select_wrapper::after {
+    content: "\f078"; /* fa-chevron-down */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ef-primary);
+    pointer-events: none;
+    font-size: 0.9rem;
+}
+
+/* Color del placeholder (primer option vacío) */
+.ef_select_wrapper .ef_input:invalid,
+.ef_select_wrapper .ef_input option[value=""] {
+    color: #9ca3af;
+}
+
 /* RESPONSIVO */
 @media (max-width: 600px) {
     .ef_container {

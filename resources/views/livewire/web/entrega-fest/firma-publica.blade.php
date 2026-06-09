@@ -106,40 +106,13 @@
                         Selecciona el horario disponible
                     </label>
 
-                    {{-- 🆕 Wrapper con flecha custom --}}
-                    <div style="position: relative;">
-                        <select id="hora"
-                                wire:model="hora"
-                                class="ef_input"
-                                style="
-                                    padding: 18px 50px 18px 25px;
-                                    font-size: 1.1rem;
-                                    border: 2px solid var(--ef-primary);
-                                    border-radius: 40px;
-                                    background: #fff;
-                                    cursor: pointer;
-                                    width: 100%;
-                                    -webkit-appearance: none;
-                                    -moz-appearance: none;
-                                    appearance: none;
-                                ">
+                    <div class="ef_select_wrapper">
+                        <select id="hora" wire:model="hora" class="ef_input" required>
                             <option value="">-- Elige un horario --</option>
                             @foreach($horariosDisponibles as $slot)
                                 <option value="{{ $slot }}">{{ $slot }} hrs</option>
                             @endforeach
                         </select>
-
-                        {{-- 🆕 Flecha custom posicionada perfectamente --}}
-                        <i class="fa-solid fa-chevron-down"
-                        style="
-                            position: absolute;
-                            right: 25px;
-                            top: 50%;
-                            transform: translateY(-50%);
-                            color: var(--ef-primary);
-                            pointer-events: none;
-                            font-size: 0.9rem;
-                        "></i>
                     </div>
 
                     @error('hora')
@@ -153,7 +126,6 @@
                         Recuerda llegar puntualmente para tu cita.
                     </p>
                 </div>
-
 
                 <button type="submit" class="ef_btn_submit" wire:loading.attr="disabled"
                         style="margin-top: 30px; background: linear-gradient(135deg, #f8cc00 0%, #ff7e33 100%);
