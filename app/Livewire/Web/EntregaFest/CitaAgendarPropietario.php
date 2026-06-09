@@ -2,52 +2,64 @@
 
 namespace App\Livewire\Web\EntregaFest;
 
+use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 use App\Events\EntregaFest\EntregaFestCitaConfirmacion;
 use App\Models\ProspectoEntregaFest;
+use App\Support\RedirigeSiEventoConcluido;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 #[Layout('layouts.web.layout-web')]
 #[Title('Agenda tu Cita de Firma')]
 class CitaAgendarPropietario extends Component
 {
+    use RedirigeSiEventoConcluido;
+
     // ============ CONFIGURACIÓN DE HORARIOS ============
-    public const HORA_INICIO = '10:00';      // Hora mínima (inclusive)
-    public const HORA_FIN    = '17:00';      // Hora máxima (inclusive)
-    public const INTERVALO_MIN = 30;          // Intervalo en minutos entre slots
-    public const DIAS_ANTICIPACION = 3;       // Días mínimos de anticipación
-    public const CUPO_POR_HORARIO   = 2;   // Máx. citas simultáneas por slot
-    // =====================================================
+    public const HORA_INICIO       = '10:00';
+    public const HORA_FIN          = '17:00';
+    public const INTERVALO_MIN     = 30;
+    public const DIAS_ANTICIPACION = 3;
+    public const CUPO_POR_HORARIO  = 2;
+    // ====================================================
 
     public $slug;
     public $prospecto;
     public $evento;
     public string $direccion_sede = '';
 
-    // Campos del formulario (separados)
-    public string $fecha = '';   // YYYY-MM-DD
-    public string $hora  = '';   // HH:MM
-
-    // Campo combinado que se guarda en BD
+    public string $fecha = '';
+    public string $hora  = '';
     public string $fecha_firma = '';
 
-    // Datos derivados para la vista
     public string $fechaMinima = '';
     public array  $horariosDisponibles = [];
 
     public $enviado = false;
     public $mensaje_exito = '';
 
+    // ============================================================
+    //                          MOUNT
+    // ============================================================
+
     public function mount($slug, $propietarioId)
     {
-        $this->prospecto = ProspectoEntregaFest::with(['entregaFest', 'proyecto.unidadNegocio'])
+        $this->prospecto = ProspectoEntregaFest::with([
+                'entregaFest',
+                'proyecto.unidadNegocio',
+                'reubicadoProyecto.unidadNegocio', // 🆕 AGREGAR
+            ])
             ->findOrFail($propietarioId);
 
         $this->evento = $this->prospecto->entregaFest;
-        $this->direccion_sede = $this->prospecto->proyecto?->unidadNegocio?->direccion ?? '';
 
+        // 🆕 La sede ahora se calcula con el proyecto activo (reubicado u original)
+        $this->direccion_sede = $this->proyectoActivo?->unidadNegocio?->direccion ?? '';
+        
         if ($this->evento->slug !== $slug) abort(404);
 
         if ($this->prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
@@ -55,48 +67,36 @@ class CitaAgendarPropietario extends Component
         }
 
         if ($this->prospecto->fecha_firma) {
-            $this->enviado = true;
-            $this->fecha_firma = $this->prospecto->fecha_firma;
+            $this->enviado       = true;
+            $this->fecha_firma   = $this->prospecto->fecha_firma;
             $this->mensaje_exito = 'Ya tienes una cita agendada. Si necesitas cambiarla, comunícate con nosotros.';
             return;
         }
 
-        $this->fechaMinima = $this->calcularFechaMinima();
-
-        // 🆕 Inicializa con todos los slots libres (aún no hay fecha seleccionada)
+        $this->fechaMinima         = $this->calcularFechaMinima();
         $this->horariosDisponibles = $this->generarHorarios();
     }
 
-    /**
-     * Calcula la fecha mínima permitida sumando los días de anticipación.
-     * Si la fecha mínima cae en sábado o domingo, la mueve al lunes siguiente.
-     */
+    // ============================================================
+    //                       HELPERS DE HORARIO
+    // ============================================================
+
     protected function calcularFechaMinima(): string
     {
         $fecha = now()->addDays(self::DIAS_ANTICIPACION);
-
-        // Si cae en sábado (6) o domingo (0/7), mover al lunes
         while ($fecha->isWeekend()) {
             $fecha->addDay();
         }
-
         return $fecha->format('Y-m-d');
     }
 
-    /**
-     * Genera la lista de horarios entre HORA_INICIO y HORA_FIN.
-     * Si se pasa una fecha, marca los slots llenos como no disponibles.
-     *
-     * @param  string|null  $fecha  Fecha en formato Y-m-d
-     * @return array  [['hora' => 'HH:MM', 'disponible' => bool, 'ocupados' => int], ...]
-     */
     protected function generarHorarios(?string $fecha = null): array
     {
         $ocupacion = $fecha ? $this->obtenerOcupacionDelDia($fecha) : [];
 
         $horarios = [];
-        $inicio = \Carbon\Carbon::createFromFormat('H:i', self::HORA_INICIO);
-        $fin    = \Carbon\Carbon::createFromFormat('H:i', self::HORA_FIN);
+        $inicio = Carbon::createFromFormat('H:i', self::HORA_INICIO);
+        $fin    = Carbon::createFromFormat('H:i', self::HORA_FIN);
 
         while ($inicio->lte($fin)) {
             $horaStr  = $inicio->format('H:i');
@@ -115,34 +115,25 @@ class CitaAgendarPropietario extends Component
     }
 
     /**
-     * Cuenta cuántas citas hay por slot horario en una fecha dada.
-     * IMPORTANTE: Considera prospectos de TODOS los EntregaFest, ya que el equipo
-     * legal es compartido entre eventos.
-     *
-     * @param  string  $fecha  Y-m-d
-     * @return array  ['HH:MM' => cantidad, ...]
+     * 🆕 Optimizado: el conteo se hace en MySQL, no en PHP.
      */
     protected function obtenerOcupacionDelDia(string $fecha): array
     {
         return ProspectoEntregaFest::query()
             ->whereDate('fecha_firma', $fecha)
-            ->whereNotNull('fecha_firma')
-            // Excluimos al propio prospecto (por si está reagendando)
             ->where('id', '!=', $this->prospecto->id)
-            ->pluck('fecha_firma')
-            ->groupBy(fn ($f) => \Carbon\Carbon::parse($f)->format('H:i'))
-            ->map(fn ($items) => $items->count())
+            ->selectRaw("DATE_FORMAT(fecha_firma, '%H:%i') as hora, COUNT(*) as total")
+            ->groupBy('hora')
+            ->pluck('total', 'hora')
             ->toArray();
     }
 
+    // ============================================================
+    //                          REACTIVOS
+    // ============================================================
 
-    /**
-     * Hook de Livewire: se dispara automáticamente cuando $fecha cambia
-     * (gracias a wire:model.live="fecha").
-     */
     public function updatedFecha($value): void
     {
-        // Si el usuario limpió o seleccionó algo inválido, regeneramos sin restricciones
         if (!$value) {
             $this->horariosDisponibles = $this->generarHorarios();
             return;
@@ -150,7 +141,6 @@ class CitaAgendarPropietario extends Component
 
         $this->horariosDisponibles = $this->generarHorarios($value);
 
-        // 🛡️ Si la hora previamente seleccionada quedó ocupada al cambiar de fecha, la limpiamos
         if ($this->hora) {
             $slot = collect($this->horariosDisponibles)->firstWhere('hora', $this->hora);
             if (!$slot || !$slot['disponible']) {
@@ -158,6 +148,10 @@ class CitaAgendarPropietario extends Component
             }
         }
     }
+
+    // ============================================================
+    //                         VALIDACIÓN
+    // ============================================================
 
     protected function rules(): array
     {
@@ -168,47 +162,50 @@ class CitaAgendarPropietario extends Component
 
         return [
             'fecha' => 'required|date|after_or_equal:' . $this->fechaMinima,
-            'hora'  => ['required', 'date_format:H:i', \Illuminate\Validation\Rule::in($horariosValidos)],
+            'hora'  => ['required', 'date_format:H:i', Rule::in($horariosValidos)],
         ];
     }
 
     protected function messages(): array
     {
         return [
-            'fecha.required'        => 'Debes seleccionar la fecha de tu cita.',
-            'fecha.date'            => 'La fecha seleccionada no es válida.',
-            'fecha.after_or_equal'  => 'La fecha debe tener al menos ' . self::DIAS_ANTICIPACION . ' días de anticipación.',
-            'hora.required'         => 'Debes seleccionar el horario de tu cita.',
-            'hora.in'               => 'El horario seleccionado no está disponible.',
+            'fecha.required'       => 'Debes seleccionar la fecha de tu cita.',
+            'fecha.date'           => 'La fecha seleccionada no es válida.',
+            'fecha.after_or_equal' => 'La fecha debe tener al menos ' . self::DIAS_ANTICIPACION . ' días hábiles de anticipación.',
+            'hora.required'        => 'Debes seleccionar el horario de tu cita.',
+            'hora.in'              => 'El horario seleccionado no está disponible.',
         ];
     }
+
+    // ============================================================
+    //                            SAVE
+    // ============================================================
 
     public function save()
     {
         $this->validate();
 
-        $fechaCarbon = \Carbon\Carbon::parse($this->fecha);
-        if ($fechaCarbon->isWeekend()) {
+        // Validación: día hábil
+        if (Carbon::parse($this->fecha)->isWeekend()) {
             $this->addError('fecha', 'Solo puedes agendar de Lunes a Viernes.');
             return;
         }
 
-        $fechaFirmaCompleta = "{$this->fecha} {$this->hora}:00";
-        $fechaCompletaCarbon = \Carbon\Carbon::parse($fechaFirmaCompleta);
-
-        if ($fechaCompletaCarbon->lt(now()->addDays(self::DIAS_ANTICIPACION)->startOfDay())) {
-            $this->addError('fecha', 'La fecha y hora seleccionadas no cumplen con la anticipación mínima.');
+        // 🆕 Validación de anticipación consistente con fechaMinima (ajustada por weekends)
+        if ($this->fecha < $this->fechaMinima) {
+            $this->addError('fecha', 'La fecha seleccionada no cumple con la anticipación mínima requerida.');
             return;
         }
 
-        // 🆕 RE-VALIDACIÓN DE CUPO (defensa contra concurrencia)
+        $fechaFirmaCompleta = "{$this->fecha} {$this->hora}:00";
+
+        // Re-validación de cupo (defensa contra concurrencia)
         $ocupados = ProspectoEntregaFest::whereDate('fecha_firma', $this->fecha)
             ->whereTime('fecha_firma', "{$this->hora}:00")
             ->where('id', '!=', $this->prospecto->id)
             ->count();
 
         if ($ocupados >= self::CUPO_POR_HORARIO) {
-            // Refrescar la UI con los slots actualizados
             $this->horariosDisponibles = $this->generarHorarios($this->fecha);
             $this->hora = '';
             $this->addError('hora',
@@ -222,8 +219,8 @@ class CitaAgendarPropietario extends Component
 
             EntregaFestCitaConfirmacion::dispatch($this->prospecto->refresh());
 
-            $this->enviado = true;
-            $this->fecha_firma = $fechaFirmaCompleta;
+            $this->enviado       = true;
+            $this->fecha_firma   = $fechaFirmaCompleta;
             $this->mensaje_exito = '¡Listo! Tu cita de firma ha sido agendada con éxito. ' .
                 'Te hemos enviado los detalles de confirmación a tu correo y WhatsApp.';
 
@@ -236,6 +233,58 @@ class CitaAgendarPropietario extends Component
             session()->flash('error', 'Ocurrió un error al guardar tu cita. Por favor intenta más tarde.');
         }
     }
+
+    // ============================================================
+    //                    UBICACIÓN DEL LOTE
+    // ============================================================
+
+    /**
+     * Indica si el prospecto fue reubicado a otra manzana/lote.
+     */
+    #[Computed]
+    public function fueReubicado(): bool
+    {
+        return !empty($this->prospecto->reubicado_manzana)
+            || !empty($this->prospecto->reubicado_lote);
+    }
+
+    /**
+     * Manzana a mostrar al cliente: la reubicada si existe, o la original.
+     */
+    #[Computed]
+    public function manzanaActiva(): ?string
+    {
+        return $this->fueReubicado
+            ? $this->prospecto->reubicado_manzana
+            : $this->prospecto->manzana;
+    }
+
+    /**
+     * Lote a mostrar al cliente: el reubicado si existe, o el original.
+     */
+    #[Computed]
+    public function loteActivo(): ?string
+    {
+        return $this->fueReubicado
+            ? $this->prospecto->reubicado_lote
+            : $this->prospecto->lote;
+    }
+
+    /**
+     * Proyecto a mostrar: el reubicado si existe, o el original.
+     * (Por consistencia, ya que si fue reubicado probablemente cambió de proyecto también.)
+     */
+    #[Computed]
+    public function proyectoActivo()
+    {
+        return $this->fueReubicado && $this->prospecto->reubicadoProyecto
+            ? $this->prospecto->reubicadoProyecto
+            : $this->prospecto->proyecto;
+    }
+
+    // ============================================================
+    //                           RENDER
+    // ============================================================
 
     public function render()
     {

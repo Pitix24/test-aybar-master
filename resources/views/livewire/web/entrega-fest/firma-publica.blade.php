@@ -31,15 +31,15 @@
                 </div>
                 <div class="ef_info_group">
                     <label>Proyecto</label>
-                    <span>{{ $prospecto->proyecto?->nombre ?? 'N/A' }}</span>
+                    <span>{{ $this->proyectoActivo?->nombre ?? 'N/A' }}</span>
                 </div>
                 <div class="ef_info_group">
                     <label>Dirección de la Sede Principal</label>
                     <span>{{ $direccion_sede ?: 'N/A' }}</span>
                 </div>
                 <div class="ef_info_group">
-                    <label>Terreno / MZ</label>
-                    <span>{{ $prospecto->lote }} - {{ $prospecto->manzana }}</span>
+                    <label>Manzana - Lote</label>
+                    <span>{{ $this->manzanaActiva ?? 'N/A' }} - {{ $this->loteActivo ?? 'N/A' }}</span>
                 </div>
             </div>
 
