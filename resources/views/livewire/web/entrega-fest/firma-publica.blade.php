@@ -72,7 +72,7 @@
                         <i class="fa-solid fa-circle-info"></i> Sobre nuestros horarios
                     </p>
                     <ul style="margin: 0; padding-left: 22px; line-height: 1.7;">
-                        <li>Debemos recordar que nuestros horarios de atención son los siguientes. <strong></strong>.</li>
+                        <li>Debemos recordar que nuestros horarios de atención son los siguientes.</li>
                         <li>Lunes a Viernes: <strong>10:00 AM a 5:00 PM</strong>.</li>
                     </ul>
                 </div>
