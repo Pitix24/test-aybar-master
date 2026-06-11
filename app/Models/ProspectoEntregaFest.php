@@ -107,6 +107,8 @@ class ProspectoEntregaFest extends Model implements HasMedia
                 });
             })
 
+            ->when($f['gestor_legal_id'] ?? null, fn($q) => $q->where('gestor_legal_id', $f['gestor_legal_id']))
+
             ->when($f['estado_backoffice']                    ?? null, fn($q) => $q->where('estado_backoffice', $f['estado_backoffice']))
             ->when($f['estado_gestor_backoffice']             ?? null, fn($q) => $q->where('estado_gestor_backoffice', $f['estado_gestor_backoffice']))
             ->when($f['estado_contrato_preeliminar_emitido']  ?? null, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $f['estado_contrato_preeliminar_emitido']))

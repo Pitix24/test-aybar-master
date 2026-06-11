@@ -26,7 +26,7 @@ class EntregaFestProspecto extends Component
         'buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice',
         'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado',
         'grupo', 'filtro_confirmacion', 'filtro_invitacion', 'gestor_id',
-        'estado_cliente_id', 'fechaFirmaDesde', 'fechaFirmaHasta', 'perPage',
+        'estado_cliente_id', 'gestor_legal_id', 'fechaFirmaDesde', 'fechaFirmaHasta', 'perPage',
     ];
 
     #[Url(as: 'q')]
@@ -65,6 +65,9 @@ class EntregaFestProspecto extends Component
     #[Url(keep: true)]
     public $estado_cliente_id = '';
 
+    #[Url(keep: true)]
+    public $gestor_legal_id = '';
+
     #[Url(as: 'firma_desde')]
     public $fechaFirmaDesde = null;
 
@@ -77,6 +80,7 @@ class EntregaFestProspecto extends Component
     public $proyectos = [];
     public $usuarios = [];
     public $estados_cliente = [];
+    public $gestoresLegales = [];
 
     // ============================================================
     //                          LIFECYCLE
@@ -88,6 +92,7 @@ class EntregaFestProspecto extends Component
         $this->proyectos       = $this->evento->proyectos;
         $this->usuarios        = \App\Models\User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
         $this->estados_cliente = \App\Models\EntregaFestEstadoCliente::where('activo', true)->orderBy('nombre')->get();
+        $this->gestoresLegales = \App\Models\User::where('activo', true)->whereHas('areas', fn($q) => $q->where('nombre', 'Legal'))->orderBy('name')->get();
 
         $this->cargarStats();
     }
@@ -126,6 +131,7 @@ class EntregaFestProspecto extends Component
             'filtro_invitacion'                    => $this->filtro_invitacion,
             'gestor_id'                            => $this->gestor_id,
             'estado_cliente_id'                    => $this->estado_cliente_id,
+            'gestor_legal_id'                      => $this->gestor_legal_id,
             'fecha_firma_desde'                    => $this->fechaFirmaDesde,
             'fecha_firma_hasta'                    => $this->fechaFirmaHasta,
         ];
