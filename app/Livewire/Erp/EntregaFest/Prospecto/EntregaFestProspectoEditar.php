@@ -45,6 +45,13 @@ class EntregaFestProspectoEditar extends Component
     public $responsable_llamada_id = '', $responsable_llamada_fecha_asignacion;
 
     // Legal
+    public $gestor_legal_id;
+    public $legal_fecha_asignacion;
+    public $observacion_gestor_legal;
+
+    public $validador_legal_id;
+    public $fecha_firma_presencial;     // 🆕 manual
+    public $fecha_validacion_firma;     // 🆕 auto
     public $estado_contrato_preeliminar_emitido, $estado_firma_contrato_firmado;
     public $fecha_firma, $fecha_generacion_contrato;
 
@@ -174,7 +181,19 @@ class EntregaFestProspectoEditar extends Component
             ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_eecc)) : null;
         $this->estado_backoffice = $this->prospecto->estado_backoffice;
 
-        // Legal
+        // ============ Legal: Gestor ============
+        $this->gestor_legal_id = $this->prospecto->gestor_legal_id;
+        $this->legal_fecha_asignacion = $this->prospecto->legal_fecha_asignacion
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->legal_fecha_asignacion)) : null;
+        $this->observacion_gestor_legal = $this->prospecto->observacion_gestor_legal;
+
+        // ============ Legal: Validador / Firma ============
+        $this->validador_legal_id = $this->prospecto->validador_legal_id;
+        $this->fecha_firma_presencial = $this->prospecto->fecha_firma_presencial
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_firma_presencial)) : null;
+        $this->fecha_validacion_firma = $this->prospecto->fecha_validacion_firma
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_firma)) : null;
+
         $this->estado_contrato_preeliminar_emitido = $this->prospecto->estado_contrato_preeliminar_emitido;
         $this->estado_firma_contrato_firmado = $this->prospecto->estado_firma_contrato_firmado;
         $this->fecha_firma = $this->prospecto->fecha_firma
@@ -575,43 +594,46 @@ class EntregaFestProspectoEditar extends Component
 
     public function updateLegal()
     {
-        // 1. Verificación manual para disparar la Alerta SweetAlert
+        // 1. PDF requerido cuando estado = CONFORME
         $isConforme = ($this->estado_contrato_preeliminar_emitido === 'CONFORME');
-        $hasFile = $this->prospecto->hasMedia('contrato-preliminar');
+        $hasFile    = $this->prospecto->hasMedia('contrato-preliminar');
 
         if ($isConforme && !$hasFile && !$this->archivo_contrato_preeliminar) {
             $this->dispatch('alertaLivewire', [
-                'type' => 'warning',
+                'type'  => 'warning',
                 'title' => '¡Contrato requerido!',
-                'text' => 'Para establecer el estado en CONFORME, debes adjuntar obligatoriamente el contrato preliminar en formato PDF.',
+                'text'  => 'Para establecer el estado en CONFORME, debes adjuntar obligatoriamente el contrato preliminar en formato PDF.',
             ]);
             return;
         }
 
-        // 2. Validación estándar (tipo de archivo, tamaño, etc)
+        // 2. Validación
         $rules = [
+            'gestor_legal_id'                     => 'nullable|exists:users,id',
+            'observacion_gestor_legal'            => 'nullable|string',
             'estado_contrato_preeliminar_emitido' => 'required|in:PENDIENTE,GENERADO,OBSERVADO,CONFORME',
-            'archivo_contrato_preeliminar' => [
-                'nullable', // Se deja nullable porque ya validamos manualmente la obligatoriedad arriba
-                'file',
-                'mimes:pdf',
-                'max:10240', // 10MB
-            ],
+            'archivo_contrato_preeliminar'        => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
         ];
-
         $this->validate($rules);
 
-        // 3. Subir archivo si ha sido seleccionado
+        // 🆕 3. Detectar PRIMERA transición a CONFORME (criterio: aún no hay fecha registrada)
+        $primeraVezConforme = ($isConforme && !$this->prospecto->fecha_generacion_contrato);
+
+        // 4. legal_fecha_asignacion: actualizar si cambió el gestor
+        if ($this->gestor_legal_id && $this->prospecto->gestor_legal_id != $this->gestor_legal_id) {
+            $this->legal_fecha_asignacion = now()->format('Y-m-d\TH:i');
+        }
+
+        // 5. Subir PDF (lógica existente, sin cambios)
         if ($this->archivo_contrato_preeliminar) {
             try {
-                $mediaAnterior = $this->prospecto->getFirstMedia('contrato-preliminar');
+                $mediaAnterior     = $this->prospecto->getFirstMedia('contrato-preliminar');
                 $mediaAnteriorData = $mediaAnterior ? [
-                    'id' => $mediaAnterior->id,
+                    'id'        => $mediaAnterior->id,
                     'file_name' => $mediaAnterior->file_name,
-                    'size' => $mediaAnterior->size,
+                    'size'      => $mediaAnterior->size,
                 ] : null;
 
-                // Reemplazar colección anterior
                 $this->prospecto->clearMediaCollection('contrato-preliminar');
 
                 $mediaNueva = $this->prospecto->addMedia($this->archivo_contrato_preeliminar->getRealPath())
@@ -619,56 +641,116 @@ class EntregaFestProspectoEditar extends Component
                     ->toMediaCollection('contrato-preliminar');
 
                 $this->registrarAuditoriaContrato($mediaAnterior ? 'reemplazado' : 'subido', [
-                    'id' => $mediaNueva->id,
+                    'id'        => $mediaNueva->id,
                     'file_name' => $mediaNueva->file_name,
                 ], [
                     'media_anterior' => $mediaAnteriorData,
                 ]);
 
                 Log::channel('entrega-fest')->info('[LEGAL UPLOAD] Contrato preliminar guardado', [
-                    'usuario_id' => Auth::id(),
+                    'usuario_id'   => Auth::id(),
                     'prospecto_id' => $this->prospecto->id,
-                    'accion' => $mediaAnterior ? 'reemplazado' : 'subido',
-                    'media_id' => $mediaNueva->id,
+                    'accion'       => $mediaAnterior ? 'reemplazado' : 'subido',
+                    'media_id'     => $mediaNueva->id,
                 ]);
 
                 $this->archivo_contrato_preeliminar = null;
-                $this->prospecto->refresh(); // Refrescar para que el Blade vea la media inmediatamente
+                $this->prospecto->refresh();
             } catch (\Exception $e) {
                 Log::channel('entrega-fest')->error('[LEGAL UPLOAD] ' . $e->getMessage());
                 $this->dispatch('alertaLivewire', [
-                    'type' => 'error',
+                    'type'  => 'error',
                     'title' => 'Error de carga',
-                    'text' => 'No se pudo guardar el archivo PDF. Inténtelo de nuevo.'
+                    'text'  => 'No se pudo guardar el archivo PDF. Inténtelo de nuevo.',
                 ]);
                 return;
             }
         }
 
-        // 4. Actualización del estado
-        $this->handleUpdate([
+        // 6. Construir payload
+        $payload = [
+            'gestor_legal_id'                     => $this->gestor_legal_id ?: null,
+            'legal_fecha_asignacion'              => $this->legal_fecha_asignacion,
+            'observacion_gestor_legal'            => $this->observacion_gestor_legal,
             'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
-        ], 'PROSPECTO EDITAR - LEGAL');
+        ];
 
-        // Si se aprueba legal (CONFORME), disparamos el evento de cita
-        if ($this->estado_contrato_preeliminar_emitido === 'CONFORME') {
-            //EntregaFestCitaAgendar::dispatch($this->prospecto->refresh());
-            EntregaFestContratoPreliminar::dispatch($this->prospecto->refresh());
+        // 🆕 7. Si es la PRIMERA vez en CONFORME, registramos fecha automáticamente
+        if ($primeraVezConforme) {
+            $ahora = now();
+            $payload['fecha_generacion_contrato'] = $ahora;
+            $this->fecha_generacion_contrato      = $ahora->format('Y-m-d\TH:i');
+
+            Log::channel('entrega-fest')->info('[LEGAL] Contrato Preliminar marcado CONFORME por primera vez', [
+                'prospecto_id'              => $this->prospecto->id,
+                'usuario_id'                => Auth::id(),
+                'fecha_generacion_contrato' => $ahora->toDateTimeString(),
+            ]);
+        }
+
+        // 8. Persistir
+        $this->handleUpdate($payload, 'PROSPECTO EDITAR - LEGAL');
+
+        // 🆕 9. Mensaje informativo si fue primera vez (el flujo n8n se dispara solo, ya existe)
+        if ($primeraVezConforme) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'success',
+                'title' => '¡Contrato Conforme registrado!',
+                'text'  => 'Se registró automáticamente la fecha de generación del contrato.',
+            ]);
         }
     }
 
     public function updateLegalSupervisor()
     {
+        // 🛡️ VALIDACIÓN CRUZADA 1: Para FIRMADO se requiere gestor asignado
+        if ($this->estado_firma_contrato_firmado === 'FIRMADO' && !$this->prospecto->gestor_legal_id) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'warning',
+                'title' => 'Gestor Legal requerido',
+                'text'  => 'No puedes confirmar la firma sin haber asignado un Gestor Legal previamente.',
+            ]);
+            return;
+        }
+
+        // 🛡️ VALIDACIÓN CRUZADA 2: El contrato preliminar debe estar CONFORME
+        if ($this->estado_firma_contrato_firmado === 'FIRMADO'
+            && !in_array($this->prospecto->estado_contrato_preeliminar_emitido, ['CONFORME'])) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'warning',
+                'title' => 'Contrato Preliminar requerido',
+                'text'  => 'No puedes confirmar la firma sin haber confirmado el contrato preliminar.',
+            ]);
+            return;
+        }
+
+        // 🛡️ VALIDACIÓN CRUZADA 3: Si marca FIRMADO, debe llenar la fecha presencial
+        if ($this->estado_firma_contrato_firmado === 'FIRMADO' && !$this->fecha_firma_presencial) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'warning',
+                'title' => 'Fecha presencial requerida',
+                'text'  => 'Debes registrar la fecha real en que se realizó la firma presencial.',
+            ]);
+            return;
+        }
+
+        // 🆕 Auto-registrar validador y fecha de validación en el momento de guardar
+        $this->validador_legal_id    = Auth::id();
+        $this->fecha_validacion_firma = now()->format('Y-m-d\TH:i');
+
         $rules = [
             'estado_firma_contrato_firmado' => 'required|in:PENDIENTE,FIRMADO',
-            'fecha_generacion_contrato' => 'nullable|date',
+            'fecha_firma_presencial'        => 'nullable|date',
+            'validador_legal_id'            => 'required|exists:users,id',
+            'fecha_validacion_firma'        => 'required|date',
         ];
-
         $this->validate($rules);
 
         $this->handleUpdate([
             'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
-            'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
+            'fecha_firma_presencial'        => $this->fecha_firma_presencial,
+            'validador_legal_id'            => $this->validador_legal_id,
+            'fecha_validacion_firma'        => $this->fecha_validacion_firma,
         ], 'PROSPECTO EDITAR - LEGAL SUPERVISOR');
     }
 
@@ -911,11 +993,19 @@ class EntregaFestProspectoEditar extends Component
 
     public function render()
     {
-        $usuarios = User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
+        $usuarios        = User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
         $usuariosLlamada = User::role(['asesor-atc', 'asesor-backoffice', 'supervisor-backoffice'])->get();
+
+        // 🆕 Filtro por área Legal (sin importar el rol)
+        $usuariosLegal = User::where('activo', true)
+            ->whereHas('areas', fn($q) => $q->where('nombre', 'Legal'))
+            ->orderBy('name')
+            ->get();
+
         return view('livewire.erp.entrega-fest.prospecto.entrega-fest-prospecto-editar', [
-            'usuarios' => $usuarios,
+            'usuarios'        => $usuarios,
             'usuariosLlamada' => $usuariosLlamada,
+            'usuariosLegal'   => $usuariosLegal,
         ]);
     }
 
