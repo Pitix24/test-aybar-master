@@ -60,6 +60,7 @@ class EntregaFestProspectoEditar extends Component
 
     public $link_preinvitacion = '';
     public $link_invitacion = '';
+    public $link_cita_contrato = '';
 
     public $proyectos = [];
     public $estados_cliente = [];
@@ -207,6 +208,12 @@ class EntregaFestProspectoEditar extends Component
         ]);
 
         $this->link_invitacion = route('entrega-fest.asistencia-invitacion.propietario', [
+            'slug' => $this->evento->slug,
+            'propietarioId' => $this->prospecto->id,
+        ]);
+
+        // 🆕 Link de Cita de Contrato
+        $this->link_cita_contrato = route('entrega-fest.cita-agendar.propietario', [
             'slug' => $this->evento->slug,
             'propietarioId' => $this->prospecto->id,
         ]);
@@ -714,8 +721,10 @@ class EntregaFestProspectoEditar extends Component
         }
 
         // 🛡️ VALIDACIÓN CRUZADA 2: El contrato preliminar debe estar CONFORME
-        if ($this->estado_firma_contrato_firmado === 'FIRMADO'
-            && !in_array($this->prospecto->estado_contrato_preeliminar_emitido, ['CONFORME'])) {
+        if (
+            $this->estado_firma_contrato_firmado === 'FIRMADO'
+            && !in_array($this->prospecto->estado_contrato_preeliminar_emitido, ['CONFORME'])
+        ) {
             $this->dispatch('alertaLivewire', [
                 'type'  => 'warning',
                 'title' => 'Contrato Preliminar requerido',
@@ -998,7 +1007,7 @@ class EntregaFestProspectoEditar extends Component
 
         // 🆕 Filtro por área Legal (sin importar el rol)
         $usuariosLegal = User::where('activo', true)
-            ->whereHas('areas', fn($q) => $q->where('nombre', 'Legal'))
+            ->whereHas('areas', fn($q) => $q->where('nombre', 'LEGAL'))
             ->orderBy('name')
             ->get();
 

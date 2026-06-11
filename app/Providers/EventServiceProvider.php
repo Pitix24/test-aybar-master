@@ -41,6 +41,7 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\EntregaFest\EntregaFestCitaConfirmacion::class => [
             \App\Listeners\EntregaFest\EntregaFestCitaConfirmacionN8N::class,
+            \App\Listeners\EntregaFest\NotificarGestorLegalCitaConfirmada::class,
         ],
 
         \App\Events\EntregaFest\EntregaFestCitaRecordatorio::class => [

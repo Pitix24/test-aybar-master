@@ -23,10 +23,21 @@ class EntregaFestProspecto extends Component
 
     /** Lista centralizada de propiedades que son filtros. */
     protected array $propiedadesFiltro = [
-        'buscar', 'proyecto_id', 'estado_backoffice', 'estado_gestor_backoffice',
-        'estado_contrato_preeliminar_emitido', 'estado_firma_contrato_firmado',
-        'grupo', 'filtro_confirmacion', 'filtro_invitacion', 'gestor_id',
-        'estado_cliente_id', 'gestor_legal_id', 'fechaFirmaDesde', 'fechaFirmaHasta', 'perPage',
+        'buscar',
+        'proyecto_id',
+        'estado_backoffice',
+        'estado_gestor_backoffice',
+        'estado_contrato_preeliminar_emitido',
+        'estado_firma_contrato_firmado',
+        'grupo',
+        'filtro_confirmacion',
+        'filtro_invitacion',
+        'gestor_id',
+        'estado_cliente_id',
+        'gestor_legal_id',
+        'fechaFirmaDesde',
+        'fechaFirmaHasta',
+        'perPage',
     ];
 
     #[Url(as: 'q')]
@@ -92,7 +103,7 @@ class EntregaFestProspecto extends Component
         $this->proyectos       = $this->evento->proyectos;
         $this->usuarios        = \App\Models\User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
         $this->estados_cliente = \App\Models\EntregaFestEstadoCliente::where('activo', true)->orderBy('nombre')->get();
-        $this->gestoresLegales = \App\Models\User::where('activo', true)->whereHas('areas', fn($q) => $q->where('nombre', 'Legal'))->orderBy('name')->get();
+        $this->gestoresLegales = \App\Models\User::where('activo', true)->whereHas('areas', fn($q) => $q->where('nombre', 'LEGAL'))->orderBy('name')->get();
 
         $this->cargarStats();
     }
@@ -142,12 +153,16 @@ class EntregaFestProspecto extends Component
      */
     protected function validarRangoFechas(): void
     {
-        if ($this->fechaFirmaDesde && $this->fechaFirmaHasta &&
-            $this->fechaFirmaDesde > $this->fechaFirmaHasta) {
+        if (
+            $this->fechaFirmaDesde && $this->fechaFirmaHasta &&
+            $this->fechaFirmaDesde > $this->fechaFirmaHasta
+        ) {
 
             $this->fechaFirmaHasta = $this->fechaFirmaDesde;
-            session()->flash('aviso_filtro',
-                'La fecha "Hasta" no puede ser menor que "Desde". Se ajustó automáticamente.');
+            session()->flash(
+                'aviso_filtro',
+                'La fecha "Hasta" no puede ser menor que "Desde". Se ajustó automáticamente.'
+            );
         }
     }
 
@@ -235,9 +250,15 @@ class EntregaFestProspecto extends Component
     {
         $items = ProspectoEntregaFest::query()
             ->with([
-                'proyecto', 'reubicadoProyecto', 'user', 'invitado', 'gestor',
-                'copropietarios', 'historialComunicaciones',
-                'copropietarios.historialComunicaciones', 'estadoCliente',
+                'proyecto',
+                'reubicadoProyecto',
+                'user',
+                'invitado',
+                'gestor',
+                'copropietarios',
+                'historialComunicaciones',
+                'copropietarios.historialComunicaciones',
+                'estadoCliente',
             ])
             ->filtrado($this->filtrosActivos())
             ->orderBy('nombres', 'asc')
