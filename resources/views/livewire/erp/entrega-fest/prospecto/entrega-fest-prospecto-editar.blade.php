@@ -118,6 +118,32 @@
                         </div>
                     </div>
                 </div>
+                @if($prospecto->estado_contrato_preeliminar_emitido === 'CONFORME')
+                <div class="g_gap_small" style="margin-top: 10px;">
+                    <label class="g_label" style="font-size: 0.75rem;">
+                        Link Cita de Contrato
+                        @if(!$prospecto->fecha_firma)
+                            <span class="g_badge light" style="font-size: 0.65rem; margin-left: 5px;">Pendiente de agendar</span>
+                        @else
+                            <span class="g_badge success" style="font-size: 0.65rem; margin-left: 5px; background:#8e44ad; color:#fff;">
+                                Agendada: {{ \Carbon\Carbon::parse($prospecto->fecha_firma)->format('d/m/Y H:i') }}
+                            </span>
+                        @endif
+                    </label>
+                    <div class="g_input_grupo" x-data="{ copied: false }">
+                        <input type="text" class="g_input small" value="{{ $link_cita_contrato }}" readonly>
+                        <button type="button" class="g_boton_icono info small"
+                            @click="navigator.clipboard.writeText('{{ $link_cita_contrato }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                            title="Copiar enlace">
+                            <i class="fa-solid" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                        </button>
+                        <a href="{{ $link_cita_contrato }}" target="_blank" class="g_boton_icono dark small"
+                            title="Ver enlace">
+                            <i class="fa-solid fa-external-link"></i>
+                        </a>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
 

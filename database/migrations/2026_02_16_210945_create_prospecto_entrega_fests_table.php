@@ -18,8 +18,8 @@ return new class extends Migration {
             $table->foreignId('user_id')->nullable()->constrained(); // quien lo registró
 
             // Auditoría: usuario que creó/actualizó el prospecto
-            $table->foreignId('created_by')->nullable()->after('user_id')->constrained('users')->nullOnDelete();
-            $table->foreignId('updated_by')->nullable()->after('created_by')->constrained('users')->nullOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->string('dni', 15);
             $table->string('nombres');
@@ -38,20 +38,20 @@ return new class extends Migration {
 
             $table->foreignId('estado_cliente_id')->nullable()->constrained('entrega_fest_estado_clientes')->nullOnDelete();
 
-            // BackOffice
+            // ============ BackOffice ============
             $table->enum('grupo', [
                 'A',
                 'B',
                 'C',
                 'D'
             ])->default('A');
-            $table->foreignId('responsable_llamada_id')->nullable()->constrained('users')->nullOnDelete(); //responsable llamadas
-            $table->dateTime('responsable_llamada_fecha_asignacion')->nullable(); //fecha asignacion responsable llamadas
-            $table->foreignId('gestor_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //gestor backoffice
-            $table->dateTime('gestor_fecha_asignacion')->nullable(); //fecha asignacion gestor
-            $table->dateTime('fecha_culminacion_eecc')->nullable(); //fecha culminación estado de cuenta
-            $table->string('link_carpeta_eecc')->nullable(); // esto será un link
-            $table->string('link_eecc_firmado')->nullable(); // esto será un link
+            $table->foreignId('responsable_llamada_id')->nullable()->constrained('users')->nullOnDelete(); // responsable llamadas
+            $table->dateTime('responsable_llamada_fecha_asignacion')->nullable(); // fecha asignacion responsable llamadas
+            $table->foreignId('gestor_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); // gestor backoffice
+            $table->dateTime('gestor_fecha_asignacion')->nullable(); // fecha asignacion gestor
+            $table->dateTime('fecha_culminacion_eecc')->nullable(); // fecha culminación estado de cuenta
+            $table->string('link_carpeta_eecc')->nullable(); // link
+            $table->string('link_eecc_firmado')->nullable(); // link
             $table->enum('estado_gestor_backoffice', [
                 'PENDIENTE',
                 'BANCARIZAR',
@@ -61,8 +61,8 @@ return new class extends Migration {
                 'VIGENTE'
             ])->default('PENDIENTE');
             $table->text('observacion_gestor_backoffice')->nullable();
-            $table->foreignId('validador_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); //validador backoffice
-            $table->dateTime('fecha_validacion_eecc')->nullable(); //fecha validación estado de cuenta
+            $table->foreignId('validador_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); // validador backoffice
+            $table->dateTime('fecha_validacion_eecc')->nullable(); // fecha validación estado de cuenta
             $table->enum('estado_backoffice', [
                 'PENDIENTE',
                 'BANCARIZAR',
@@ -72,7 +72,7 @@ return new class extends Migration {
                 'VIGENTE'
             ])->default('PENDIENTE');
 
-            // Legal
+            // ============ Legal ============
             $table->enum('estado_contrato_preeliminar_emitido', [
                 'PENDIENTE',
                 'GENERADO',
@@ -80,15 +80,32 @@ return new class extends Migration {
                 'CONFORME'
             ])->default('PENDIENTE');
 
+            // ============ GESTOR LEGAL ============
+            $table->foreignId('gestor_legal_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->dateTime('legal_fecha_asignacion')->nullable();
+            $table->text('observacion_gestor_legal')->nullable();
+
+            // ============ VALIDADOR LEGAL (FIRMA) ============
+            $table->foreignId('validador_legal_id')->nullable()->constrained('users')->nullOnDelete();
+            // Fecha REAL de la firma presencial (manual, la llena el validador)
+            $table->dateTime('fecha_firma_presencial')->nullable();
+            // Fecha de auditoría: cuándo el validador llenó el formulario (auto = now())
+            $table->dateTime('fecha_validacion_firma')->nullable();
+
+            // ============ FIRMA CONTRATO ============
             $table->enum('estado_firma_contrato_firmado', [
                 'PENDIENTE',
                 'FIRMADO'
             ])->default('PENDIENTE');
-            $table->dateTime('fecha_firma')->nullable(); //fecha firma contrato
-            $table->dateTime('fecha_generacion_contrato')->nullable(); //fecha generacion contrato
+            $table->dateTime('fecha_firma')->nullable(); // fecha firma contrato
+            $table->dateTime('fecha_generacion_contrato')->nullable(); // fecha generacion contrato
 
             $table->timestamps();
-            $table->unique(['entrega_fest_id', 'proyecto_id', 'lote', 'manzana'], 'prospecto_entrega_fest_unique');
+
+            $table->unique(
+                ['entrega_fest_id', 'proyecto_id', 'lote', 'manzana'],
+                'prospecto_entrega_fest_unique'
+            );
         });
     }
 

@@ -39,7 +39,7 @@ class EntregaFestProspectoExport implements FromQuery, WithHeadings, ShouldAutoS
         return ProspectoEntregaFest::query()
             ->with([
                 'proyecto', 'reubicadoProyecto', 'user', 'invitado',
-                'gestor', 'validador', 'estadoCliente',
+                'gestor', 'gestorLegal', 'validador', 'estadoCliente',
             ])
             ->filtrado($this->filtros)
             ->orderBy('id', 'desc');
@@ -81,6 +81,7 @@ class EntregaFestProspectoExport implements FromQuery, WithHeadings, ShouldAutoS
             $p->validador->name ?? 'No asignado',
             $this->formatFecha($p->fecha_validacion_eecc),
             $p->estado_backoffice,
+            $p->gestorLegal->name ?? 'No asignado',
             $p->estado_contrato_preeliminar_emitido,
             $p->estado_firma_contrato_firmado,
             $this->formatFecha($p->fecha_firma),
@@ -118,6 +119,7 @@ class EntregaFestProspectoExport implements FromQuery, WithHeadings, ShouldAutoS
             'Validador BO (Supervisor)',
             'Fecha Validación BO',
             'Estado Supervisor BO',
+            'Abogado (Gestor Legal)',
             'Estado Contrato Preliminar',
             'Estado Firma Contrato',
             'Fecha Firma',

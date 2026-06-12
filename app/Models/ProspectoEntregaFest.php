@@ -79,7 +79,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
     {
         return self::ESTADO_FIRMA[$this->estado_firma_contrato_firmado]['color'] ?? '#000000';
     }
-    
+
     public function scopeFiltrado($query, array $f)
     {
         return $query
@@ -106,6 +106,8 @@ class ProspectoEntregaFest extends Model implements HasMedia
                         ->orWhere('reubicado_proyecto_id', $f['proyecto_id']);
                 });
             })
+
+            ->when($f['gestor_legal_id'] ?? null, fn($q) => $q->where('gestor_legal_id', $f['gestor_legal_id']))
 
             ->when($f['estado_backoffice']                    ?? null, fn($q) => $q->where('estado_backoffice', $f['estado_backoffice']))
             ->when($f['estado_gestor_backoffice']             ?? null, fn($q) => $q->where('estado_gestor_backoffice', $f['estado_gestor_backoffice']))
@@ -165,6 +167,12 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'estado_backoffice',
         'estado_contrato_preeliminar_emitido',
         'estado_firma_contrato_firmado',
+        'gestor_legal_id',
+        'legal_fecha_asignacion',
+        'observacion_gestor_legal',
+        'validador_legal_id',
+        'fecha_firma_presencial',
+        'fecha_validacion_firma',
         'fecha_firma',
         'fecha_generacion_contrato',
         'reubicado_proyecto_id',
@@ -181,6 +189,9 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'fecha_culminacion_eecc' => 'datetime',
         'fecha_validacion_eecc' => 'datetime',
         'fecha_firma' => 'datetime',
+        'legal_fecha_asignacion'  => 'datetime',
+        'fecha_firma_presencial'  => 'datetime',
+        'fecha_validacion_firma'  => 'datetime',
         'fecha_generacion_contrato' => 'datetime',
     ];
 
@@ -260,6 +271,16 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function gestor()
     {
         return $this->belongsTo(User::class, 'gestor_backoffice_id');
+    }
+
+    public function gestorLegal()
+    {
+        return $this->belongsTo(User::class, 'gestor_legal_id');
+    }
+
+    public function validadorLegal()
+    {
+        return $this->belongsTo(User::class, 'validador_legal_id');
     }
 
     public function responsableLlamada()

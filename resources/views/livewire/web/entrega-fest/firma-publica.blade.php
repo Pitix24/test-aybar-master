@@ -57,9 +57,9 @@
                             tener alguna consulta sobre el contrato, por favor comuníquese con el
                             Área de Formalización de Contratos al siguiente correo:</li>
                         <li style="margin-top: 8px;">
-                            <a href="mailto: formalizacioncontratos@aybarsac.com" style="color: #004d55;
+                            <a href="mailto: legalcontratos@aybarsac.com" style="color: #004d55;
                             font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 6px;">
-                                formalizacioncontratos@aybarsac.com
+                                legalcontratos@aybarsac.com
                             </a>
                         </li>
                     </ul>

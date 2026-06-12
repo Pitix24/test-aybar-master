@@ -194,9 +194,20 @@
 
             <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Abogado (Gestor Legal)</label>
+                    <select wire:model.live="gestor_legal_id">
+                        <option value="">Todos</option>
+                        @foreach ($gestoresLegales as $g)
+                            <option value="{{ $g->id }}">{{ $g->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Fecha Firma Desde</label>
                     <input type="date" wire:model.live="fechaFirmaDesde">
                 </div>
+                
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Fecha Firma Hasta</label>
                     <input type="date" wire:model.live="fechaFirmaHasta">
@@ -263,6 +274,7 @@
                         <th class="g_celda_centro">Estado Gestor BO</th>
                         <th class="g_celda_centro">Fecha Culminación EECC</th>
                         <th class="g_celda_centro">Supervisor BO</th>
+                        <th class="g_celda_centro">Abogado</th>
                         <th class="g_celda_centro">Estado Contrato Preliminar</th>
                         <th class="g_celda_centro">Fecha para Firmar</th>
                         <th class="g_celda_centro">Fecha Firmado</th>
@@ -424,6 +436,17 @@
                                 {{ \App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE[$p->estado_backoffice]['label']
                                 ?? $p->estado_backoffice }}
                             </span>
+                        </td>
+                        <td>
+                            @if ($p->gestorLegal)
+                                <span class="g_badge"
+                                    style="background-color: #8e44ad; color: #ffffff;">
+                                    <i class="fa-solid fa-scale-balanced"></i>
+                                    {{ $p->gestorLegal->name }}
+                                </span>
+                            @else
+                                <span class="g_badge light">Sin asignar</span>
+                            @endif
                         </td>
                         <td class="g_celda_centro">
                             <span class="g_badge g_badge_soft" style="color: {{ $p->badgeContratoPreeliminar() }}">

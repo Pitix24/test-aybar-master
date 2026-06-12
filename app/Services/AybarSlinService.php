@@ -19,42 +19,59 @@ class AybarSlinService
      */
     public function getCliente(string $dni): ?array
     {
-        try {
-            $response = Http::timeout(10)->get("{$this->baseUrl}/cliente/{$dni}");
-            return $response->json();
-        } catch (\Exception $e) {
-            Log::error("AybarSlinService@getCliente: " . $e->getMessage());
-            return null;
-        }
-    }
+        return cache()->remember(
+            "aybar_slin.cliente.{$dni}",
+            now()->addMinutes(15),
+            function () use ($dni) {
+                try {
+                    // ⚡ Timeout reducido: 3s en lugar de 10s
+                    $response = Http::timeout(3)
+                        ->connectTimeout(2)
+                        ->get("{$this->baseUrl}/cliente/{$dni}");
 
+                    return $response->successful() ? $response->json() : null;
+                } catch (\Exception $e) {
+                    Log::warning("AybarSlinService@getCliente fallback", [
+                        'dni' => $dni,
+                        'error' => $e->getMessage(),
+                    ]);
+                    return null;
+                }
+            }
+        );
+    }
     /**
-     * Obtener lotes de un cliente en una empresa específica
+     * Obtener lotes asociados a un cliente y empresa
      */
     public function getLotes(string $idCliente, string $idEmpresa): array
     {
-        try {
-            $response = Http::timeout(10)->get("{$this->baseUrl}/lotes", [
-                'id_cliente' => $idCliente,
-                'id_empresa' => $idEmpresa,
-            ]);
+        return cache()->remember(
+            "aybar_slin.lotes.{$idCliente}.{$idEmpresa}",
+            now()->addMinutes(15),
+            function () use ($idCliente, $idEmpresa) {
+                try {
+                    // ⚡ Timeout reducido: 3s en lugar de 10s
+                    $response = Http::timeout(3)
+                        ->connectTimeout(2)
+                        ->get("{$this->baseUrl}/lotes", [
+                            'id_cliente' => $idCliente,
+                            'id_empresa' => $idEmpresa,
+                        ]);
 
-            if (!$response->successful()) {
-                return [];
+                    if (!$response->successful()) return [];
+
+                    $data = $response->json();
+                    if (isset($data['data']) && is_array($data['data'])) return $data['data'];
+                    return is_array($data) ? $data : [];
+                } catch (\Exception $e) {
+                    Log::warning("AybarSlinService@getLotes fallback", [
+                        'id_cliente' => $idCliente,
+                        'error' => $e->getMessage(),
+                    ]);
+                    return [];
+                }
             }
-
-            $data = $response->json();
-
-            // Normalización según diferentes estructuras de respuesta detectadas
-            if (isset($data['data']) && is_array($data['data'])) {
-                return $data['data'];
-            }
-
-            return is_array($data) ? $data : [];
-        } catch (\Exception $e) {
-            Log::error("AybarSlinService@getLotes: " . $e->getMessage());
-            return [];
-        }
+        );
     }
 
     /**
