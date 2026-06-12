@@ -197,6 +197,8 @@
                     <label>Abogado (Gestor Legal)</label>
                     <select wire:model.live="gestor_legal_id">
                         <option value="">Todos</option>
+                        {{-- Opción especial para filtrar prospectos sin gestor asignado --}}
+                        <option value="sin_asignar">Sin Asignar</option>
                         @foreach ($gestoresLegales as $g)
                             <option value="{{ $g->id }}">{{ $g->name }}</option>
                         @endforeach
@@ -207,7 +209,7 @@
                     <label>Fecha Firma Desde</label>
                     <input type="date" wire:model.live="fechaFirmaDesde">
                 </div>
-                
+
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Fecha Firma Hasta</label>
                     <input type="date" wire:model.live="fechaFirmaHasta">
@@ -445,7 +447,7 @@
                                     {{ $p->gestorLegal->name }}
                                 </span>
                             @else
-                                <span class="g_badge light">Sin asignar</span>
+                                <span class="g_badge light"></span>
                             @endif
                         </td>
                         <td class="g_celda_centro">
