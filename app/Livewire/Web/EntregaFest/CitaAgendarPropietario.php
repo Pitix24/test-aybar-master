@@ -59,7 +59,7 @@ class CitaAgendarPropietario extends Component
 
         // 🆕 La sede ahora se calcula con el proyecto activo (reubicado u original)
         $this->direccion_sede = $this->proyectoActivo?->unidadNegocio?->direccion ?? '';
-        
+
         if ($this->evento->slug !== $slug) abort(404);
 
         if ($this->prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
@@ -83,10 +83,18 @@ class CitaAgendarPropietario extends Component
 
     protected function calcularFechaMinima(): string
     {
+        // ⚠️ Importante: con CarbonImmutable, addDay() NO muta el objeto.
+        //    Hay que reasignar siempre.
         $fecha = now()->addDays(self::DIAS_ANTICIPACION);
-        while ($fecha->isWeekend()) {
-            $fecha->addDay();
+
+        $maxIteraciones = 10; // Safety guard contra bucles
+        $i = 0;
+
+        while ($fecha->isWeekend() && $i < $maxIteraciones) {
+            $fecha = $fecha->addDay(); // 🔧 REASIGNACIÓN obligatoria con CarbonImmutable
+            $i++;
         }
+
         return $fecha->format('Y-m-d');
     }
 
@@ -95,10 +103,11 @@ class CitaAgendarPropietario extends Component
         $ocupacion = $fecha ? $this->obtenerOcupacionDelDia($fecha) : [];
 
         $horarios = [];
-        $inicio = Carbon::createFromFormat('H:i', self::HORA_INICIO);
-        $fin    = Carbon::createFromFormat('H:i', self::HORA_FIN);
+        $inicio = \Carbon\Carbon::createFromFormat('H:i', self::HORA_INICIO);
+        $fin    = \Carbon\Carbon::createFromFormat('H:i', self::HORA_FIN);
 
-        while ($inicio->lte($fin)) {
+        $safety = 0;
+        while ($inicio->lte($fin) && $safety < 100) {
             $horaStr  = $inicio->format('H:i');
             $ocupados = $ocupacion[$horaStr] ?? 0;
 
@@ -108,7 +117,8 @@ class CitaAgendarPropietario extends Component
                 'disponible' => $ocupados < self::CUPO_POR_HORARIO,
             ];
 
-            $inicio->addMinutes(self::INTERVALO_MIN);
+            $inicio = $inicio->addMinutes(self::INTERVALO_MIN); // 🔧 REASIGNACIÓN
+            $safety++;
         }
 
         return $horarios;
