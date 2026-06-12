@@ -107,7 +107,13 @@ class ProspectoEntregaFest extends Model implements HasMedia
                 });
             })
 
-            ->when($f['gestor_legal_id'] ?? null, fn($q) => $q->where('gestor_legal_id', $f['gestor_legal_id']))
+            ->when($f['gestor_legal_id'] ?? null, function ($q) use ($f) {
+                if ($f['gestor_legal_id'] === 'sin_asignar') {
+                    $q->whereNull('gestor_legal_id');
+                } else {
+                    $q->where('gestor_legal_id', $f['gestor_legal_id']);
+                }
+            })
 
             ->when($f['estado_backoffice']                    ?? null, fn($q) => $q->where('estado_backoffice', $f['estado_backoffice']))
             ->when($f['estado_gestor_backoffice']             ?? null, fn($q) => $q->where('estado_gestor_backoffice', $f['estado_gestor_backoffice']))
