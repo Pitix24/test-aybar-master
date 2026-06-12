@@ -103,7 +103,7 @@ class EntregaFestProspecto extends Component
         $this->proyectos       = $this->evento->proyectos;
         $this->usuarios        = \App\Models\User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
         $this->estados_cliente = \App\Models\EntregaFestEstadoCliente::where('activo', true)->orderBy('nombre')->get();
-        $this->gestoresLegales = \App\Models\User::where('activo', true)->whereHas('areas', fn($q) => $q->where('nombre', 'LEGAL'))->orderBy('name')->get();
+        $this->gestoresLegales = \App\Models\User::where('activo', true)->whereHas('areas', fn($q) => $q->where('area_user.area_id', 3))->orderBy('name')->get();
 
         $this->cargarStats();
     }

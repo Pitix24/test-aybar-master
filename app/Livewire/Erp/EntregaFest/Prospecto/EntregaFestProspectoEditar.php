@@ -1007,7 +1007,7 @@ class EntregaFestProspectoEditar extends Component
 
         // 🆕 Filtro por área Legal (sin importar el rol)
         $usuariosLegal = User::where('activo', true)
-            ->whereHas('areas', fn($q) => $q->where('nombre', 'LEGAL'))
+            ->whereHas('areas', fn($q) => $q->where('area_user.area_id', 3))
             ->orderBy('name')
             ->get();
 

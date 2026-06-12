@@ -153,7 +153,7 @@
                         <td style="padding:18px 20px;text-align:center;">
                             <a href="{{ $urlExpediente }}"
                             style="display:inline-block;padding:12px 28px;background:#8e44ad;color:#ffffff;text-decoration:none;font-size:13px;font-weight:bold;border-radius:6px;letter-spacing:.3px;">
-                                📂 VER EXPEDIENTE EN EL ERP
+                                📂 VER EXPEDIENTE EN LA PLATAFORMA
                             </a>
                         </td>
                     </tr>
@@ -173,7 +173,8 @@
                     {{-- FOOTER --}}
                     <tr>
                         <td style="padding:12px 20px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:11px;color:#64748b;line-height:1.5;">
-                            Este es un correo automático generado por el sistema ERP de Entrega Fest.<br>
+                            Este es un correo automático generado por Plataforma Interna.<br>
+                            No responder a este correo, ya que no se encuentra monitoreado.<br>
                             Para cualquier consulta, comunícate con el equipo de soporte interno.<br>
                             <strong>Notificación generada:</strong> {{ now()->format('d/m/Y H:i') }}
                         </td>

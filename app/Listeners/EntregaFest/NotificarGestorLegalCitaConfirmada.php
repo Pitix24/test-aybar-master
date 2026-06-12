@@ -27,11 +27,12 @@ class NotificarGestorLegalCitaConfirmada implements ShouldQueue
         }
 
         // 🆕 Obtener email_buzon del Área Legal (fallback + CC)
-        $areaLegal = Area::where('nombre', 'LEGAL')->where('activo', true)->first();
+        $areaLegal = Area::find(3); // ID 3 corresponde al área LEGAL
         $emailBuzon = $areaLegal?->email_buzon;
 
         if (!$emailBuzon) {
-            Log::channel('entrega-fest')->error("[CORREO-GESTOR-LEGAL] No se encontró email_buzon del área LEGAL", [
+            // En caso de no encontrarse, log de error para visibilidad y no intentar enviar correo del Area (nombre area ID 3)
+            Log::channel('entrega-fest')->error("[CORREO-GESTOR-LEGAL] No se encontró email_buzon del área " . $areaLegal?->nombre, [
                 'prospecto_id' => $prospecto->id,
             ]);
             return;
@@ -70,7 +71,6 @@ class NotificarGestorLegalCitaConfirmada implements ShouldQueue
                 'tiene_gestor'  => $tieneGestor,
                 'cliente'       => $prospecto->nombres,
             ]);
-
         } catch (\Exception $e) {
             Log::channel('entrega-fest')->error('[CORREO-GESTOR-LEGAL] Error al enviar', [
                 'prospecto_id' => $prospecto->id,
