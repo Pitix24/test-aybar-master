@@ -698,7 +698,10 @@ class EntregaFestProspectoEditar extends Component
         // 8. Persistir
         $this->handleUpdate($payload, 'PROSPECTO EDITAR - LEGAL');
 
-        // 🆕 9. Mensaje informativo si fue primera vez (el flujo n8n se dispara solo, ya existe)
+        // 🆕 9a. DISPARAR EVENTO → N8N listener (solo en la primera transición CONFORME)
+        EntregaFestContratoPreliminar::dispatch($this->prospecto->fresh());
+
+        // 9b. Mensaje informativo al usuario
         if ($primeraVezConforme) {
             $this->dispatch('alertaLivewire', [
                 'type'  => 'success',
@@ -706,6 +709,7 @@ class EntregaFestProspectoEditar extends Component
                 'text'  => 'Se registró automáticamente la fecha de generación del contrato.',
             ]);
         }
+
     }
 
     public function updateLegalSupervisor()

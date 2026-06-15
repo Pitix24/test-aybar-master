@@ -6,6 +6,7 @@ use Illuminate\Auth\Events\Login;
 use App\Listeners\ClienteLoginListener;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Listeners\PasswordResetListener;
+
 use App\Events\TicketCreado;
 use App\Listeners\EnviarCorreoTicketCreado;
 use App\Events\UsuarioRegistrado;
@@ -42,6 +43,10 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\EntregaFest\EntregaFestCitaConfirmacion::class => [
             \App\Listeners\EntregaFest\EntregaFestCitaConfirmacionN8N::class,
             \App\Listeners\EntregaFest\NotificarGestorLegalCitaConfirmada::class,
+        ],
+
+        \App\Events\EntregaFest\EntregaFestContratoPreliminar::class => [
+        \App\Listeners\EntregaFest\EntregaFestContratoPreliminarN8N::class,
         ],
 
         \App\Events\EntregaFest\EntregaFestCitaRecordatorio::class => [
