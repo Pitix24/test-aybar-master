@@ -2,6 +2,7 @@
 
 namespace App\Listeners\EntregaFest;
 
+use App\Models\Area;
 use App\Events\EntregaFest\EntregaFestContratoPreliminar;
 use App\Events\EntregaFest\EntregaFestCitaAgendar;
 use App\Mail\EntregaFest\ContratoPreliminarMail;
@@ -18,6 +19,7 @@ class EntregaFestContratoPreliminarN8N
     {
         $prospecto = $event->prospecto->load(['entregaFest', 'proyecto', 'historialComunicaciones']);
         $evento = $prospecto->entregaFest;
+        $areaEmail = Area::find(3)?->email;
 
         // Solo procesamos si el estado es CONFORME
         if ($prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
@@ -47,6 +49,7 @@ class EntregaFestContratoPreliminarN8N
         // 4. Preparar el contacto (Propietario) para n8n
         $titular = [
             'id' => $prospecto->id,
+            'bcc' => $areaEmail,
             'nombres' => $prospecto->nombres,
             'email' => $prospecto->email,
             'celular' => EntregaFestCelular::peru($prospecto->celular),
