@@ -23,7 +23,7 @@ class ContratoPreliminarMail extends Mailable
     public function __construct(ProspectoEntregaFest $prospecto)
     {
         $this->prospecto = $prospecto;
-        $this->areaEmail = Area::find(3)?->email;
+        $this->areaEmail = Area::find(3)?->email_buzon;
         $this->evento = $prospecto->entregaFest;
         $this->link = route('entrega-fest.cita-agendar.propietario', [
             'slug' => $this->evento->slug,

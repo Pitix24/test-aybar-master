@@ -19,7 +19,7 @@ class EntregaFestContratoPreliminarN8N
     {
         $prospecto = $event->prospecto->load(['entregaFest', 'proyecto', 'historialComunicaciones']);
         $evento = $prospecto->entregaFest;
-        $areaEmail = Area::find(3)?->email;
+        $areaEmail = Area::find(3)?->email_buzon;
 
         // Solo procesamos si el estado es CONFORME
         if ($prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
