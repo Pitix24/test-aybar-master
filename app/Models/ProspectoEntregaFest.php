@@ -137,7 +137,10 @@ class ProspectoEntregaFest extends Model implements HasMedia
 
             // Rango de fechas (campo: fecha_firma)
             ->when($f['fecha_firma_desde'] ?? null, fn($q) => $q->whereDate('fecha_firma', '>=', $f['fecha_firma_desde']))
-            ->when($f['fecha_firma_hasta'] ?? null, fn($q) => $q->whereDate('fecha_firma', '<=', $f['fecha_firma_hasta']));
+            ->when($f['fecha_firma_hasta'] ?? null, fn($q) => $q->whereDate('fecha_firma', '<=', $f['fecha_firma_hasta']))
+            // Rango de fechas (campo: fecha_generacion_contrato)
+            ->when($f['fecha_generacion_desde'] ?? null, fn($q) => $q->whereDate('fecha_generacion_contrato', '>=', $f['fecha_generacion_desde']))
+            ->when($f['fecha_generacion_hasta'] ?? null, fn($q) => $q->whereDate('fecha_generacion_contrato', '<=', $f['fecha_generacion_hasta']));
     }
 
     // ---------------------------------------------------------------
