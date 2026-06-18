@@ -56,8 +56,11 @@ class EntregaFestImportarProspecto extends Component
             }
 
             if (count($import->errores) > 0) {
-                $text .= " | Atención: " . count($import->errores) . " filas no se pudieron procesar por errores.";
+                $text .= " | Atención: " . count($import->errores) . " filas no se procesaron. Revisa los logs del sistema para ver el detalle.";
                 $type = 'warning';
+
+                // NUEVO: Loguear el detalle exacto de las filas que fallaron
+                Log::warning("[PROSPECTO-IMPORT-ERRORES] Evento ID: {$this->evento->id}", $import->errores);
             }
 
             $this->dispatch('alertaLivewire', [
@@ -68,8 +71,8 @@ class EntregaFestImportarProspecto extends Component
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("[PROSPECTO-IMPORT] : " . $e->getMessage());
-            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => $e->getMessage()]);
+            Log::error("[PROSPECTO-IMPORT-CRITICO] : " . $e->getMessage());
+            $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error Crítico', 'text' => 'Ocurrió un error inesperado al importar. Revise los logs.']);
         }
     }
 

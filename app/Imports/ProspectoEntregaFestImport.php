@@ -35,75 +35,81 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
 
         DB::transaction(function () use ($rows, &$clavesProcesadas) {
             foreach ($rows as $index => $row) {
-
                 $numFila = $index + 2;
-                $proyectoId = (int) $row['proyecto_id'];
-                $dniTitular = str_replace("'", "", trim($row['dni'] ?? ''));
 
-                if (empty($dniTitular)) {
-                    $this->errores[] = "Fila {$numFila}: DNI vacío.";
-                    continue;
+                try {
+                    $proyectoId = (int) $row['proyecto_id'];
+                    $dniTitular = str_replace("'", "", trim($row['dni'] ?? ''));
+
+                    if (empty($dniTitular)) {
+                        $this->errores[] = "Fila {$numFila}: DNI vacío.";
+                        continue;
+                    }
+
+                    // Detectar columnas
+                    $keys = array_map('strtolower', array_keys($row->toArray()));
+                    $keyLote = $keys[array_search('lote', $keys)] ?? 'lote';
+                    $keyManzana = $keys[array_search('manzana', $keys)] ?? 'manzana';
+                    $keyEstado = collect($keys)->first(fn($k) => str_contains($k, 'estado_cliente')) ?? 'estado_cliente';
+
+                    $mza = strtoupper(trim($row[$keyManzana] ?? ''));
+                    $lot = strtoupper(trim($row[$keyLote] ?? ''));
+                    $estadoExcel = strtoupper(trim($row[$keyEstado] ?? 'ADENDA'));
+
+                    $grupoVal = strtoupper(trim($row['grupo'] ?? 'A'));
+                    $grupo = in_array($grupoVal, ['A','B','C','D']) ? $grupoVal : 'A';
+
+                    // ===== DETECTAR DUPLICADOS DENTRO DEL EXCEL =====
+                    $claveUnica = "{$proyectoId}-{$dniTitular}-{$lot}-{$mza}";
+                    if (isset($clavesProcesadas[$claveUnica])) {
+                        $filaOriginal = $clavesProcesadas[$claveUnica];
+                        $this->errores[] = "Fila {$numFila}: Duplicado exacto de la fila {$filaOriginal} (mismo DNI {$dniTitular}, Lote {$lot}, Manzana {$mza}).";
+                        continue;
+                    }
+                    $clavesProcesadas[$claveUnica] = $numFila;
+
+                    // ===== Lógica DNI + Lote + Manzana =====
+                    $prospecto = ProspectoEntregaFest::where('entrega_fest_id', $this->entrega_fest_id)
+                        ->where('proyecto_id', $proyectoId)
+                        ->where('dni', $dniTitular)
+                        ->where('lote', $lot)
+                        ->where('manzana', $mza)
+                        ->first();
+
+                    if ($prospecto) {
+                        $prospecto->update([
+                            'nombres' => $row['nombres'],
+                            'email' => $row['email'] ?? '',
+                            'celular' => $row['celular'] ?? '',
+                            'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
+                            'grupo' => $grupo,
+                            'updated_by' => auth()->id(),
+                        ]);
+                        $this->actualizados++;
+                    } else {
+                        ProspectoEntregaFest::create([
+                            'entrega_fest_id' => $this->entrega_fest_id,
+                            'proyecto_id' => $proyectoId,
+                            'dni' => $dniTitular,
+                            'user_id' => auth()->id(),
+                            'created_by' => auth()->id(),
+                            'nombres' => $row['nombres'],
+                            'email' => $row['email'] ?? '',
+                            'celular' => $row['celular'] ?? '',
+                            'lote' => $lot,
+                            'manzana' => $mza,
+                            'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
+                            'grupo' => $grupo,
+                        ]);
+                        $this->nuevos++;
+                    }
+
+                    $this->importados++;
+
+                } catch (\Exception $e) {
+                    // Capturamos cualquier otro error de base de datos específico para esta fila
+                    $this->errores[] = "Fila {$numFila}: Error al guardar (Detalle: " . $e->getMessage() . ")";
                 }
-
-                // Detectar columnas
-                $keys = array_map('strtolower', array_keys($row->toArray()));
-                $keyLote = $keys[array_search('lote', $keys)] ?? 'lote';
-                $keyManzana = $keys[array_search('manzana', $keys)] ?? 'manzana';
-                $keyEstado = collect($keys)->first(fn($k) => str_contains($k, 'estado_cliente')) ?? 'estado_cliente';
-
-                $mza = strtoupper(trim($row[$keyManzana] ?? ''));
-                $lot = strtoupper(trim($row[$keyLote] ?? ''));
-                $estadoExcel = strtoupper(trim($row[$keyEstado] ?? 'ADENDA'));
-
-                $grupoVal = strtoupper(trim($row['grupo'] ?? 'A'));
-                $grupo = in_array($grupoVal, ['A','B','C','D']) ? $grupoVal : 'A';
-
-                // ===== DETECTAR DUPLICADOS DENTRO DEL EXCEL =====
-                $claveUnica = "{$proyectoId}-{$dniTitular}-{$lot}-{$mza}";
-                if (isset($clavesProcesadas[$claveUnica])) {
-                    $filaOriginal = $clavesProcesadas[$claveUnica];
-                    $this->errores[] = "Fila {$numFila}: Duplicado de la fila {$filaOriginal} (mismo DNI {$dniTitular}, Lote {$lot}, Manzana {$mza}).";
-                    continue;
-                }
-                $clavesProcesadas[$claveUnica] = $numFila;
-
-                // ===== Lógica DNI + Lote + Manzana =====
-                $prospecto = ProspectoEntregaFest::where('entrega_fest_id', $this->entrega_fest_id)
-                    ->where('proyecto_id', $proyectoId)
-                    ->where('dni', $dniTitular)
-                    ->where('lote', $lot)
-                    ->where('manzana', $mza)
-                    ->first();
-
-                if ($prospecto) {
-                    $prospecto->update([
-                        'nombres' => $row['nombres'],
-                        'email' => $row['email'] ?? '',
-                        'celular' => $row['celular'] ?? '',
-                        'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
-                        'grupo' => $grupo,
-                        'updated_by' => auth()->id(),
-                    ]);
-                    $this->actualizados++;
-                } else {
-                    ProspectoEntregaFest::create([
-                        'entrega_fest_id' => $this->entrega_fest_id,
-                        'proyecto_id' => $proyectoId,
-                        'dni' => $dniTitular,
-                        'user_id' => auth()->id(),
-                        'created_by' => auth()->id(),
-                        'nombres' => $row['nombres'],
-                        'email' => $row['email'] ?? '',
-                        'celular' => $row['celular'] ?? '',
-                        'lote' => $lot,
-                        'manzana' => $mza,
-                        'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
-                        'grupo' => $grupo,
-                    ]);
-                    $this->nuevos++;
-                }
-
-                $this->importados++;
             }
         });
     }
