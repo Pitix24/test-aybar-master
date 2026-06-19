@@ -346,29 +346,48 @@ class TicketCrear extends Component
 
     public function verificarDuplicados()
     {
+        // 1. Validar que tengamos los datos mínimos para buscar
         if (!$this->dni || !$this->tipo_solicitud_id || !$this->sub_tipo_solicitud_id || empty($this->lotes_agregados)) {
             $this->has_duplicado = false;
             return;
         }
 
-        $lotesConTicket = [];
-        foreach ($this->lotes_agregados as $lote) {
-            $existeTicketSimilar = Ticket::query()
-                ->where('dni', $this->dni)
-                ->where('tipo_solicitud_id', $this->tipo_solicitud_id)
-                ->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id)
-                ->whereJsonContains('lotes', ['id' => (int) $lote['id']])
-                ->whereNotIn('estado_ticket_id', [EstadoTicket::id(EstadoTicket::CERRADO)])
-                ->exists();
+        // 2. Buscamos TODOS los tickets activos de este cliente para el mismo Tipo y Subtipo
+        $ticketsActivos = Ticket::query()
+            ->where('dni', $this->dni)
+            ->where('tipo_solicitud_id', $this->tipo_solicitud_id)
+            ->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id)
+            ->whereNotIn('estado_ticket_id', [EstadoTicket::id(EstadoTicket::CERRADO)])
+            ->get();
 
-            if ($existeTicketSimilar) {
-                $lotesConTicket[] = $lote['numero_lote'];
-            }
-        }
-
-        if (!empty($lotesConTicket)) {
+        if ($ticketsActivos->isNotEmpty()) {
             $this->has_duplicado = true;
-            $mensaje = "Ya existe un ticket activo para este DNI y Tipo de Solicitud en los lotes: " . implode(', ', $lotesConTicket);
+
+            // 3. Extraemos los números de lote históricos para mostrárselos al operador
+            $lotesPrevios = [];
+            foreach ($ticketsActivos as $ticket) {
+                $lotes = is_string($ticket->lotes) ? json_decode($ticket->lotes, true) : $ticket->lotes;
+                if (is_array($lotes)) {
+                    foreach ($lotes as $l) {
+                        if (isset($l['numero_lote'])) {
+                            $lotesPrevios[] = $l['numero_lote'];
+                        }
+                    }
+                }
+            }
+
+            // Limpiamos duplicados y preparamos el texto
+            $lotesPreviosUnicos = array_unique($lotesPrevios);
+            $lotesPreviosStr = empty($lotesPreviosUnicos) ? 'sin lote especificado' : implode(', ', $lotesPreviosUnicos);
+
+            // 4. Extraemos los lotes actuales (los que está intentando crear ahora mismo)
+            $lotesNuevosStr = collect($this->lotes_agregados)->pluck('numero_lote')->implode(', ');
+
+            // 5. Armamos el mensaje contextual para el Gestor
+            $mensaje = "Este cliente ya tiene un ticket activo de este tipo para el/los lote(s): {$lotesPreviosStr}. " .
+                       "¿Estás seguro de que deseas generar este nuevo registro para: {$lotesNuevosStr}?";
+
+            // 6. Lanzamos la alerta
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => '¡Ticket Duplicado detectado!',
