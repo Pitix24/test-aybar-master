@@ -59,7 +59,7 @@
             },
             {
               "name": "estado",
-              "value": "={{ $json.key ? 'enviado' : 'fallido' }}"
+              "value": "={{ $json.messages ? 'enviado' : 'fallido' }}"
             }
           ]
         },
@@ -68,8 +68,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        320,
-        192
+        496,
+        176
       ],
       "id": "5e280117-9309-45e0-a951-eb423ac4ffce",
       "name": "set-laravel-mensaje-1",
@@ -230,7 +230,7 @@
     },
     {
       "parameters": {
-        "phoneNumberId": "111079285343903",
+        "phoneNumberId": "1089842304211504",
         "recipientPhoneNumber": "={{ $json.celular }}",
         "template": "entregafest_cita_agendar|es_PE",
         "components": {
@@ -270,8 +270,8 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        48,
-        192
+        304,
+        176
       ],
       "id": "fd698176-01bc-40ce-94c7-546633378534",
       "name": "enviar-mensaje-wsp",
@@ -282,6 +282,88 @@
           "name": "WhatsApp account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4484cea6-a382-418a-8448-72417822f19f",
+              "leftValue": "={{ $json.celular ? true : false }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        32,
+        192
+      ],
+      "id": "48fe22b1-0c60-4ed2-bc17-40c8a4014bd5",
+      "name": "If1",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "whatsapp"
+            },
+            {
+              "name": "mensaje",
+              "value": "Error: Número de celular no encontrado o es nulo. No se intentó el envío."
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "fallido"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        304,
+        368
+      ],
+      "id": "d7811e97-9acb-4001-86d1-2e571d232a47",
+      "name": "Notificar Error a Laravel",
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -302,6 +384,11 @@
         [
           {
             "node": "Filter1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter",
             "type": "main",
             "index": 0
           }
@@ -345,7 +432,7 @@
       "main": [
         [
           {
-            "node": "enviar-mensaje-wsp",
+            "node": "If1",
             "type": "main",
             "index": 0
           }
@@ -354,17 +441,41 @@
     },
     "enviar-mensaje-wsp": {
       "main": [
-        []
+        [
+          {
+            "node": "set-laravel-mensaje-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notificar Error a Laravel",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "310cb188-fd73-432a-9d63-2480508707f5",
+  "versionId": "2ee9ff11-800e-4214-b284-8826f6e09955",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
