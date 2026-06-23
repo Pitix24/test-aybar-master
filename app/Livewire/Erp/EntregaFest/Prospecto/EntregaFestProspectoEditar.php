@@ -71,6 +71,8 @@ class EntregaFestProspectoEditar extends Component
     // Modo: null = lista, 'crear' = formulario nuevo, 'editar' = editando fila
     public $cop_modo = null;
     public $cop_editando_id = null;
+    // Propiedad para bloquear la edición de historiales
+    public $es_solo_lectura = false;
 
     // Campos del formulario copropietario
     public $cop_dni = '';
@@ -145,6 +147,8 @@ class EntregaFestProspectoEditar extends Component
     {
         $this->evento = EntregaFest::with('proyectos')->findOrFail($id);
         $this->prospecto = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)->findOrFail($prospectoId);
+        // 🆕 Definimos si el formulario debe bloquearse
+        $this->es_solo_lectura = !$this->prospecto->activo;
 
         $this->proyecto_id = $this->prospecto->proyecto_id;
         $this->dni = $this->prospecto->dni;
@@ -417,6 +421,16 @@ class EntregaFestProspectoEditar extends Component
 
     private function handleUpdate(array $data, string $logContext)
     {
+        // 🛡️ ESCUDO DE SEGURIDAD BACKEND
+        if ($this->es_solo_lectura) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Acción denegada',
+                'text' => 'Este registro es histórico (edición pasada) y no puede ser modificado.'
+            ]);
+            return;
+        }
+
         $this->authorize('prospecto-entrega-fest.editar');
 
         $antes = [];
@@ -426,7 +440,22 @@ class EntregaFestProspectoEditar extends Component
 
         try {
             DB::beginTransaction();
+
+            // 1. ACTUALIZAR EL TICKET DEL EVENTO ACTUAL
             $this->prospecto->update($data);
+
+            // 2. 🔄 SINCRONIZAR CON LA TABLA MAESTRA (Histórico)
+            if ($this->prospecto->prospecto_historico_id) {
+                $historicoData = $data;
+
+                // Regla de Negocio: Si en este update se firmó el contrato, marcamos el lote como entregado
+                if (isset($data['estado_firma_contrato_firmado']) && $data['estado_firma_contrato_firmado'] === 'FIRMADO') {
+                    $historicoData['lote_entregado'] = true;
+                }
+
+                $this->prospecto->prospectoHistorico->update($historicoData);
+            }
+
             DB::commit();
 
             $cambios = [];
@@ -448,7 +477,7 @@ class EntregaFestProspectoEditar extends Component
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => '¡Actualizado!',
-                'text' => 'Información actualizada correctamente.'
+                'text' => 'Información actualizada correctamente en el evento y en el histórico.'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
