@@ -83,7 +83,7 @@
         "html": "={{ $json.html }}",
         "options": {
           "attachments": "=data",
-          "bccEmail": "={{ $json.body.titular.bcc }}"
+          "bccEmail": "={{ $json.bcc }}"
         }
       },
       "id": "cc04d96c-199c-4411-947d-919083a9e33d",
@@ -238,33 +238,6 @@
     },
     {
       "parameters": {
-        "operation": "send",
-        "phoneNumberId": "1089842304211504",
-        "recipientPhoneNumber": "={{ $json.celular }}",
-        "messageType": "document",
-        "mediaLink": "={{ $json.pdf_url }}",
-        "additionalFields": {
-          "mediaCaption": "={{ `*${$json.plantilla_titulo}*\\n\\nHola *${$json.nombres}*. ${$json.plantilla_descripcion}\\n✅ *Tu contrato se encuentra adjunto a este mensaje.*\\n\\n📅 *Una vez revisado, podrás agendar tu cita en el siguiente enlace:*\\n ${$json.link_agendar || $json.plantilla_link_boton || ''}` }}"
-        }
-      },
-      "type": "n8n-nodes-base.whatsApp",
-      "typeVersion": 1.1,
-      "position": [
-        1056,
-        736
-      ],
-      "id": "8eee4d5a-5127-4efc-b55d-9d5ea9917f4f",
-      "name": "enviar-mensaje-wsp",
-      "webhookId": "b0c04256-9440-4101-baa2-a159ab516b3e",
-      "credentials": {
-        "whatsAppApi": {
-          "id": "wsfypPUomJK3uU3v",
-          "name": "WhatsApp account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
         "sendBody": true,
@@ -344,6 +317,32 @@
       "id": "5e31354f-f882-4c34-98c5-0a30acc97129",
       "name": "If1",
       "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v19.0/1089842304211504/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{ $json.celular }}\",\n  \"type\": \"template\",\n  \"template\": {\n    \"name\": \"entregafest_contrato_prelimina_pdf\",\n    \"language\": {\n      \"code\": \"es_PE\"\n    },\n    \"components\": [\n      {\n        \"type\": \"header\",\n        \"parameters\": [\n          {\n            \"type\": \"document\",\n            \"document\": {\n              \"link\": \"{{ $json.pdf_url }}\",\n              \"filename\": \"Contrato_Definitivo.pdf\"\n            }\n          }\n        ]\n      },\n      {\n        \"type\": \"body\",\n        \"parameters\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"{{ $json.nombres }}\"\n          },\n          {\n            \"type\": \"text\",\n            \"text\": \"{{ $json.plantilla_titulo }}\"\n          },\n          {\n            \"type\": \"text\",\n            \"text\": \"{{ $json.plantilla_descripcion }}\"\n          },\n          {\n            \"type\": \"text\",\n            \"text\": \"{{ $json.link_agendar || $json.plantilla_link_boton || ' ' }}\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1056,
+        736
+      ],
+      "id": "6ad256b3-d9cf-4b4c-9d6c-83e1e39c906f",
+      "name": "Enviar Plantilla PDF",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "wsfypPUomJK3uU3v",
+          "name": "WhatsApp account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -419,22 +418,11 @@
         ]
       ]
     },
-    "enviar-mensaje-wsp": {
-      "main": [
-        [
-          {
-            "node": "set-laravel-mensaje-1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If1": {
       "main": [
         [
           {
-            "node": "enviar-mensaje-wsp",
+            "node": "Enviar Plantilla PDF",
             "type": "main",
             "index": 0
           }
@@ -442,6 +430,17 @@
         [
           {
             "node": "Notificar Error a Laravel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Plantilla PDF": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-1",
             "type": "main",
             "index": 0
           }
@@ -455,7 +454,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "7853c471-bfcd-4e53-9c6f-7eb99cf980b0",
+  "versionId": "613979ef-6b76-4207-9776-99f680171efe",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"

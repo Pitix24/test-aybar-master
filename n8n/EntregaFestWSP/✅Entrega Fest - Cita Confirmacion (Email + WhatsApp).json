@@ -196,7 +196,7 @@
                     "text": "={{ $json.plantilla_titulo }}"
                   },
                   {
-                    "text": "={{ ($json.plantilla_descripcion || '') + ($json.direccion_sede ? '\n\n📍 Sede principal: ' + $json.direccion_sede : '') }}"
+                    "text": "={{ `${$json.plantilla_descripcion || ''}${$json.direccion_sede ? ' 📍 Sede principal: ' + $json.direccion_sede : ''}` }}"
                   },
                   {
                     "text": "={{ $json.fecha_firma_formateada }}"
@@ -322,6 +322,28 @@
           }
         ]
       ]
+    },
+    "enviar-mensaje-wsp": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviar-mensaje-email": {
+      "main": [
+        [
+          {
+            "node": "set-laravel-mensaje-2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -329,7 +351,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "cb96477a-527c-4fd2-90eb-2ef87e050615",
+  "versionId": "e636a4c6-7466-43c8-bbe4-6513fc276b63",
   "meta": {
     "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
   },

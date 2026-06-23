@@ -40,6 +40,8 @@ class EntregaFestProspecto extends Component
         'gestor_legal_id',
         'fechaFirmaDesde',
         'fechaFirmaHasta',
+        'fechaGeneracionDesde',
+        'fechaGeneracionHasta',
         'perPage',
     ];
 
@@ -96,6 +98,12 @@ class EntregaFestProspecto extends Component
 
     #[Url(as: 'firma_hasta')]
     public $fechaFirmaHasta = null;
+
+    #[Url(as: 'generacion_desde')]
+    public $fechaGeneracionDesde = null;
+
+    #[Url(as: 'generacion_hasta')]
+    public $fechaGeneracionHasta = null;
 
     public array $stats = [];
 
@@ -160,6 +168,8 @@ class EntregaFestProspecto extends Component
             'gestor_legal_id'                      => $this->gestor_legal_id,
             'fecha_firma_desde'                    => $this->fechaFirmaDesde,
             'fecha_firma_hasta'                    => $this->fechaFirmaHasta,
+            'fecha_generacion_desde'               => $this->fechaGeneracionDesde,
+            'fecha_generacion_hasta'               => $this->fechaGeneracionHasta,
         ];
     }
 
@@ -179,11 +189,22 @@ class EntregaFestProspecto extends Component
                 'La fecha "Hasta" no puede ser menor que "Desde". Se ajustó automáticamente.'
             );
         }
+
+        if (
+            $this->fechaGeneracionDesde && $this->fechaGeneracionHasta &&
+            $this->fechaGeneracionDesde > $this->fechaGeneracionHasta
+        ) {
+            $this->fechaGeneracionHasta = $this->fechaGeneracionDesde;
+            session()->flash(
+                'aviso_filtro',
+                'La fecha "Hasta" de generación no puede ser menor que "Desde". Se ajustó automáticamente.'
+            );
+        }
     }
 
     public function limpiarRangoFechas(): void
     {
-        $this->reset(['fechaFirmaDesde', 'fechaFirmaHasta']);
+        $this->reset(['fechaFirmaDesde', 'fechaFirmaHasta', 'fechaGeneracionDesde', 'fechaGeneracionHasta']);
         $this->resetPage();
         $this->cargarStats();
     }
