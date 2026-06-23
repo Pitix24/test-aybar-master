@@ -25,6 +25,9 @@ class EntregaFestProspecto extends Component
     protected array $propiedadesFiltro = [
         'buscar',
         'proyecto_id',
+        'filtro_activo',
+        'con_historico',
+        'filtro_lote_entregado',
         'filtroGestorBackoffice',
         'estado_backoffice',
         'estado_gestor_backoffice',
@@ -56,6 +59,15 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $proyecto_id = '';
+
+    #[Url(keep: true)]
+    public $filtro_activo = '1';
+
+    #[Url(keep: true)]
+    public $con_historico = '';
+
+    #[Url(keep: true)]
+    public $filtro_lote_entregado = '';
 
     #[Url(keep: true)]
     public $filtroGestorBackoffice = '';
@@ -240,6 +252,9 @@ class EntregaFestProspecto extends Component
             'evento_id'                            => $this->evento->id,
             'buscar'                               => $this->buscar,
             'proyecto_id'                          => $this->proyecto_id,
+            'filtro_activo'                        => $this->filtro_activo,
+            'con_historico'                        => $this->con_historico,
+            'filtro_lote_entregado'                => $this->filtro_lote_entregado,
             'filtro_gestor_backoffice'             => $this->filtroGestorBackoffice,
             'estado_backoffice'                    => $this->estado_backoffice,
             'estado_gestor_backoffice'             => $this->estado_gestor_backoffice,

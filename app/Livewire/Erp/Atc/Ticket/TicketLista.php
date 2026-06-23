@@ -159,7 +159,6 @@ class TicketLista extends Component
     private function ticketQuery(bool $aplicarGestor = true)
     {
         return Ticket::query()
-            ->sinCartasNotariales()
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
                     $q->where('id', 'like', "%{$this->buscar}%")

@@ -356,6 +356,7 @@ class RolesYPermisosSeeder extends Seeder
             'Módulo Entrega Fest' => [
                 'modulo-entrega-fest.ver',
                 /* ENTREGA FEST */
+                'entrega-fest.admin',
                 'entrega-fest.navegacion',
                 'entrega-fest.lista',
                 'entrega-fest.gestor', //ok
@@ -363,6 +364,7 @@ class RolesYPermisosSeeder extends Seeder
                 'entrega-fest.crear',
                 'entrega-fest.editar',
                 'entrega-fest.eliminar',
+                'entrega-fest.cancelar',
                 'entrega-fest.exportar-filtro',
                 'entrega-fest.exportar-todo',
                 'entrega-fest.ver-panel',
@@ -377,6 +379,14 @@ class RolesYPermisosSeeder extends Seeder
                 'contrato-preliminar.eliminar',
                 'prospecto.exportar-filtro',
                 'prospecto.exportar-todo',
+                /* PROSPECTO HISTÓRICO */
+                'prospecto-historico.navegacion',
+                'prospecto-historico.lista',
+                'prospecto-historico.ver',
+                'prospecto-historico.importar',
+                'prospecto-historico.cargar-desde-historico',
+                'prospecto-historico.exportar-filtro',
+                'prospecto-historico.exportar-todo',
                 /* INVITADO */
                 'invitado.navegacion',
                 'invitado.lista',
@@ -532,6 +542,7 @@ class RolesYPermisosSeeder extends Seeder
             'supervisor-legal' => 'Supervisor Legal',
             'asesor-legal' => 'Asesor Legal',
             'asesor-libro-reclamacion' => 'Asesor Libro de Reclamaciones',
+            'entrega-fest.admin' => 'Administrador EntregaFest',
             'staff-asistencia' => 'Proveedor Externo',
             'staff-itinerario' => 'Proveedor Externo',
             'staff-mop' => 'Proveedor Externo',
@@ -650,6 +661,16 @@ class RolesYPermisosSeeder extends Seeder
         $asesor_libro_reclamacion->syncPermissions(Permission::where('name', 'like', 'ticket.%')->get());
         $asesor_libro_reclamacion->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
         $this->command->info("✓ Asesor Libro Reclamacion: Configurado");
+
+        // Admin EntregaFest: Control total del módulo + gestión del histórico
+        $admin_entrega_fest = Role::findByName('entrega-fest.admin');
+        $admin_entrega_fest->syncPermissions(
+            Permission::where('module', 'Módulo Entrega Fest')->get()
+        );
+        $this->command->info("✓ Admin EntregaFest: Configurado");
+        // (Opcional) Si tu rol "supervisor-entrega-fest" debe poder usar el botón de autocarga, agrégalo aquí:
+        // $supervisor = Role::findByName('supervisor-entrega-fest');
+        // $supervisor->givePermissionTo('prospecto-historico.cargar-desde-historico');
 
         // Staff Operativo (supervisor-entrega-fest)
         $staff_operativo = Role::findByName('supervisor-entrega-fest');

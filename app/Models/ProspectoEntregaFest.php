@@ -107,6 +107,21 @@ class ProspectoEntregaFest extends Model implements HasMedia
                 });
             })
 
+            ->when(isset($f['filtro_activo']) && $f['filtro_activo'] !== '', function ($q) use ($f) {
+                $q->where('activo', $f['filtro_activo'] === '1');
+            })
+
+            ->when($f['con_historico'] ?? null, function($q) {
+                $q->whereNotNull('prospecto_historico_id');
+            })
+            ->when(($f['filtro_lote_entregado'] ?? '') !== '', function($q) use ($f) {
+                if ($f['filtro_lote_entregado'] === 'si') {
+                    $q->whereHas('prospectoHistorico', fn($h) => $h->where('lote_entregado', true));
+                } elseif ($f['filtro_lote_entregado'] === 'no') {
+                    $q->whereHas('prospectoHistorico', fn($h) => $h->where('lote_entregado', false));
+                }
+            })
+
             ->when($f['gestor_legal_id'] ?? null, function ($q) use ($f) {
                 if ($f['gestor_legal_id'] === 'sin_asignar') {
                     $q->whereNull('gestor_legal_id');
@@ -151,7 +166,6 @@ class ProspectoEntregaFest extends Model implements HasMedia
             ->when($f['fecha_generacion_desde'] ?? null, fn($q) => $q->whereDate('fecha_generacion_contrato', '>=', $f['fecha_generacion_desde']))
             ->when($f['fecha_generacion_hasta'] ?? null, fn($q) => $q->whereDate('fecha_generacion_contrato', '<=', $f['fecha_generacion_hasta']));
     }
-
     // ---------------------------------------------------------------
     // Fillable
     // ---------------------------------------------------------------
@@ -161,6 +175,8 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'user_id',
         'created_by',
         'updated_by',
+        'prospecto_historico_id',
+        'activo', // <--- NUEVO
         'dni',
         'nombres',
         'email',
@@ -200,6 +216,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
     ];
 
     protected $casts = [
+        'activo' => 'boolean',
         'preinvitacion_confirmada' => 'boolean',
         'invitacion_confirmada' => 'boolean',
         'responsable_llamada_fecha_asignacion' => 'datetime',
@@ -249,6 +266,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function reubicadoProyecto()
     {
         return $this->belongsTo(Proyecto::class, 'reubicado_proyecto_id');
+    }
+
+    public function prospectoHistorico()
+    {
+        return $this->belongsTo(ProspectoHistorico::class, 'prospecto_historico_id');
     }
 
     public function copropietarios()
@@ -328,5 +350,12 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function getNombreCompletoAttribute(): string
     {
         return $this->nombres;
+    }
+    /**
+     * Scope para obtener únicamente los prospectos activos en el evento actual.
+     */
+    public function scopeActivos($query)
+    {
+        return $query->where('activo', true);
     }
 }

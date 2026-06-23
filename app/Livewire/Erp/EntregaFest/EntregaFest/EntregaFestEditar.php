@@ -137,6 +137,22 @@ class EntregaFestEditar extends Component
         }
     }
 
+    public function cancelarEvento()
+    {
+        // Actualizamos en BD
+        $this->evento->update(['activo' => false]);
+        $this->evento->prospectos()->update(['activo' => false]);
+
+        // CLAVE: Actualizamos la propiedad pública para que la vista cambie sin recargar
+        $this->activo = false;
+
+        // Disparamos alerta de éxito (Ajusta a tu método de alertas)
+        $this->dispatch('alerta', [
+            'tipo' => 'success',
+            'mensaje' => 'Evento y prospectos cancelados correctamente.'
+        ]);
+    }
+
     #[On('eliminarEntregaFestOn')]
     public function eliminarEntregaFestOn()
     {

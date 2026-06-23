@@ -1,4 +1,9 @@
 <div style="padding: 20px;">
+    @if(!$evento->activo)
+    <div class="g_margin_bottom_20" style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; color: #991b1b; border-radius: 4px;">
+        <i class="fa-solid fa-lock"></i> <b>Evento Cancelado:</b> No se permite la edición y creación de plantillas en eventos inactivos.
+    </div>
+    @else
     @foreach([
         'pre-invitacion',
         'asistencia-invitacion',
@@ -67,4 +72,5 @@
             </div>
         </div>
     @endforeach
+    @endif
 </div>

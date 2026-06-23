@@ -225,6 +225,34 @@
                     <input type="date" wire:model.live="fechaGeneracionHasta">
                 </div>
             </div>
+
+            <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Vínculo con Histórico</label>
+                    <select wire:model.live="con_historico">
+                        <option value="">Todos los prospectos</option>
+                        <option value="1">Solo prospectos vinculados al Histórico</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado Lote (Histórico)</label>
+                    <select wire:model.live="filtro_lote_entregado">
+                        <option value="">Todos</option>
+                        <option value="si">Lote Entregado (Firmado)</option>
+                        <option value="no">Lote Pendiente</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado del Registro</label>
+                    <select wire:model.live="filtro_activo">
+                        <option value="1">Solo Activos (Evento actual)</option>
+                        <option value="0">Historial Inactivo (Eventos pasados)</option>
+                        <option value="">Todos los registros</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
