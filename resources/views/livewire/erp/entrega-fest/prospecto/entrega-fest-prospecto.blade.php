@@ -172,11 +172,12 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Gestor BO</label>
-                    <select wire:model.live="gestor_id">
-                        <option value="">Todos los gestores</option>
-                        @foreach ($usuarios as $u)
-                        <option value="{{ $u->id }}">{{ $u->name }}</option>
+                    <label>Filtro Gestor BO</label>
+                    <select wire:model.live="filtroGestorBackoffice">
+                        <option value="">Todos los Gestores</option>
+                        <option value="sin_asignar">⚠ Sin Asignar</option>
+                        @foreach ($gestoresBackofficeList as $gbo)
+                        <option value="{{ $gbo->id }}">{{ $gbo->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -197,7 +198,7 @@
                     <label>Abogado (Gestor Legal)</label>
                     <select wire:model.live="gestor_legal_id">
                         <option value="">Todos</option>
-                        <option value="sin_asignar">Sin Asignar</option>
+                        <option value="sin_asignar">⚠ Sin Asignar</option>
                         @foreach ($gestoresLegales as $g)
                             <option value="{{ $g->id }}">{{ $g->name }}</option>
                         @endforeach
@@ -227,6 +228,53 @@
         </div>
     </div>
 
+    <!-- PANEL DINÁMICO DE ASIGNACIÓN MASIVA (Aparece solo si hay seleccionados) -->
+    @if($modoAsignacionMasiva)
+    <div class="g_panel" style="background-color: #f0f9ff; border: 1px solid #bae6fd; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <h3 style="margin: 0; color: #0369a1; font-size: 1.1em;">
+                    <i class="fa-solid fa-users"></i> {{ count($selectedProspectos) }} Seleccionados
+                </h3>
+                @if(!$selectAll)
+                <button type="button" wire:click="seleccionarTodosLosFiltrados" class="g_boton light" style="padding: 5px 10px; font-size: 0.85em; margin: 0;">
+                    Seleccionar todos los filtrados
+                </button>
+                @else
+                <span style="color: #15803d; font-size: 0.85em; font-weight: bold;"><i class="fa-solid fa-check-double"></i> Todos seleccionados</span>
+                @endif
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+
+                <select wire:model.live="tipoAsignacionMasiva" style="padding: 8px; border: 1px solid #0284c7; background-color: #e0f2fe; color: #0369a1; border-radius: 4px; font-weight: bold;">
+                    <option value="backoffice">BackOffice</option>
+                    <option value="legal">Legal</option>
+                </select>
+
+                <select wire:model="gestorIdSeleccionado" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; min-width: 200px;">
+                    <option value="">-- Seleccionar Gestor Destino --</option>
+
+                    @if($tipoAsignacionMasiva === 'backoffice')
+                        @foreach($gestoresBackofficeList as $gestor)
+                            <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
+                        @endforeach
+                    @elseif($tipoAsignacionMasiva === 'legal')
+                        @foreach($gestoresLegales as $gestor)
+                            <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
+                        @endforeach
+                    @endif
+
+                </select>
+
+                <button type="button" wire:click="asignarGestorMasivo" class="g_boton success" style="margin: 0;">
+                    <i class="fa-solid fa-user-check"></i> Asignar
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
@@ -253,6 +301,14 @@
                 <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
+
+                <button wire:click="toggleModoAsignacionMasiva" class="g_boton {{ $modoAsignacionMasiva ? 'danger' : 'warning' }}">
+                @if($modoAsignacionMasiva)
+                    <i class="fa-solid fa-times"></i> Cancelar Asignación
+                @else
+                    <i class="fa-solid fa-list-check"></i> Asignación Masiva
+                @endif
+                </button>
             </div>
 
             <div class="g_tabla_cabecera_filtro formulario">
@@ -271,6 +327,11 @@
             <table class="g_tabla">
                 <thead>
                     <tr>
+                        @if($modoAsignacionMasiva)
+                        <th class="g_celda_centro">
+                            <input type="checkbox" wire:model.live="selectAll">
+                        </th>
+                        @endif
                         <th>N°</th>
                         <th>Estado Cliente</th>
                         <th>DNI</th>
@@ -297,6 +358,11 @@
                 <tbody>
                     @foreach ($items as $index => $p)
                     <tr wire:key="prospecto-{{ $p->id }}">
+                        @if($modoAsignacionMasiva)
+                        <td class="g_celda_centro">
+                            <input type="checkbox" wire:model.live="selectedProspectos" value="{{ $p->id }}">
+                        </td>
+                        @endif
                         <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
                         <td>
                             @if ($p->estadoCliente)
@@ -411,11 +477,14 @@
                             @endif
                         </td>
                         <td>
-                            {{ $p->gestor->name ?? '' }}
-                            <div class="g_negrita">
-                                {{ $p->gestor_fecha_asignacion ? date('d/m/Y', strtotime($p->gestor_fecha_asignacion)) :
-                                '' }}
-                            </div>
+                            @if ($p->gestor_backoffice_id)
+                                {{ $p->gestor->name ?? '' }}
+                                <div class="g_negrita">
+                                    {{ $p->gestor_fecha_asignacion ? date('d/m/Y', strtotime($p->gestor_fecha_asignacion)) : '' }}
+                                </div>
+                            @else
+                                <span class="g_badge light">Sin asignar</span>
+                            @endif
                         </td>
                         <td class="g_celda_centro">
                             <span class="g_badge g_badge_soft" style="color: {{ $p->badgeGestorBackoffice() }}">
@@ -456,7 +525,7 @@
                                     {{ $p->gestorLegal->name }}
                                 </span>
                             @else
-                                <span class="g_badge light"></span>
+                                <span class="g_badge light">Sin Asignar</span>
                             @endif
                         </td>
                         <td class="g_celda_centro">
