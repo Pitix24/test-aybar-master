@@ -115,6 +115,15 @@ class ProspectoEntregaFest extends Model implements HasMedia
                 }
             })
 
+            // NUEVO FILTRO GESTOR BACKOFFICE
+            ->when($f['filtro_gestor_backoffice'] ?? null, function ($q) use ($f) {
+                if ($f['filtro_gestor_backoffice'] === 'sin_asignar') {
+                    $q->whereNull('gestor_backoffice_id');
+                } else {
+                    $q->where('gestor_backoffice_id', $f['filtro_gestor_backoffice']);
+                }
+            })
+
             ->when($f['estado_backoffice']                    ?? null, fn($q) => $q->where('estado_backoffice', $f['estado_backoffice']))
             ->when($f['estado_gestor_backoffice']             ?? null, fn($q) => $q->where('estado_gestor_backoffice', $f['estado_gestor_backoffice']))
             ->when($f['estado_contrato_preeliminar_emitido']  ?? null, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $f['estado_contrato_preeliminar_emitido']))
