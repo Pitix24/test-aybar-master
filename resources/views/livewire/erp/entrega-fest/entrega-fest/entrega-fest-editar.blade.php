@@ -17,6 +17,18 @@
             </a>
             @endcan
 
+            @can('entrega-fest.cancelar')
+            @if($activo)
+            <button type="button" onclick="confirmarCancelarEntregaFest()" class="g_boton warning" title="Cancelar Evento">
+                Cancelar <i class="fas fa-ban"></i>
+            </button>
+            @else
+            <button type="button" class="g_boton warning" title="Evento Cancelado" style="opacity: 0.7; cursor: not-allowed;">
+                Cancelado
+            </button>
+            @endif
+            @endcan
+
             @can('entrega-fest.eliminar')
             <button type="button" class="g_boton danger" onclick="confirmarEliminarEntregaFest()">
                 Eliminar <i class="fa-solid fa-trash-can"></i>
@@ -66,7 +78,7 @@
                             <label for="estado_activo">Estado</label>
                             <div class="g_switch-wrapper">
                                 <label class="g_switch">
-                                    <input id="estado_activo" type="checkbox" wire:model.live="activo">
+                                    <input id="estado_activo" type="checkbox" wire:model.live="activo" disabled>
                                     <span class="g_switch-slider"></span>
                                 </label>
                                 <span class="g_switch-label">{{ $activo ? 'Activo' : 'Inactivo' }}</span>
@@ -220,6 +232,23 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $wire.eliminarEntregaFestOn();
+            }
+        });
+    }
+
+    window.confirmarCancelarEntregaFest = function () {
+        Swal.fire({
+            title: '¿Estás seguro de cancelar este evento?',
+            text: "El evento quedará inactivo. Además, se desactivarán todos los prospectos vinculados, prohibiendo su edición.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $wire.cancelarEvento();
             }
         });
     }
