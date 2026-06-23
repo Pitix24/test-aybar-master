@@ -5,9 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('prospecto_entrega_fests', function (Blueprint $table) {
@@ -17,9 +14,16 @@ return new class extends Migration {
             $table->foreignId('proyecto_id')->nullable()->constrained();
             $table->foreignId('user_id')->nullable()->constrained(); // quien lo registró
 
-            // Auditoría: usuario que creó/actualizó el prospecto
+            // Auditoría
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+
+            // Relación con Histórico y Estado Lógico (Consolidados)
+            $table->unsignedBigInteger('prospecto_historico_id')->nullable();
+            $table->foreign('prospecto_historico_id', 'fk_pef_historico')
+                  ->references('id')->on('prospecto_historicos')
+                  ->onDelete('set null');
+            $table->boolean('activo')->default(true);
 
             $table->string('dni', 15);
             $table->string('nombres');
@@ -45,13 +49,16 @@ return new class extends Migration {
                 'C',
                 'D'
             ])->default('A');
-            $table->foreignId('responsable_llamada_id')->nullable()->constrained('users')->nullOnDelete(); // responsable llamadas
-            $table->dateTime('responsable_llamada_fecha_asignacion')->nullable(); // fecha asignacion responsable llamadas
-            $table->foreignId('gestor_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); // gestor backoffice
-            $table->dateTime('gestor_fecha_asignacion')->nullable(); // fecha asignacion gestor
-            $table->dateTime('fecha_culminacion_eecc')->nullable(); // fecha culminación estado de cuenta
-            $table->string('link_carpeta_eecc')->nullable(); // link
-            $table->string('link_eecc_firmado')->nullable(); // link
+            $table->foreignId('responsable_llamada_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->dateTime('responsable_llamada_fecha_asignacion')->nullable();
+
+            $table->foreignId('gestor_backoffice_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->dateTime('gestor_fecha_asignacion')->nullable();
+
+            $table->dateTime('fecha_culminacion_eecc')->nullable();
+            $table->string('link_carpeta_eecc')->nullable();
+            $table->string('link_eecc_firmado')->nullable();
+
             $table->enum('estado_gestor_backoffice', [
                 'PENDIENTE',
                 'BANCARIZAR',
@@ -61,8 +68,9 @@ return new class extends Migration {
                 'VIGENTE'
             ])->default('PENDIENTE');
             $table->text('observacion_gestor_backoffice')->nullable();
-            $table->foreignId('validador_backoffice_id')->nullable()->constrained('users')->nullOnDelete(); // validador backoffice
-            $table->dateTime('fecha_validacion_eecc')->nullable(); // fecha validación estado de cuenta
+
+            $table->foreignId('validador_backoffice_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->dateTime('fecha_validacion_eecc')->nullable();
             $table->enum('estado_backoffice', [
                 'PENDIENTE',
                 'BANCARIZAR',
@@ -87,9 +95,7 @@ return new class extends Migration {
 
             // ============ VALIDADOR LEGAL (FIRMA) ============
             $table->foreignId('validador_legal_id')->nullable()->constrained('users')->nullOnDelete();
-            // Fecha REAL de la firma presencial (manual, la llena el validador)
             $table->dateTime('fecha_firma_presencial')->nullable();
-            // Fecha de auditoría: cuándo el validador llenó el formulario (auto = now())
             $table->dateTime('fecha_validacion_firma')->nullable();
 
             // ============ FIRMA CONTRATO ============
@@ -97,8 +103,8 @@ return new class extends Migration {
                 'PENDIENTE',
                 'FIRMADO'
             ])->default('PENDIENTE');
-            $table->dateTime('fecha_firma')->nullable(); // fecha firma contrato
-            $table->dateTime('fecha_generacion_contrato')->nullable(); // fecha generacion contrato
+            $table->dateTime('fecha_firma')->nullable();
+            $table->dateTime('fecha_generacion_contrato')->nullable();
 
             $table->timestamps();
 
@@ -109,9 +115,6 @@ return new class extends Migration {
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('prospecto_entrega_fests');
