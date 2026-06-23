@@ -1,4 +1,9 @@
 <div style="padding: 20px;">
+    @if(!$evento->activo)
+    <div class="g_margin_bottom_20" style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; color: #991b1b; border-radius: 4px;">
+        <i class="fa-solid fa-lock"></i> <b>Evento Cancelado:</b> No se permite la carga masiva ni autocarga de prospectos en eventos inactivos.
+    </div>
+    @else
     <div class="g_panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-file-excel"></i> Importación Masiva de Prospectos</h4>
@@ -28,7 +33,7 @@
     </div>
     @can('prospecto-historico.cargar-desde-historico')
     <div class="g_panel" style="margin-top: 20px;">
-        <div div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h4 class="g_panel_titulo" style="margin: 0; color: var(--color-primary);">
                 <i class="fa-solid fa-robot"></i> Autocarga Inteligente desde Histórico
             </h4>
@@ -60,4 +65,5 @@
         </div>
     </div>
     @endcan
+    @endif
 </div>
