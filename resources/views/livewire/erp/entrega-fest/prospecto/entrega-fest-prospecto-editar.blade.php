@@ -19,9 +19,11 @@
             </a>
             @endcan
             @can('prospecto.eliminar')
+            @if(!$es_solo_lectura)
             <button type="button" class="g_boton danger" wire:click="solicitarEliminarProspecto">
                 Eliminar <i class="fa-solid fa-trash-can"></i>
             </button>
+            @endif
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -29,7 +31,19 @@
             </button>
         </div>
     </div>
-
+    @if($es_solo_lectura)
+        <div class="g_margin_bottom_20" style="background-color: #fef2f2; border: 1px solid #f87171; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; font-size: 1.2rem;"></i>
+                <div>
+                    <h4 style="margin: 0; color: #991b1b; font-size: 0.95rem; font-weight: bold;">Registro de Solo Lectura (Histórico)</h4>
+                    <p style="margin: 5px 0 0 0; color: #b91c1c; font-size: 0.85rem;">
+                        Este prospecto pertenece a una edición pasada del EntregaFest. Su información ha sido congelada para mantener la integridad de los reportes. Para gestionar al cliente, busca su participación activa más reciente en el sistema.
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
     <div class="g_fila">
         <div class="g_columna_4">
             <div class="g_panel g_gap_pagina">
@@ -179,28 +193,30 @@
                     </div>
                 </div>
 
-                <div x-show="activeTab === 'prospecto'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-datos-basicos')
+                <fieldset @if($es_solo_lectura) disabled="disabled" style="opacity: 0.8;" @endif>
+                    <div x-show="activeTab === 'prospecto'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-datos-basicos')
 
-                    @livewire('erp.entrega-fest.prospecto.entrega-fest-prospecto-bancarizacion', ['prospectoId' =>
-                    $prospecto->id])
-                </div>
+                        @livewire('erp.entrega-fest.prospecto.entrega-fest-prospecto-bancarizacion', ['prospectoId' =>
+                        $prospecto->id])
+                    </div>
 
-                <div x-show="activeTab === 'backoffice'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-backoffice')
-                </div>
+                    <div x-show="activeTab === 'backoffice'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-backoffice')
+                    </div>
 
-                <div x-show="activeTab === 'legal'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-legal')
-                </div>
+                    <div x-show="activeTab === 'legal'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-legal')
+                    </div>
 
-                <div x-show="activeTab === 'copropietarios'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-copropietarios')
-                </div>
+                    <div x-show="activeTab === 'copropietarios'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-copropietarios')
+                    </div>
 
-                <div x-show="activeTab === 'llamada'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-llamada')
-                </div>
+                    <div x-show="activeTab === 'llamada'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-llamada')
+                    </div>
+                </fieldset>
             </div>
         </div>
     </div>
