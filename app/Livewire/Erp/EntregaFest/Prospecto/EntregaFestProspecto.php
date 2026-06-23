@@ -25,6 +25,7 @@ class EntregaFestProspecto extends Component
     protected array $propiedadesFiltro = [
         'buscar',
         'proyecto_id',
+        'filtroGestorBackoffice',
         'estado_backoffice',
         'estado_gestor_backoffice',
         'estado_contrato_preeliminar_emitido',
@@ -42,11 +43,22 @@ class EntregaFestProspecto extends Component
         'perPage',
     ];
 
+    public bool $modoAsignacionMasiva = false;
+    public array $selectedProspectos = [];
+    public bool $selectAll = false;
+
+    // NUEVAS VARIABLES DINÁMICAS
+    public $tipoAsignacionMasiva = 'backoffice'; // Por defecto iniciará en BackOffice
+    public $gestorIdSeleccionado = '';
+
     #[Url(as: 'q')]
     public $buscar = '';
 
     #[Url(keep: true)]
     public $proyecto_id = '';
+
+    #[Url(keep: true)]
+    public $filtroGestorBackoffice = '';
 
     #[Url(keep: true)]
     public $estado_backoffice = '';
@@ -82,16 +94,16 @@ class EntregaFestProspecto extends Component
     public $gestor_legal_id = '';
 
     #[Url(as: 'firma_desde')]
-    public $fechaFirmaDesde = null;
+    public $fechaFirmaDesde = '';
 
     #[Url(as: 'firma_hasta')]
-    public $fechaFirmaHasta = null;
+    public $fechaFirmaHasta = '';
 
     #[Url(as: 'generacion_desde')]
-    public $fechaGeneracionDesde = null;
+    public $fechaGeneracionDesde = '';
 
     #[Url(as: 'generacion_hasta')]
-    public $fechaGeneracionHasta = null;
+    public $fechaGeneracionHasta = '';
 
     public array $stats = [];
 
@@ -100,6 +112,7 @@ class EntregaFestProspecto extends Component
     public $usuarios = [];
     public $estados_cliente = [];
     public $gestoresLegales = [];
+    public $gestoresBackofficeList = []; // <-- NUEVO CATÁLOGO
 
     // ============================================================
     //                          LIFECYCLE
@@ -112,12 +125,19 @@ class EntregaFestProspecto extends Component
         $this->usuarios        = \App\Models\User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
         $this->estados_cliente = \App\Models\EntregaFestEstadoCliente::where('activo', true)->orderBy('nombre')->get();
         $this->gestoresLegales = \App\Models\User::where('activo', true)->whereHas('areas', fn($q) => $q->where('area_user.area_id', 3))->orderBy('name')->get();
+        $this->gestoresBackofficeList = \App\Models\User::where('activo', true)->whereHas('areas', fn($q) => $q->where('area_user.area_id', 2))->orderBy('name')->get();
 
         $this->cargarStats();
     }
 
     public function updated($property): void
     {
+        // Al cambiar de página o filtro, solo desmarcamos visualmente el "Seleccionar Todo"
+        // pero MANTENEMOS los prospectos que el usuario ya había seleccionado en memoria.
+        if ($property === 'paginators.page' || in_array($property, $this->propiedadesFiltro)) {
+            $this->selectAll = false;
+        }
+
         if (!in_array($property, $this->propiedadesFiltro)) {
             return;
         }
@@ -128,19 +148,99 @@ class EntregaFestProspecto extends Component
     }
 
     // ============================================================
+    //            MÉTODOS DE SELECCIÓN Y ASIGNACIÓN MASIVA
+    // ============================================================
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            // Selecciona solo los prospectos de la página actual
+            $this->selectedProspectos = ProspectoEntregaFest::query()
+                ->filtrado($this->filtrosActivos())
+                ->orderBy('nombres', 'asc')
+                ->paginate($this->perPage)
+                ->pluck('id')
+                ->map(fn($id) => (string)$id)
+                ->toArray();
+        } else {
+            $this->selectedProspectos = [];
+        }
+    }
+
+    public function updatedTipoAsignacionMasiva()
+    {
+        $this->gestorIdSeleccionado = ''; // Limpiamos el gestor cuando cambian de área
+    }
+
+    public function toggleModoAsignacionMasiva()
+    {
+        $this->modoAsignacionMasiva = !$this->modoAsignacionMasiva;
+
+        // Si el usuario apaga el modo, limpiamos todo
+        if (!$this->modoAsignacionMasiva) {
+            $this->reset(['selectedProspectos', 'selectAll', 'gestorIdSeleccionado', 'tipoAsignacionMasiva']);
+        }
+    }
+
+    public function seleccionarTodosLosFiltrados()
+    {
+        // Selecciona TODOS los prospectos del filtro activo ignorando la paginación
+        $this->selectedProspectos = ProspectoEntregaFest::query()
+            ->filtrado($this->filtrosActivos())
+            ->pluck('id')
+            ->map(fn($id) => (string)$id)
+            ->toArray();
+
+        $this->selectAll = true;
+    }
+
+    public function asignarGestorMasivo()
+    {
+        // 1. Validamos
+        if (empty($this->gestorIdSeleccionado)) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'error',
+                'title' => '¡Error en la Asignación!',
+                'text'  => 'Debe seleccionar un gestor destino.',
+            ]);
+            return;
+        }
+
+        if (empty($this->selectedProspectos)) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'error',
+                'title' => '¡Error en la Asignación!',
+                'text'  => 'Debe seleccionar al menos un prospecto.',
+            ]);
+            return;
+        }
+
+        $columnaDestino = $this->tipoAsignacionMasiva === 'legal' ? 'gestor_legal_id' : 'gestor_backoffice_id';
+        ProspectoEntregaFest::whereIn('id', $this->selectedProspectos)
+            ->update([$columnaDestino => $this->gestorIdSeleccionado]);
+
+        $this->reset(['selectedProspectos', 'selectAll', 'gestorIdSeleccionado', 'modoAsignacionMasiva', 'tipoAsignacionMasiva']);
+        $this->cargarStats();
+
+        // 5. Alerta éxito
+        $this->dispatch('alertaLivewire', [
+            'type'  => 'success',
+            'title' => '¡Asignación Exitosa!',
+            'text'  => 'Los gestores han sido asignados correctamente a los registros seleccionados.',
+        ]);
+    }
+
+    // ============================================================
     //                       FILTROS / HELPERS
     // ============================================================
 
-    /**
-     * 🎯 ÚNICA fuente de verdad de los filtros activos.
-     * Se usa en render(), cargarStats() y los exports.
-     */
     protected function filtrosActivos(): array
     {
         return [
             'evento_id'                            => $this->evento->id,
             'buscar'                               => $this->buscar,
             'proyecto_id'                          => $this->proyecto_id,
+            'filtro_gestor_backoffice'             => $this->filtroGestorBackoffice,
             'estado_backoffice'                    => $this->estado_backoffice,
             'estado_gestor_backoffice'             => $this->estado_gestor_backoffice,
             'estado_contrato_preeliminar_emitido'  => $this->estado_contrato_preeliminar_emitido,
@@ -232,7 +332,6 @@ class EntregaFestProspecto extends Component
     {
         $this->authorize('prospecto.exportar-todo');
 
-        // "Todo" = solo respeta el evento, ignora demás filtros
         return Excel::download(
             new EntregaFestProspectoExport(['evento_id' => $this->evento->id]),
             'prospectos_todo_' . $this->evento->codigo . '.xlsx'
