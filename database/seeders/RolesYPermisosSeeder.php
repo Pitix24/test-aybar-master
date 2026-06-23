@@ -364,6 +364,7 @@ class RolesYPermisosSeeder extends Seeder
                 'entrega-fest.crear',
                 'entrega-fest.editar',
                 'entrega-fest.eliminar',
+                'entrega-fest.cancelar',
                 'entrega-fest.exportar-filtro',
                 'entrega-fest.exportar-todo',
                 'entrega-fest.ver-panel',
