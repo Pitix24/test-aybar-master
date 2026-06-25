@@ -98,11 +98,19 @@ class TicketLista extends Component
         $this->canales = Canal::all();
         $this->usuarios_admin = User::permission('atc.gestor')->get();
         $this->prioridades = PrioridadTicket::all();
-        // Aplicamos filtros por defecto solo si NO están presentes en la URL
-        // Esto permite que si regresas con ?desde=&hasta= (vacíos), se respeten.
+
+        // --- NUEVA LÓGICA DE FILTRO POR DEFECTO ---
         if (!request()->has('usuario_admin_id') && is_null($this->usuario_admin_id)) {
-            $this->usuario_admin_id = Auth::check() ? Auth::id() : '';
+            if (Auth::user()->can('ticket.ver-todos')) {
+                // Si TIENE el permiso, le filtramos visualmente sus tickets a cargo por defecto.
+                // Al limpiar filtros, esto quedará vacío y verá todo.
+                $this->usuario_admin_id = Auth::check() ? Auth::id() : '';
+            } else {
+                // Si NO tiene el permiso, lo dejamos vacío para que el query lo maneje (OR Creado / Gestionado).
+                $this->usuario_admin_id = '';
+            }
         }
+
         if (!request()->has('desde') && is_null($this->desde)) {
             $this->desde = now()->toDateString();
         }
@@ -112,7 +120,7 @@ class TicketLista extends Component
 
         $this->unidades_negocios = UnidadNegocio::all();
 
-        // Cargamos catálogos dependientes si hay un valor (venga de URL o de los defaults anteriores)
+        // Cargamos catálogos dependientes si hay un valor
         if ($this->unidad_negocio_id) {
             $this->loadProyectos();
         }
@@ -158,7 +166,19 @@ class TicketLista extends Component
 
     private function ticketQuery(bool $aplicarGestor = true)
     {
-        return Ticket::query()
+        $query = Ticket::query();
+
+        // REGLA ESTRICTA DE VISUALIZACIÓN POR PERMISO
+        if (!Auth::user()->can('ticket.ver-todos')) {
+            // Si NO tiene el permiso, obligatoriamente solo ve los que creó o gestiona
+            $query->where(function ($q) {
+                $q->where('created_by', Auth::id())
+                  ->orWhere('gestor_id', Auth::id());
+            });
+        }
+
+        // APLICACIÓN DE LOS FILTROS DE BÚSQUEDA
+        return $query
             ->when($this->buscar, function ($query) {
                 $query->where(function ($q) {
                     $q->where('id', 'like', "%{$this->buscar}%")
@@ -175,43 +195,16 @@ class TicketLista extends Component
             ->when($this->canal_id, fn($q) => $q->where('canal_id', $this->canal_id))
             ->when($aplicarGestor && $this->usuario_admin_id, fn($q) => $q->where('gestor_id', $this->usuario_admin_id))
             ->when($this->creado_por_id, fn($q) => $q->where('created_by', $this->creado_por_id))
-            ->when(
-                $this->desde,
-                fn($q) =>
-                $q->whereDate('created_at', '>=', $this->desde)
-            )
-            ->when(
-                $this->hasta,
-                fn($q) =>
-                $q->whereDate('created_at', '<=', $this->hasta)
-            )
+            ->when($this->desde, fn($q) => $q->whereDate('created_at', '>=', $this->desde))
+            ->when($this->hasta, fn($q) => $q->whereDate('created_at', '<=', $this->hasta))
             ->when($this->prioridad_id, fn($q) => $q->where('prioridad_ticket_id', $this->prioridad_id))
-            ->when(
-                $this->con_derivados == '1',
-                fn($q) => $q->whereHas('derivados')
-            )
-            ->when(
-                $this->con_derivados == '0',
-                fn($q) => $q->whereDoesntHave('derivados')
-            )
-            ->when(
-                $this->con_citas == '1',
-                fn($q) => $q->whereHas('citas')
-            )
-            ->when(
-                $this->con_citas == '0',
-                fn($q) => $q->whereDoesntHave('citas')
-            )
-            ->when(
-                $this->con_hijos == '1',
-                fn($q) => $q->whereNotNull('ticket_padre_id')
-            )
-            ->when(
-                $this->con_hijos == '0',
-                fn($q) => $q->whereNull('ticket_padre_id')
-            );
+            ->when($this->con_derivados == '1', fn($q) => $q->whereHas('derivados'))
+            ->when($this->con_derivados == '0', fn($q) => $q->whereDoesntHave('derivados'))
+            ->when($this->con_citas == '1', fn($q) => $q->whereHas('citas'))
+            ->when($this->con_citas == '0', fn($q) => $q->whereDoesntHave('citas'))
+            ->when($this->con_hijos == '1', fn($q) => $q->whereNotNull('ticket_padre_id'))
+            ->when($this->con_hijos == '0', fn($q) => $q->whereNull('ticket_padre_id'));
     }
-
 
     public function updated($property)
     {
@@ -258,8 +251,7 @@ class TicketLista extends Component
             'creado_por_id',
         ]);
 
-        // Seteamos a string vacío en lugar de null (reset default)
-        // para que mount() no vuelva a aplicar los filtros automáticos
+        // Asegúrate de que esto esté como string vacío
         $this->usuario_admin_id = '';
         $this->desde = '';
         $this->hasta = '';
