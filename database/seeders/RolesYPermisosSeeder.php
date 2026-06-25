@@ -205,6 +205,7 @@ class RolesYPermisosSeeder extends Seeder
                 'ticket.accion-exportar-todo', //ok
                 'ticket.exportar-todo', //ok
                 'ticket.derivar', //ok
+                'ticket.accion-derivar', //ok
                 'ticket.vista-derivar', //ok
                 'ticket.agregar-archivo', //ok
                 'ticket.eliminar-archivo', //ok
