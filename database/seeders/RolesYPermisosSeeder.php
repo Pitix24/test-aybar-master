@@ -188,6 +188,7 @@ class RolesYPermisosSeeder extends Seeder
                 'ticket.vista-lista', //ok
                 'ticket.gestor', //ok
                 'ticket.ver', //ok
+                'ticket.ver-todos', //ok
                 'ticket.accion-ver', //ok
                 'ticket.vista-ver', //ok
                 'ticket.crear', //ok
@@ -589,8 +590,9 @@ class RolesYPermisosSeeder extends Seeder
             'ticket.crear',
             'ticket.editar',
             'ticket.derivar',
+            'ticket.ver-todos',
         ]);
-        $this->command->info("✓ Asesor ATC: 4 permisos");
+        $this->command->info("✓ Asesor ATC: 5 permisos");
 
         // Supervisor Cita: Todos los permisos de Cita
         $supervisor_cita = Role::findByName('supervisor-cita');
@@ -643,6 +645,7 @@ class RolesYPermisosSeeder extends Seeder
         ]);
         // Agregar permisos de prospecto según entrega-fest.php
         $asesor_backoffice->givePermissionTo(Permission::where('name', 'like', 'prospecto.%')->get());
+        $asesor_backoffice->givePermissionTo(Permission::where('name', 'like', 'ticket.%')->get());
         $this->command->info("✓ Asesor Backoffice: Configurado");
 
         // Legal
