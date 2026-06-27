@@ -79,5 +79,12 @@ return [
         'verify_token' => env('WHATSAPP_VERIFY_TOKEN', 'aybar_crm_secret_token'),
         'app_secret' => env('WHATSAPP_APP_SECRET'),
     ],
-
+    
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'pubsub_topic' => env('GOOGLE_PUBSUB_TOPIC'),
+        'inbox' => env('GOOGLE_GMAIL_INBOX'),
+        'refresh_token' => env('GOOGLE_REFRESH_TOKEN'),
+    ],
 ];

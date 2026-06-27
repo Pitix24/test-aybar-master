@@ -6,6 +6,7 @@ use App\Http\Controllers\SlinController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\GmailWebhookController;
 use App\Http\Controllers\WhatsappController;
 
 Route::middleware('api')->group(function () {
@@ -51,4 +52,8 @@ Route::middleware('api')->group(function () {
     Route::post('/whatsapp/webhook', [WhatsappController::class, 'handleWebhook']);
 
     Route::post('/entrega-fest/mensaje-historial', [EntregaFestMensajeHistorialController::class, 'mensajeHistorial']);
+
+    // Webhook para Google Cloud Pub/Sub
+    //https://localhost:8000/api/webhooks/gmail/indecopi
+    Route::post('/webhooks/gmail/indecopi', [GmailWebhookController::class, 'handle']);
 });

@@ -21,6 +21,9 @@ class UnidadNegocio extends Model
         'razon_social',
         'ruc',
         'slin_id',
+        'email_interno',
+        'email_alias',
+        'responsable_id',
         'direccion',
         'region_id',
         'provincia_id',
@@ -90,5 +93,10 @@ class UnidadNegocio extends Model
     public function distrito()
     {
         return $this->belongsTo(Distrito::class);
+    }
+
+    public function responsable()
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
     }
 }
