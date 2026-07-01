@@ -228,18 +228,59 @@ class EntregaFestProspecto extends Component
         }
 
         $columnaDestino = $this->tipoAsignacionMasiva === 'legal' ? 'gestor_legal_id' : 'gestor_backoffice_id';
-        ProspectoEntregaFest::whereIn('id', $this->selectedProspectos)
-            ->update([$columnaDestino => $this->gestorIdSeleccionado]);
+        // Para actualizar automáticamente también la fecha en la que se le asignó el gestor
+        $columnaFecha   = $this->tipoAsignacionMasiva === 'legal' ? 'legal_fecha_asignacion' : 'gestor_fecha_asignacion';
+        $ahora = now();
 
-        $this->reset(['selectedProspectos', 'selectAll', 'gestorIdSeleccionado', 'modoAsignacionMasiva', 'tipoAsignacionMasiva']);
-        $this->cargarStats();
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            // Obtenemos los prospectos a actualizar
+            $prospectos = ProspectoEntregaFest::whereIn('id', $this->selectedProspectos)->get();
 
-        // 5. Alerta éxito
-        $this->dispatch('alertaLivewire', [
-            'type'  => 'success',
-            'title' => '¡Asignación Exitosa!',
-            'text'  => 'Los gestores han sido asignados correctamente a los registros seleccionados.',
-        ]);
+            foreach ($prospectos as $prospecto) {
+                // PROTECCIÓN: No editamos masivamente registros históricos/inactivos
+                if (!$prospecto->activo) {
+                    continue;
+                }
+
+                $dataToUpdate = [
+                    $columnaDestino => $this->gestorIdSeleccionado
+                ];
+
+                // Si el gestor es distinto al que ya tenía, actualizamos la fecha de asignación
+                if ($prospecto->{$columnaDestino} != $this->gestorIdSeleccionado) {
+                    $dataToUpdate[$columnaFecha] = $ahora;
+                }
+
+                // A) Actualizamos el ticket en este evento
+                $prospecto->update($dataToUpdate);
+
+                // B) SINCRONIZAMOS CON LA TABLA MAESTRA (Histórico)
+                if ($prospecto->prospecto_historico_id) {
+                    $prospecto->prospectoHistorico->update($dataToUpdate);
+                }
+            }
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            $this->reset(['selectedProspectos', 'selectAll', 'gestorIdSeleccionado', 'modoAsignacionMasiva', 'tipoAsignacionMasiva']);
+            $this->cargarStats();
+
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'success',
+                'title' => '¡Asignación Exitosa!',
+                'text'  => 'Los gestores han sido asignados correctamente y se sincronizó el historial.',
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            \Illuminate\Support\Facades\Log::error("[ASIGNACIÓN MASIVA] Error: " . $e->getMessage());
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'error',
+                'title' => 'Error de Asignación',
+                'text'  => 'Ocurrió un problema al guardar los cambios masivos.',
+            ]);
+        }
     }
 
     // ============================================================

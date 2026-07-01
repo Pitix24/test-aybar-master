@@ -385,10 +385,14 @@
 
                 <tbody>
                     @foreach ($items as $index => $p)
-                    <tr wire:key="prospecto-{{ $p->id }}">
+                    <tr wire:key="prospecto-{{ $p->id }}" @if(!$p->activo) style="background-color: #f1f5f9; opacity: 0.6;" @endif>
                         @if($modoAsignacionMasiva)
                         <td class="g_celda_centro">
-                            <input type="checkbox" wire:model.live="selectedProspectos" value="{{ $p->id }}">
+                            @if($p->activo)
+                                <input type="checkbox" wire:model.live="selectedProspectos" value="{{ $p->id }}">
+                            @else
+                                <i class="fa-solid fa-ban" style="color:#ccc;" title="Registro Histórico. No se puede asignar masivamente."></i>
+                            @endif
                         </td>
                         @endif
                         <td class="g_celda_centro">{{ $items->firstItem() + $index }}</td>
