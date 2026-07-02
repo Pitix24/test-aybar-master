@@ -581,6 +581,7 @@
                         <td class="g_celda_acciones g_celda_centro">
                             @can('prospecto.editar')
                             <a href="{{ route('erp.entrega-fest.prospecto.editar', [$evento->id, $p->id]) }}"
+                                wire:navigate
                                 class="g_accion editar" title="Editar / Evaluar">
                                 <i class="fa-solid fa-pencil"></i>
                             </a>
