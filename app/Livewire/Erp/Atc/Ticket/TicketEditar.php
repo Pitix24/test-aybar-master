@@ -46,7 +46,7 @@ class TicketEditar extends Component
     protected function rules()
     {
         return [
-            'email' => 'nullable|email|max:150',
+            'email' => 'nullable|email:filter|max:150',
             'celular' => 'nullable|string|max:50',
             'estado_ticket_id' => 'required|exists:estado_tickets,id',
             'asunto_respuesta' => 'nullable|string|max:255',
@@ -225,6 +225,8 @@ class TicketEditar extends Component
     public function update()
     {
         $this->authorize('ticket.accion-editar');
+        // Añade esta línea para limpiar espacios accidentales antes de la validación
+        $this->email = $this->email ? trim($this->email) : null;
 
         // Validar y, si hay errores, notificar pero NO relanzar la excepción
         // para que Livewire pueda pintar los errores por campo en la vista.

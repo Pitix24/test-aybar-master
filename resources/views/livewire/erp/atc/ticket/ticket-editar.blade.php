@@ -256,7 +256,7 @@
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_6">
                             <label>Correo</label>
-                            <input type="text" wire:model="email">
+                            <input type="email" wire:model.trim="email" ...>
                         </div>
 
                         <div class="g_margin_bottom_10 g_columna_6">
