@@ -14,10 +14,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        576,
-        416
+        928,
+        1120
       ],
-      "id": "f20c4c07-4ddb-4b80-b302-f44a6ba3de1b",
+      "id": "c45b991c-b77d-4f56-911e-97cb3e682dfe",
       "name": "Send an Email2",
       "webhookId": "636d7165-e771-48f6-961f-f95dc4315141",
       "credentials": {
@@ -33,13 +33,13 @@
         "path": "entregafest-asistencia-invitacion",
         "options": {}
       },
-      "id": "3be470e0-65ce-4b61-a87d-e0d411ec236b",
+      "id": "87e74ba6-8f97-4107-8cb1-87e63f102432",
       "name": "webhook-laravel",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -880,
-        368
+        -192,
+        1168
       ],
       "webhookId": "36ead788-585d-49d9-9eb0-17f748354709"
     },
@@ -47,13 +47,13 @@
       "parameters": {
         "jsCode": "// Extrae los datos del body enviado por Laravel\nconst body = $json.body ?? $json;\n\n// Mapeamos los campos según la nueva estructura\nconst titular = body.titular;\nconst copropietarios = body.copropietarios ?? [];\nconst evento = body.evento ?? '';\nconst plantilla = body.plantilla ?? {};\n\n// Usamos el título de la plantilla como asunto predeterminado\nconst asunto = plantilla.titulo ?? 'Invitación al evento';\n\nlet finalItems = [];\n\n// 1. Añadimos al Titular (Propietario) si existe y tiene envíos pendientes\nif (titular) {\n    if (titular.enviar_email || titular.enviar_whatsapp) {\n        finalItems.push({\n            json: {\n                id: titular.id,\n                email: titular.email,\n                nombres: titular.nombres,\n                celular: titular.celular ?? '',\n                dni: titular.dni ?? '',\n                link: titular.link,\n                html: titular.html,\n                tipo: 'Propietario',\n                asunto: asunto,\n                evento: evento,\n                // --- BANDERAS DE ENVÍO ---\n                enviar_email: titular.enviar_email,\n                enviar_whatsapp: titular.enviar_whatsapp,\n                // --- CAMPOS DE LA PLANTILLA ---\n                plantilla_titulo: plantilla.titulo ?? '',\n                plantilla_subtitulo: plantilla.subtitulo ?? '',\n                plantilla_descripcion: plantilla.descripcion ?? '',\n                plantilla_imagen: plantilla.imagen_url ?? '',\n                plantilla_link_boton: plantilla.link_boton ?? ''\n            }\n        });\n    }\n}\n\n// 2. Recorremos y añadimos a cada Copropietario si tiene envíos pendientes\ncopropietarios.forEach(cp => {\n    if (cp.enviar_email || cp.enviar_whatsapp) {\n        finalItems.push({\n            json: {\n                id: cp.id,\n                email: cp.email ?? '',\n                nombres: cp.nombres,\n                celular: cp.celular ?? '',\n                dni: cp.dni ?? '',\n                link: cp.link,\n                html: cp.html,\n                tipo: 'Copropietario',\n                asunto: asunto,\n                evento: evento,\n                // --- BANDERAS DE ENVÍO ---\n                enviar_email: cp.enviar_email,\n                enviar_whatsapp: cp.enviar_whatsapp,\n                // --- CAMPOS DE LA PLANTILLA ---\n                plantilla_titulo: plantilla.titulo ?? '',\n                plantilla_subtitulo: plantilla.subtitulo ?? '',\n                plantilla_descripcion: plantilla.descripcion ?? '',\n                plantilla_imagen: plantilla.imagen_url ?? '',\n                plantilla_link_boton: plantilla.link_boton ?? ''\n            }\n        });\n    }\n});\n\nreturn finalItems;\n"
       },
-      "id": "4ed2a089-d498-4f18-97a3-e7db522359fa",
+      "id": "203f4cb2-83c4-45f6-87a2-a55606f66d2f",
       "name": "formatear-contactos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        368
+        32,
+        1168
       ]
     },
     {
@@ -61,13 +61,13 @@
         "batchSize": 10,
         "options": {}
       },
-      "id": "6000342f-7e05-4117-8e99-0b71714efd52",
+      "id": "99372344-ec8d-4c17-baa8-901f36262554",
       "name": "split-10-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -480,
-        512
+        256,
+        1408
       ]
     },
     {
@@ -105,56 +105,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        416
+        480,
+        1120
       ],
-      "id": "b704a270-cd75-4b46-afcc-97eec9b9ba4c",
+      "id": "d4d9ea02-0f08-4123-9463-2fdeb878cacf",
       "name": "resumen-1"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "id",
-              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
-            },
-            {
-              "name": "tipo",
-              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
-            },
-            {
-              "name": "canal",
-              "value": "whatsapp"
-            },
-            {
-              "name": "mensaje",
-              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
-            },
-            {
-              "name": "etapa",
-              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
-            },
-            {
-              "name": "estado",
-              "value": "={{ $json.messages[0].id ? 'enviado' : 'fallido' }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        304,
-        608
-      ],
-      "id": "829f14f2-cebc-41c4-8079-a8a7893757c6",
-      "name": "set-laravel-mensaje-1",
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -163,23 +118,23 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        288,
-        416
+        704,
+        1120
       ],
-      "id": "ff99b7db-9bc3-47e0-acbf-b0b8e15df620",
+      "id": "113e4f72-2f23-4823-83de-2be9e0fcf92e",
       "name": "formatear-resultados-1"
     },
     {
       "parameters": {
         "amount": 45
       },
-      "id": "e7c8ee3e-6363-4567-b7f5-b083c647fa40",
+      "id": "a121da24-ad9c-462a-9145-98e615a536fb",
       "name": "espera-45s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        592,
-        608
+        1376,
+        1504
       ],
       "webhookId": "b806a011-93f9-4c9d-9642-d2cf5ca732cd"
     },
@@ -188,13 +143,13 @@
         "batchSize": 25,
         "options": {}
       },
-      "id": "e28819c7-561f-4c0d-a156-ca21d165c9e4",
+      "id": "deae4d6f-204b-4d2c-ae80-1f405df80aaf",
       "name": "split-25-contactos",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -464,
-        96
+        256,
+        832
       ]
     },
     {
@@ -205,13 +160,13 @@
         "html": "={{ $json.html }}",
         "options": {}
       },
-      "id": "86c94249-7d8b-47fe-a2bd-695c5354c0ee",
+      "id": "477e1d81-529b-4928-a601-8de5247b908f",
       "name": "enviar-mensaje-email",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        0,
-        176
+        704,
+        832
       ],
       "webhookId": "abc84d18-6f38-4eb2-90ed-d09a45bf3fb7",
       "credentials": {
@@ -225,7 +180,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://host.docker.internal:8000/api/entrega-fest/mensaje-historial",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -248,6 +203,10 @@
             {
               "name": "estado",
               "value": "={{ $json.accepted?.length > 0 ? 'enviado' : 'fallido' }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
             }
           ]
         },
@@ -256,10 +215,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        288,
-        176
+        928,
+        832
       ],
-      "id": "e5704a8a-0e86-40e8-bf19-73e1dc6bc63c",
+      "id": "d6f4ec1d-3fd9-4a84-a981-90b9937d857f",
       "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
     },
@@ -267,13 +226,13 @@
       "parameters": {
         "amount": 12
       },
-      "id": "5321fe99-b349-4135-a541-036774fe8bb8",
+      "id": "79da777c-a9fd-4167-8d2a-7346a53ca333",
       "name": "espera-12s",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        576,
-        176
+        1152,
+        904
       ],
       "webhookId": "fd06c27e-ff50-4c2b-b7af-e7f04a8f9f75"
     },
@@ -312,10 +271,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        0
+        480,
+        640
       ],
-      "id": "89bc21f9-28e8-4f31-91c1-0c862f382b5e",
+      "id": "a376ab85-5592-4b07-b47c-36406ed2c3bc",
       "name": "resumen-2"
     },
     {
@@ -325,10 +284,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        288,
-        0
+        704,
+        640
       ],
-      "id": "22be602d-3255-41ee-a121-3ea75046a27e",
+      "id": "d9a0d53d-3a59-4901-ab5a-0db66d7ef259",
       "name": "formatear-resultados-2"
     },
     {
@@ -344,10 +303,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        576,
-        0
+        928,
+        640
       ],
-      "id": "02b63812-1a37-4e79-bf9a-980ae15f5efb",
+      "id": "f34dceed-4438-4923-80f2-50ed475b8d5a",
       "name": "enviar-email-constancia-2",
       "webhookId": "9f45934c-44d2-4eba-b245-ad1905145e7b",
       "credentials": {
@@ -385,10 +344,10 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        -224,
-        608
+        480,
+        1408
       ],
-      "id": "6ee01e14-1c60-4af1-a905-c18996ee4221",
+      "id": "6ae79e8c-96fe-4fa9-8ecb-d49879cb4c0e",
       "name": "filtro-1"
     },
     {
@@ -419,10 +378,10 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        -208,
-        176
+        480,
+        832
       ],
-      "id": "d6f4499c-fa65-40e8-a79f-691afa4bb42d",
+      "id": "3b24546c-668d-496e-b5b4-354eb246c097",
       "name": "filtro-2"
     },
     {
@@ -467,10 +426,10 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        32,
-        608
+        928,
+        1312
       ],
-      "id": "2b323aa7-ea99-4eb3-b46f-012b17f01664",
+      "id": "7e9ea3b3-9597-45fe-8812-857ae819675e",
       "name": "enviar-mensaje-wsp",
       "webhookId": "f2dd0443-4a47-4744-8aa1-3893e81e9bb5",
       "credentials": {
@@ -478,8 +437,134 @@
           "id": "wsfypPUomJK3uU3v",
           "name": "WhatsApp account"
         }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4484cea6-a382-418a-8448-72417822f19f",
+              "leftValue": "={{ $json.celular ? true : false }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
       },
-      "onError": "continueErrorOutput"
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        704,
+        1408
+      ],
+      "id": "85663162-c494-457b-8533-64bd3c7044d3",
+      "name": "If1",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "whatsapp"
+            },
+            {
+              "name": "mensaje",
+              "value": "Error: Número de celular no encontrado o es nulo. No se intentó el envío."
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "fallido"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1152,
+        1504
+      ],
+      "id": "30b4063e-cd05-4d4b-b7d9-b3d06f381623",
+      "name": "Notificar Error a Laravel",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "whatsapp"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.messages[0].id ? 'enviado' : 'fallido' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1152,
+        1312
+      ],
+      "id": "d003fc5b-e6d0-4510-8c79-212832d9fed2",
+      "name": "set-laravel-mensaje-1",
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -534,17 +619,6 @@
         [
           {
             "node": "formatear-resultados-1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "set-laravel-mensaje-1": {
-      "main": [
-        [
-          {
-            "node": "espera-45s",
             "type": "main",
             "index": 0
           }
@@ -650,7 +724,7 @@
       "main": [
         [
           {
-            "node": "enviar-mensaje-wsp",
+            "node": "If1",
             "type": "main",
             "index": 0
           }
@@ -678,6 +752,46 @@
           }
         ]
       ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "enviar-mensaje-wsp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notificar Error a Laravel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar Error a Laravel": {
+      "main": [
+        [
+          {
+            "node": "espera-45s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-1": {
+      "main": [
+        [
+          {
+            "node": "espera-45s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -686,7 +800,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "038d7889-4f7c-4fe2-bf25-224a1d330af1",
+  "versionId": "79a6f41e-bee3-444f-b7e8-de7693062363",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"
