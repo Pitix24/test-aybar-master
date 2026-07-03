@@ -17,9 +17,11 @@
             </a>
             @endcan
 
+            {{--
             <button wire:click="enviarPreInvitacion" class="g_boton success">
                 Enviar pre invitación <i class="fa-solid fa-envelope"></i> <i class="fa-brands fa-whatsapp"></i>
             </button>
+            --}}
 
             <button wire:click="enviarInvitacion" class="g_boton success">
                 Enviar invitación <i class="fa-solid fa-envelope"></i> <i class="fa-brands fa-whatsapp"></i>
