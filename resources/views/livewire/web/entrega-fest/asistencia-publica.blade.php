@@ -10,7 +10,7 @@
                 <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
                     class="ef_logo_main">
                 <p class="ef_header_text">Formulario de Confirmación de Asistencia</p>
-                <div class="ef_badge_type">Titular del lote</div>
+                <div class="ef_badge_type">Titular del Terreno</div>
             </div>
 
             <div class="ef_body">
@@ -150,7 +150,7 @@
                                 <span class="ef_footer_value">{{ $prospecto->proyecto?->nombre ?? 'N/A' }}</span>
                             </div>
                             <div class="ef_footer_row">
-                                <span class="ef_footer_label">Lote / Manzana</span>
+                                <span class="ef_footer_label">Terreno / Manzana</span>
                                 <span class="ef_footer_value">{{ $prospecto->lote }} {{ $prospecto->manzana }}</span>
                             </div>
                             <div class="ef_footer_row">

@@ -38,7 +38,7 @@
                     <span>{{ $direccion_sede ?: 'N/A' }}</span>
                 </div>
                 <div class="ef_info_group">
-                    <label>Manzana - Lote</label>
+                    <label>Manzana - Terreno</label>
                     <span>{{ $this->manzanaActiva ?? 'N/A' }} - {{ $this->loteActivo ?? 'N/A' }}</span>
                 </div>
             </div>

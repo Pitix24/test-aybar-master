@@ -32,7 +32,7 @@
                         <span>{{ $copropietario->dni }}</span>
                     </div>
                     <div class="ef_info_group">
-                        <label>Lote/MZ</label>
+                        <label>Terreno/MZ</label>
                         <span>
                             {{ $copropietario->prospecto?->lote ?? '—' }}
                             - {{ $copropietario->prospecto?->manzana ?? '—' }}

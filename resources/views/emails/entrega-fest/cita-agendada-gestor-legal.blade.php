@@ -103,11 +103,11 @@
                         </td>
                     </tr>
 
-                    {{-- 2. UBICACIÓN DEL LOTE --}}
+                    {{-- 2. UBICACIÓN DEL Terreno --}}
                     <tr>
                         <td style="padding:8px 20px 6px 20px;">
                             <div style="font-size:12px;font-weight:bold;color:#8e44ad;margin-bottom:8px;">
-                                2. UBICACIÓN DEL LOTE
+                                2. UBICACIÓN DEL Terreno
                                 @if($fueReubicado)
                                     <span style="display:inline-block;margin-left:6px;padding:2px 8px;background:#f59e0b;color:#fff;font-size:10px;border-radius:10px;">REUBICADO</span>
                                 @endif
@@ -121,7 +121,7 @@
                                         <strong>Manzana:</strong> {{ $manzana ?: 'N/D' }}
                                     </td>
                                     <td style="width:34%;padding:8px 10px;font-size:12px;">
-                                        <strong>Lote:</strong> {{ $lote ?: 'N/D' }}
+                                        <strong>Terreno:</strong> {{ $lote ?: 'N/D' }}
                                     </td>
                                 </tr>
                             </table>

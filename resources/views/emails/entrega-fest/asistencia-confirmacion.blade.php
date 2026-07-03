@@ -80,7 +80,7 @@
                                             <tr>
                                                 <td style="padding: 15px 0; border-bottom: 1px solid #eeeeee;">
                                                     <span
-                                                        style="font-size: 12px; color: #888888; text-transform: uppercase;">Lote
+                                                        style="font-size: 12px; color: #888888; text-transform: uppercase;">Terreno
                                                         / Manzana</span>
                                                     <span
                                                         style="float: right; font-weight: 700; color: #333333;">{{ $lote }}

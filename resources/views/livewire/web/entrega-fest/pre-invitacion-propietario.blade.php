@@ -32,7 +32,7 @@
                         <span>{{ $prospecto->dni }}</span>
                     </div>
                     <div class="ef_info_group">
-                        <label>Lote/MZ</label>
+                        <label>Terreno/MZ</label>
                         <span>
                             {{ $prospecto->lote ?? '—' }}
                             - {{ $prospecto->manzana ?? '—' }}

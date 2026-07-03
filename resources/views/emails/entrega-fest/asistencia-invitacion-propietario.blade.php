@@ -69,7 +69,7 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <span
-                                                        style="display: block; font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Lote
+                                                        style="display: block; font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Terreno
                                                         y Manzana</span>
                                                     <span
                                                         style="display: block; font-size: 16px; color: #ffffff; font-weight: 700;">{{ $prospecto->lote }}
