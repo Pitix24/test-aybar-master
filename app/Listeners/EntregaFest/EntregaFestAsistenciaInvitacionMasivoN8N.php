@@ -57,21 +57,35 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                             });
                     });
             })
-            // 1. Añadimos 'estadoCliente' a las relaciones
+            // Cargamos relaciones incluyendo 'estadoCliente'
             ->with(['copropietarios.historialComunicaciones', 'entregaFest', 'historialComunicaciones', 'estadoCliente'])
             ->get()
-            // 2. ORDEN DE PRIORIDAD PERSONALIZADO ANTES DEL UNIQUE
+
+            // 🛑 FILTRO DE BLOQUEO: Excluir estados no deseados
+            ->filter(function ($prospecto) {
+                $nombreEstado = strtoupper($prospecto->estadoCliente->nombre ?? '');
+                $bloqueados = [
+                    'RESOLUCION DE CONTRATO',
+                    'DEVOLUCIONES EFECTUADAS',
+                    'DEVOLUCIONES EN PROCESO',
+                    'PLANTON',
+                    'RESOLUCION'
+                ];
+                // Retorna verdadero solo si el estado NO está en la lista de bloqueados
+                return !in_array($nombreEstado, $bloqueados);
+            })
+
+            // ⚡ ORDEN DE PRIORIDAD PERSONALIZADO
             ->sortBy(function ($prospecto) {
                 $prioridades = [
-                    'PRIORIDAD ATC'          => 1,
-                    'PRIORIDAD LEGAL'        => 2,
-                    'LOTE CANCELADO'         => 3,
-                    'RESOLUCION DE CONTRATO' => 4,
-                    'PLANTON'                => 5,
+                    'PRIORIDAD LEGAL' => 1,
+                    'PRIORIDAD ATC'   => 2,
+                    'LOTE CANCELADO'  => 3,
                 ];
                 $nombreEstado = strtoupper($prospecto->estadoCliente->nombre ?? '');
-                return $prioridades[$nombreEstado] ?? 99;
+                return $prioridades[$nombreEstado] ?? 99; // Todo lo demás va al final (99)
             })
+
             ->unique('dni')
             ->values()
             ->map(function (ProspectoEntregaFest $prospecto) use ($plantilla, $etapa) {
