@@ -60,6 +60,9 @@ class AsistenciaInvitacionPropietario extends Component
             $this->enviado = true;
             $this->mensaje_exito = 'Ya hemos registrado tu respuesta anteriormente. ¡Muchas gracias!';
             $this->codigo_invitado = $this->prospecto->invitado?->codigo_invitado;
+            $this->cantidad_acompanantes = $this->prospecto->invitado?->cantidad_acompanantes_permitidos ?? 0;
+            $this->transporte = strtolower($this->prospecto->invitado?->transporte ?? 'bus');
+            $this->asistira = $this->prospecto->invitacion_confirmada ? 'si' : 'no';
         }
 
         // Si no está aprobado en backoffice, no debería estar aquí (opcional)

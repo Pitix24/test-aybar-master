@@ -63,6 +63,9 @@ class AsistenciaInvitacionCopropietario extends Component
             $this->enviado = true;
             $this->mensaje_exito = 'Ya hemos registrado tu respuesta anteriormente. ¡Muchas gracias!';
             $this->codigo_invitado = $this->copropietario->invitado?->codigo_invitado;
+            $this->cantidad_acompanantes = $this->copropietario->invitado?->cantidad_acompanantes_permitidos ?? 0;
+            $this->transporte = strtolower($this->copropietario->invitado?->transporte ?? 'bus');
+            $this->asistira = $this->copropietario->invitacion_confirmada ? 'si' : 'no';
         }
     }
 
