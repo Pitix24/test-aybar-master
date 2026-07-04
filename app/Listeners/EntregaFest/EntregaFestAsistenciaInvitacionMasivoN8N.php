@@ -31,9 +31,6 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
 
         $etapa = $plantilla->tipo ?? 'asistencia-invitacion';
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $evento->id)
-            /*->whereHas('estadoCliente', function ($query) {
-                $query->whereNotIn('nombre', ['PLANTON', 'DESISTIMIENTO', 'DEVOLUCION DE APORTES', 'CARTA NOTARIAL', 'RESOLUCION DE CONTRATO']);
-            })*/
             ->where(function ($query) use ($etapa) {
                 // El titular necesita algo y NO ha respondido
                 $query->where(function ($q) use ($etapa) {
@@ -60,9 +57,22 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                             });
                     });
             })
-            ->with(['copropietarios.historialComunicaciones', 'entregaFest', 'historialComunicaciones'])
+            // 1. Añadimos 'estadoCliente' a las relaciones
+            ->with(['copropietarios.historialComunicaciones', 'entregaFest', 'historialComunicaciones', 'estadoCliente'])
             ->get()
-            ->unique('dni') // Solo un envío por DNI de Titular
+            // 2. ORDEN DE PRIORIDAD PERSONALIZADO ANTES DEL UNIQUE
+            ->sortBy(function ($prospecto) {
+                $prioridades = [
+                    'PRIORIDAD ATC'          => 1,
+                    'PRIORIDAD LEGAL'        => 2,
+                    'LOTE CANCELADO'         => 3,
+                    'RESOLUCION DE CONTRATO' => 4,
+                    'PLANTON'                => 5,
+                ];
+                $nombreEstado = strtoupper($prospecto->estadoCliente->nombre ?? '');
+                return $prioridades[$nombreEstado] ?? 99;
+            })
+            ->unique('dni')
             ->values()
             ->map(function (ProspectoEntregaFest $prospecto) use ($plantilla, $etapa) {
 
