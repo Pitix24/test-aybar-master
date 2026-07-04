@@ -80,8 +80,8 @@
                                     <i class="fa-solid fa-circle-info"></i> Información Importante
                                 </p>
                                 <ul style="margin: 0; padding-left: 20px; color: #004d55; font-size: 0.85rem; line-height: 1.6;">
-                                    <li>En esta zona podrá registrar el nombre completo y número de DNI de cada uno de sus acompañantes.</li>
-                                    <li>Los niños mayores de 3 años cuentan como acompañante.</li>
+                                    <li><i class="fa-solid fa-check" style="padding-right: 5px;"></i>En esta zona podrá registrar el nombre completo y número de DNI de cada uno de sus acompañantes.</a></li>
+                                    <li><i class="fa-solid fa-check" style="padding-right: 5px;"></i>Los niños mayores de 3 años cuentan como acompañante.</a></li>
                                 </ul>
                             </div>
 
