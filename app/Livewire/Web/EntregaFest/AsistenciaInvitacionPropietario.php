@@ -28,10 +28,7 @@ class AsistenciaInvitacionPropietario extends Component
     public $observaciones = '';
 
     // Datos del acompañante
-    public $acompanante_dni = '';
-    public $acompanante_nombres = '';
-    public $acompanante_email = '';
-    public $acompanante_celular = '';
+    public $acompanantes = [];
 
     public $enviado = false;
     public $mensaje_exito = '';
@@ -75,16 +72,31 @@ class AsistenciaInvitacionPropietario extends Component
     {
         return [
             'asistira' => 'required|in:si,no',
-            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:1',
+            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:2', // <-- Cambiado a max:2
             'transporte' => 'required_if:asistira,si|in:bus,propio',
             'observaciones' => 'nullable|string|max:500',
 
-            // Validación para el acompañante
-            'acompanante_dni' => 'required_if:cantidad_acompanantes,1|nullable|string|max:15',
-            'acompanante_nombres' => 'required_if:cantidad_acompanantes,1|nullable|string|max:255',
-            'acompanante_email' => 'nullable|email|max:255',
-            'acompanante_celular' => 'nullable|string|max:20',
+            // Validación dinámica para el array
+            'acompanantes.*.dni' => 'required_if:cantidad_acompanantes,1,2|nullable|string|max:15',
+            'acompanantes.*.nombres' => 'required_if:cantidad_acompanantes,1,2|nullable|string|max:255',
+            'acompanantes.*.email' => 'nullable|email|max:255',
+            'acompanantes.*.celular' => 'nullable|string|max:20',
         ];
+    }
+
+    public function updatedCantidadAcompanantes($value)
+    {
+        // Limpiamos el array y creamos campos vacíos para la cantidad seleccionada
+        $this->acompanantes = [];
+
+        for ($i = 0; $i < (int)$value; $i++) {
+            $this->acompanantes[] = [
+                'dni' => '',
+                'nombres' => '',
+                'email' => '',
+                'celular' => ''
+            ];
+        }
     }
 
     public function save()
@@ -120,16 +132,20 @@ class AsistenciaInvitacionPropietario extends Component
                     'observaciones_asistencia' => $this->observaciones,
                 ]);
 
-                // Si tiene acompañante, lo registramos
-                if ($this->cantidad_acompanantes == 1) {
-                    \App\Models\AcompananteEntregaFest::create([
-                        'dni' => $this->acompanante_dni,
-                        'nombres' => $this->acompanante_nombres,
-                        'email' => $this->acompanante_email,
-                        'celular' => $this->acompanante_celular,
-                        'prospecto_entrega_fest_id' => $this->prospecto->id,
-                        'invitado_entrega_fest_id' => $invitado->id,
-                    ]);
+                // Si tiene acompañantes, los registramos
+                if ($this->cantidad_acompanantes > 0) {
+                    foreach ($this->acompanantes as $acompanante) {
+                        if (!empty($acompanante['dni']) && !empty($acompanante['nombres'])) {
+                            \App\Models\AcompananteEntregaFest::create([
+                                'dni' => $acompanante['dni'],
+                                'nombres' => $acompanante['nombres'],
+                                'email' => $acompanante['email'] ?? null,
+                                'celular' => $acompanante['celular'] ?? null,
+                                'prospecto_entrega_fest_id' => $this->prospecto->id,
+                                'invitado_entrega_fest_id' => $invitado->id,
+                            ]);
+                        }
+                    }
                 }
 
                 DB::commit();
