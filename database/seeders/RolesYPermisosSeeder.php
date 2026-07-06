@@ -31,6 +31,7 @@ class RolesYPermisosSeeder extends Seeder
                 'rol.crear', //ok
                 'rol.editar', //ok
                 'rol.eliminar', //ok
+                'rol.jerarquia', //ok
                 'rol.exportar-filtro', //ok
                 'rol.exportar-todo', //ok
                 /* PERMISOS */
@@ -184,19 +185,35 @@ class RolesYPermisosSeeder extends Seeder
                 'canal.exportar-todo', //ok
                 'ticket.navegacion', //ok
                 'ticket.lista', //ok
+                'ticket.vista-lista', //ok
                 'ticket.gestor', //ok
                 'ticket.ver', //ok
+                'ticket.ver-todos', //ok
+                'ticket.accion-ver', //ok
+                'ticket.vista-ver', //ok
                 'ticket.crear', //ok
+                'ticket.accion-crear', //ok
+                'ticket.vista-crear', //ok
                 'ticket.editar', //ok
+                'ticket.accion-editar', //ok
+                'ticket.vista-editar', //ok
                 'ticket.eliminar', //ok
+                'ticket.accion-eliminar', //ok
+                'ticket.vista-eliminar', //ok
+                'ticket.accion-exportar-filtro', //ok
                 'ticket.exportar-filtro', //ok
+                'ticket.accion-exportar-todo', //ok
                 'ticket.exportar-todo', //ok
                 'ticket.derivar', //ok
+                'ticket.accion-derivar', //ok
+                'ticket.vista-derivar', //ok
                 'ticket.agregar-archivo', //ok
                 'ticket.eliminar-archivo', //ok
                 'ticket.ver-archivo', //ok
                 'ticket.enviar-correo', //ok
+                'ticket.vista-crear-cita', //ok
                 'ticket.chat', //ok
+                'ticket.vista-chat', //ok
             ],
             'Módulo Cita' => [ //ok
                 'modulo-cita.ver', //ok
@@ -299,12 +316,23 @@ class RolesYPermisosSeeder extends Seeder
                 'reporte-letra.letra.ver', //ok
             ],
             'Módulo Legal' => [
-                'modulo-legal.ver',
-                'libro-reclamacion.navegar',
-                'libro-reclamacion.gestor',
-                'ticket-libro-reclamacion.ver',
-                'ticket-libro-reclamacion.editar',
-                'ticket-libro-reclamacion.eliminar',
+                'modulo-legal.ver', //ok
+                /* LIBRO DE RECLAMACIONES */
+                'libro-reclamacion.navegacion', //ok
+                'libro-reclamacion.lista', //ok
+                'libro-reclamacion.ver', //ok
+                'libro-reclamacion.editar', //ok
+                'libro-reclamacion.eliminar', //ok
+                /* CARTAS NOTARIALES */
+                'ticket-notarial.navegacion', //ok
+                'ticket-notarial.lista', //ok
+                'ticket-notarial.crear', //ok
+                'ticket-notarial.accion-crear', //ok
+                'ticket-notarial.ver', //ok
+                'ticket-notarial.editar', //ok
+                'ticket-notarial.accion-editar', //ok
+                'ticket-notarial.accion-exportar-filtro', //ok
+                'ticket-notarial.accion-exportar-todo', //ok
             ],
             'Módulo Marketing' => [
                 'modulo-marketing.ver', //ok
@@ -330,6 +358,7 @@ class RolesYPermisosSeeder extends Seeder
             'Módulo Entrega Fest' => [
                 'modulo-entrega-fest.ver',
                 /* ENTREGA FEST */
+                'entrega-fest.admin',
                 'entrega-fest.navegacion',
                 'entrega-fest.lista',
                 'entrega-fest.gestor', //ok
@@ -337,6 +366,7 @@ class RolesYPermisosSeeder extends Seeder
                 'entrega-fest.crear',
                 'entrega-fest.editar',
                 'entrega-fest.eliminar',
+                'entrega-fest.cancelar',
                 'entrega-fest.exportar-filtro',
                 'entrega-fest.exportar-todo',
                 'entrega-fest.ver-panel',
@@ -348,8 +378,17 @@ class RolesYPermisosSeeder extends Seeder
                 'prospecto.crear',
                 'prospecto.editar',
                 'prospecto.eliminar',
+                'contrato-preliminar.eliminar',
                 'prospecto.exportar-filtro',
                 'prospecto.exportar-todo',
+                /* PROSPECTO HISTÓRICO */
+                'prospecto-historico.navegacion',
+                'prospecto-historico.lista',
+                'prospecto-historico.ver',
+                'prospecto-historico.importar',
+                'prospecto-historico.cargar-desde-historico',
+                'prospecto-historico.exportar-filtro',
+                'prospecto-historico.exportar-todo',
                 /* INVITADO */
                 'invitado.navegacion',
                 'invitado.lista',
@@ -505,6 +544,7 @@ class RolesYPermisosSeeder extends Seeder
             'supervisor-legal' => 'Supervisor Legal',
             'asesor-legal' => 'Asesor Legal',
             'asesor-libro-reclamacion' => 'Asesor Libro de Reclamaciones',
+            'entrega-fest.admin' => 'Administrador EntregaFest',
             'staff-asistencia' => 'Proveedor Externo',
             'staff-itinerario' => 'Proveedor Externo',
             'staff-mop' => 'Proveedor Externo',
@@ -551,8 +591,9 @@ class RolesYPermisosSeeder extends Seeder
             'ticket.crear',
             'ticket.editar',
             'ticket.derivar',
+            'ticket.ver-todos',
         ]);
-        $this->command->info("✓ Asesor ATC: 4 permisos");
+        $this->command->info("✓ Asesor ATC: 5 permisos");
 
         // Supervisor Cita: Todos los permisos de Cita
         $supervisor_cita = Role::findByName('supervisor-cita');
@@ -605,12 +646,14 @@ class RolesYPermisosSeeder extends Seeder
         ]);
         // Agregar permisos de prospecto según entrega-fest.php
         $asesor_backoffice->givePermissionTo(Permission::where('name', 'like', 'prospecto.%')->get());
+        $asesor_backoffice->givePermissionTo(Permission::where('name', 'like', 'ticket.%')->get());
         $this->command->info("✓ Asesor Backoffice: Configurado");
 
         // Legal
         $supervisor_legal = Role::findByName('supervisor-legal');
         $supervisor_legal->syncPermissions(Permission::where('name', 'like', 'prospecto.%')->get());
         $supervisor_legal->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
+        $supervisor_legal->givePermissionTo('contrato-preliminar.eliminar');
         $this->command->info("✓ Supervisor Legal: Configurado");
 
         $asesor_legal = Role::findByName('asesor-legal');
@@ -619,9 +662,19 @@ class RolesYPermisosSeeder extends Seeder
 
         $asesor_libro_reclamacion = Role::findByName('asesor-libro-reclamacion');
         // Sincronizar con el módulo correcto y asegurar permiso de ver tickets
-        $asesor_libro_reclamacion->syncPermissions(Permission::where('module', 'Módulo Legal')->get());
-        $asesor_libro_reclamacion->givePermissionTo('ticket.%');
+        $asesor_libro_reclamacion->syncPermissions(Permission::where('name', 'like', 'ticket.%')->get());
+        $asesor_libro_reclamacion->givePermissionTo(Permission::where('module', 'Módulo Legal')->get());
         $this->command->info("✓ Asesor Libro Reclamacion: Configurado");
+
+        // Admin EntregaFest: Control total del módulo + gestión del histórico
+        $admin_entrega_fest = Role::findByName('entrega-fest.admin');
+        $admin_entrega_fest->syncPermissions(
+            Permission::where('module', 'Módulo Entrega Fest')->get()
+        );
+        $this->command->info("✓ Admin EntregaFest: Configurado");
+        // (Opcional) Si tu rol "supervisor-entrega-fest" debe poder usar el botón de autocarga, agrégalo aquí:
+        // $supervisor = Role::findByName('supervisor-entrega-fest');
+        // $supervisor->givePermissionTo('prospecto-historico.cargar-desde-historico');
 
         // Staff Operativo (supervisor-entrega-fest)
         $staff_operativo = Role::findByName('supervisor-entrega-fest');

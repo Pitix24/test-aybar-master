@@ -5,11 +5,11 @@
         <h2>Derivar Ticket</h2>
 
         @can('ticket.vista-editar')
-            <div class="cabecera_titulo_botones">
-                <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton dark">
-                    <i class="fa-solid fa-arrow-left"></i> Regresar al ticket
-                </a>
-            </div>
+        <div class="cabecera_titulo_botones">
+            <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton dark">
+                <i class="fa-solid fa-arrow-left"></i> Regresar al ticket
+            </a>
+        </div>
         @endcan
     </div>
 
@@ -54,7 +54,7 @@
                                     class="@error('a_area_id') input-error @enderror">
                                     <option value="" selected disabled>Seleccionar área destino</option>
                                     @foreach ($areas as $area)
-                                        <option value="{{ $area->id }}">{{ $area->nombre }}</option>
+                                    <option value="{{ $area->id }}">{{ $area->nombre }}</option>
                                     @endforeach
                                 </select>
                                 @error('a_area_id') <p class="mensaje_error">{{ $message }}</p> @enderror
@@ -64,15 +64,21 @@
                                 <label for="gestor_id">Gestor destino<span class="obligatorio"><i
                                             class="fa-solid fa-asterisk"></i></span></label>
                                 <select id="gestor_id" wire:model.live="gestor_id"
-                                    class="@error('gestor_id') input-error @enderror">
+                                    class="@error('gestor_id') input-error @enderror" @if(count($gestores)===0) disabled
+                                    @endif>
                                     <option value="" selected disabled>Sin asignar</option>
                                     @foreach ($gestores as $usuario)
-                                        <option value="{{ $usuario->id }}">
-                                            {{ $usuario->name }}
-                                        </option>
+                                    <option value="{{ $usuario->id }}">
+                                        {{ $usuario->name }}
+                                    </option>
                                     @endforeach
                                 </select>
                                 @error('gestor_id') <p class="mensaje_error">{{ $message }}</p> @enderror
+                                @if($a_area_id && count($gestores) === 0)
+                                <div class="g_margin_top_10 g_alerta warning">
+                                    No hay gestores disponibles para el área destino seleccionada.
+                                </div>
+                                @endif
                             </div>
                         </div>
 
@@ -88,14 +94,14 @@
 
                         <div class="formulario_botones">
                             @can('ticket.accion-derivar')
-                                <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                                    <span wire:loading.remove wire:target="store">
-                                        <i class="fa-solid fa-route"></i> Derivar
-                                    </span>
-                                    <span wire:loading wire:target="store">
-                                        <i class="fa-solid fa-spinner fa-spin"></i> Derivando...
-                                    </span>
-                                </button>
+                            <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="store">
+                                    <i class="fa-solid fa-route"></i> Derivar
+                                </span>
+                                <span wire:loading wire:target="store">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Derivando...
+                                </span>
+                            </button>
                             @endcan
 
                             <button type="button" class="g_boton cancelar" onclick="history.back()">
@@ -117,15 +123,15 @@
 
                 <div class="g_margin_bottom_10">
                     @can('ticket.vista-ver')
-                        <a href="{{ route('erp.ticket.vista.ver', $ticket->id) }}" class="g_boton warning">
-                            <i class="fa-solid fa-eye"></i> Ver ticket
-                        </a>
+                    <a href="{{ route('erp.ticket.vista.ver', $ticket->id) }}" class="g_boton warning">
+                        <i class="fa-solid fa-eye"></i> Ver ticket
+                    </a>
                     @endcan
 
                     @can('ticket.vista-editar')
-                        <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton info">
-                            <i class="fa-solid fa-pencil"></i> Editar ticket
-                        </a>
+                    <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton info">
+                        <i class="fa-solid fa-pencil"></i> Editar ticket
+                    </a>
                     @endcan
                 </div>
 
@@ -194,32 +200,32 @@
                 </div>
 
                 @if (!empty($ticket->lotes))
-                    <div class="g_fila">
-                        <div class="g_columna_12">
-                            <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
+                <div class="g_fila">
+                    <div class="g_columna_12">
+                        <h4 class="g_panel_titulo"><i class="fa-solid fa-layer-group"></i> Lotes vinculados</h4>
 
-                            <div class="g_contenedor_tabla">
-                                <table class="g_tabla">
-                                    <thead>
-                                        <tr>
-                                            <th>Razón Social</th>
-                                            <th>Proyecto</th>
-                                            <th>Mz./Lt.</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($ticket->lotes as $index => $l)
-                                            <tr wire:key="lote-parent-{{ $index }}">
-                                                <td> {{ $l['razon_social'] }} </td>
-                                                <td> {{ $l['proyecto'] }} </td>
-                                                <td> {{ $l['numero_lote'] }} </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="g_contenedor_tabla">
+                            <table class="g_tabla">
+                                <thead>
+                                    <tr>
+                                        <th>Razón Social</th>
+                                        <th>Proyecto</th>
+                                        <th>Mz./Lt.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($ticket->lotes as $index => $l)
+                                    <tr wire:key="lote-parent-{{ $index }}">
+                                        <td> {{ $l['razon_social'] }} </td>
+                                        <td> {{ $l['proyecto'] }} </td>
+                                        <td> {{ $l['numero_lote'] }} </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                </div>
                 @endif
             </div>
         </div>

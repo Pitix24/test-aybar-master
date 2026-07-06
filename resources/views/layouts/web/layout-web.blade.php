@@ -17,6 +17,7 @@
 
     <!-- SCRIPTS -->
     @vite(['resources/css/web/web.css', 'resources/js/web/web.js'])
+    @vite('resources/css/erp/entregafest/invitacion.css')
 
     <!-- Librería Swiper -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>

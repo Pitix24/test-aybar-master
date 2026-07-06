@@ -12,8 +12,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -960,
-        368
+        -1120,
+        456
       ],
       "webhookId": "5784ff8d-5a93-463f-bd55-41341e7438d5"
     },
@@ -26,8 +26,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -720,
-        368
+        -896,
+        456
       ]
     },
     {
@@ -43,8 +43,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        0,
-        176
+        -224,
+        192
       ],
       "webhookId": "35f1df2c-3320-452f-ae19-c12dbb5c7b59",
       "credentials": {
@@ -53,96 +53,6 @@
           "name": "SMTP account"
         }
       },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "id",
-              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
-            },
-            {
-              "name": "tipo",
-              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
-            },
-            {
-              "name": "canal",
-              "value": "whatsapp"
-            },
-            {
-              "name": "mensaje",
-              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
-            },
-            {
-              "name": "etapa",
-              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
-            },
-            {
-              "name": "estado",
-              "value": "={{ $json.key ? 'enviado' : 'fallido' }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        288,
-        608
-      ],
-      "id": "122f595b-9351-4d40-ac31-c5b674e0d8b7",
-      "name": "set-laravel-mensaje-1",
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "id",
-              "value": "={{ $node[\"formatear-contactos\"].json.id }}"
-            },
-            {
-              "name": "tipo",
-              "value": "={{ $node[\"formatear-contactos\"].json.tipo }}"
-            },
-            {
-              "name": "canal",
-              "value": "email"
-            },
-            {
-              "name": "mensaje",
-              "value": "={{ $node[\"formatear-contactos\"].json.link }}"
-            },
-            {
-              "name": "estado",
-              "value": "={{ $json.accepted?.length > 0 ? 'enviado' : 'invalido' }}"
-            },
-            {
-              "name": "etapa",
-              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        288,
-        176
-      ],
-      "id": "1f1b4716-5940-4125-9b4d-b3deaff7eb55",
-      "name": "set-laravel-mensaje-2",
       "onError": "continueRegularOutput"
     },
     {
@@ -180,21 +90,21 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        416
+        -224,
+        504
       ],
       "id": "a416a835-51d6-4cfe-8b7f-f585f67e9006",
       "name": "resumen-1"
     },
     {
       "parameters": {
-        "jsCode": "const resultados = $(\"enviar-mensaje-wsp-3\").all();\nconst datosOriginales = $(\"formatear-contactos\").all(); \n\n// CAMBIO AQUÍ: Evolution API suele devolver un objeto con 'key' si es exitoso\nconst exitosos = resultados.filter(r => r.json.key && r.json.key.remoteJid).length;\nconst fallidos = resultados.length - exitosos;\nconst total = resultados.length;\n\nlet logDetallado = \"Resumen de envíos por WhatsApp:\\n\";\nresultados.forEach((r, index) => {\n    // CAMBIO AQUÍ: Validamos por la existencia de 'key'\n    const status = (r.json.key) ? \"✅ OK\" : \"❌ Error\";\n    \n    // Traemos el nombre y el celular original\n    const nombre = datosOriginales[index].json.nombres;\n    const celular = datosOriginales[index].json.celular; // <--- Añadimos esto\n    \n    logDetallado += `${index + 1}. ${nombre} (${celular}): ${status}\\n`; // <--- Mostramos el celular aquí\n});\n\nreturn { exitosos, fallidos, total, logDetallado, fecha: new Date().toLocaleString() };\n"
+        "jsCode": "const resultados = $(\"enviar-mensaje-wsp\").all();\nconst datosOriginales = $(\"formatear-contactos\").all(); \n\n// Evolution/WhatsApp Cloud API: si tiene 'key' fue exitoso\nconst exitosos = resultados.filter(r => r.json.key && (r.json.key.remoteJid || r.json.key.id)).length;\nconst fallidos = resultados.length - exitosos;\nconst total = resultados.length;\n\nlet logDetallado = \"Resumen de envíos por WhatsApp:\\n\";\nresultados.forEach((r, index) => {\n    const status = (r.json.key) ? \"✅ OK\" : \"❌ Error\";\n    \n    // Protegemos por si datosOriginales no tiene el mismo índice\n    const nombre = datosOriginales[index]?.json?.nombres ?? \"(sin nombre)\";\n    const celular = datosOriginales[index]?.json?.celular ?? \"(sin celular)\";\n    \n    logDetallado += `${index + 1}. ${nombre} (${celular}): ${status}\\n`;\n});\n\nreturn { exitosos, fallidos, total, logDetallado, fecha: new Date().toLocaleString() };\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        288,
-        416
+        0,
+        504
       ],
       "id": "707c75f5-22c7-40a7-ab35-f7ea300f5a08",
       "name": "formatear-resultados-1"
@@ -212,8 +122,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        576,
-        416
+        224,
+        504
       ],
       "id": "5b86f7e6-57e2-4ce3-83e4-eb3dc1feca7d",
       "name": "enviar-email-constancia-1",
@@ -260,7 +170,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
+        -448,
         0
       ],
       "id": "4c50734d-65ff-4ed8-a31d-7708a2832d37",
@@ -273,7 +183,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        288,
+        -224,
         0
       ],
       "id": "be5b916e-c83a-4f42-88da-8ae4c50d49df",
@@ -292,7 +202,7 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        576,
+        0,
         0
       ],
       "id": "d1e67e9a-5150-4054-b78f-137f034e87b8",
@@ -315,8 +225,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -480,
-        96
+        -672,
+        192
       ]
     },
     {
@@ -328,14 +238,14 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        576,
-        176
+        224,
+        264
       ],
       "webhookId": "aac688e3-bc5d-449c-85bb-a12e5db949c8"
     },
     {
       "parameters": {
-        "batchSize": 2,
+        "batchSize": 10,
         "options": {}
       },
       "id": "9be7c368-aabf-425f-b40f-d5fef884eeb1",
@@ -343,8 +253,8 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -480,
-        512
+        -672,
+        696
       ]
     },
     {
@@ -356,8 +266,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        576,
-        608
+        224,
+        768
       ],
       "webhookId": "94b8e4c7-06eb-4262-ab99-a7b1bd58775c"
     },
@@ -389,8 +299,8 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        -240,
-        608
+        -448,
+        696
       ],
       "id": "6f5a2f6f-0cd7-4567-aa18-5a1e178b62b5",
       "name": "filtro-1"
@@ -423,8 +333,8 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        -240,
-        176
+        -448,
+        192
       ],
       "id": "bd523e2b-6a0b-4f96-b0d7-cb1baed3778b",
       "name": "filtro-2"
@@ -471,8 +381,8 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        0,
-        608
+        -224,
+        696
       ],
       "id": "46112640-b28e-4f48-8d08-bde59a19572f",
       "name": "enviar-mensaje-wsp",
@@ -482,7 +392,112 @@
           "id": "wsfypPUomJK3uU3v",
           "name": "WhatsApp account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        504
+      ],
+      "id": "04b50a6e-9c7c-4997-a1b1-a418b0ecb6ae",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $('filtro-1').item.json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $('filtro-1').item.json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "whatsapp"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $('filtro-1').item.json.link }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.messages ? 'enviado' : 'fallido' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        696
+      ],
+      "id": "9627c4c5-dc0b-461b-85eb-d2acaa286681",
+      "name": "set-laravel-mensaje-1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://plataforma-digital.aybarcorp.com/api/entrega-fest/mensaje-historial",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $('filtro-2').item.json.id }}"
+            },
+            {
+              "name": "tipo",
+              "value": "={{ $('filtro-2').item.json.tipo }}"
+            },
+            {
+              "name": "canal",
+              "value": "email"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{ $('filtro-2').item.json.link }}"
+            },
+            {
+              "name": "etapa",
+              "value": "={{ $('webhook-laravel').item.json.body.etapa }}"
+            },
+            {
+              "name": "estado",
+              "value": "={{ $json.messageId ? 'enviado' : 'fallido' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        192
+      ],
+      "id": "43e2b11b-c648-4335-926d-4fdf52f008a3",
+      "name": "set-laravel-mensaje-2",
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -505,6 +520,11 @@
             "node": "split-10-contactos",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "split-25-contactos",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -514,28 +534,6 @@
         [
           {
             "node": "set-laravel-mensaje-2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "set-laravel-mensaje-1": {
-      "main": [
-        [
-          {
-            "node": "espera-120s",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "set-laravel-mensaje-2": {
-      "main": [
-        [
-          {
-            "node": "espera-12s",
             "type": "main",
             "index": 0
           }
@@ -588,7 +586,13 @@
     },
     "split-25-contactos": {
       "main": [
-        [],
+        [
+          {
+            "node": "resumen-2",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "filtro-2",
@@ -611,7 +615,13 @@
     },
     "split-10-contactos": {
       "main": [
-        [],
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "filtro-1",
@@ -664,15 +674,50 @@
           }
         ]
       ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "resumen-1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-1": {
+      "main": [
+        [
+          {
+            "node": "espera-120s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-laravel-mensaje-2": {
+      "main": [
+        [
+          {
+            "node": "espera-12s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "26afc86b-7525-4a26-8cd8-6b469724f099",
+  "versionId": "d71bbeca-1108-4ea7-9010-28462b4d5c8a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "c433c71318b007b5f27973859b26f7f0e1a6fc93061cfcb9f59fb9bcba4cdc6f"

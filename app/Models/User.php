@@ -9,13 +9,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, SoftDeletes, HasRoles;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, SoftDeletes, HasRoles {
+        hasPermissionTo as spatieHasPermissionTo;
+        getAllPermissions as spatieGetAllPermissions;
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -79,6 +86,60 @@ class User extends Authenticatable
         return $this->belongsToMany(TipoSolicitud::class, 'tipo_solicitud_user')
             ->withPivot('is_principal')
             ->withTimestamps();
+    }
+
+    public function hasPermissionTo($permission, $guardName = null): bool
+    {
+        if ($this->spatieHasPermissionTo($permission, $guardName)) {
+            return true;
+        }
+        return $this->hasInheritedPermissionTo($permission, $guardName);
+    }
+
+    public function getAllPermissions(): Collection
+    {
+        return $this->spatieGetAllPermissions()
+            ->merge($this->getInheritedPermissions())
+            ->unique('id')
+            ->values();
+    }
+
+    public function getInheritedPermissions(?string $guardName = null): Collection
+    {
+        $guardName = $guardName ?? $this->getDefaultGuardName();
+        $inheritedPermissions = collect();
+        $assignedRoles = $this->roles;
+        foreach ($assignedRoles as $assignedRole) {
+            $roleIds = collect([$assignedRole->id])->merge($assignedRole->cadenaSuperior()->pluck('id'));
+            $inheritedPermissions = $inheritedPermissions->merge(
+                Permission::query()
+                    ->where('guard_name', $guardName)
+                    ->whereHas('roles', function ($q) use ($roleIds) {
+                        $q->whereIn('roles.id', $roleIds);
+                    })
+                    ->get()
+            );
+        }
+        return $inheritedPermissions->unique('id')->values();
+    }
+
+    public function hasInheritedPermissionTo($permission, ?string $guardName = null): bool
+    {
+        $guardName = $guardName ?? $this->getDefaultGuardName();
+        try {
+            $permissionModel = $this->getPermissionClass()::findByName($permission, $guardName);
+        } catch (\Exception $e) {
+            if (is_numeric($permission)) {
+                try {
+                    $permissionModel = $this->getPermissionClass()::findById($permission, $guardName);
+                } catch (\Exception $e) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return $this->getInheritedPermissions($guardName)->contains('id', $permissionModel->id);
     }
 
     /**

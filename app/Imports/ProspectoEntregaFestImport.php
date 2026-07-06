@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\ProspectoEntregaFest;
+use App\Models\ProspectoHistorico;
 use App\Models\CopropietarioEntregaFest;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -31,90 +32,210 @@ class ProspectoEntregaFestImport implements ToCollection, WithHeadingRow
 
     public function collection(Collection $rows)
     {
-        DB::transaction(function () use ($rows) {
+        $clavesProcesadas = []; // Detectar duplicados en el Excel
+
+        DB::transaction(function () use ($rows, &$clavesProcesadas) {
             foreach ($rows as $index => $row) {
-                // El WithHeadingRow usa los nombres de las columnas del Excel como keys del array
-                // Según lo que vimos en el Excel anterior:
-                // proyecto_id, user_id, dni, nombres, email, celular, lote, manzana, grupo ...
-
-                /*if (empty($row['dni']))
-                    continue;*/
-
                 $numFila = $index + 2;
-                $proyectoId = (int) $row['proyecto_id'];
 
-                Log::info("Fila {$numFila}: Validando Proyecto ID", [
-                    'proyectoId_excel' => $proyectoId,
-                    'proyectosValidos' => $this->proyectosValidos,
-                    'is_valid' => in_array($proyectoId, $this->proyectosValidos)
-                ]);
+                try {
+                    $proyectoId = (int) $row['proyecto_id'];
+                    $dniTitular = str_replace("'", "", trim($row['dni'] ?? ''));
 
-                if (!in_array($proyectoId, array_map('intval', $this->proyectosValidos))) {
-                    $this->errores[] = "Fila {$numFila}: El proyecto ID {$proyectoId} no está asignado a este evento.";
-                    continue;
+                    if (empty($dniTitular)) {
+                        $this->errores[] = "Fila {$numFila}: DNI vacío.";
+                        continue;
+                    }
+
+                    // Detectar columnas
+                    $keys = array_map('strtolower', array_keys($row->toArray()));
+                    $keyLote = $keys[array_search('lote', $keys)] ?? 'lote';
+                    $keyManzana = $keys[array_search('manzana', $keys)] ?? 'manzana';
+                    $keyEstado = collect($keys)->first(fn($k) => str_contains($k, 'estado_cliente')) ?? 'estado_cliente';
+
+                    $mza = strtoupper(trim($row[$keyManzana] ?? ''));
+                    $lot = strtoupper(trim($row[$keyLote] ?? ''));
+                    $estadoExcel = strtoupper(trim($row[$keyEstado] ?? 'ADENDA'));
+
+                    $grupoVal = strtoupper(trim($row['grupo'] ?? 'A'));
+                    $grupo = in_array($grupoVal, ['A','B','C','D']) ? $grupoVal : 'A';
+
+                    // ===== DETECTAR DUPLICADOS DENTRO DEL EXCEL =====
+                    $claveUnica = "{$proyectoId}-{$dniTitular}-{$lot}-{$mza}";
+                    if (isset($clavesProcesadas[$claveUnica])) {
+                        $filaOriginal = $clavesProcesadas[$claveUnica];
+                        $this->errores[] = "Fila {$numFila}: Duplicado exacto de la fila {$filaOriginal} (mismo DNI {$dniTitular}, Lote {$lot}, Manzana {$mza}).";
+                        continue;
+                    }
+                    $clavesProcesadas[$claveUnica] = $numFila;
+
+                    // ===== Lógica DNI + Lote + Manzana =====
+                    $prospecto = ProspectoEntregaFest::where('entrega_fest_id', $this->entrega_fest_id)
+                        ->where('proyecto_id', $proyectoId)
+                        ->where('dni', $dniTitular)
+                        ->where('lote', $lot)
+                        ->where('manzana', $mza)
+                        ->first();
+
+                    if ($prospecto) {
+                        $prospecto->update([
+                            'nombres' => $row['nombres'],
+                            'email' => $row['email'] ?? '',
+                            'celular' => $row['celular'] ?? '',
+                            'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
+                            'grupo' => $grupo,
+                            'updated_by' => auth()->id(),
+                        ]);
+                        $this->actualizados++;
+                    } else {
+                        ProspectoEntregaFest::create([
+                            'entrega_fest_id' => $this->entrega_fest_id,
+                            'proyecto_id' => $proyectoId,
+                            'dni' => $dniTitular,
+                            'user_id' => auth()->id(),
+                            'created_by' => auth()->id(),
+                            'nombres' => $row['nombres'],
+                            'email' => $row['email'] ?? '',
+                            'celular' => $row['celular'] ?? '',
+                            'lote' => $lot,
+                            'manzana' => $mza,
+                            'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
+                            'grupo' => $grupo,
+                        ]);
+                        $this->nuevos++;
+                    }
+
+                    $this->importados++;
+
+                } catch (\Exception $e) {
+                    // Capturamos cualquier otro error de base de datos específico para esta fila
+                    $this->errores[] = "Fila {$numFila}: Error al guardar (Detalle: " . $e->getMessage() . ")";
                 }
 
-                $dniTitular = str_replace("'", "", $row['dni']);
+                // Detectar columnas
+                $keys = array_map('strtolower', array_keys($row->toArray()));
+                $keyLote = $keys[array_search('lote', $keys)] ?? 'lote';
+                $keyManzana = $keys[array_search('manzana', $keys)] ?? 'manzana';
+                $keyEstado = collect($keys)->first(fn($k) => str_contains($k, 'estado_cliente')) ?? 'estado_cliente';
 
-                // Detectar las llaves correctas por si tienen espacios o mayúsculas en el Excel
-                $keyLote = collect(array_keys($row->toArray()))->filter(fn($k) => trim(strtolower($k)) == 'lote')->first() ?? 'lote';
-                $keyManzana = collect(array_keys($row->toArray()))->filter(fn($k) => trim(strtolower($k)) == 'manzana')->first() ?? 'manzana';
-                $keyEstado = collect(array_keys($row->toArray()))->filter(fn($k) => str_contains(trim(strtolower($k)), 'estado_cliente'))->first() ?? 'estado_cliente';
-
-                $mza = (string) strtoupper(trim($row[$keyManzana] ?? ''));
-                $lot = (string) strtoupper(trim($row[$keyLote] ?? ''));
-                $estadoExcel = (string) strtoupper(trim($row[$keyEstado] ?? 'ADENDA'));
-
-                $proy = (string) $proyectoId;
-                $llaveFila = $proy . '-' . $mza . '-' . $lot;
-
-                if (isset($this->llavesProcesadas[$llaveFila])) {
-                    $this->filasRepetidasExcel[] = $index + 2;
-                }
-                $this->llavesProcesadas[$llaveFila] = true;
+                $mza = strtoupper(trim($row[$keyManzana] ?? ''));
+                $lot = strtoupper(trim($row[$keyLote] ?? ''));
+                $estadoExcel = strtoupper(trim($row[$keyEstado] ?? 'ADENDA'));
 
                 $grupoVal = strtoupper(trim($row['grupo'] ?? 'A'));
-                $grupo = in_array($grupoVal, ['A', 'B', 'C', 'D']) ? $grupoVal : 'A';
+                $grupo = in_array($grupoVal, ['A','B','C','D']) ? $grupoVal : 'A';
 
-                $prospecto = ProspectoEntregaFest::updateOrCreate(
+                // ===== DETECTAR DUPLICADOS DENTRO DEL EXCEL =====
+                $claveUnica = "{$proyectoId}-{$dniTitular}-{$lot}-{$mza}";
+                if (isset($clavesProcesadas[$claveUnica])) {
+                    $filaOriginal = $clavesProcesadas[$claveUnica];
+                    $this->errores[] = "Fila {$numFila}: Duplicado de la fila {$filaOriginal} (mismo DNI {$dniTitular}, Lote {$lot}, Manzana {$mza}).";
+                    continue;
+                }
+                $clavesProcesadas[$claveUnica] = $numFila;
+
+                // =========================================================
+                // 1. ALIMENTAR TABLA MAESTRA (Histórico)
+                // =========================================================
+                $historico = \App\Models\ProspectoHistorico::updateOrCreate(
                     [
-                        'entrega_fest_id' => (int) $this->entrega_fest_id,
-                        'proyecto_id' => (int) $proyectoId,
-                        'lote' => $lot,
-                        'manzana' => $mza,
+                        // Llave maestra
+                        'proyecto_id' => $proyectoId,
+                        'dni'         => $dniTitular,
+                        'lote'        => $lot,
+                        'manzana'     => $mza,
                     ],
                     [
-                        'dni' => $dniTitular,
-                        'user_id' => auth()->id(),
-                        'nombres' => $row['nombres'],
-                        'email' => $row['email'] ?? '',
-                        'celular' => $row['celular'] ?? '',
+                        // Datos vivos
+                        'nombres'           => $row['nombres'],
+                        'email'             => $row['email'] ?? '',
+                        'celular'           => $row['celular'] ?? '',
                         'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
-                        'grupo' => $grupo,
-                        'gestor_backoffice_id' => is_numeric($row['gestor_backoffice_id'] ?? null) ? $row['gestor_backoffice_id'] : null,
-                        'fecha_culminacion_eecc' => $this->transformDate($row['fecha_culminacion_eecc'] ?? null),
-                        'link_carpeta_eecc' => $row['link_carpeta_eecc'] ?? null,
-                        'link_eecc_firmado' => $row['link_eecc_firmado'] ?? null,
-                        'validador_backoffice_id' => is_numeric($row['validador_backoffice_id'] ?? null) ? $row['validador_backoffice_id'] : null,
-                        'fecha_validacion_eecc' => $this->transformDate($row['fecha_validacion_eecc'] ?? null),
-                        'estado_backoffice' => $this->limpiarEstado($row['estado_backoffice'] ?? 'PENDIENTE'),
-                        'estado_contrato_preeliminar_emitido' => $this->limpiarEstado($row['estado_contrato_preeliminar_emitido'] ?? 'PENDIENTE'),
-                        'estado_firma_contrato_firmado' => $this->limpiarEstado($row['estado_firma_contrato_firmado'] ?? 'PENDIENTE'),
-                        'fecha_firma' => $this->transformDate($row['fecha_firma'] ?? null),
-                        'fecha_generacion_contrato' => $this->transformDate($row['fecha_generacion_contrato'] ?? null),
+                        'grupo'             => $grupo,
+                        'updated_by'        => auth()->id(),
                     ]
                 );
 
-                // Copropietarios
-                $this->procesarCopropietario($prospecto->id, $row, '2');
-                $this->procesarCopropietario($prospecto->id, $row, '3');
-                $this->procesarCopropietario($prospecto->id, $row, '4');
+                if ($historico->wasRecentlyCreated) {
+                    $historico->update(['created_by' => auth()->id()]);
+                }
 
-                if ($prospecto->wasRecentlyCreated) {
-                    $this->nuevos++;
-                } else {
+                // =========================================================
+                // 2. VERIFICAR EN EL EVENTO ACTUAL
+                // =========================================================
+                $prospecto = ProspectoEntregaFest::where('entrega_fest_id', $this->entrega_fest_id)
+                    ->where('prospecto_historico_id', $historico->id) // Búsqueda por la nueva FK
+                    ->first();
+
+                if ($prospecto) {
+                    // Si ya está en este evento, actualizamos sus datos (comportamiento original)
+                    $prospecto->update([
+                        'nombres'           => $row['nombres'],
+                        'email'             => $row['email'] ?? '',
+                        'celular'           => $row['celular'] ?? '',
+                        'estado_cliente_id' => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
+                        'grupo'             => $grupo,
+                        'updated_by'        => auth()->id(),
+                    ]);
                     $this->actualizados++;
-                    $this->filasActualizadas[] = $index + 2;
+                } else {
+                    // =========================================================
+                    // 3. APAGADO AUTOMÁTICO Y CREACIÓN DEL NUEVO TICKET
+                    // =========================================================
+                    ProspectoEntregaFest::where('prospecto_historico_id', $historico->id)
+                        ->update(['activo' => false]); // Apagar pasados
+
+                    $prospectoNuevo = ProspectoEntregaFest::create([
+                        'entrega_fest_id'        => $this->entrega_fest_id,
+                        'prospecto_historico_id' => $historico->id, // Conexión
+                        'activo'                 => true,           // Nace Activo
+                        'proyecto_id'            => $proyectoId,
+                        'dni'                    => $dniTitular,
+                        'user_id'                => auth()->id(),
+                        'created_by'             => auth()->id(),
+                        'nombres'                => $row['nombres'],
+                        'email'                  => $row['email'] ?? '',
+                        'celular'                => $row['celular'] ?? '',
+                        'lote'                   => $lot,
+                        'manzana'                => $mza,
+                        'estado_cliente_id'      => \App\Models\EntregaFestEstadoCliente::id($estadoExcel),
+                        'grupo'                  => $grupo,
+
+                        // 🆕 HEREDAR PROGRESO DEL TRÁMITE DESDE EL HISTÓRICO
+                        'reubicado_proyecto_id' => $historico->reubicado_proyecto_id,
+                        'reubicado_lote' => $historico->reubicado_lote,
+                        'reubicado_manzana' => $historico->reubicado_manzana,
+                        'estado_backoffice' => $historico->estado_backoffice ?? 'PENDIENTE',
+                        'gestor_backoffice_id' => $historico->gestor_backoffice_id,
+                        'gestor_fecha_asignacion' => $historico->gestor_fecha_asignacion,
+                        'estado_gestor_backoffice' => $historico->estado_gestor_backoffice ?? 'PENDIENTE',
+                        'observacion_gestor_backoffice' => $historico->observacion_gestor_backoffice,
+                        'fecha_culminacion_eecc' => $historico->fecha_culminacion_eecc,
+                        'link_carpeta_eecc' => $historico->link_carpeta_eecc,
+                        'link_eecc_firmado' => $historico->link_eecc_firmado,
+                        'validador_backoffice_id' => $historico->validador_backoffice_id,
+                        'fecha_validacion_eecc' => $historico->fecha_validacion_eecc,
+                        'responsable_llamada_id' => $historico->responsable_llamada_id,
+                        'responsable_llamada_fecha_asignacion' => $historico->responsable_llamada_fecha_asignacion,
+                        'gestor_legal_id' => $historico->gestor_legal_id,
+                        'legal_fecha_asignacion' => $historico->legal_fecha_asignacion,
+                        'observacion_gestor_legal' => $historico->observacion_gestor_legal,
+                        'validador_legal_id' => $historico->validador_legal_id,
+                        'fecha_firma_presencial' => $historico->fecha_firma_presencial,
+                        'fecha_validacion_firma' => $historico->fecha_validacion_firma,
+                        'estado_contrato_preeliminar_emitido' => $historico->estado_contrato_preeliminar_emitido ?? 'PENDIENTE',
+                        'estado_firma_contrato_firmado' => $historico->estado_firma_contrato_firmado ?? 'PENDIENTE',
+                        'fecha_firma' => $historico->fecha_firma,
+                        'fecha_generacion_contrato' => $historico->fecha_generacion_contrato,
+                    ]);
+
+                    // Si tienes lógica para procesar copropietarios en el Excel por evento,
+                    // la llamas aquí pasándole el ID del nuevo ticket
+                    // $this->procesarCopropietario($prospectoNuevo->id, $row, 2);
+                    // $this->procesarCopropietario($prospectoNuevo->id, $row, 3);
+                    // $this->procesarCopropietario($prospectoNuevo->id, $row, 4);
+
+                    $this->nuevos++;
                 }
 
                 $this->importados++;

@@ -4,6 +4,7 @@ namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestCitaConfirmacion;
 use App\Mail\EntregaFest\CitaConfirmacionMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -11,7 +12,7 @@ class EntregaFestCitaConfirmacionN8N
 {
     public function handle(EntregaFestCitaConfirmacion $event): void
     {
-        $prospecto = $event->prospecto->load(['entregaFest', 'proyecto', 'historialComunicaciones']);
+        $prospecto = $event->prospecto->load(['entregaFest', 'proyecto.unidadNegocio', 'historialComunicaciones']);
         $evento = $prospecto->entregaFest;
 
         // Solo procesamos si ya tiene fecha de firma agendada
@@ -41,10 +42,12 @@ class EntregaFestCitaConfirmacionN8N
             'id' => $prospecto->id,
             'nombres' => $prospecto->nombres,
             'email' => $prospecto->email,
-            'celular' => $prospecto->celular,
+            'celular' => EntregaFestCelular::peru($prospecto->celular),
             'dni' => $prospecto->dni,
             'tipo' => 'Propietario',
             'proyecto' => $prospecto->proyecto?->nombre,
+            'sede_nombre' => $prospecto->proyecto?->unidadNegocio?->nombre,
+            'direccion_sede' => $prospecto->proyecto?->unidadNegocio?->direccion,
             'fecha_firma' => $prospecto->fecha_firma,
             'fecha_firma_formateada' => $mail->fechaFormateada,
             'html' => $mail->render(),
@@ -76,7 +79,6 @@ class EntregaFestCitaConfirmacionN8N
             ]);
 
             Log::channel('entrega-fest')->info("[CITA-CONFIRMACION-PAQUETE-N8N] Enviada exitosamente para Prospecto #{$contacto['id']}");
-
         } catch (\Exception $e) {
             Log::error("[CITA-CONFIRMACION-PAQUETE-N8N] Error: " . $e->getMessage());
         }

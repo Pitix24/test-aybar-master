@@ -10,6 +10,7 @@ use App\Models\TicketHistorial;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -32,6 +33,57 @@ class TicketDerivar extends Component
 
     public $mapAreas = [];
     public $mapUsuarios = [];
+
+    protected function obtenerGestoresPorArea($areaId, $tipoSolicitudId = null)
+    {
+        $area = Area::find($areaId);
+
+        if (!$area) {
+            return collect();
+        }
+
+        $idsDeArea = $area->users()
+            ->where('activo', true)
+            ->pluck('users.id')
+            ->toArray();
+
+        if ($tipoSolicitudId && !empty($idsDeArea)) {
+            $idsDeTipoSolicitud = DB::table('tipo_solicitud_user')
+                ->where('tipo_solicitud_id', $tipoSolicitudId)
+                ->whereIn('user_id', $idsDeArea)
+                ->pluck('user_id')
+                ->toArray();
+
+            $idsFinales = !empty($idsDeTipoSolicitud) ? $idsDeTipoSolicitud : $idsDeArea;
+        } else {
+            $idsFinales = $idsDeArea;
+        }
+
+        return $area->users()
+            ->whereIn('users.id', $idsFinales)
+            ->where('activo', true)
+            ->withPivot('is_principal')
+            ->orderByDesc('area_user.is_principal')
+            ->orderBy('users.name')
+            ->get();
+    }
+
+    protected function resolverGestorPorDefecto($gestores)
+    {
+        $principal = $gestores->first(fn($usuario) => (bool) $usuario->pivot->is_principal);
+
+        return $principal?->id ?? $gestores->first()?->id;
+    }
+
+    protected function gestorPerteneceAArea($areaId, $gestorId, $tipoSolicitudId = null): bool
+    {
+        if (!$gestorId) {
+            return true;
+        }
+
+        return $this->obtenerGestoresPorArea($areaId, $tipoSolicitudId)
+            ->contains('id', (int) $gestorId);
+    }
 
     protected function rules()
     {
@@ -64,65 +116,13 @@ class TicketDerivar extends Component
             return;
         }
 
-        $area = Area::find($value);
-        if (!$area) {
+        $this->gestores = $this->obtenerGestoresPorArea($value, $this->ticket->tipo_solicitud_id);
+
+        if (collect($this->gestores)->isEmpty()) {
             return;
         }
 
-        // 1. Obtener IDs de usuarios asignados al área
-        $idsDeArea = $area->users()
-            ->where('activo', true)
-            ->pluck('users.id')
-            ->toArray();
-
-        // 2. Si el ticket tiene tipo_solicitud, hacer intersección con tipo_solicitud_user
-        $tipoSolicitudId = $this->ticket->tipo_solicitud_id;
-
-        if ($tipoSolicitudId && !empty($idsDeArea)) {
-            $idsDeTipoSolicitud = DB::table('tipo_solicitud_user')
-                ->where('tipo_solicitud_id', $tipoSolicitudId)
-                ->whereIn('user_id', $idsDeArea)
-                ->pluck('user_id')
-                ->toArray();
-
-            // Si hay coincidencia, usar solo esos; si no hay ninguno, caer de nuevo a todos los del área
-            $idsFinales = !empty($idsDeTipoSolicitud) ? $idsDeTipoSolicitud : $idsDeArea;
-        } else {
-            $idsFinales = $idsDeArea;
-        }
-
-        // 3. Cargar gestores con el pivot de area para saber el principal del área
-        $this->gestores = $area->users()
-            ->whereIn('users.id', $idsFinales)
-            ->where('activo', true)
-            ->withPivot('is_principal')
-            ->orderByDesc('area_user.is_principal')
-            ->orderBy('users.name')
-            ->get();
-
-        if ($this->gestores->isEmpty()) {
-            return;
-        }
-
-        // 4. Preseleccionar: primero buscar principal de tipo_solicitud_user, luego principal de área
-        if ($tipoSolicitudId) {
-            $principalTipo = DB::table('tipo_solicitud_user')
-                ->where('tipo_solicitud_id', $tipoSolicitudId)
-                ->where('is_principal', true)
-                ->whereIn('user_id', $idsFinales)
-                ->value('user_id');
-
-            if ($principalTipo) {
-                $this->gestor_id = $principalTipo;
-                return;
-            }
-        }
-
-        // Fallback: principal del área
-        $principal = $this->gestores->first(fn($u) => (bool) $u->pivot->is_principal);
-        $this->gestor_id = $principal
-            ? $principal->id
-            : $this->gestores->first()->id;
+        $this->gestor_id = $this->resolverGestorPorDefecto($this->gestores);
     }
 
     public function store()
@@ -143,6 +143,12 @@ class TicketDerivar extends Component
         try {
             DB::beginTransaction();
 
+            if (!$this->gestorPerteneceAArea($this->a_area_id, $this->gestor_id, $this->ticket->tipo_solicitud_id)) {
+                $this->addError('gestor_id', 'El gestor seleccionado no pertenece al área destino.');
+                DB::rollBack();
+                return;
+            }
+
             $oldArea = $this->mapAreas[$this->ticket->area_id] ?? 'N/A';
             $oldGestor = $this->ticket->gestor->name ?? 'Sin asignar';
 
@@ -153,7 +159,7 @@ class TicketDerivar extends Component
                 'ticket_id' => $this->ticket->id,
                 'de_area_id' => $this->ticket->area_id,
                 'a_area_id' => $this->a_area_id,
-                'usuario_deriva_id' => auth()->id(),
+                'usuario_deriva_id' => Auth::id(),
                 'usuario_recibe_id' => $this->gestor_id,
                 'motivo' => $this->motivo,
             ]);
@@ -164,12 +170,12 @@ class TicketDerivar extends Component
                 'area_id' => $this->a_area_id,
                 'gestor_id' => $this->gestor_id,
                 'estado_ticket_id' => $estadoDerivadoId,
-                'updated_by' => auth()->id(),
+                'updated_by' => Auth::id(),
             ]);
 
             // Registrar participantes: el que deriva y el que recibe
             $this->ticket->usuariosParticipantes()->syncWithoutDetaching([
-                auth()->id(),
+                Auth::id(),
                 (int) $this->gestor_id
             ]);
 
@@ -179,7 +185,7 @@ class TicketDerivar extends Component
 
             TicketHistorial::create([
                 'ticket_id' => $this->ticket->id,
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'accion' => 'Derivación',
                 'detalle' => $detalle,
             ]);
@@ -192,7 +198,6 @@ class TicketDerivar extends Component
             ]);
 
             return redirect()->route('erp.ticket.vista.editar', $this->ticket->id);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('ticket')->error('[TICKET] Error TicketDerivar@derivar: ' . $e->getMessage());

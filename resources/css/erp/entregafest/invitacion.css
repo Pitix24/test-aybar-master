@@ -299,6 +299,85 @@
     color: #333;
 }
 
+/* =================================================
+   SELECT CUSTOM con chevron alineado
+   ================================================= */
+.ef_select_wrapper {
+    position: relative;
+    width: 100%;
+    /* 🆕 Aseguramos que el wrapper NO bloquee clics */
+    pointer-events: auto;
+}
+
+.ef_select_wrapper .ef_input {
+    width: 100%;
+    padding: 18px 50px 18px 25px;
+    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+    color: #1f2937;
+    border: 2px solid var(--ef-primary);
+    border-radius: 40px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* 🆕 Forzamos que el select esté por encima del ::after */
+    position: relative;
+    z-index: 1;
+
+    /* 🆕 Garantizamos que recibe clics */
+    pointer-events: auto;
+
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ef_select_wrapper .ef_input:focus {
+    box-shadow: 0 0 0 4px rgba(0, 77, 85, 0.12);
+}
+
+/* Flecha custom — DEBE estar detrás del select para no robar clics */
+.ef_select_wrapper::after {
+    content: "\f078";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ef-primary);
+    font-size: 0.9rem;
+
+    /* 🆕 Crítico: que NO intercepte el clic */
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Color del placeholder (texto visible cuando no hay selección) */
+.ef_select_wrapper .ef_input:invalid {
+    color: #9ca3af;
+}
+
+/* 🆕 Las opciones SIEMPRE deben verse en color normal */
+.ef_select_wrapper .ef_input option {
+    color: #1f2937;
+}
+
+/* Solo el placeholder en gris (cuando se despliega la lista) */
+.ef_select_wrapper .ef_input option[value=""] {
+    color: #9ca3af;
+}
+
+/* Las opciones bloqueadas (por cupo lleno) */
+.ef_select_wrapper .ef_input option:disabled {
+    color: #9ca3af;
+    background-color: #f3f4f6;
+    text-decoration: line-through;
+}
+
 /* RESPONSIVO */
 @media (max-width: 600px) {
     .ef_container {

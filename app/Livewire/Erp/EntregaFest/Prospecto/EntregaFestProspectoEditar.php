@@ -5,6 +5,7 @@ namespace App\Livewire\Erp\EntregaFest\Prospecto;
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacion;
 use App\Events\EntregaFest\EntregaFestCitaRecordatorio;
 use App\Events\EntregaFest\EntregaFestContratoPreliminar;
+use App\Models\AuditoriaProspectoContrato;
 use App\Models\CopropietarioEntregaFest;
 use App\Models\EntregaFest;
 use App\Models\InvitadoEnvioEntregaFest;
@@ -44,6 +45,13 @@ class EntregaFestProspectoEditar extends Component
     public $responsable_llamada_id = '', $responsable_llamada_fecha_asignacion;
 
     // Legal
+    public $gestor_legal_id;
+    public $legal_fecha_asignacion;
+    public $observacion_gestor_legal;
+
+    public $validador_legal_id;
+    public $fecha_firma_presencial;     // 🆕 manual
+    public $fecha_validacion_firma;     // 🆕 auto
     public $estado_contrato_preeliminar_emitido, $estado_firma_contrato_firmado;
     public $fecha_firma, $fecha_generacion_contrato;
 
@@ -52,6 +60,7 @@ class EntregaFestProspectoEditar extends Component
 
     public $link_preinvitacion = '';
     public $link_invitacion = '';
+    public $link_cita_contrato = '';
 
     public $proyectos = [];
     public $estados_cliente = [];
@@ -62,6 +71,8 @@ class EntregaFestProspectoEditar extends Component
     // Modo: null = lista, 'crear' = formulario nuevo, 'editar' = editando fila
     public $cop_modo = null;
     public $cop_editando_id = null;
+    // Propiedad para bloquear la edición de historiales
+    public $es_solo_lectura = false;
 
     // Campos del formulario copropietario
     public $cop_dni = '';
@@ -136,6 +147,8 @@ class EntregaFestProspectoEditar extends Component
     {
         $this->evento = EntregaFest::with('proyectos')->findOrFail($id);
         $this->prospecto = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)->findOrFail($prospectoId);
+        // 🆕 Definimos si el formulario debe bloquearse
+        $this->es_solo_lectura = !$this->prospecto->activo;
 
         $this->proyecto_id = $this->prospecto->proyecto_id;
         $this->dni = $this->prospecto->dni;
@@ -173,7 +186,19 @@ class EntregaFestProspectoEditar extends Component
             ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_eecc)) : null;
         $this->estado_backoffice = $this->prospecto->estado_backoffice;
 
-        // Legal
+        // ============ Legal: Gestor ============
+        $this->gestor_legal_id = $this->prospecto->gestor_legal_id;
+        $this->legal_fecha_asignacion = $this->prospecto->legal_fecha_asignacion
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->legal_fecha_asignacion)) : null;
+        $this->observacion_gestor_legal = $this->prospecto->observacion_gestor_legal;
+
+        // ============ Legal: Validador / Firma ============
+        $this->validador_legal_id = $this->prospecto->validador_legal_id;
+        $this->fecha_firma_presencial = $this->prospecto->fecha_firma_presencial
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_firma_presencial)) : null;
+        $this->fecha_validacion_firma = $this->prospecto->fecha_validacion_firma
+            ? date('Y-m-d\TH:i', strtotime($this->prospecto->fecha_validacion_firma)) : null;
+
         $this->estado_contrato_preeliminar_emitido = $this->prospecto->estado_contrato_preeliminar_emitido;
         $this->estado_firma_contrato_firmado = $this->prospecto->estado_firma_contrato_firmado;
         $this->fecha_firma = $this->prospecto->fecha_firma
@@ -187,6 +212,12 @@ class EntregaFestProspectoEditar extends Component
         ]);
 
         $this->link_invitacion = route('entrega-fest.asistencia-invitacion.propietario', [
+            'slug' => $this->evento->slug,
+            'propietarioId' => $this->prospecto->id,
+        ]);
+
+        // 🆕 Link de Cita de Contrato
+        $this->link_cita_contrato = route('entrega-fest.cita-agendar.propietario', [
             'slug' => $this->evento->slug,
             'propietarioId' => $this->prospecto->id,
         ]);
@@ -365,19 +396,88 @@ class EntregaFestProspectoEditar extends Component
     // PROSPECTO — helpers de actualización
     // ════════════════════════════════════════════════════════════════════
 
+    private function registrarAuditoriaContrato(string $accion, ?array $mediaData = null, array $payload = []): void
+    {
+        try {
+            AuditoriaProspectoContrato::create([
+                'prospecto_entrega_fest_id' => $this->prospecto->id,
+                'user_id' => Auth::id(),
+                'media_id' => $mediaData['id'] ?? null,
+                'accion' => $accion,
+                'collection_name' => 'contrato-preliminar',
+                'file_name' => $mediaData['file_name'] ?? null,
+                'ip_address' => request()?->ip(),
+                'user_agent' => request()?->userAgent(),
+                'payload' => $payload,
+            ]);
+        } catch (\Exception $e) {
+            Log::channel('entrega-fest')->error('[AUDITORIA CONTRATO PRELIMINAR] Error registrando auditoria: ' . $e->getMessage(), [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $this->prospecto->id,
+                'accion' => $accion,
+            ]);
+        }
+    }
+
     private function handleUpdate(array $data, string $logContext)
     {
+        // 🛡️ ESCUDO DE SEGURIDAD BACKEND
+        if ($this->es_solo_lectura) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Acción denegada',
+                'text' => 'Este registro es histórico (edición pasada) y no puede ser modificado.'
+            ]);
+            return;
+        }
+
         $this->authorize('prospecto-entrega-fest.editar');
+
+        $antes = [];
+        foreach ($data as $campo => $valorNuevo) {
+            $antes[$campo] = $this->prospecto->{$campo} ?? null;
+        }
 
         try {
             DB::beginTransaction();
+
+            // 1. ACTUALIZAR EL TICKET DEL EVENTO ACTUAL
             $this->prospecto->update($data);
+
+            // 2. 🔄 SINCRONIZAR CON LA TABLA MAESTRA (Histórico)
+            if ($this->prospecto->prospecto_historico_id) {
+                $historicoData = $data;
+
+                // Regla de Negocio: Si en este update se firmó el contrato, marcamos el lote como entregado
+                if (isset($data['estado_firma_contrato_firmado']) && $data['estado_firma_contrato_firmado'] === 'FIRMADO') {
+                    $historicoData['lote_entregado'] = true;
+                }
+
+                $this->prospecto->prospectoHistorico->update($historicoData);
+            }
+
             DB::commit();
+
+            $cambios = [];
+            foreach ($data as $campo => $valorNuevo) {
+                if (($antes[$campo] ?? null) != $valorNuevo) {
+                    $cambios[$campo] = [
+                        'antes' => $antes[$campo] ?? null,
+                        'despues' => $valorNuevo,
+                    ];
+                }
+            }
+
+            Log::channel('entrega-fest')->info("[$logContext] Actualización exitosa", [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $this->prospecto->id,
+                'cambios' => $cambios,
+            ]);
 
             $this->dispatch('alertaLivewire', [
                 'type' => 'success',
                 'title' => '¡Actualizado!',
-                'text' => 'Información actualizada correctamente.'
+                'text' => 'Información actualizada correctamente en el evento y en el histórico.'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -530,79 +630,257 @@ class EntregaFestProspectoEditar extends Component
 
     public function updateLegal()
     {
-        // 1. Verificación manual para disparar la Alerta SweetAlert
+        // 1. PDF requerido cuando estado = CONFORME
         $isConforme = ($this->estado_contrato_preeliminar_emitido === 'CONFORME');
-        $hasFile = $this->prospecto->hasMedia('contrato-preliminar');
+        $hasFile    = $this->prospecto->hasMedia('contrato-preliminar');
 
         if ($isConforme && !$hasFile && !$this->archivo_contrato_preeliminar) {
             $this->dispatch('alertaLivewire', [
-                'type' => 'warning',
+                'type'  => 'warning',
                 'title' => '¡Contrato requerido!',
-                'text' => 'Para establecer el estado en CONFORME, debes adjuntar obligatoriamente el contrato preliminar en formato PDF.',
+                'text'  => 'Para establecer el estado en CONFORME, debes adjuntar obligatoriamente el contrato preliminar en formato PDF.',
             ]);
             return;
         }
 
-        // 2. Validación estándar (tipo de archivo, tamaño, etc)
+        // 2. Validación
         $rules = [
+            'gestor_legal_id'                     => 'nullable|exists:users,id',
+            'observacion_gestor_legal'            => 'nullable|string',
             'estado_contrato_preeliminar_emitido' => 'required|in:PENDIENTE,GENERADO,OBSERVADO,CONFORME',
-            'archivo_contrato_preeliminar' => [
-                'nullable', // Se deja nullable porque ya validamos manualmente la obligatoriedad arriba
-                'file',
-                'mimes:pdf',
-                'max:10240', // 10MB
-            ],
+            'archivo_contrato_preeliminar'        => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
         ];
-
         $this->validate($rules);
 
-        // 3. Subir archivo si ha sido seleccionado
+        // 🆕 3. Detectar PRIMERA transición a CONFORME (criterio: aún no hay fecha registrada)
+        $primeraVezConforme = ($isConforme && !$this->prospecto->fecha_generacion_contrato);
+
+        // 4. legal_fecha_asignacion: actualizar si cambió el gestor
+        if ($this->gestor_legal_id && $this->prospecto->gestor_legal_id != $this->gestor_legal_id) {
+            $this->legal_fecha_asignacion = now()->format('Y-m-d\TH:i');
+        }
+
+        // 5. Subir PDF (lógica existente, sin cambios)
         if ($this->archivo_contrato_preeliminar) {
             try {
-                // Reemplazar colección anterior
+                $mediaAnterior     = $this->prospecto->getFirstMedia('contrato-preliminar');
+                $mediaAnteriorData = $mediaAnterior ? [
+                    'id'        => $mediaAnterior->id,
+                    'file_name' => $mediaAnterior->file_name,
+                    'size'      => $mediaAnterior->size,
+                ] : null;
+
                 $this->prospecto->clearMediaCollection('contrato-preliminar');
-                $this->prospecto->addMedia($this->archivo_contrato_preeliminar->getRealPath())
+
+                $mediaNueva = $this->prospecto->addMedia($this->archivo_contrato_preeliminar->getRealPath())
                     ->usingFileName('CONTRATO_PRELIMINAR_' . $this->prospecto->dni . '.pdf')
                     ->toMediaCollection('contrato-preliminar');
 
+                $this->registrarAuditoriaContrato($mediaAnterior ? 'reemplazado' : 'subido', [
+                    'id'        => $mediaNueva->id,
+                    'file_name' => $mediaNueva->file_name,
+                ], [
+                    'media_anterior' => $mediaAnteriorData,
+                ]);
+
+                Log::channel('entrega-fest')->info('[LEGAL UPLOAD] Contrato preliminar guardado', [
+                    'usuario_id'   => Auth::id(),
+                    'prospecto_id' => $this->prospecto->id,
+                    'accion'       => $mediaAnterior ? 'reemplazado' : 'subido',
+                    'media_id'     => $mediaNueva->id,
+                ]);
+
                 $this->archivo_contrato_preeliminar = null;
-                $this->prospecto->refresh(); // Refrescar para que el Blade vea la media inmediatamente
+                $this->prospecto->refresh();
             } catch (\Exception $e) {
                 Log::channel('entrega-fest')->error('[LEGAL UPLOAD] ' . $e->getMessage());
                 $this->dispatch('alertaLivewire', [
-                    'type' => 'error',
+                    'type'  => 'error',
                     'title' => 'Error de carga',
-                    'text' => 'No se pudo guardar el archivo PDF. Inténtelo de nuevo.'
+                    'text'  => 'No se pudo guardar el archivo PDF. Inténtelo de nuevo.',
                 ]);
                 return;
             }
         }
 
-        // 4. Actualización del estado
-        $this->handleUpdate([
+        // 6. Construir payload
+        $payload = [
+            'gestor_legal_id'                     => $this->gestor_legal_id ?: null,
+            'legal_fecha_asignacion'              => $this->legal_fecha_asignacion,
+            'observacion_gestor_legal'            => $this->observacion_gestor_legal,
             'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
-        ], 'PROSPECTO EDITAR - LEGAL');
+        ];
 
-        // Si se aprueba legal (CONFORME), disparamos el evento de cita
-        if ($this->estado_contrato_preeliminar_emitido === 'CONFORME') {
-            //EntregaFestCitaAgendar::dispatch($this->prospecto->refresh());
-            EntregaFestContratoPreliminar::dispatch($this->prospecto->refresh());
+        // 🆕 7. Si es la PRIMERA vez en CONFORME, registramos fecha automáticamente
+        if ($primeraVezConforme) {
+            $ahora = now();
+            $payload['fecha_generacion_contrato'] = $ahora;
+            $this->fecha_generacion_contrato      = $ahora->format('Y-m-d\TH:i');
+
+            Log::channel('entrega-fest')->info('[LEGAL] Contrato Preliminar marcado CONFORME por primera vez', [
+                'prospecto_id'              => $this->prospecto->id,
+                'usuario_id'                => Auth::id(),
+                'fecha_generacion_contrato' => $ahora->toDateTimeString(),
+            ]);
         }
+
+        // 8. Persistir
+        $this->handleUpdate($payload, 'PROSPECTO EDITAR - LEGAL');
+
+        // 🆕 9a. DISPARAR EVENTO → N8N listener (solo en la primera transición CONFORME)
+        EntregaFestContratoPreliminar::dispatch($this->prospecto->fresh());
+
+        // 9b. Mensaje informativo al usuario
+        if ($primeraVezConforme) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'success',
+                'title' => '¡Contrato Conforme registrado!',
+                'text'  => 'Se registró automáticamente la fecha de generación del contrato.',
+            ]);
+        }
+
     }
 
     public function updateLegalSupervisor()
     {
+        // 🛡️ VALIDACIÓN CRUZADA 1: Para FIRMADO se requiere gestor asignado
+        if ($this->estado_firma_contrato_firmado === 'FIRMADO' && !$this->prospecto->gestor_legal_id) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'warning',
+                'title' => 'Gestor Legal requerido',
+                'text'  => 'No puedes confirmar la firma sin haber asignado un Gestor Legal previamente.',
+            ]);
+            return;
+        }
+
+        // 🛡️ VALIDACIÓN CRUZADA 2: El contrato preliminar debe estar CONFORME
+        if (
+            $this->estado_firma_contrato_firmado === 'FIRMADO'
+            && !in_array($this->prospecto->estado_contrato_preeliminar_emitido, ['CONFORME'])
+        ) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'warning',
+                'title' => 'Contrato Preliminar requerido',
+                'text'  => 'No puedes confirmar la firma sin haber confirmado el contrato preliminar.',
+            ]);
+            return;
+        }
+
+        // 🛡️ VALIDACIÓN CRUZADA 3: Si marca FIRMADO, debe llenar la fecha presencial
+        if ($this->estado_firma_contrato_firmado === 'FIRMADO' && !$this->fecha_firma_presencial) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'warning',
+                'title' => 'Fecha presencial requerida',
+                'text'  => 'Debes registrar la fecha real en que se realizó la firma presencial.',
+            ]);
+            return;
+        }
+
+        // 🆕 Auto-registrar validador y fecha de validación en el momento de guardar
+        $this->validador_legal_id    = Auth::id();
+        $this->fecha_validacion_firma = now()->format('Y-m-d\TH:i');
+
         $rules = [
             'estado_firma_contrato_firmado' => 'required|in:PENDIENTE,FIRMADO',
-            'fecha_generacion_contrato' => 'nullable|date',
+            'fecha_firma_presencial'        => 'nullable|date',
+            'validador_legal_id'            => 'required|exists:users,id',
+            'fecha_validacion_firma'        => 'required|date',
         ];
-
         $this->validate($rules);
 
         $this->handleUpdate([
             'estado_firma_contrato_firmado' => $this->estado_firma_contrato_firmado,
-            'fecha_generacion_contrato' => $this->fecha_generacion_contrato,
+            'fecha_firma_presencial'        => $this->fecha_firma_presencial,
+            'validador_legal_id'            => $this->validador_legal_id,
+            'fecha_validacion_firma'        => $this->fecha_validacion_firma,
         ], 'PROSPECTO EDITAR - LEGAL SUPERVISOR');
+    }
+
+    public function solicitarEliminarContratoPreliminar()
+    {
+        $this->authorize('contrato-preliminar.eliminar');
+
+        if (!$this->prospecto->hasMedia('contrato-preliminar')) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Sin archivo',
+                'text' => 'El prospecto no tiene contrato preliminar adjunto.',
+            ]);
+            return;
+        }
+
+        $this->dispatch('alertaConfirmar', [
+            'event' => 'eliminarContratoPreliminarOn',
+            'titulo' => '¿Eliminar contrato preliminar?',
+            'texto' => 'Se eliminará el PDF adjunto de forma permanente. Esta acción no se puede deshacer.',
+        ]);
+    }
+
+    #[On('eliminarContratoPreliminarOn')]
+    public function eliminarContratoPreliminarOn()
+    {
+        $this->authorize('contrato-preliminar.eliminar');
+
+        if (!$this->prospecto->hasMedia('contrato-preliminar')) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'info',
+                'title' => 'Sin archivo',
+                'text' => 'El contrato preliminar ya fue eliminado.',
+            ]);
+            return;
+        }
+
+        try {
+            $mediaActual = $this->prospecto->getFirstMedia('contrato-preliminar');
+            $mediaActualData = $mediaActual ? [
+                'id' => $mediaActual->id,
+                'file_name' => $mediaActual->file_name,
+                'size' => $mediaActual->size,
+            ] : null;
+
+            $this->prospecto->clearMediaCollection('contrato-preliminar');
+
+            $this->registrarAuditoriaContrato('eliminado', $mediaActualData, [
+                'motivo' => 'eliminacion_manual',
+            ]);
+
+            // Restablecer estado del contrato a PENDIENTE
+            try {
+                $this->prospecto->update(['estado_contrato_preeliminar_emitido' => 'PENDIENTE']);
+            } catch (\Exception $e) {
+                Log::channel('entrega-fest')->warning('[LEGAL DELETE] No se pudo actualizar estado a PENDIENTE: ' . $e->getMessage(), [
+                    'usuario_id' => Auth::id(),
+                    'prospecto_id' => $this->prospecto->id,
+                ]);
+            }
+
+            Log::channel('entrega-fest')->info('[LEGAL DELETE CONTRATO PRELIMINAR] Eliminación exitosa', [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $this->prospecto->id,
+                'media_eliminada' => $mediaActualData,
+            ]);
+
+            $this->archivo_contrato_preeliminar = null;
+            $this->prospecto->refresh();
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'success',
+                'title' => 'Eliminado',
+                'text' => 'El contrato preliminar fue eliminado correctamente y su estado quedó en Pendiente.',
+            ]);
+        } catch (\Exception $e) {
+            Log::channel('entrega-fest')->error('[LEGAL DELETE CONTRATO PRELIMINAR] ' . $e->getMessage(), [
+                'usuario_id' => Auth::id(),
+                'prospecto_id' => $this->prospecto->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'Error',
+                'text' => 'No se pudo eliminar el contrato preliminar.',
+            ]);
+        }
     }
 
     public function solicitarEliminarProspecto()
@@ -647,7 +925,28 @@ class EntregaFestProspectoEditar extends Component
                 $copropietario->delete();
             }
 
+            $mediaContrato = $prospecto->getFirstMedia('contrato-preliminar');
+            if ($mediaContrato) {
+                $mediaContratoData = [
+                    'id' => $mediaContrato->id,
+                    'file_name' => $mediaContrato->file_name,
+                    'size' => $mediaContrato->size,
+                ];
+
+                $this->registrarAuditoriaContrato('eliminado_por_prospecto', $mediaContratoData, [
+                    'motivo' => 'eliminacion_de_prospecto',
+                ]);
+
+                $prospecto->clearMediaCollection('contrato-preliminar');
+            }
+
             $prospecto->delete();
+
+            Log::channel('entrega-fest')->info('[PROSPECTO ELIMINAR] Eliminación exitosa', [
+                'usuario_id' => Auth::id(),
+                'evento_id' => $this->evento->id,
+                'prospecto_id' => $prospecto->id,
+            ]);
 
             DB::commit();
 
@@ -736,11 +1035,19 @@ class EntregaFestProspectoEditar extends Component
 
     public function render()
     {
-        $usuarios = User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
+        $usuarios        = User::role(['asesor-backoffice', 'supervisor-backoffice'])->get();
         $usuariosLlamada = User::role(['asesor-atc', 'asesor-backoffice', 'supervisor-backoffice'])->get();
+
+        // 🆕 Filtro por área Legal (sin importar el rol)
+        $usuariosLegal = User::where('activo', true)
+            ->whereHas('areas', fn($q) => $q->where('area_user.area_id', 3))
+            ->orderBy('name')
+            ->get();
+
         return view('livewire.erp.entrega-fest.prospecto.entrega-fest-prospecto-editar', [
-            'usuarios' => $usuarios,
+            'usuarios'        => $usuarios,
             'usuariosLlamada' => $usuariosLlamada,
+            'usuariosLegal'   => $usuariosLegal,
         ]);
     }
 

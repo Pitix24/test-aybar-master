@@ -176,7 +176,7 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                @can('ticket.accion-exportar-filtro')
+                @can('ticket.exportar-filtro')
                 <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
                     wire:target="exportExcelFiltro">
                     <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
@@ -186,7 +186,7 @@
                 </button>
                 @endcan
 
-                @can('ticket.accion-exportar-todo')
+                @can('ticket.exportar-todo')
                 <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
                     wire:target="exportExcelTodo">
                     <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
@@ -221,12 +221,11 @@
                         <th>Cliente</th>
                         <th>Área</th>
                         <th>Solicitud</th>
-                        <th>Canal</th>
+                        <th>Sub Tipo Solicitud</th>
                         <th class="g_celda_centro">Estado</th>
                         <th>Gestor</th>
                         <th>Prioridad</th>
                         <th>Creado</th>
-                        <th>Vencimiento</th>
                         <th>Derivado</th>
                         <th class="g_celda_centro">Acciones</th>
                     </tr>
@@ -235,7 +234,7 @@
                     @foreach ($items as $item)
                     <tr>
                         <td class="g_celda_centro">
-                            @if(in_array($item->id, $unreadTicketIds))
+                            @if(in_array($item->id, $unreadTicketIds ?? []))
                             <span style="position: relative; display: inline-block;">
                                 <span class="g_badge light" style="border-left: 3px solid #ef4444;">#{{ $item->id
                                     }}</span>
@@ -257,7 +256,7 @@
                             @endif
                         </td>
                         <td class="g_resumir g_inferior">{{ $item->tipoSolicitud?->nombre ?? '-' }}</td>
-                        <td>{{ $item->canal?->nombre ?? '-' }}</td>
+                        <td class="g_resumir g_inferior">{{ $item->subTipoSolicitud?->nombre ?? '-' }}</td>
                         <td class="g_celda_centro">
                             <span class="g_badge g_badge_soft" style="color: {{ $item->estado?->color }};">
                                 {{ $item->estado?->nombre }}
@@ -271,20 +270,6 @@
                         </td>
                         <td class="g_inferior g_celda_centro">
                             {{ $item->created_at->format('d/m/Y H:i') }}
-                        </td>
-                        <td>
-                            @if($item->sla_status)
-                            <div style="font-size: 0.8rem; line-height: 1;">
-                                <span class="g_badge g_badge_soft" style="color: {{ $item->sla_status['color'] }};">
-                                    <i class="fa-solid fa-clock"></i> {{ $item->sla_status['texto'] }}
-                                </span>
-                                <div class="g_inferior" style="margin-top: 2px;">
-                                    {{ $item->fecha_vencimiento->format('d/m H:i') }}
-                                </div>
-                            </div>
-                            @else
-                            <span class="g_badge light">-</span>
-                            @endif
                         </td>
                         <td class="g_celda_centro">
                             <span class="g_badge {{ $item->tiene_derivados ? 'success' : 'light' }}">

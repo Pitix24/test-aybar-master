@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Web\EntregaFest;
 
+use App\Support\RedirigeSiEventoConcluido;
 use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
 use App\Models\InvitadoEntregaFest;
 use App\Models\ProspectoEntregaFest;
@@ -27,14 +28,14 @@ class AsistenciaInvitacionPropietario extends Component
     public $observaciones = '';
 
     // Datos del acompañante
-    public $acompanante_dni = '';
-    public $acompanante_nombres = '';
-    public $acompanante_email = '';
-    public $acompanante_celular = '';
+    public $acompanantes = [];
 
     public $enviado = false;
     public $mensaje_exito = '';
     public $codigo_invitado = '';
+
+    // Para mostrar info adicional en el view
+    use RedirigeSiEventoConcluido;
 
     public function mount($slug, $propietarioId)
     {
@@ -46,7 +47,10 @@ class AsistenciaInvitacionPropietario extends Component
 
         $this->evento = $this->prospecto->entregaFest;
 
-        // Validar que el slug coincida con el evento del prospecto
+        // 🛑 Si el evento ya se realizó → redirigir
+        if ($redir = $this->redirigirSiConcluido($this->evento)) return $redir;
+
+        // Validar slug
         if ($this->evento->slug !== $slug) {
             abort(404, 'Evento no encontrado o link inválido.');
         }
@@ -56,6 +60,9 @@ class AsistenciaInvitacionPropietario extends Component
             $this->enviado = true;
             $this->mensaje_exito = 'Ya hemos registrado tu respuesta anteriormente. ¡Muchas gracias!';
             $this->codigo_invitado = $this->prospecto->invitado?->codigo_invitado;
+            $this->cantidad_acompanantes = $this->prospecto->invitado?->cantidad_acompanantes_permitidos ?? 0;
+            $this->transporte = strtolower($this->prospecto->invitado?->transporte ?? 'bus');
+            $this->asistira = $this->prospecto->invitacion_confirmada ? 'si' : 'no';
         }
 
         // Si no está aprobado en backoffice, no debería estar aquí (opcional)
@@ -68,16 +75,31 @@ class AsistenciaInvitacionPropietario extends Component
     {
         return [
             'asistira' => 'required|in:si,no',
-            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:1',
+            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:2', // <-- Cambiado a max:2
             'transporte' => 'required_if:asistira,si|in:bus,propio',
             'observaciones' => 'nullable|string|max:500',
 
-            // Validación para el acompañante
-            'acompanante_dni' => 'required_if:cantidad_acompanantes,1|nullable|string|max:15',
-            'acompanante_nombres' => 'required_if:cantidad_acompanantes,1|nullable|string|max:255',
-            'acompanante_email' => 'nullable|email|max:255',
-            'acompanante_celular' => 'nullable|string|max:20',
+            // Validación dinámica para el array
+            'acompanantes.*.dni' => 'required_if:cantidad_acompanantes,1,2|nullable|string|max:15',
+            'acompanantes.*.nombres' => 'required_if:cantidad_acompanantes,1,2|nullable|string|max:255',
+            'acompanantes.*.email' => 'nullable|email|max:255',
+            'acompanantes.*.celular' => 'nullable|string|max:20',
         ];
+    }
+
+    public function updatedCantidadAcompanantes($value)
+    {
+        // Limpiamos el array y creamos campos vacíos para la cantidad seleccionada
+        $this->acompanantes = [];
+
+        for ($i = 0; $i < (int)$value; $i++) {
+            $this->acompanantes[] = [
+                'dni' => '',
+                'nombres' => '',
+                'email' => '',
+                'celular' => ''
+            ];
+        }
     }
 
     public function save()
@@ -113,16 +135,20 @@ class AsistenciaInvitacionPropietario extends Component
                     'observaciones_asistencia' => $this->observaciones,
                 ]);
 
-                // Si tiene acompañante, lo registramos
-                if ($this->cantidad_acompanantes == 1) {
-                    \App\Models\AcompananteEntregaFest::create([
-                        'dni' => $this->acompanante_dni,
-                        'nombres' => $this->acompanante_nombres,
-                        'email' => $this->acompanante_email,
-                        'celular' => $this->acompanante_celular,
-                        'prospecto_entrega_fest_id' => $this->prospecto->id,
-                        'invitado_entrega_fest_id' => $invitado->id,
-                    ]);
+                // Si tiene acompañantes, los registramos
+                if ($this->cantidad_acompanantes > 0) {
+                    foreach ($this->acompanantes as $acompanante) {
+                        if (!empty($acompanante['dni']) && !empty($acompanante['nombres'])) {
+                            \App\Models\AcompananteEntregaFest::create([
+                                'dni' => $acompanante['dni'],
+                                'nombres' => $acompanante['nombres'],
+                                'email' => $acompanante['email'] ?? null,
+                                'celular' => $acompanante['celular'] ?? null,
+                                'prospecto_entrega_fest_id' => $this->prospecto->id,
+                                'invitado_entrega_fest_id' => $invitado->id,
+                            ]);
+                        }
+                    }
                 }
 
                 DB::commit();

@@ -4,6 +4,7 @@ namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestCitaAgendar;
 use App\Mail\EntregaFest\CitaAgendarMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -39,7 +40,7 @@ class EntregaFestCitaAgendarN8N
             'id' => $prospecto->id,
             'nombres' => $prospecto->nombres,
             'email' => $prospecto->email,
-            'celular' => $prospecto->celular,
+            'celular' => EntregaFestCelular::peru($prospecto->celular),
             'dni' => $prospecto->dni,
             'link' => $mail->link,
             'html' => $mail->render(),
@@ -70,7 +71,6 @@ class EntregaFestCitaAgendarN8N
             ]);
 
             Log::channel('entrega-fest')->info("[CITA-AGENDAR-PAQUETE-N8N] Enviada exitosamente a Prospecto #{$propietario['id']}");
-
         } catch (\Exception $e) {
             Log::error("[CITA-AGENDAR-PAQUETE-N8N] Error: " . $e->getMessage());
         }

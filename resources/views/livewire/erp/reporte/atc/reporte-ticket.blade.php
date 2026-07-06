@@ -43,15 +43,6 @@
                 </div>
             </div>
 
-            <div class="g_panel" title="Tiempo promedio entre creación y cierre">
-                <div class="g_panel_dashboard">
-                    <div class="g_panel_dashboard_1">
-                        <h2>Tpo. Cierre</h2>
-                        <p class="g_negrita">{{ $tiempoPromedioCierre }}h</p>
-                    </div>
-                    <i class="fa-solid fa-stopwatch" style="color: #8B5CF6;"></i>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -138,33 +129,33 @@
                         </thead>
                         <tbody>
                             @foreach($ultimosTickets as $t)
-                                <tr>
-                                    <td>
-                                        <div style="font-weight: 600;">#{{ $t->id }}</div>
-                                        <div
-                                            style="font-size: 0.75rem; color: #64748b; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                            {{ $t->asunto_inicial }}</div>
-                                    </td>
-                                    <td>
-                                        <div style="font-size: 0.85rem;">
-                                            {{ explode(' ', $t->cliente?->name ?: $t->nombres)[0] }}</div>
-                                        <div style="font-size: 0.7rem; color: #64748b;">{{ $t->dni }}</div>
-                                    </td>
-                                    <td>{{ $t->area?->nombre ?: 'N/A' }}</td>
-                                    <td>
-                                        <span
-                                            style="font-size: 0.75rem; color: {{ str_contains(strtolower($t->prioridad?->nombre), 'alta') ? '#EF4444' : '#64748b' }}; font-weight: 600;">
-                                            {{ $t->prioridad?->nombre ?: 'Normal' }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="g_badge"
-                                            style="background: {{ str_contains(strtolower($t->estado?->slug), 'cerrado') ? '#dcfce7' : '#e0f2fe' }}; color: {{ str_contains(strtolower($t->estado?->slug), 'cerrado') ? '#166534' : '#0369a1' }};">
-                                            {{ $t->estado?->nombre }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $t->created_at->format('d/m/Y H:i') }}</td>
-                                </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600;">#{{ $t->id }}</div>
+                                    <div
+                                        style="font-size: 0.75rem; color: #64748b; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{ $t->asunto_inicial }}</div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.85rem;">
+                                        {{ explode(' ', $t->cliente?->name ?: $t->nombres)[0] }}</div>
+                                    <div style="font-size: 0.7rem; color: #64748b;">{{ $t->dni }}</div>
+                                </td>
+                                <td>{{ $t->area?->nombre ?: 'N/A' }}</td>
+                                <td>
+                                    <span
+                                        style="font-size: 0.75rem; color: {{ str_contains(strtolower($t->prioridad?->nombre), 'alta') ? '#EF4444' : '#64748b' }}; font-weight: 600;">
+                                        {{ $t->prioridad?->nombre ?: 'Normal' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="g_badge"
+                                        style="background: {{ str_contains(strtolower($t->estado?->slug), 'cerrado') ? '#dcfce7' : '#e0f2fe' }}; color: {{ str_contains(strtolower($t->estado?->slug), 'cerrado') ? '#166534' : '#0369a1' }};">
+                                        {{ $t->estado?->nombre }}
+                                    </span>
+                                </td>
+                                <td>{{ $t->created_at->format('d/m/Y H:i') }}</td>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -192,17 +183,17 @@
                         </thead>
                         <tbody>
                             @foreach($ultimasDerivaciones as $d)
-                                <tr>
-                                    <td><span style="font-weight: 600;">#{{ $d->ticket_id }}</span></td>
-                                    <td>{{ $d->deArea?->nombre }}</td>
-                                    <td><i class="fa-solid fa-arrow-right-long"
-                                            style="margin-right: 0.5rem; color: #94a3b8;"></i> {{ $d->aArea?->nombre }}</td>
-                                    <td>{{ explode(' ', $d->usuarioDeriva?->name ?: 'Sistema')[0] }}</td>
-                                    <td><span
-                                            style="color: #3B82F6; font-weight: 500;">{{ explode(' ', $d->usuarioRecibe?->name ?: 'Fila')[0] }}</span>
-                                    </td>
-                                    <td>{{ $d->created_at->diffForHumans() }}</td>
-                                </tr>
+                            <tr>
+                                <td><span style="font-weight: 600;">#{{ $d->ticket_id }}</span></td>
+                                <td>{{ $d->deArea?->nombre }}</td>
+                                <td><i class="fa-solid fa-arrow-right-long"
+                                        style="margin-right: 0.5rem; color: #94a3b8;"></i> {{ $d->aArea?->nombre }}</td>
+                                <td>{{ explode(' ', $d->usuarioDeriva?->name ?: 'Sistema')[0] }}</td>
+                                <td><span style="color: #3B82F6; font-weight: 500;">{{ explode(' ',
+                                        $d->usuarioRecibe?->name ?: 'Fila')[0] }}</span>
+                                </td>
+                                <td>{{ $d->created_at->diffForHumans() }}</td>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>

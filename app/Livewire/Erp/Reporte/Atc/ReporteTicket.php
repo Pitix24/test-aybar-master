@@ -4,11 +4,7 @@ namespace App\Livewire\Erp\Reporte\Atc;
 
 use App\Models\Ticket;
 use App\Models\EstadoTicket;
-use App\Models\Area;
-use App\Models\Canal;
-use App\Models\TipoSolicitud;
 use App\Models\TicketDerivado;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -24,7 +20,6 @@ class ReporteTicket extends Component
     public $ticketsCerrados;
     public $ticketsAbiertos;
     public $ticketsVencidos;
-    public $tiempoPromedioCierre; // en horas
 
     // Gráficos
     public $ticketsPorEstado = [];
@@ -62,12 +57,6 @@ class ReporteTicket extends Component
         $this->ticketsVencidos = Ticket::whereNull('fecha_validacion')
             ->where('created_at', '<', Carbon::now()->subDays(3))
             ->count();
-
-        // Tiempo promedio de cierre
-        $tiempos = Ticket::whereNotNull('fecha_validacion')
-            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, fecha_validacion)) as promedio')
-            ->first();
-        $this->tiempoPromedioCierre = $tiempos ? round($tiempos->promedio, 1) : 0;
 
         $this->cargarDistribucionEstatica();
     }

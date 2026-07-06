@@ -19,9 +19,11 @@
             </a>
             @endcan
             @can('prospecto.eliminar')
+            @if(!$es_solo_lectura)
             <button type="button" class="g_boton danger" wire:click="solicitarEliminarProspecto">
                 Eliminar <i class="fa-solid fa-trash-can"></i>
             </button>
+            @endif
             @endcan
 
             <button type="button" class="g_boton dark" onclick="history.back()">
@@ -29,7 +31,19 @@
             </button>
         </div>
     </div>
-
+    @if($es_solo_lectura)
+        <div class="g_margin_bottom_20" style="background-color: #fef2f2; border: 1px solid #f87171; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; font-size: 1.2rem;"></i>
+                <div>
+                    <h4 style="margin: 0; color: #991b1b; font-size: 0.95rem; font-weight: bold;">Registro de Solo Lectura (Histórico)</h4>
+                    <p style="margin: 5px 0 0 0; color: #b91c1c; font-size: 0.85rem;">
+                        Este prospecto pertenece a una edición pasada del EntregaFest. Su información ha sido congelada para mantener la integridad de los reportes. Para gestionar al cliente, busca su participación activa más reciente en el sistema.
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
     <div class="g_fila">
         <div class="g_columna_4">
             <div class="g_panel g_gap_pagina">
@@ -118,6 +132,32 @@
                         </div>
                     </div>
                 </div>
+                @if($prospecto->estado_contrato_preeliminar_emitido === 'CONFORME')
+                <div class="g_gap_small" style="margin-top: 10px;">
+                    <label class="g_label" style="font-size: 0.75rem;">
+                        Link Cita de Contrato
+                        @if(!$prospecto->fecha_firma)
+                            <span class="g_badge light" style="font-size: 0.65rem; margin-left: 5px;">Pendiente de agendar</span>
+                        @else
+                            <span class="g_badge success" style="font-size: 0.65rem; margin-left: 5px; background:#8e44ad; color:#fff;">
+                                Agendada: {{ \Carbon\Carbon::parse($prospecto->fecha_firma)->format('d/m/Y H:i') }}
+                            </span>
+                        @endif
+                    </label>
+                    <div class="g_input_grupo" x-data="{ copied: false }">
+                        <input type="text" class="g_input small" value="{{ $link_cita_contrato }}" readonly>
+                        <button type="button" class="g_boton_icono info small"
+                            @click="navigator.clipboard.writeText('{{ $link_cita_contrato }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                            title="Copiar enlace">
+                            <i class="fa-solid" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                        </button>
+                        <a href="{{ $link_cita_contrato }}" target="_blank" class="g_boton_icono dark small"
+                            title="Ver enlace">
+                            <i class="fa-solid fa-external-link"></i>
+                        </a>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
 
@@ -153,28 +193,30 @@
                     </div>
                 </div>
 
-                <div x-show="activeTab === 'prospecto'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-datos-basicos')
+                <fieldset @if($es_solo_lectura) disabled="disabled" style="opacity: 0.8;" @endif>
+                    <div x-show="activeTab === 'prospecto'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-datos-basicos')
 
-                    @livewire('erp.entrega-fest.prospecto.entrega-fest-prospecto-bancarizacion', ['prospectoId' =>
-                    $prospecto->id])
-                </div>
+                        @livewire('erp.entrega-fest.prospecto.entrega-fest-prospecto-bancarizacion', ['prospectoId' =>
+                        $prospecto->id])
+                    </div>
 
-                <div x-show="activeTab === 'backoffice'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-backoffice')
-                </div>
+                    <div x-show="activeTab === 'backoffice'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-backoffice')
+                    </div>
 
-                <div x-show="activeTab === 'legal'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-legal')
-                </div>
+                    <div x-show="activeTab === 'legal'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-legal')
+                    </div>
 
-                <div x-show="activeTab === 'copropietarios'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-copropietarios')
-                </div>
+                    <div x-show="activeTab === 'copropietarios'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-copropietarios')
+                    </div>
 
-                <div x-show="activeTab === 'llamada'" x-transition class="g_tab_content">
-                    @include('livewire.erp.entrega-fest.prospecto.partials._tab-llamada')
-                </div>
+                    <div x-show="activeTab === 'llamada'" x-transition class="g_tab_content">
+                        @include('livewire.erp.entrega-fest.prospecto.partials._tab-llamada')
+                    </div>
+                </fieldset>
             </div>
         </div>
     </div>

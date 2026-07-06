@@ -2,9 +2,11 @@
 
 namespace App\Listeners\EntregaFest;
 
+use App\Models\Area;
 use App\Events\EntregaFest\EntregaFestContratoPreliminar;
 use App\Events\EntregaFest\EntregaFestCitaAgendar;
 use App\Mail\EntregaFest\ContratoPreliminarMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -17,6 +19,7 @@ class EntregaFestContratoPreliminarN8N
     {
         $prospecto = $event->prospecto->load(['entregaFest', 'proyecto', 'historialComunicaciones']);
         $evento = $prospecto->entregaFest;
+        $areaEmail = Area::find(3)?->email_buzon;
 
         // Solo procesamos si el estado es CONFORME
         if ($prospecto->estado_contrato_preeliminar_emitido !== 'CONFORME') {
@@ -46,9 +49,10 @@ class EntregaFestContratoPreliminarN8N
         // 4. Preparar el contacto (Propietario) para n8n
         $titular = [
             'id' => $prospecto->id,
+            'bcc' => $areaEmail,
             'nombres' => $prospecto->nombres,
             'email' => $prospecto->email,
-            'celular' => $prospecto->celular,
+            'celular' => EntregaFestCelular::peru($prospecto->celular),
             'dni' => $prospecto->dni,
             'tipo' => 'Propietario',
             'proyecto' => $prospecto->proyecto?->nombre,
@@ -80,13 +84,12 @@ class EntregaFestContratoPreliminarN8N
                     'subtitulo' => $plantilla?->subtitulo ?? 'Tu contrato preliminar ya está disponible para revisión.',
                     'descripcion' => $plantilla?->descripcion ?? '',
                     'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
-                    'link_boton' => $titular['pdf_url'] ?: $plantilla?->link_boton,
+                    'link_boton' => $titular['link_agendar'] ?: ($titular['pdf_url'] ?: $plantilla?->link_boton),
                 ],
                 'etapa' => $etapa
             ]);
 
             Log::channel('entrega-fest')->info("[CONTRATO-PRELIMINAR-N8N] Enviado para Propietario Prospecto #{$titular['id']}");
-
         } catch (\Exception $e) {
             Log::error("[CONTRATO-PRELIMINAR-N8N] Error: " . $e->getMessage());
         }

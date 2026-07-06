@@ -4,11 +4,14 @@ namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestInstrucciones;
 use App\Mail\EntregaFest\InstruccionesEventoMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Support\VerificaEventoVigente;
 
 class EntregaFestInstruccionesN8N
 {
+    use VerificaEventoVigente; // Importamos el trait para verificar si el evento sigue vigente antes de enviar a n8n
     /**
      * Handle the event.
      */
@@ -16,6 +19,11 @@ class EntregaFestInstruccionesN8N
     {
         $invitado = $event->invitado->load(['prospecto.historialComunicaciones', 'copropietario.historialComunicaciones', 'entregaFest']);
         $evento = $invitado->entregaFest;
+
+        // 🛑 FILTRO: Si el evento ya pasó, NO enviamos a n8n
+        if (!$this->eventoVigente($evento, 'INSTRUCCIONES-N8N')) {
+            return;
+        }
 
         // Definimos la persona (Titular o Copropietario)
         $persona = $invitado->prospecto ?? $invitado->copropietario;
@@ -47,7 +55,7 @@ class EntregaFestInstruccionesN8N
             'id' => $invitado->prospecto_entrega_fest_id ?? $invitado->copropietario_entrega_fest_id,
             'nombres' => $invitado->nombre_completo,
             'email' => $invitado->email,
-            'celular' => $invitado->celular,
+            'celular' => EntregaFestCelular::peru($invitado->celular),
             'dni' => $invitado->dni,
             'tipo' => $invitado->prospecto_entrega_fest_id ? 'Propietario' : 'Copropietario',
             'html' => $mail->render(),

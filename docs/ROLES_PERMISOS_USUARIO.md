@@ -18,6 +18,7 @@ admin.accion-editar
 admin.accion-eliminar
 admin.accion-exportar-filtro
 admin.accion-exportar-todo
+admin.cambiar-clave
 
 CLIENTE
 cliente.navegacion
@@ -46,7 +47,6 @@ cliente-antiguo.accion-exportar-filtro
 cliente-antiguo.accion-exportar-todo
 
 PERMISOS NO APLICADOS
-admin.accion-cambiar-clave
 cliente.vista-ver-consulta
 cliente.accion-consultar
 cliente.vista-ver-movimientos

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Web\EntregaFest;
 
+use App\Support\RedirigeSiEventoConcluido; // ⬅️ AGREGAR
 use App\Models\ProspectoEntregaFest;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -21,6 +22,8 @@ class PreInvitacionPropietario extends Component
     public $mensaje_exito = '';
     public $plantilla;
 
+    use RedirigeSiEventoConcluido; // ⬅️ AGREGAR
+    
     public function mount($slug, $propietarioId)
     {
         $this->slug = $slug;
@@ -30,6 +33,9 @@ class PreInvitacionPropietario extends Component
             ->findOrFail($propietarioId);
 
         $this->evento = $this->prospecto->entregaFest;
+
+        // 🛑 Si el evento ya se realizó → redirigir al view único
+        if ($redir = $this->redirigirSiConcluido($this->evento)) return $redir;
 
         // Cargar la plantilla de pre-invitación si existe
         $this->plantilla = $this->evento->plantillas()

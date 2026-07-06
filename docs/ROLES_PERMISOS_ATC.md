@@ -80,7 +80,42 @@ ticket.editar-pasos
 ticket.hijos-masivos
 ticket.crear-hijos-masivos
 
+PERMISOS DETECTADOS SOLO EN CODIGO
+tipo-solicitud.vista-lista
+tipo-solicitud.vista-ver
+tipo-solicitud.vista-crear
+tipo-solicitud.vista-editar
+tipo-solicitud.vista-agregar-usuario
+sub-tipo-solicitud.vista-lista
+sub-tipo-solicitud.vista-ver
+sub-tipo-solicitud.vista-crear
+sub-tipo-solicitud.vista-editar
+estado-ticket.vista-lista
+estado-ticket.vista-ver
+estado-ticket.vista-crear
+estado-ticket.vista-editar
+prioridad-ticket.vista-lista
+prioridad-ticket.vista-ver
+prioridad-ticket.vista-crear
+prioridad-ticket.vista-editar
+canal.vista-lista
+canal.vista-ver
+canal.vista-crear
+canal.vista-editar
+ticket.vista-lista
+ticket.vista-ver
+ticket.vista-crear
+ticket.vista-editar
+ticket.vista-derivar
+ticket.vista-crear-cita
+ticket.vista-chat
+
 USO EN CODIGO
+routes/erp/atc.php
+resources/views/livewire/erp/atc/ticket/ticket-ver.blade.php
+resources/views/livewire/erp/atc/ticket/ticket-editar.blade.php
+
+USO EN CODIGO GENERAL
 routes/erp/atc.php
 app/Livewire/Erp/Atc/TipoSolicitud/
 app/Livewire/Erp/Atc/SubTipoSolicitud/

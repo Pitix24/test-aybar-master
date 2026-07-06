@@ -13,6 +13,7 @@ use App\Models\SubTipoSolicitud;
 use App\Models\Canal;
 use App\Models\EstadoTicket;
 use App\Models\PrioridadTicket;
+use App\Models\TipoSolicitud;
 use App\Services\ConsultaClienteService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -67,6 +68,8 @@ class TicketCrear extends Component
 
     public Collection $informaciones;
 
+    protected bool $prefillCartaNotarial = false;
+
     protected function rules()
     {
         $rules = [
@@ -114,58 +117,77 @@ class TicketCrear extends Component
         ];
     }
 
+    public function messages()
+    {
+        return [
+            'lotes_agregados.required' => 'No se ha vinculado ningún lote al ticket. Por favor, agréguelos manualmente desde el panel de "Cliente" o, en su defecto, derive el ticket al área de origen correspondiente.',
+            'lotes_agregados.array'    => 'El formato de los lotes vinculados no es válido.',
+            'lotes_agregados.min'      => 'Debe vincular al menos un lote para continuar con la creación del ticket.',
+        ];
+    }
+
     public function mount($ticketPadre = null)
     {
+        $this->prefillCartaNotarial = request()->routeIs('erp.ticket-notarial.vista.crear');
+
         if ($ticketPadre) {
-            // Si ya es una instancia de Ticket (Route Model Binding)
+            // Resolver el ticket padre según el tipo recibido
             if ($ticketPadre instanceof Ticket) {
                 $this->ticketPadre = $ticketPadre;
-            }
-            // Si es un array (a veces Livewire pasa los parámetros así)
-            elseif (is_array($ticketPadre)) {
+            } elseif (is_array($ticketPadre)) {
                 $id = $ticketPadre['id'] ?? reset($ticketPadre);
                 $this->ticketPadre = Ticket::findOrFail($id);
-            }
-            // Si es un ID (string o int)
-            else {
+            } else {
                 $this->ticketPadre = Ticket::findOrFail($ticketPadre);
             }
 
-            $this->ticket_padre_id = $this->ticketPadre->id;
+            $this->ticket_padre_id   = $this->ticketPadre->id;
             $this->unidad_negocio_id = $this->ticketPadre->unidad_negocio_id;
-            $this->proyecto_id = $this->ticketPadre->proyecto_id;
-            $this->canal_id = $this->ticketPadre->canal_id;
-            $this->dni = $this->ticketPadre->dni;
-            $this->nombres = $this->ticketPadre->nombres;
-            $this->email = $this->ticketPadre->email;
-            $this->celular = $this->ticketPadre->celular;
-            $this->origen = $this->ticketPadre->origen;
-            $this->lotes_agregados = $this->ticketPadre->lotes ?? [];
+            $this->proyecto_id       = $this->ticketPadre->proyecto_id;
+            $this->canal_id          = $this->ticketPadre->canal_id;
+            $this->dni               = $this->ticketPadre->dni;
+            $this->nombres           = $this->ticketPadre->nombres;
+            $this->email             = $this->ticketPadre->email;
+            $this->celular           = $this->ticketPadre->celular;
+            $this->origen            = $this->ticketPadre->origen;
+
+            // 🔧 FIX: Asegurar que lotes_agregados sea siempre un array válido
+            $lotesPadre = $this->ticketPadre->lotes;
+            if (is_string($lotesPadre)) {
+                $lotesPadre = json_decode($lotesPadre, true) ?? [];
+            }
+            $this->lotes_agregados = is_array($lotesPadre) ? array_values($lotesPadre) : [];
+
             $this->loadProyectos();
         }
 
-        $user = auth()->user();
+        $user   = User::find(Auth::id());
+        $userId = Auth::id();
 
         // Determinar área inicial
-        if ($user->areas()->exists()) {
-            $this->area_id = $user->areas()->orderBy('area_user.created_at')->value('areas.id');
+        if ($userId && DB::table('area_user')->where('user_id', $userId)->exists()) {
+            $this->area_id = DB::table('area_user')
+                ->where('user_id', $userId)
+                ->orderByDesc('is_principal')
+                ->orderBy('created_at')
+                ->value('area_id');
         } else {
             $this->area_id = Area::where('activo', true)->orderBy('id')->value('id');
         }
 
         // Cargar catálogos activos
-        $this->areas = Area::where('activo', true)->orderBy('nombre')->get();
-        $this->canales = Canal::where('activo', true)->orderBy('nombre')->get();
-        $this->unidades_negocios = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
-        $this->prioridades = PrioridadTicket::where('activo', true)->get();
+        $this->areas              = Area::where('activo', true)->orderBy('nombre')->get();
+        $this->canales            = Canal::where('activo', true)->orderBy('nombre')->get();
+        $this->unidades_negocios  = UnidadNegocio::where('activo', true)->orderBy('nombre')->get();
+        $this->prioridades        = PrioridadTicket::where('activo', true)->get();
 
-        // Valores por defecto
-        if (!$this->ticket_padre_id) {
-            $this->prioridad_ticket_id = $this->prioridades->firstWhere('nombre', 'Media')?->id ?? $this->prioridades->first()?->id;
-        }
+        // 🔧 FIX: Asignar prioridad por defecto SIEMPRE (también en modo asociado)
+        $prioridadCollection = collect($this->prioridades);
+        $this->prioridad_ticket_id = $prioridadCollection->firstWhere('nombre', 'Media')?->id
+            ?? $prioridadCollection->first()?->id;
 
         // Añadir al creador como participante por defecto
-        if (!in_array($user->id, $this->selectedParticipants)) {
+        if ($user && !in_array($user->id, $this->selectedParticipants)) {
             $this->selectedParticipants[] = $user->id;
         }
 
@@ -173,6 +195,10 @@ class TicketCrear extends Component
 
         if ($this->area_id) {
             $this->cargarDatosArea($this->area_id);
+        }
+
+        if ($this->prefillCartaNotarial) {
+            $this->aplicarTipoSolicitudCartaNotarial();
         }
     }
 
@@ -194,6 +220,57 @@ class TicketCrear extends Component
         }
     }
 
+    protected function obtenerGestoresPorArea($areaId, $tipoSolicitudId = null)
+    {
+        $area = Area::find($areaId);
+
+        if (!$area) {
+            return collect();
+        }
+
+        $idsDeArea = $area->users()
+            ->where('activo', true)
+            ->pluck('users.id')
+            ->toArray();
+
+        if ($tipoSolicitudId && !empty($idsDeArea)) {
+            $idsDeTipoSolicitud = DB::table('tipo_solicitud_user')
+                ->where('tipo_solicitud_id', $tipoSolicitudId)
+                ->whereIn('user_id', $idsDeArea)
+                ->pluck('user_id')
+                ->toArray();
+
+            $idsFinales = !empty($idsDeTipoSolicitud) ? $idsDeTipoSolicitud : $idsDeArea;
+        } else {
+            $idsFinales = $idsDeArea;
+        }
+
+        return $area->users()
+            ->whereIn('users.id', $idsFinales)
+            ->where('activo', true)
+            ->withPivot('is_principal')
+            ->orderByDesc('area_user.is_principal')
+            ->orderBy('users.name')
+            ->get();
+    }
+
+    protected function resolverGestorPorDefecto($gestores)
+    {
+        $principal = $gestores->first(fn($usuario) => (bool) $usuario->pivot->is_principal);
+
+        return $principal?->id ?? $gestores->first()?->id;
+    }
+
+    protected function gestorPerteneceAArea($areaId, $gestorId, $tipoSolicitudId = null): bool
+    {
+        if (!$gestorId) {
+            return true;
+        }
+
+        return $this->obtenerGestoresPorArea($areaId, $tipoSolicitudId)
+            ->contains('id', (int) $gestorId);
+    }
+
     public function cargarDatosArea($areaId)
     {
         $area = Area::find($areaId);
@@ -213,26 +290,14 @@ class TicketCrear extends Component
             ->where('activo', true)
             ->get();
 
-        $this->gestores = $area->users()
-            ->where('activo', true)
-            ->withPivot('is_principal')
-            ->orderByDesc('area_user.is_principal')
-            ->orderBy('users.name')
-            ->get();
+        $this->gestores = $this->obtenerGestoresPorArea($areaId);
 
         $user = Auth::user();
 
-        if ($this->gestores->contains('id', $user->id)) {
+        if ($user && collect($this->gestores)->contains('id', $user->id)) {
             $this->gestor_id = $user->id;
         } else {
-            $principal = $this->gestores
-                ->first(fn($u) => (bool) $u->pivot->is_principal);
-
-            if ($principal) {
-                $this->gestor_id = $principal->id;
-            } else {
-                $this->gestor_id = $this->gestores->first()?->id;
-            }
+            $this->gestor_id = $this->resolverGestorPorDefecto($this->gestores);
         }
 
         $this->tipo_solicitud_id = '';
@@ -242,6 +307,10 @@ class TicketCrear extends Component
     public function updatedAreaId($value)
     {
         $this->cargarDatosArea($value);
+
+        if ($this->prefillCartaNotarial) {
+            $this->aplicarTipoSolicitudCartaNotarial();
+        }
     }
 
     public function updatedTipoSolicitudId($value)
@@ -261,30 +330,64 @@ class TicketCrear extends Component
         $this->verificarDuplicados();
     }
 
+    public function updatedGestorId($value)
+    {
+        if (!$value || !$this->area_id) {
+            return;
+        }
+
+        if ($this->gestorPerteneceAArea($this->area_id, $value, $this->tipo_solicitud_id)) {
+            return;
+        }
+
+        $gestoresArea = $this->obtenerGestoresPorArea($this->area_id, $this->tipo_solicitud_id);
+        $this->gestor_id = $this->resolverGestorPorDefecto($gestoresArea) ?? '';
+    }
+
     public function verificarDuplicados()
     {
+        // 1. Validar que tengamos los datos mínimos para buscar
         if (!$this->dni || !$this->tipo_solicitud_id || !$this->sub_tipo_solicitud_id || empty($this->lotes_agregados)) {
             $this->has_duplicado = false;
             return;
         }
 
-        $lotesConTicket = [];
-        foreach ($this->lotes_agregados as $lote) {
-            if (
-                \App\Services\TicketService::existeTicketSimilar(
-                    $this->dni,
-                    $lote['id'],
-                    $this->tipo_solicitud_id,
-                    $this->sub_tipo_solicitud_id
-                )
-            ) {
-                $lotesConTicket[] = $lote['numero_lote'];
-            }
-        }
+        // 2. Buscamos TODOS los tickets activos de este cliente para el mismo Tipo y Subtipo
+        $ticketsActivos = Ticket::query()
+            ->where('dni', $this->dni)
+            ->where('tipo_solicitud_id', $this->tipo_solicitud_id)
+            ->where('sub_tipo_solicitud_id', $this->sub_tipo_solicitud_id)
+            ->whereNotIn('estado_ticket_id', [EstadoTicket::id(EstadoTicket::CERRADO)])
+            ->get();
 
-        if (!empty($lotesConTicket)) {
+        if ($ticketsActivos->isNotEmpty()) {
             $this->has_duplicado = true;
-            $mensaje = "Ya existe un ticket activo para este DNI y Tipo de Solicitud en los lotes: " . implode(', ', $lotesConTicket);
+
+            // 3. Extraemos los números de lote históricos para mostrárselos al operador
+            $lotesPrevios = [];
+            foreach ($ticketsActivos as $ticket) {
+                $lotes = is_string($ticket->lotes) ? json_decode($ticket->lotes, true) : $ticket->lotes;
+                if (is_array($lotes)) {
+                    foreach ($lotes as $l) {
+                        if (isset($l['numero_lote'])) {
+                            $lotesPrevios[] = $l['numero_lote'];
+                        }
+                    }
+                }
+            }
+
+            // Limpiamos duplicados y preparamos el texto
+            $lotesPreviosUnicos = array_unique($lotesPrevios);
+            $lotesPreviosStr = empty($lotesPreviosUnicos) ? 'sin lote especificado' : implode(', ', $lotesPreviosUnicos);
+
+            // 4. Extraemos los lotes actuales (los que está intentando crear ahora mismo)
+            $lotesNuevosStr = collect($this->lotes_agregados)->pluck('numero_lote')->implode(', ');
+
+            // 5. Armamos el mensaje contextual para el Gestor
+            $mensaje = "Este cliente ya tiene un ticket activo de este tipo para el/los lote(s): {$lotesPreviosStr}. " .
+                       "¿Estás seguro de que deseas generar este nuevo registro para: {$lotesNuevosStr}?";
+
+            // 6. Lanzamos la alerta
             $this->dispatch('alertaLivewire', [
                 'type' => 'warning',
                 'title' => '¡Ticket Duplicado detectado!',
@@ -303,6 +406,20 @@ class TicketCrear extends Component
                 ->orderBy('nombre')
                 ->get();
         }
+    }
+
+    protected function aplicarTipoSolicitudCartaNotarial(): void
+    {
+        $tipoSolicitud = TipoSolicitud::where('nombre', 'like', '%CARTAS NOTARIALES%')
+            ->where('activo', true)
+            ->first();
+
+        if (!$tipoSolicitud) {
+            return;
+        }
+
+        $this->tipo_solicitud_id = $tipoSolicitud->id;
+        $this->loadSubTipoSolicitudes();
     }
 
     public function buscarCliente(ConsultaClienteService $service)
@@ -400,16 +517,45 @@ class TicketCrear extends Component
 
     public function store($confirmado = false)
     {
-        $this->authorize('ticket.accion-crear');
+        $permisoCrear = request()->routeIs('erp.ticket-notarial.vista.crear')
+            ? 'ticket-notarial.accion-crear'
+            : 'ticket.accion-crear';
+
+        $this->authorize($permisoCrear);
 
         try {
             $this->validate();
         } catch (ValidationException $e) {
+            $errores = array_keys($e->errors());
+
+            // Detectar tab con error
+            $camposClienteTab = ['nombres', 'email', 'celular', 'dni'];
+            $tabConError = collect($errores)->intersect($camposClienteTab)->isNotEmpty()
+                ? 'cliente'
+                : 'general';
+
+            // Mensaje contextual según el tipo de error
+            if (in_array('lotes_agregados', $errores) && count($errores) === 1) {
+                $titulo = 'Sin lotes vinculados';
+                $texto  = 'No se ha agregado ningún lote al ticket. Agréguelos manualmente o derive el ticket al área de origen.';
+            } else {
+                $labels = $this->validationAttributes();
+                $camposLegibles = collect($errores)
+                    ->map(fn($campo) => $labels[$campo] ?? $campo)
+                    ->implode(', ');
+
+                $titulo = 'Advertencia';
+                $texto  = 'Verifique los siguientes campos: ' . $camposLegibles;
+            }
+
             $this->dispatch('alertaLivewire', [
-                'type' => 'warning',
-                'title' => 'Advertencia',
-                'text' => 'Verifique los errores de los campos resaltados.'
+                'type'  => 'warning',
+                'title' => $titulo,
+                'text'  => $texto,
             ]);
+
+            $this->dispatch('cambiarTabFormulario', tab: $tabConError);
+
             throw $e;
         }
 
@@ -422,6 +568,16 @@ class TicketCrear extends Component
         // 1. Validación de contacto (Confirmación opcional via JS)
         if (!$confirmado && (empty($this->email) || empty($this->celular))) {
             $this->dispatch('confirmarTicketSinDatos');
+            return;
+        }
+
+        if (!$this->gestorPerteneceAArea($this->area_id, $this->gestor_id, $this->tipo_solicitud_id)) {
+            $this->addError('gestor_id', 'El gestor seleccionado no pertenece al área elegida.');
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Advertencia',
+                'text' => 'El gestor seleccionado no pertenece al área elegida.'
+            ]);
             return;
         }
 
@@ -456,7 +612,7 @@ class TicketCrear extends Component
                     'celular' => $this->celular,
                     'origen' => $this->origen,
                     'lotes' => $lotesParaTicket,
-                    'created_by' => auth()->id(),
+                    'created_by' => Auth::id(),
                 ]);
 
                 // Asegurar que el creador y el gestor sean participantes
@@ -471,7 +627,7 @@ class TicketCrear extends Component
 
                 TicketHistorial::create([
                     'ticket_id' => $ticket->id,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::id(),
                     'accion' => 'Creación',
                     'detalle' => 'Ticket creado con estado inicial: ' . ($ticket->estado?->nombre ?? 'N/A'),
                 ]);
@@ -495,7 +651,7 @@ class TicketCrear extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('ticket')->error('[TICKET] Error en Creación: ' . $e->getMessage(), [
-                'usuario_id' => auth()->id(),
+                'usuario_id' => Auth::id(),
                 'trace' => $e->getTraceAsString()
             ]);
             $this->dispatch('alertaLivewire', [

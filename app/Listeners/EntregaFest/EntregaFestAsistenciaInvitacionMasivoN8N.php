@@ -3,15 +3,17 @@
 namespace App\Listeners\EntregaFest;
 
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacionMasivo;
-use App\Models\CopropietarioEntregaFest;
 use App\Models\ProspectoEntregaFest;
 use App\Mail\EntregaFest\AsistenciaInvitacionPropietarioMail;
 use App\Mail\EntregaFest\AsistenciaInvitacionCopropietarioMail;
+use App\Support\EntregaFestCelular;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Support\VerificaEventoVigente;
 
 class EntregaFestAsistenciaInvitacionMasivoN8N
 {
+    use VerificaEventoVigente; // Importamos el trait para verificar si el evento sigue vigente antes de enviar a n8n
     /**
      * Handle the event.
      */
@@ -19,14 +21,16 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
     {
         $evento = $event->evento;
 
+        // 🛑 FILTRO: Si el evento ya pasó, NO enviamos a n8n
+        if (!$this->eventoVigente($evento, 'ASISTENCIA-INVITACION-MASIVO-N8N')) {
+            return;
+        }
+
         // 1. Buscamos la plantilla configurada para este evento (tipo asistencia-invitacion)
         $plantilla = $evento->plantillas()->where('tipo', 'asistencia-invitacion')->first();
 
         $etapa = $plantilla->tipo ?? 'asistencia-invitacion';
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $evento->id)
-            /*->whereHas('estadoCliente', function ($query) {
-                $query->whereNotIn('nombre', ['PLANTON', 'DESISTIMIENTO', 'DEVOLUCION DE APORTES', 'CARTA NOTARIAL', 'RESOLUCION DE CONTRATO']);
-            })*/
             ->where(function ($query) use ($etapa) {
                 // El titular necesita algo y NO ha respondido
                 $query->where(function ($q) use ($etapa) {
@@ -42,20 +46,47 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                 })
                     // ...o algún copropietario necesita algo y NO ha respondido
                     ->orWhereHas('copropietarios', function ($cq) use ($etapa) {
-                    $cq->whereNull('invitacion_confirmada')
-                        ->where(function ($qq) use ($etapa) {
-                            $qq->whereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
-                                $h->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
-                            })
-                                ->orWhereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
-                                    $h->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
-                                });
-                        });
-                });
+                        $cq->whereNull('invitacion_confirmada')
+                            ->where(function ($qq) use ($etapa) {
+                                $qq->whereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                                    $h->where('etapa', $etapa)->where('canal', 'email')->where('estado', 'enviado');
+                                })
+                                    ->orWhereDoesntHave('historialComunicaciones', function ($h) use ($etapa) {
+                                        $h->where('etapa', $etapa)->where('canal', 'whatsapp')->where('estado', 'enviado');
+                                    });
+                            });
+                    });
             })
-            ->with(['copropietarios.historialComunicaciones', 'entregaFest', 'historialComunicaciones'])
+            // Cargamos relaciones incluyendo 'estadoCliente'
+            ->with(['copropietarios.historialComunicaciones', 'entregaFest', 'historialComunicaciones', 'estadoCliente'])
             ->get()
-            ->unique('dni') // Solo un envío por DNI de Titular
+
+            // 🛑 FILTRO DE BLOQUEO: Excluir estados no deseados
+            ->filter(function ($prospecto) {
+                $nombreEstado = strtoupper($prospecto->estadoCliente->nombre ?? '');
+                $bloqueados = [
+                    'RESOLUCION DE CONTRATO',
+                    'DEVOLUCIONES EFECTUADAS',
+                    'DEVOLUCIONES EN PROCESO',
+                    'PLANTON',
+                    'RESOLUCION'
+                ];
+                // Retorna verdadero solo si el estado NO está en la lista de bloqueados
+                return !in_array($nombreEstado, $bloqueados);
+            })
+
+            // ⚡ ORDEN DE PRIORIDAD PERSONALIZADO
+            ->sortBy(function ($prospecto) {
+                $prioridades = [
+                    'PRIORIDAD LEGAL' => 1,
+                    'PRIORIDAD ATC'   => 2,
+                    'LOTE CANCELADO'  => 3,
+                ];
+                $nombreEstado = strtoupper($prospecto->estadoCliente->nombre ?? '');
+                return $prioridades[$nombreEstado] ?? 99; // Todo lo demás va al final (99)
+            })
+
+            ->unique('dni')
             ->values()
             ->map(function (ProspectoEntregaFest $prospecto) use ($plantilla, $etapa) {
 
@@ -72,7 +103,7 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                     'id' => $prospecto->id,
                     'nombres' => $prospecto->nombres,
                     'email' => $prospecto->email,
-                    'celular' => $prospecto->celular,
+                    'celular' => EntregaFestCelular::peru($prospecto->celular),
                     'dni' => $prospecto->dni,
                     'link' => $mailPropietario->link,
                     'html' => $mailPropietario->render(),
@@ -98,7 +129,7 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                                 'id' => $copro->id,
                                 'nombres' => $copro->nombres,
                                 'email' => $copro->email,
-                                'celular' => $copro->celular,
+                                'celular' => EntregaFestCelular::peru($copro->celular),
                                 'dni' => $copro->dni,
                                 'link' => $mailCopro->link,
                                 'html' => $mailCopro->render(),

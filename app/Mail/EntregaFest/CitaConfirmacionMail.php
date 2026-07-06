@@ -16,15 +16,20 @@ class CitaConfirmacionMail extends Mailable
     public ProspectoEntregaFest $prospecto;
     public $evento;
     public string $fechaFormateada;
+    public ?string $sedeNombre;
+    public ?string $direccionSede;
 
     public function __construct(ProspectoEntregaFest $prospecto)
     {
-        $this->prospecto = $prospecto;
+        $this->prospecto = $prospecto->loadMissing(['proyecto.unidadNegocio']);
         $this->evento = $prospecto->entregaFest;
 
         $this->fechaFormateada = \Carbon\Carbon::parse($prospecto->fecha_firma)
             ->locale('es')
             ->isoFormat('dddd, D [de] MMMM [de] YYYY [a las] HH:mm');
+
+        $this->sedeNombre = $this->prospecto->proyecto?->unidadNegocio?->nombre;
+        $this->direccionSede = $this->prospecto->proyecto?->unidadNegocio?->direccion;
     }
 
     public function envelope(): Envelope

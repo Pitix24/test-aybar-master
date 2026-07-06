@@ -10,7 +10,7 @@
                 <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png" alt="Entrega Fest"
                     class="ef_logo_main">
                 <p class="ef_header_text">Formulario de Confirmación de Asistencia</p>
-                <div class="ef_badge_type">Copropietario del lote</div>
+                <div class="ef_badge_type">Copropietario del Terreno</div>
             </div>
 
             <div class="ef_body">
@@ -60,10 +60,11 @@
                     @if ($asistira === 'si')
                         <div class="ef_form_grid">
                             <div class="ef_input_group">
-                                <label>Nº de acompañantes (máx. 1)</label>
+                                <label>Nº de acompañantes (máx. 2)</label>
                                 <select wire:model.live="cantidad_acompanantes" class="ef_input">
                                     <option value="0">Sin acompañantes</option>
                                     <option value="1">1 acompañante</option>
+                                    <option value="2">2 acompañantes</option>
                                 </select>
                             </div>
 
@@ -76,35 +77,46 @@
                             </div>
                         </div>
 
-                        @if ($cantidad_acompanantes == 1)
-                            <div class="ef_companion_section"
-                                style="margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.2);">
-                                <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                                    <i class="fa-solid fa-user-plus"></i> Datos del acompañante
-                                </h3>
-                                <div class="ef_form_grid">
-                                    <div class="ef_input_group">
-                                        <label>DNI del acompañante</label>
-                                        <input type="text" wire:model="acompanante_dni" class="ef_input" placeholder="Ingrese DNI">
-                                        @error('acompanante_dni') <span class="error-msg" style="color: #f87171; font-size: 0.8rem;">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div class="ef_input_group">
-                                        <label>Nombres completos</label>
-                                        <input type="text" wire:model="acompanante_nombres" class="ef_input" placeholder="Ingrese nombres">
-                                        @error('acompanante_nombres') <span class="error-msg" style="color: #f87171; font-size: 0.8rem;">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div class="ef_input_group">
-                                        <label>Email (opcional)</label>
-                                        <input type="email" wire:model="acompanante_email" class="ef_input" placeholder="correo@ejemplo.com">
-                                        @error('acompanante_email') <span class="error-msg" style="color: #f87171; font-size: 0.8rem;">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div class="ef_input_group">
-                                        <label>Celular (opcional)</label>
-                                        <input type="text" wire:model="acompanante_celular" class="ef_input" placeholder="999 999 999">
-                                        @error('acompanante_celular') <span class="error-msg" style="color: #f87171; font-size: 0.8rem;">{{ $message }}</span> @enderror
+                        @if ($cantidad_acompanantes > 0)
+                            <div style="margin-top: 25px; padding: 15px; background: #f0fdfa; border: 1px dashed #99f6e4; border-radius: 12px;">
+                                <p style="margin: 0 0 8px 0; color: #004d55; font-size: 0.95rem; font-weight: 700;">
+                                    <i class="fa-solid fa-circle-info"></i> Información Importante
+                                </p>
+                                <ul style="margin: 0; padding-left: 20px; color: #004d55; font-size: 0.85rem; line-height: 1.6;">
+                                    <li>En esta zona podrá registrar el nombre completo y número de DNI de cada uno de sus acompañantes.</li>
+                                    <li>Los niños mayores de 3 años cuentan como acompañante.</li>
+                                </ul>
+                            </div>
+
+                            @for ($i = 0; $i < $cantidad_acompanantes; $i++)
+                                <div class="ef_companion_section" style="margin-top: 20px; margin-bottom: 20px; padding: 25px 20px; background: #ffffff; border-radius: 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                                    <h3 style="color: #334155; font-size: 1.1rem; margin-top: 0; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+                                        <i class="fa-solid fa-user-plus" style="color: #e68a00;"></i> Datos del acompañante {{ $i + 1 }}
+                                    </h3>
+                                    <div class="ef_form_grid">
+                                        <div class="ef_input_group">
+                                            <label>DNI del acompañante</label>
+                                            <input type="text" wire:model="acompanantes.{{ $i }}.dni" class="ef_input" placeholder="Ingrese DNI">
+                                            @error("acompanantes.{$i}.dni") <span class="error-msg" style="color: #ef4444; font-size: 0.8rem; font-weight: 600;">{{ $message }}</span> @enderror
+                                        </div>
+                                        <div class="ef_input_group">
+                                            <label>Nombres completos</label>
+                                            <input type="text" wire:model="acompanantes.{{ $i }}.nombres" class="ef_input" placeholder="Ingrese nombres">
+                                            @error("acompanantes.{$i}.nombres") <span class="error-msg" style="color: #ef4444; font-size: 0.8rem; font-weight: 600;">{{ $message }}</span> @enderror
+                                        </div>
+                                        <div class="ef_input_group">
+                                            <label>Email (opcional)</label>
+                                            <input type="email" wire:model="acompanantes.{{ $i }}.email" class="ef_input" placeholder="correo@ejemplo.com">
+                                            @error("acompanantes.{$i}.email") <span class="error-msg" style="color: #ef4444; font-size: 0.8rem; font-weight: 600;">{{ $message }}</span> @enderror
+                                        </div>
+                                        <div class="ef_input_group">
+                                            <label>Celular (opcional)</label>
+                                            <input type="text" wire:model="acompanantes.{{ $i }}.celular" class="ef_input" placeholder="999 999 999">
+                                            @error("acompanantes.{$i}.celular") <span class="error-msg" style="color: #ef4444; font-size: 0.8rem; font-weight: 600;">{{ $message }}</span> @enderror
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endfor
                         @endif
                     @endif
 
@@ -155,7 +167,7 @@
                                     class="ef_footer_value">{{ $copropietario->prospecto?->proyecto?->nombre ?? 'N/A' }}</span>
                             </div>
                             <div class="ef_footer_row">
-                                <span class="ef_footer_label">Lote / Manzana</span>
+                                <span class="ef_footer_label">Terreno / Manzana</span>
                                 <span class="ef_footer_value">{{ $copropietario->prospecto?->lote ?? '—' }}
                                     {{ $copropietario->prospecto?->manzana ?? '—' }}</span>
                             </div>

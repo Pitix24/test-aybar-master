@@ -118,6 +118,8 @@ class LibroReclamacionLivewire extends Component
     {
         $this->lista_proyectos = Proyecto::with('unidadNegocio')
             ->where('activo', true)
+            ->where('nombre', 'NOT LIKE', 'HU%')
+            ->where('nombre', 'NOT LIKE', 'Terra Galicia%')
             ->orderBy('nombre')
             ->get();
     }

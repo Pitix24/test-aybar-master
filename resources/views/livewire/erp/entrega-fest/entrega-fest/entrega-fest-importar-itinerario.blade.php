@@ -1,4 +1,9 @@
 <div style="padding: 20px;">
+    @if(!$evento->activo)
+    <div class="g_margin_bottom_20" style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; color: #991b1b; border-radius: 4px;">
+        <i class="fa-solid fa-lock"></i> <b>Evento Cancelado:</b> No se permite la carga ni creación de itinerarios en eventos inactivos.
+    </div>
+    @else
     <div class="g_panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h4 class="g_panel_titulo" style="margin: 0;"><i class="fa-solid fa-calendar-alt"></i> Planificación del Evento</h4>
@@ -6,9 +11,9 @@
                 <i class="fa-solid fa-download"></i> Descargar Formato
             </button>
         </div>
-        
+
         <p class="leyenda" style="margin-bottom: 20px;">Carga el cronograma de actividades desde un archivo Excel para el evento <b>{{ $evento->nombre }}</b>.</p>
-        
+
         <div class="formulario">
             <div class="g_margin_bottom_20">
                 <input type="file" wire:model="archivo_itinerario" accept=".xlsx, .xls">
@@ -22,4 +27,5 @@
             </div>
         </div>
     </div>
+    @endif
 </div>

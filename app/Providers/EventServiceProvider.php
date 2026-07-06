@@ -6,14 +6,11 @@ use Illuminate\Auth\Events\Login;
 use App\Listeners\ClienteLoginListener;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Listeners\PasswordResetListener;
+
 use App\Events\TicketCreado;
 use App\Listeners\EnviarCorreoTicketCreado;
 use App\Events\UsuarioRegistrado;
 use App\Listeners\EnviarCorreoVerificacionUsuario;
-use App\Events\ProspectoBackofficeConforme;
-use App\Listeners\EnviarInvitacionesAsistencia;
-use App\Events\ProspectoLegalConforme;
-use App\Listeners\EnviarLinkFirma;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -31,15 +28,6 @@ class EventServiceProvider extends ServiceProvider
             EnviarCorreoVerificacionUsuario::class,
         ],
 
-            // ── EntregaFest ──────────────────────────────────────────────────
-        ProspectoBackofficeConforme::class => [
-            EnviarInvitacionesAsistencia::class,
-        ],
-
-        ProspectoLegalConforme::class => [
-            EnviarLinkFirma::class,
-        ],
-
         \App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion::class => [
             \App\Listeners\EntregaFest\EntregaFestAsistenciaConfirmacionN8N::class,
         ],
@@ -54,6 +42,11 @@ class EventServiceProvider extends ServiceProvider
 
         \App\Events\EntregaFest\EntregaFestCitaConfirmacion::class => [
             \App\Listeners\EntregaFest\EntregaFestCitaConfirmacionN8N::class,
+            \App\Listeners\EntregaFest\NotificarGestorLegalCitaConfirmada::class,
+        ],
+
+        \App\Events\EntregaFest\EntregaFestContratoPreliminar::class => [
+        \App\Listeners\EntregaFest\EntregaFestContratoPreliminarN8N::class,
         ],
 
         \App\Events\EntregaFest\EntregaFestCitaRecordatorio::class => [

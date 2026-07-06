@@ -117,7 +117,7 @@ class AdminEditar extends Component
 
     public function updatePassword()
     {
-        $this->authorize('cambiar-clave');
+        $this->authorize('admin.cambiar-clave');
 
         try {
             $this->validate(['password' => 'required|string|min:8']);
@@ -181,7 +181,6 @@ class AdminEditar extends Component
             ]);
 
             return redirect()->route('erp.admin.vista.todo');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('admins')->error("[USUARIO] Error al eliminar usuario admin: " . $e->getMessage(), [

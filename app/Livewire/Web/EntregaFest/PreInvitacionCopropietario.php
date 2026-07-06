@@ -6,6 +6,7 @@ use App\Models\CopropietarioEntregaFest;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use App\Support\RedirigeSiEventoConcluido;
 
 #[Layout('layouts.web.layout-web')]
 #[Title('Confirmar Interés (Copropietario) - Entrega Fest')]
@@ -22,6 +23,7 @@ class PreInvitacionCopropietario extends Component
 
     public $plantilla;
 
+    use RedirigeSiEventoConcluido;
 
     public function mount($slug, $copropietarioId)
     {
@@ -34,6 +36,9 @@ class PreInvitacionCopropietario extends Component
         ])->findOrFail($copropietarioId);
 
         $this->evento = $this->copropietario->prospecto->entregaFest;
+
+        // 🛑 Si el evento ya se realizó → redirigir
+        if ($redir = $this->redirigirSiConcluido($this->evento)) return $redir;
 
         // Cargar la plantilla de pre-invitación si existe
         $this->plantilla = $this->evento->plantillas()

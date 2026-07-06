@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -79,6 +80,92 @@ class ProspectoEntregaFest extends Model implements HasMedia
         return self::ESTADO_FIRMA[$this->estado_firma_contrato_firmado]['color'] ?? '#000000';
     }
 
+    public function scopeFiltrado($query, array $f)
+    {
+        return $query
+            ->where('entrega_fest_id', $f['evento_id'])
+
+            ->when($f['buscar'] ?? null, function ($q) use ($f) {
+                $q->where(function ($sub) use ($f) {
+                    $sub->where('nombres', 'like', "%{$f['buscar']}%")
+                        ->orWhere('dni', 'like', "%{$f['buscar']}%")
+                        ->orWhere('email', 'like', "%{$f['buscar']}%")
+                        ->orWhere('celular', 'like', "%{$f['buscar']}%")
+                        ->orWhereHas('copropietarios', function ($cop) use ($f) {
+                            $cop->where('nombres', 'like', "%{$f['buscar']}%")
+                                ->orWhere('dni', 'like', "%{$f['buscar']}%")
+                                ->orWhere('email', 'like', "%{$f['buscar']}%")
+                                ->orWhere('celular', 'like', "%{$f['buscar']}%");
+                        });
+                });
+            })
+
+            ->when($f['proyecto_id'] ?? null, function ($q) use ($f) {
+                $q->where(function ($sub) use ($f) {
+                    $sub->where('proyecto_id', $f['proyecto_id'])
+                        ->orWhere('reubicado_proyecto_id', $f['proyecto_id']);
+                });
+            })
+
+            ->when(isset($f['filtro_activo']) && $f['filtro_activo'] !== '', function ($q) use ($f) {
+                $q->where('activo', $f['filtro_activo'] === '1');
+            })
+
+            ->when($f['con_historico'] ?? null, function($q) {
+                $q->whereNotNull('prospecto_historico_id');
+            })
+            ->when(($f['filtro_lote_entregado'] ?? '') !== '', function($q) use ($f) {
+                if ($f['filtro_lote_entregado'] === 'si') {
+                    $q->whereHas('prospectoHistorico', fn($h) => $h->where('lote_entregado', true));
+                } elseif ($f['filtro_lote_entregado'] === 'no') {
+                    $q->whereHas('prospectoHistorico', fn($h) => $h->where('lote_entregado', false));
+                }
+            })
+
+            ->when($f['gestor_legal_id'] ?? null, function ($q) use ($f) {
+                if ($f['gestor_legal_id'] === 'sin_asignar') {
+                    $q->whereNull('gestor_legal_id');
+                } else {
+                    $q->where('gestor_legal_id', $f['gestor_legal_id']);
+                }
+            })
+
+            // NUEVO FILTRO GESTOR BACKOFFICE
+            ->when($f['filtro_gestor_backoffice'] ?? null, function ($q) use ($f) {
+                if ($f['filtro_gestor_backoffice'] === 'sin_asignar') {
+                    $q->whereNull('gestor_backoffice_id');
+                } else {
+                    $q->where('gestor_backoffice_id', $f['filtro_gestor_backoffice']);
+                }
+            })
+
+            ->when($f['estado_backoffice']                    ?? null, fn($q) => $q->where('estado_backoffice', $f['estado_backoffice']))
+            ->when($f['estado_gestor_backoffice']             ?? null, fn($q) => $q->where('estado_gestor_backoffice', $f['estado_gestor_backoffice']))
+            ->when($f['estado_contrato_preeliminar_emitido']  ?? null, fn($q) => $q->where('estado_contrato_preeliminar_emitido', $f['estado_contrato_preeliminar_emitido']))
+            ->when($f['estado_firma_contrato_firmado']        ?? null, fn($q) => $q->where('estado_firma_contrato_firmado', $f['estado_firma_contrato_firmado']))
+            ->when($f['grupo']                                ?? null, fn($q) => $q->where('grupo', $f['grupo']))
+            ->when($f['gestor_id']                            ?? null, fn($q) => $q->where('gestor_backoffice_id', $f['gestor_id']))
+            ->when($f['estado_cliente_id']                    ?? null, fn($q) => $q->where('estado_cliente_id', $f['estado_cliente_id']))
+
+            ->when(($f['filtro_confirmacion'] ?? '') !== '', function ($q) use ($f) {
+                $f['filtro_confirmacion'] === 'pendiente'
+                    ? $q->whereNull('preinvitacion_confirmada')
+                    : $q->where('preinvitacion_confirmada', $f['filtro_confirmacion']);
+            })
+
+            ->when(($f['filtro_invitacion'] ?? '') !== '', function ($q) use ($f) {
+                $f['filtro_invitacion'] === 'pendiente'
+                    ? $q->whereNull('invitacion_confirmada')
+                    : $q->where('invitacion_confirmada', $f['filtro_invitacion']);
+            })
+
+            // Rango de fechas (campo: fecha_firma)
+            ->when($f['fecha_firma_desde'] ?? null, fn($q) => $q->whereDate('fecha_firma', '>=', $f['fecha_firma_desde']))
+            ->when($f['fecha_firma_hasta'] ?? null, fn($q) => $q->whereDate('fecha_firma', '<=', $f['fecha_firma_hasta']))
+            // Rango de fechas (campo: fecha_generacion_contrato)
+            ->when($f['fecha_generacion_desde'] ?? null, fn($q) => $q->whereDate('fecha_generacion_contrato', '>=', $f['fecha_generacion_desde']))
+            ->when($f['fecha_generacion_hasta'] ?? null, fn($q) => $q->whereDate('fecha_generacion_contrato', '<=', $f['fecha_generacion_hasta']));
+    }
     // ---------------------------------------------------------------
     // Fillable
     // ---------------------------------------------------------------
@@ -86,6 +173,10 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'entrega_fest_id',
         'proyecto_id',
         'user_id',
+        'created_by',
+        'updated_by',
+        'prospecto_historico_id',
+        'activo', // <--- NUEVO
         'dni',
         'nombres',
         'email',
@@ -110,6 +201,12 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'estado_backoffice',
         'estado_contrato_preeliminar_emitido',
         'estado_firma_contrato_firmado',
+        'gestor_legal_id',
+        'legal_fecha_asignacion',
+        'observacion_gestor_legal',
+        'validador_legal_id',
+        'fecha_firma_presencial',
+        'fecha_validacion_firma',
         'fecha_firma',
         'fecha_generacion_contrato',
         'reubicado_proyecto_id',
@@ -119,6 +216,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
     ];
 
     protected $casts = [
+        'activo' => 'boolean',
         'preinvitacion_confirmada' => 'boolean',
         'invitacion_confirmada' => 'boolean',
         'responsable_llamada_fecha_asignacion' => 'datetime',
@@ -126,6 +224,9 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'fecha_culminacion_eecc' => 'datetime',
         'fecha_validacion_eecc' => 'datetime',
         'fecha_firma' => 'datetime',
+        'legal_fecha_asignacion'  => 'datetime',
+        'fecha_firma_presencial'  => 'datetime',
+        'fecha_validacion_firma'  => 'datetime',
         'fecha_generacion_contrato' => 'datetime',
     ];
 
@@ -137,6 +238,26 @@ class ProspectoEntregaFest extends Model implements HasMedia
         return $this->belongsTo(EntregaFest::class);
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $prospecto): void {
+            $userId = Auth::id();
+
+            if ($userId) {
+                $prospecto->created_by = $prospecto->created_by ?: $userId;
+                $prospecto->updated_by = $userId;
+            }
+        });
+
+        static::updating(function (self $prospecto): void {
+            $userId = Auth::id();
+
+            if ($userId) {
+                $prospecto->updated_by = $userId;
+            }
+        });
+    }
+
     public function proyecto()
     {
         return $this->belongsTo(Proyecto::class);
@@ -145,6 +266,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function reubicadoProyecto()
     {
         return $this->belongsTo(Proyecto::class, 'reubicado_proyecto_id');
+    }
+
+    public function prospectoHistorico()
+    {
+        return $this->belongsTo(ProspectoHistorico::class, 'prospecto_historico_id');
     }
 
     public function copropietarios()
@@ -172,9 +298,29 @@ class ProspectoEntregaFest extends Model implements HasMedia
         return $this->belongsTo(User::class);
     }
 
+    public function creador()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function actualizador()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
     public function gestor()
     {
         return $this->belongsTo(User::class, 'gestor_backoffice_id');
+    }
+
+    public function gestorLegal()
+    {
+        return $this->belongsTo(User::class, 'gestor_legal_id');
+    }
+
+    public function validadorLegal()
+    {
+        return $this->belongsTo(User::class, 'validador_legal_id');
     }
 
     public function responsableLlamada()
@@ -204,5 +350,12 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function getNombreCompletoAttribute(): string
     {
         return $this->nombres;
+    }
+    /**
+     * Scope para obtener únicamente los prospectos activos en el evento actual.
+     */
+    public function scopeActivos($query)
+    {
+        return $query->where('activo', true);
     }
 }
