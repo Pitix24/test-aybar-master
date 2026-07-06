@@ -182,7 +182,9 @@
 
             @if ($soporte->estadoSoporte?->nombre === 'EN_PROGRESO' && $soporte->gestor_id === Auth::id())
             <button type="button" wire:click="marcarResuelto" class="g_boton warning" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="marcarResuelto">
+                <span
+                    wire:loading.remove
+                    wire:target="marcarResuelto">
                     <i class="fa-solid fa-check"></i> Marcar Resuelto
                 </span>
                 <span wire:loading wire:target="marcarResuelto">
@@ -193,7 +195,9 @@
 
             @if ($soporte->estadoSoporte?->nombre === 'EN_PROGRESO' && $soporte->gestor_id === Auth::id())
             <button type="button" wire:click="marcarNoProcede" class="g_boton danger" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="marcarNoProcede">
+                <span
+                    wire:confirm="¿Estás seguro de marcar este ticket como NO PROCEDE?"
+                    wire:target="marcarNoProcede">
                     <i class="fa-solid fa-check"></i> Marcar No Procedente
                 </span>
                 <span wire:loading wire:target="marcarNoProcede">
