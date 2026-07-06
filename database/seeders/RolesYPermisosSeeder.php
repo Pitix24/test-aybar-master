@@ -260,6 +260,7 @@ class RolesYPermisosSeeder extends Seeder
                 'solicitud-evidencia-pago.gestor', //ok
                 'solicitud-evidencia-pago.ver', //ok
                 'solicitud-evidencia-pago.editar', //ok
+                'solicitud-evidencia-pago.editar-evidencia', // <--- NUEVO PERMISO
                 'solicitud-evidencia-pago.exportar-filtro', //ok
                 'solicitud-evidencia-pago.exportar-todo', //ok
                 'solicitud-evidencia-pago.validar', //ok

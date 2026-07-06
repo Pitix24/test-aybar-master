@@ -106,21 +106,21 @@
                 </div>
 
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
-                    <div class="formulario">  
+                    <div class="formulario">
                          <div class="g_margin_bottom_10">
                             @can('cliente.consultar')
                                 <a href="{{ route('erp.cliente.vista.consultar', $solicitud->userCliente->perfilCliente->dni) }}" class="g_boton primary">
                                     <i class="fa-solid fa-border-all"></i> Portal cliente
                                 </a>
                             @endcan
-    
+
                             @can('cliente.ver')
                                 <a href="{{ route('erp.cliente.vista.ver', $solicitud->userCliente->id) }}" class="g_boton info">
                                     <i class="fa-solid fa-circle-user"></i> Perfil
                                 </a>
                             @endcan
-                        </div>               
-                        <div class="g_fila">                           
+                        </div>
+                        <div class="g_fila">
                             <div class="g_margin_bottom_10 g_columna_6">
                                 <label>Nombre del Cliente</label>
                                 <input type="text" disabled value="{{ $solicitud->userCliente->name ?? '—' }}">
@@ -251,7 +251,7 @@
                                     </span>
                                 </td>
                                 <td class="g_celda_centro">
-                                    
+
                                 </td>
                             </tr>
                         </tbody>
@@ -300,7 +300,16 @@
                                         @endif
                                     </td>
                                     <td class="g_celda_centro">
-                                        <div class="g_comparador_acciones">
+                                        <div class="g_comparador_acciones" style="display: flex; gap: 5px; justify-content: center;">
+                                            @can('solicitud-evidencia-pago.editar-evidencia')
+                                                @if(in_array(auth()->id(), [1, 18, 21]))
+                                                    <button type="button" wire:click="editarEvidencia({{ $evidencia->id }})"
+                                                        class="g_accion editar"
+                                                        title="Editar datos de evidencia OCR">
+                                                        <i class="fa-solid fa-pen"></i>
+                                                    </button>
+                                                @endif
+                                            @endcan
                                             <button wire:click="seleccionarEvidencia({{ $evidencia->id }})"
                                                 class="g_accion ver {{ $evidenciaSeleccionadaId == $evidencia->id ? 'active' : '' }}"
                                                 title="Seleccionar para comparar">
@@ -350,7 +359,7 @@
                             </span>
 
                             <span class="g_badge {{ $solicitud->slin_evidencia ? 'primary' : 'light' }}">
-                                <i class="fa-solid {{ $solicitud->slin_evidencia ? 'fa-check-double' : 'fa-hourglass-half' }}"></i> 
+                                <i class="fa-solid {{ $solicitud->slin_evidencia ? 'fa-check-double' : 'fa-hourglass-half' }}"></i>
                                 Validado: {{ $solicitud->slin_evidencia ? 'SÍ' : 'NO' }}
                             </span>
                         </div>
@@ -427,4 +436,57 @@
         </div>
         @livewire('erp.backoffice.solicitud-evidencia-pago.solicitud-evidencia-chat', ['solicitud' => $solicitud])
     </div>
+    @if($showModalEditEvidencia)
+    <div class="g_modal_wrapper active" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1050; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px);">
+        <div class="g_modal_contenedor g_panel" style="width: 100%; max-width: 500px; padding: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+
+            <div class="g_modal_cabecera" style="background-color: #f8f9fa; padding: 15px 20px; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.15rem; color: #2c3e50; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-file-signature" style="color: #3b82f6;"></i>
+                    Corregir Datos de Evidencia
+                </h3>
+                <button type="button" wire:click="cancelarEdicionEvidencia" style="background: transparent; border: none; font-size: 1.2rem; color: #95a5a6; cursor: pointer; transition: color 0.2s ease;" onmouseover="this.style.color='#e74c3c'" onmouseout="this.style.color='#95a5a6'" title="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="g_modal_cuerpo" style="padding: 20px;">
+                <div class="g_alerta info g_margin_bottom_10" style="padding: 10px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-circle-info"></i> Modifique los datos extraídos por el OCR si no son correctos.
+                </div>
+
+                <form wire:submit="guardarEvidencia" class="formulario">
+                    <div class="g_fila">
+                        <div class="g_margin_bottom_10 g_columna_12">
+                            <label>Fecha de Operación</label>
+                            <input type="date" wire:model="evidenciaEditFecha" class="@error('evidenciaEditFecha') input-error @enderror">
+                            @error('evidenciaEditFecha') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_12">
+                            <label>N° Operación</label>
+                            <input type="text" wire:model="evidenciaEditNumeroOperacion" class="@error('evidenciaEditNumeroOperacion') input-error @enderror" placeholder="Ingrese el número de operación">
+                            @error('evidenciaEditNumeroOperacion') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="g_margin_bottom_10 g_columna_12">
+                            <label>Monto (S/)</label>
+                            <input type="number" step="0.01" wire:model="evidenciaEditMonto" class="@error('evidenciaEditMonto') input-error @enderror" placeholder="0.00">
+                            @error('evidenciaEditMonto') <p class="mensaje_error">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div class="formulario_botones" style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #eee; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" wire:click="cancelarEdicionEvidencia" class="g_boton light">
+                            <i class="fa-solid fa-ban"></i> Cancelar
+                        </button>
+                        <button type="submit" class="g_boton guardar">
+                            <i class="fa-solid fa-save"></i> Guardar Corrección
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>

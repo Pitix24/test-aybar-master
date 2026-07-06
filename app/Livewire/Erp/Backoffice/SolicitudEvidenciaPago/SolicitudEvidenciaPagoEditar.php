@@ -32,6 +32,11 @@ class SolicitudEvidenciaPagoEditar extends Component
     public $gestor_id;
     public $estado_id;
     public $observacion;
+    public $evidenciaEditId = null;
+    public $evidenciaEditFecha;
+    public $evidenciaEditNumeroOperacion;
+    public $evidenciaEditMonto;
+    public $showModalEditEvidencia = false;
 
     // Catálogos
     public $unidades_negocios = [];
@@ -316,6 +321,75 @@ class SolicitudEvidenciaPagoEditar extends Component
             ]);
             $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => 'No se pudo realizar el cierre manual.']);
         }
+    }
+
+    public function editarEvidencia($evidenciaId)
+    {
+        $this->authorize('solicitud-evidencia-pago.editar-evidencia');
+
+        // --- FILTRO DE SEGURIDAD TEMPORAL POR ID ---
+        if (!in_array(auth()->id(), [1, 18, 21])) {
+            abort(403, 'Acción restringida temporalmente.');
+        }
+
+        $evidencia = $this->solicitud->evidencias->firstWhere('id', $evidenciaId);
+
+        if ($evidencia) {
+            $this->evidenciaEditId = $evidencia->id;
+            $this->evidenciaEditFecha = $evidencia->fecha;
+            $this->evidenciaEditNumeroOperacion = $evidencia->numero_operacion;
+            $this->evidenciaEditMonto = $evidencia->monto;
+            $this->showModalEditEvidencia = true;
+        }
+    }
+
+    public function guardarEvidencia()
+    {
+        $this->authorize('solicitud-evidencia-pago.editar-evidencia');
+
+        // --- FILTRO DE SEGURIDAD TEMPORAL POR ID ---
+        if (!in_array(auth()->id(), [1, 18, 21])) {
+            $this->dispatch('alertaLivewire', [
+                'type' => 'error',
+                'title' => 'No autorizado',
+                'text' => 'Su cuenta no está habilitada para esta fase de pruebas.'
+            ]);
+            return;
+        }
+
+        $this->validate([
+            'evidenciaEditFecha' => 'nullable|date',
+            'evidenciaEditNumeroOperacion' => 'nullable|string|max:255',
+            'evidenciaEditMonto' => 'required|numeric|min:0',
+        ]);
+
+        $evidencia = \App\Models\EvidenciaPago::find($this->evidenciaEditId);
+
+        if ($evidencia) {
+            $evidencia->update([
+                'fecha' => $this->evidenciaEditFecha,
+                'numero_operacion' => $this->evidenciaEditNumeroOperacion,
+                'monto' => $this->evidenciaEditMonto,
+            ]);
+
+            // Refrescar relaciones y cerrar modal
+            $this->solicitud->refresh();
+            $this->showModalEditEvidencia = false;
+            $this->evidenciaEditId = null;
+
+            // Si la evidencia modificada es la que está seleccionada actualmente, refrescarla
+            if ($this->evidenciaSeleccionadaId == $evidencia->id) {
+                $this->seleccionarEvidencia($evidencia->id);
+            }
+
+            $this->dispatch('alertaLivewire', ['title' => 'Evidencia Actualizada', 'text' => 'Los datos de la evidencia fueron corregidos correctamente.']);
+        }
+    }
+
+    public function cancelarEdicionEvidencia()
+    {
+        $this->showModalEditEvidencia = false;
+        $this->evidenciaEditId = null;
     }
 
     public function render()
