@@ -30,6 +30,23 @@ class SoporteCrear extends Component
     public string $descripcion = '';
     public array $archivos = [];
 
+    public function mount(): void
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user) {
+            // Obtenemos la primera área asociada al usuario.
+            // Eloquent por defecto respetará el orden de asignación en la tabla pivote,
+            // por lo que first() traerá la más antigua/primera en registrarse.
+            $primeraArea = $user->areas()->first();
+
+            if ($primeraArea) {
+                $this->area_id = $primeraArea->id;
+            }
+        }
+    }
+
     public function rules(): array
     {
         return [
