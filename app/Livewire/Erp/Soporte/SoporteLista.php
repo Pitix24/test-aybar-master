@@ -21,29 +21,47 @@ use Livewire\WithPagination;
 class SoporteLista extends Component
 {
     use WithPagination;
+
     #[Url(as: 'q')]
     public string $buscar = '';
+
     #[Url]
     public ?int $tipo_id = null;
+
     #[Url]
     public $estado_id = null;
+
     #[Url]
     public ?int $prioridad_id = null;
+
     #[Url]
     public ?int $area_id = null;
+
     #[Url]
     public string $gestor_id = '';
+
     #[Url]
     public string $desde = '';
+
     #[Url]
     public string $hasta = '';
+
     #[Url]
     public int $perPage = 20;
+
     public $gestores = [];
     public array $stats = [];
+
     public function mount(): void
     {
+        // 1. Obtener solo los IDs de los gestores que tienen algún ticket asignado
+        $gestoresIdsEnUso = Soporte::whereNotNull('gestor_id')
+            ->distinct()
+            ->pluck('gestor_id');
+
+        // 2. Filtrar los usuarios usando esos IDs
         $this->gestores = User::query()
+            ->whereIn('id', $gestoresIdsEnUso)
             ->where('activo', true)
             ->orderBy('name')
             ->get(['id', 'name']);
@@ -196,10 +214,19 @@ class SoporteLista extends Component
             ->latest()
             ->paginate($this->perPage);
 
-        $tipos = TipoSoporte::where('activo', true)->get(['id', 'nombre']);
-        $estados = EstadoSoporte::where('activo', true)->get(['id', 'nombre']);
-        $prioridades = PrioridadSoporte::where('activo', true)->get(['id', 'nombre']);
-        $areas = Area::where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
+        // --- OPTIMIZACIÓN DE FILTROS ---
+
+        // Extraemos los IDs en uso desde la tabla soportes
+        $tiposIds       = Soporte::whereNotNull('tipo_soporte_id')->distinct()->pluck('tipo_soporte_id');
+        $estadosIds     = Soporte::whereNotNull('estado_soporte_id')->distinct()->pluck('estado_soporte_id');
+        $prioridadesIds = Soporte::whereNotNull('prioridad_soporte_id')->distinct()->pluck('prioridad_soporte_id');
+        $areasIds       = Soporte::whereNotNull('area_id')->distinct()->pluck('area_id');
+
+        // Filtramos los catálogos para que solo muestren los que están en uso
+        $tipos       = TipoSoporte::whereIn('id', $tiposIds)->where('activo', true)->get(['id', 'nombre']);
+        $estados     = EstadoSoporte::whereIn('id', $estadosIds)->where('activo', true)->get(['id', 'nombre']);
+        $prioridades = PrioridadSoporte::whereIn('id', $prioridadesIds)->where('activo', true)->get(['id', 'nombre']);
+        $areas       = Area::whereIn('id', $areasIds)->where('activo', true)->orderBy('nombre')->get(['id', 'nombre']);
 
         return view('livewire.erp.soporte.soporte-lista', compact('soportes', 'tipos', 'estados', 'prioridades', 'areas'));
     }
