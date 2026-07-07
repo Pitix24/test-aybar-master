@@ -161,17 +161,22 @@
 
         <div class="formulario_botones">
             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="guardar">
+                <span
+                    wire:loading.remove
+                    wire:target="guardar">
                     <i class="fa-solid fa-save"></i> Guardar
                 </span>
-                <span wire:loading wire:target="guardar">
+                <span
+                    wire:loading wire:target="guardar">
                     <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
                 </span>
             </button>
 
             @if ($soporte->estadoSoporte?->nombre === 'ABIERTO')
             <button type="button" wire:click="asignarGestor" class="g_boton success" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="asignarGestor">
+                <span
+                    wire:loading.remove
+                    wire:target="asignarGestor">
                     <i class="fa-solid fa-user-check"></i> Asignarse
                 </span>
                 <span wire:loading wire:target="asignarGestor">
@@ -182,7 +187,9 @@
 
             @if ($soporte->estadoSoporte?->nombre === 'EN_PROGRESO' && $soporte->gestor_id === Auth::id())
             <button type="button" wire:click="marcarResuelto" class="g_boton warning" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="marcarResuelto">
+                <span
+                    wire:loading.remove
+                    wire:target="marcarResuelto">
                     <i class="fa-solid fa-check"></i> Marcar Resuelto
                 </span>
                 <span wire:loading wire:target="marcarResuelto">
@@ -193,7 +200,10 @@
 
             @if ($soporte->estadoSoporte?->nombre === 'EN_PROGRESO' && $soporte->gestor_id === Auth::id())
             <button type="button" wire:click="marcarNoProcede" class="g_boton danger" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="marcarNoProcede">
+                <span
+                    wire:loading.remove
+                    wire:confirm="¿Estás seguro de marcar este ticket como NO PROCEDE?"
+                    wire:target="marcarNoProcede">
                     <i class="fa-solid fa-check"></i> Marcar No Procedente
                 </span>
                 <span wire:loading wire:target="marcarNoProcede">

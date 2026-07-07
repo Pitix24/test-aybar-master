@@ -103,50 +103,82 @@ class SoporteEditar extends Component
         $this->soporte->observaciones = $this->observaciones;
         $this->soporte->save();
 
-        session()->flash('success', 'Ticket actualizado correctamente.');
-        $this->redirectRoute('erp.soporte.vista.todo', navigate: true);
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => 'Actualizado',
+            'text' => 'Ticket actualizado correctamente.',
+        ]);
     }
 
     public function asignarGestor(): void
     {
         $estadoEnProgreso = EstadoSoporte::where('nombre', 'EN_PROGRESO')->first();
+
         $this->soporte->gestor_id = Auth::id();
         $this->soporte->assigned_at = now();
         $this->soporte->estado_soporte_id = $estadoEnProgreso?->id;
         $this->soporte->save();
 
-        session()->flash('success', 'Te han asignado este ticket.');
-        $this->redirectRoute('erp.soporte.vista.todo', navigate: true);
+        // Actualizamos los campos públicos para que la vista se refresque inmediatamente
+        $this->gestor_id = Auth::id();
+        $this->estado_soporte_id = $estadoEnProgreso?->id;
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => 'Asignado',
+            'text' => 'Te han asignado este ticket.',
+        ]);
     }
 
     public function marcarResuelto(): void
     {
         $estadoResuelto = EstadoSoporte::where('nombre', 'RESUELTO')->first();
+
         $this->soporte->estado_soporte_id = $estadoResuelto?->id;
         $this->soporte->resuelto_at = now();
         $this->soporte->save();
 
-        session()->flash('success', 'Ticket marcado como resuelto.');
-        $this->redirectRoute('erp.soporte.vista.todo', navigate: true);
+        // Actualizamos el selector de estado
+        $this->estado_soporte_id = $estadoResuelto?->id;
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => 'Resuelto',
+            'text' => 'Ticket marcado como resuelto.',
+        ]);
     }
 
     public function cerrar(): void
     {
         $estadoCerrado = EstadoSoporte::where('nombre', 'CERRADO')->first();
+
         $this->soporte->estado_soporte_id = $estadoCerrado?->id;
         $this->soporte->save();
 
-        session()->flash('success', 'Ticket cerrado.');
-        $this->redirectRoute('erp.soporte.vista.todo', navigate: true);
+        // Actualizamos el selector de estado
+        $this->estado_soporte_id = $estadoCerrado?->id;
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => 'Cerrado',
+            'text' => 'Ticket cerrado.',
+        ]);
     }
 
     public function marcarNoProcede(): void
     {
         $estadoNoProcede = EstadoSoporte::where('nombre', 'NO PROCEDE')->first();
+
         $this->soporte->estado_soporte_id = $estadoNoProcede?->id;
         $this->soporte->save();
 
-        session()->flash('success', 'Ticket marcado como no procedente.');
-        $this->redirectRoute('erp.soporte.vista.todo', navigate: true);
+        // Actualizamos el selector de estado
+        $this->estado_soporte_id = $estadoNoProcede?->id;
+
+        $this->dispatch('alertaLivewire', [
+            'type' => 'success',
+            'title' => 'No Procede',
+            'text' => 'Ticket marcado como no procedente.',
+        ]);
     }
 }
