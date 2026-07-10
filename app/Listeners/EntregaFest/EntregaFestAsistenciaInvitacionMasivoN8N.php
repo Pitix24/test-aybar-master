@@ -69,7 +69,8 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
                     'DEVOLUCIONES EFECTUADAS',
                     'DEVOLUCIONES EN PROCESO',
                     'PLANTON',
-                    'RESOLUCION'
+                    'RESOLUCION',
+                    'BLOQUEADO'
                 ];
                 // Retorna verdadero solo si el estado NO está en la lista de bloqueados
                 return !in_array($nombreEstado, $bloqueados);
