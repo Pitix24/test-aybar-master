@@ -26,6 +26,7 @@ class EntregaFestProspecto extends Component
         'buscar',
         'proyecto_id',
         'filtro_activo',
+        'filtro_observacion_legal',
         'con_historico',
         'filtro_lote_entregado',
         'filtroGestorBackoffice',
@@ -62,6 +63,9 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $filtro_activo = '1';
+
+    #[Url(keep: true)]
+    public $filtro_observacion_legal = '';
 
     #[Url(keep: true)]
     public $con_historico = '';
@@ -294,6 +298,7 @@ class EntregaFestProspecto extends Component
             'buscar'                               => $this->buscar,
             'proyecto_id'                          => $this->proyecto_id,
             'filtro_activo'                        => $this->filtro_activo,
+            'filtro_observacion_legal'             => $this->filtro_observacion_legal,
             'con_historico'                        => $this->con_historico,
             'filtro_lote_entregado'                => $this->filtro_lote_entregado,
             'filtro_gestor_backoffice'             => $this->filtroGestorBackoffice,

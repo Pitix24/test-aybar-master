@@ -1,4 +1,13 @@
 <form wire:submit.prevent="updateProspecto" class="formulario">
+    <div class="g_margin_bottom_20" style="padding: 10px; border: 1px dashed #f59e0b; border-radius: 5px;">
+        <label class="flex items-center cursor-pointer" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" wire:model="observacion_legal" class="form-checkbox switch">
+            <span class="font-semibold" style="color: #b45309; font-weight: bold;">
+                Marcar con Observación (Restricción de Titularidad)
+            </span>
+        </label>
+    </div>
+
     <div class="g_fila">
         <div class="g_margin_bottom_10 g_columna_6">
             <label>Nombres Completos <span class="obligatorio"><i class="fa-solid fa-asterisk"></i></span></label>

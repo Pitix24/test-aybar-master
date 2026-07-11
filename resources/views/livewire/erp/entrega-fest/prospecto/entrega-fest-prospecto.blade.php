@@ -247,6 +247,15 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Observación Legal</label>
+                    <select wire:model.live="filtro_observacion_legal">
+                        <option value="">Todos</option>
+                        <option value="1">Sí (Observados)</option>
+                        <option value="0">No (Saneados)</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Estado del Registro</label>
                     <select wire:model.live="filtro_activo">
                         <option value="1">Solo Activos (Evento actual)</option>
@@ -370,6 +379,7 @@
                         <th>Proyecto Reubicado</th>
                         <th>Mz-Lt</th>
                         <th>Mz-Lt Reubicado</th>
+                        <th class="g_celda_centro">Obs. Legal</th>
                         <th class="g_celda_centro">Pre-invitación</th>
                         <th class="g_celda_centro">Invitación</th>
                         <th class="g_celda_centro">Gestor BO</th>
@@ -490,6 +500,13 @@
                         <td>
                             @if ($p->reubicado_manzana || $p->reubicado_lote)
                             {{ $p->reubicado_manzana }}-{{ $p->reubicado_lote }}
+                            @endif
+                        </td>
+                        <td class="g_celda_centro">
+                            @if ($p->observacion_legal)
+                                <span class="g_badge warning" title="Restricción de Titularidad"><i class="fa-solid fa-scale-unbalanced"></i> SÍ</span>
+                            @else
+                                <span class="g_badge success">NO</span>
                             @endif
                         </td>
                         <td class="g_celda_centro">

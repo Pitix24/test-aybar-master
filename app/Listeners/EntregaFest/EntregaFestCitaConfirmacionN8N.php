@@ -21,6 +21,12 @@ class EntregaFestCitaConfirmacionN8N
             return;
         }
 
+        // 🛑 FILTRO: Si el prospecto tiene observación legal, cancelamos el envío
+        if ($prospecto->observacion_legal) {
+            Log::channel('entrega-fest')->warning("[CITA-CONFIRMACION] Envío abortado: Prospecto #{$prospecto->id} tiene restricción/observación legal.");
+            return;
+        }
+
         // 1. Verificamos si ya se enviaron comunicaciones para esta etapa
         $etapa = 'cita-confirmacion';
         $plantilla = $evento->plantillas()->where('tipo', $etapa)->first();

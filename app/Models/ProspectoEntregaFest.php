@@ -111,6 +111,10 @@ class ProspectoEntregaFest extends Model implements HasMedia
                 $q->where('activo', $f['filtro_activo'] === '1');
             })
 
+            ->when(isset($f['filtro_observacion_legal']) && $f['filtro_observacion_legal'] !== '', function ($q) use ($f) {
+                $q->where('observacion_legal', $f['filtro_observacion_legal'] === '1');
+            })
+
             ->when($f['con_historico'] ?? null, function($q) {
                 $q->whereNotNull('prospecto_historico_id');
             })
@@ -176,7 +180,8 @@ class ProspectoEntregaFest extends Model implements HasMedia
         'created_by',
         'updated_by',
         'prospecto_historico_id',
-        'activo', // <--- NUEVO
+        'activo',
+        'observacion_legal',
         'dni',
         'nombres',
         'email',
@@ -217,6 +222,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
 
     protected $casts = [
         'activo' => 'boolean',
+        'observacion_legal' => 'boolean',
         'preinvitacion_confirmada' => 'boolean',
         'invitacion_confirmada' => 'boolean',
         'responsable_llamada_fecha_asignacion' => 'datetime',
@@ -254,6 +260,15 @@ class ProspectoEntregaFest extends Model implements HasMedia
 
             if ($userId) {
                 $prospecto->updated_by = $userId;
+            }
+        });
+
+        static::updated(function (self $prospecto): void {
+            // Si cambió el campo 'observacion_legal' y tiene un histórico vinculado
+            if ($prospecto->isDirty('observacion_legal') && $prospecto->prospecto_historico_id) {
+                $prospecto->prospectoHistorico()->update([
+                    'observacion_legal' => $prospecto->observacion_legal
+                ]);
             }
         });
     }
@@ -357,5 +372,13 @@ class ProspectoEntregaFest extends Model implements HasMedia
     public function scopeActivos($query)
     {
         return $query->where('activo', true);
+    }
+    /**
+     * Scope para excluir a los prospectos con restricción de titularidad.
+     * Usar esto en los Jobs o controladores que envían WhatsApp/Email.
+     */
+    public function scopePermitidoParaComunicar($query)
+    {
+        return $query->where('observacion_legal', false)->where('activo', true);
     }
 }

@@ -31,6 +31,7 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
 
         $etapa = $plantilla->tipo ?? 'asistencia-invitacion';
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $evento->id)
+            ->where('observacion_legal', false) // 🛑 <-- NUEVO FILTRO AÑADIDO AQUÍ
             ->where(function ($query) use ($etapa) {
                 // El titular necesita algo y NO ha respondido
                 $query->where(function ($q) use ($etapa) {

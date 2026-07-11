@@ -44,6 +44,19 @@
             </div>
         </div>
     @endif
+    @if($observacion_legal)
+        <div class="g_margin_bottom_20" style="background-color: #fffbeb; border: 1px solid #fcd34d; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 4px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-scale-unbalanced" style="color: #f59e0b; font-size: 1.2rem;"></i>
+                <div>
+                    <h4 style="margin: 0; color: #b45309; font-size: 0.95rem; font-weight: bold;">Observación Legal Activa</h4>
+                    <p style="margin: 5px 0 0 0; color: #92400e; font-size: 0.85rem;">
+                        Este predio no posee el 100% de la titularidad. <strong>No se enviarán comunicaciones masivas automáticas</strong> (invitaciones, recordatorios) hasta que el área Legal lo resuelva.
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
     <div class="g_fila">
         <div class="g_columna_4">
             <div class="g_panel g_gap_pagina">
