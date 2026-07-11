@@ -73,6 +73,7 @@ class EntregaFestProspectoEditar extends Component
     public $cop_editando_id = null;
     // Propiedad para bloquear la edición de historiales
     public $es_solo_lectura = false;
+    public $observacion_legal = false;
 
     // Campos del formulario copropietario
     public $cop_dni = '';
@@ -149,6 +150,7 @@ class EntregaFestProspectoEditar extends Component
         $this->prospecto = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)->findOrFail($prospectoId);
         // 🆕 Definimos si el formulario debe bloquearse
         $this->es_solo_lectura = !$this->prospecto->activo;
+        $this->observacion_legal = $this->prospecto->observacion_legal;
 
         $this->proyecto_id = $this->prospecto->proyecto_id;
         $this->dni = $this->prospecto->dni;
@@ -521,6 +523,13 @@ class EntregaFestProspectoEditar extends Component
             'manzana' => $this->manzana,
             'estado_cliente_id' => $this->estado_cliente_id,
         ], 'PROSPECTO EDITAR - BASICO');
+    }
+
+    public function updatedObservacionLegal($value)
+    {
+        $this->handleUpdate([
+            'observacion_legal' => $value
+        ], 'TOGGLE OBSERVACION LEGAL');
     }
 
     public function updateReubicacion()
