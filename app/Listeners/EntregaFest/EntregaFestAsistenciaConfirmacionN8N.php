@@ -28,6 +28,12 @@ class EntregaFestAsistenciaConfirmacionN8N
             return;
         }
 
+        // 🛑 FILTRO: Si el invitado tiene observación legal, cancelamos el envío
+        if ($invitado->observacion_legal) {
+            Log::channel('entrega-fest')->warning("[ASISTENCIA-CONFIRMACION] Envío abortado: Invitado #{$invitado->id} tiene restricción/observación legal.");
+            return;
+        }
+
         // Definimos la persona (Titular o Copropietario)
         $persona = $invitado->prospecto ?? $invitado->copropietario;
 

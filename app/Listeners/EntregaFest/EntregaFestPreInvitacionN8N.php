@@ -31,6 +31,7 @@ class EntregaFestPreInvitacionN8N
 
         $etapa = $plantilla->tipo ?? 'pre-invitacion';
         $contactos = ProspectoEntregaFest::where('entrega_fest_id', $evento->id)
+            ->where('observacion_legal', false) // 🛑 <-- NUEVO FILTRO AÑADIDO AQUÍ
             ->whereHas('estadoCliente', function ($query) {
                 $query->whereNotIn('nombre', ['PLANTON', 'DESISTIMIENTO', 'DEVOLUCION DE APORTES', 'CARTA NOTARIAL', 'RESOLUCION DE CONTRATO']);
             })
