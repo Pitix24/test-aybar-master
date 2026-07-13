@@ -414,6 +414,7 @@ class EntregaFestProspecto extends Component
         $this->stats = [
             'total'         => (clone $base)->count(),
             'preinvitacion' => (clone $base)->where('preinvitacion_confirmada', 1)->count(),
+            'invitacion'    => (clone $base)->where('invitacion_confirmada', 1)->count(),
             'backoffice'    => (clone $base)->where('estado_backoffice', 'CONFORME')->count(),
             'contrato'      => (clone $base)->where('estado_contrato_preeliminar_emitido', 'CONFORME')->count(),
             'firmados'      => (clone $base)->whereNotNull('fecha_firma')->count(),

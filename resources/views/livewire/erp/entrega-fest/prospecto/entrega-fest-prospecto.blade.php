@@ -60,6 +60,16 @@
                 </div>
             </div>
 
+            <div class="g_panel" title="Clientes que aceptaron la invitación definitiva">
+                <div class="g_panel_dashboard">
+                    <div class="g_panel_dashboard_1">
+                        <h2>Invit. SI</h2>
+                        <p class="g_negrita">{{ number_format($stats['invitacion']) }}</p>
+                    </div>
+                    <i class="fa-solid fa-envelope-open-text" style="color: #06B6D4;"></i>
+                </div>
+            </div>
+
             <div class="g_panel" title="Lotes con estado BO CONFORME (Supervisor)">
                 <div class="g_panel_dashboard">
                     <div class="g_panel_dashboard_1">
