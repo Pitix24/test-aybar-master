@@ -25,6 +25,7 @@ class EntregaFestProspecto extends Component
     protected array $propiedadesFiltro = [
         'buscar',
         'proyecto_id',
+        'filtro_manzana',
         'filtro_activo',
         'filtro_observacion_legal',
         'con_historico',
@@ -60,6 +61,9 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $proyecto_id = '';
+
+    #[Url(keep: true)]
+    public $filtro_manzana = '';
 
     #[Url(keep: true)]
     public $filtro_activo = '1';
@@ -129,7 +133,7 @@ class EntregaFestProspecto extends Component
     public $estados_cliente = [];
     public $gestoresLegales = [];
     public $gestoresBackofficeList = []; // <-- NUEVO CATÁLOGO
-
+    public $accionObservacionLegal = '';
     // ============================================================
     //                          LIFECYCLE
     // ============================================================
@@ -161,6 +165,12 @@ class EntregaFestProspecto extends Component
         $this->resetPage();
         $this->validarRangoFechas();
         $this->cargarStats();
+    }
+
+    public function updatedProyectoId($value)
+    {
+        $this->filtro_manzana = ''; // Limpiamos la manzana elegida al cambiar de proyecto
+        $this->resetPage();         // Regresamos a la primera página de la tabla
     }
 
     // ============================================================
@@ -212,16 +222,7 @@ class EntregaFestProspecto extends Component
 
     public function asignarGestorMasivo()
     {
-        // 1. Validamos
-        if (empty($this->gestorIdSeleccionado)) {
-            $this->dispatch('alertaLivewire', [
-                'type'  => 'error',
-                'title' => '¡Error en la Asignación!',
-                'text'  => 'Debe seleccionar un gestor destino.',
-            ]);
-            return;
-        }
-
+        // 1. Validamos que existan prospectos seleccionados
         if (empty($this->selectedProspectos)) {
             $this->dispatch('alertaLivewire', [
                 'type'  => 'error',
@@ -231,15 +232,38 @@ class EntregaFestProspecto extends Component
             return;
         }
 
-        $columnaDestino = $this->tipoAsignacionMasiva === 'legal' ? 'gestor_legal_id' : 'gestor_backoffice_id';
-        // Para actualizar automáticamente también la fecha en la que se le asignó el gestor
-        $columnaFecha   = $this->tipoAsignacionMasiva === 'legal' ? 'legal_fecha_asignacion' : 'gestor_fecha_asignacion';
-        $ahora = now();
+        // 2. Validamos según el TIPO de acción masiva elegida
+        if ($this->tipoAsignacionMasiva === 'observacion_legal') {
+
+            // Si es Observación Legal, solo exigimos que haya elegido Activar o Desactivar
+            if ($this->accionObservacionLegal === '') {
+                $this->dispatch('alertaLivewire', [
+                    'type'  => 'error',
+                    'title' => '¡Falta selección!',
+                    'text'  => 'Seleccione si desea Activar o Desactivar la observación legal.',
+                ]);
+                return;
+            }
+
+        } else {
+
+            // Si NO es observación legal (o sea, es Backoffice o Legal), entonces SÍ exigimos un Gestor
+            if (empty($this->gestorIdSeleccionado)) {
+                $this->dispatch('alertaLivewire', [
+                    'type'  => 'error',
+                    'title' => '¡Error en la Asignación!',
+                    'text'  => 'Debe seleccionar un gestor destino.',
+                ]);
+                return;
+            }
+
+        }
 
         \Illuminate\Support\Facades\DB::beginTransaction();
         try {
             // Obtenemos los prospectos a actualizar
             $prospectos = ProspectoEntregaFest::whereIn('id', $this->selectedProspectos)->get();
+            $mensajeExito = '';
 
             foreach ($prospectos as $prospecto) {
                 // PROTECCIÓN: No editamos masivamente registros históricos/inactivos
@@ -247,13 +271,31 @@ class EntregaFestProspecto extends Component
                     continue;
                 }
 
-                $dataToUpdate = [
-                    $columnaDestino => $this->gestorIdSeleccionado
-                ];
+                $dataToUpdate = []; // Aquí guardaremos dinámicamente lo que vamos a cambiar
 
-                // Si el gestor es distinto al que ya tenía, actualizamos la fecha de asignación
-                if ($prospecto->{$columnaDestino} != $this->gestorIdSeleccionado) {
-                    $dataToUpdate[$columnaFecha] = $ahora;
+                // LÓGICA A: OBSERVACIÓN LEGAL
+                if ($this->tipoAsignacionMasiva === 'observacion_legal') {
+                    $valorBooleano = $this->accionObservacionLegal === '1';
+                    $dataToUpdate['observacion_legal'] = $valorBooleano;
+
+                    $mensajeExito = $valorBooleano
+                        ? 'Observación Legal ACTIVADA para los seleccionados.'
+                        : 'Observación Legal DESACTIVADA para los seleccionados.';
+                }
+                // LÓGICA B: ASIGNAR GESTOR
+                else {
+                    $columnaDestino = $this->tipoAsignacionMasiva === 'legal' ? 'gestor_legal_id' : 'gestor_backoffice_id';
+                    $columnaFecha   = $this->tipoAsignacionMasiva === 'legal' ? 'legal_fecha_asignacion' : 'gestor_fecha_asignacion';
+                    $ahora = now();
+
+                    $dataToUpdate[$columnaDestino] = $this->gestorIdSeleccionado;
+
+                    // Si el gestor es distinto al que ya tenía, actualizamos la fecha de asignación
+                    if ($prospecto->{$columnaDestino} != $this->gestorIdSeleccionado) {
+                        $dataToUpdate[$columnaFecha] = $ahora;
+                    }
+
+                    $mensajeExito = 'Los gestores han sido asignados correctamente y se sincronizó el historial.';
                 }
 
                 // A) Actualizamos el ticket en este evento
@@ -267,13 +309,16 @@ class EntregaFestProspecto extends Component
 
             \Illuminate\Support\Facades\DB::commit();
 
-            $this->reset(['selectedProspectos', 'selectAll', 'gestorIdSeleccionado', 'modoAsignacionMasiva', 'tipoAsignacionMasiva']);
-            $this->cargarStats();
+            // Reseteamos las variables de la interfaz
+            $this->reset(['selectedProspectos', 'selectAll', 'gestorIdSeleccionado', 'modoAsignacionMasiva', 'tipoAsignacionMasiva', 'accionObservacionLegal']);
+
+            // Actualizamos contadores si existe la función
+            // $this->cargarStats();
 
             $this->dispatch('alertaLivewire', [
                 'type'  => 'success',
-                'title' => '¡Asignación Exitosa!',
-                'text'  => 'Los gestores han sido asignados correctamente y se sincronizó el historial.',
+                'title' => '¡Acción Exitosa!',
+                'text'  => $mensajeExito,
             ]);
 
         } catch (\Exception $e) {
@@ -281,7 +326,7 @@ class EntregaFestProspecto extends Component
             \Illuminate\Support\Facades\Log::error("[ASIGNACIÓN MASIVA] Error: " . $e->getMessage());
             $this->dispatch('alertaLivewire', [
                 'type'  => 'error',
-                'title' => 'Error de Asignación',
+                'title' => 'Error de Acción Masiva',
                 'text'  => 'Ocurrió un problema al guardar los cambios masivos.',
             ]);
         }
@@ -297,7 +342,7 @@ class EntregaFestProspecto extends Component
             'evento_id'                            => $this->evento->id,
             'buscar'                               => $this->buscar,
             'proyecto_id'                          => $this->proyecto_id,
-            'filtro_activo'                        => $this->filtro_activo,
+            'filtro_manzana'                       => $this->filtro_manzana,
             'filtro_observacion_legal'             => $this->filtro_observacion_legal,
             'con_historico'                        => $this->con_historico,
             'filtro_lote_entregado'                => $this->filtro_lote_entregado,
@@ -429,6 +474,15 @@ class EntregaFestProspecto extends Component
 
     public function render()
     {
+        // 1. Calculamos las manzanas dinámicamente basadas en el Proyecto actual
+        $manzanasList = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)
+            ->when($this->proyecto_id, fn($q) => $q->where('proyecto_id', $this->proyecto_id))
+            ->whereNotNull('manzana')
+            ->where('manzana', '!=', '')
+            ->distinct()
+            ->orderBy('manzana')
+            ->pluck('manzana');
+
         $items = ProspectoEntregaFest::query()
             ->with([
                 'proyecto',
@@ -447,6 +501,7 @@ class EntregaFestProspecto extends Component
 
         return view('livewire.erp.entrega-fest.prospecto.entrega-fest-prospecto', [
             'items' => $items,
+            'manzanasList' => $manzanasList, // 🛑 DEBES AÑADIR ESTA LÍNEA AQUÍ
         ]);
     }
 

@@ -107,6 +107,10 @@ class ProspectoEntregaFest extends Model implements HasMedia
                 });
             })
 
+            ->when(($f['filtro_manzana'] ?? '') !== '', function($q) use ($f) {
+                $q->where('manzana', $f['filtro_manzana']);
+            })
+
             ->when(isset($f['filtro_activo']) && $f['filtro_activo'] !== '', function ($q) use ($f) {
                 $q->where('activo', $f['filtro_activo'] === '1');
             })

@@ -110,6 +110,20 @@
                     </select>
                 </div>
 
+                <div class="g_columna_2">
+                    <label>Manzana</label>
+                    <select wire:model.live="filtro_manzana" class="g_input">
+                        <option value="">Todas</option>
+                        @if(isset($manzanasList))
+                            @foreach($manzanasList as $mz)
+                                <option value="{{ $mz }}" wire:key="manzana-{{ $mz }}">
+                                    {{ $mz }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Estado Gestor BO</label>
                     <select wire:model.live="estado_gestor_backoffice">
@@ -287,27 +301,36 @@
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
 
                 <select wire:model.live="tipoAsignacionMasiva" style="padding: 8px; border: 1px solid #0284c7; background-color: #e0f2fe; color: #0369a1; border-radius: 4px; font-weight: bold;">
-                    <option value="backoffice">BackOffice</option>
-                    <option value="legal">Legal</option>
+                    <option value="backoffice">Asignar Gestor BackOffice</option>
+                    <option value="legal">Asignar Abogado (Legal)</option>
+                    <option value="observacion_legal">Cambiar Observación Legal</option>
                 </select>
 
-                <select wire:model="gestorIdSeleccionado" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; min-width: 200px;">
-                    <option value="">-- Seleccionar Gestor Destino --</option>
+                @if(in_array($tipoAsignacionMasiva, ['backoffice', 'legal']))
+                    <select wire:model="gestorIdSeleccionado" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; min-width: 200px;">
+                        <option value="">-- Seleccionar Gestor Destino --</option>
+                        @if($tipoAsignacionMasiva === 'backoffice')
+                            @foreach($gestoresBackofficeList as $gestor)
+                                <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
+                            @endforeach
+                        @elseif($tipoAsignacionMasiva === 'legal')
+                            @foreach($gestoresLegales as $gestor)
+                                <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                @endif
 
-                    @if($tipoAsignacionMasiva === 'backoffice')
-                        @foreach($gestoresBackofficeList as $gestor)
-                            <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
-                        @endforeach
-                    @elseif($tipoAsignacionMasiva === 'legal')
-                        @foreach($gestoresLegales as $gestor)
-                            <option value="{{ $gestor->id }}">{{ $gestor->name }}</option>
-                        @endforeach
-                    @endif
-
-                </select>
+                @if($tipoAsignacionMasiva === 'observacion_legal')
+                    <select wire:model="accionObservacionLegal" style="padding: 8px; border: 1px solid #f59e0b; background-color: #fffbeb; color: #b45309; border-radius: 4px; min-width: 200px; font-weight: bold;">
+                        <option value="">-- ¿Qué deseas hacer? --</option>
+                        <option value="1">🔒 ACTIVAR (Bloquear comunicaciones)</option>
+                        <option value="0">✅ DESACTIVAR (Saneado / Permitir)</option>
+                    </select>
+                @endif
 
                 <button type="button" wire:click="asignarGestorMasivo" class="g_boton success" style="margin: 0;">
-                    <i class="fa-solid fa-user-check"></i> Asignar
+                    <i class="fa-solid fa-bolt"></i> Aplicar a {{ count($selectedProspectos) }} registros
                 </button>
             </div>
         </div>
