@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class ProspectoHistorico extends Model
 {
@@ -40,6 +41,24 @@ class ProspectoHistorico extends Model
         'fecha_firma_presencial' => 'datetime',
         'fecha_validacion_firma' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $prospecto): void {
+            $userId = Auth::id();
+            if ($userId) {
+                $prospecto->created_by = $prospecto->created_by ?: $userId;
+                $prospecto->updated_by = $userId;
+            }
+        });
+
+        static::updating(function (self $prospecto): void {
+            $userId = Auth::id();
+            if ($userId) {
+                $prospecto->updated_by = $userId;
+            }
+        });
+    }
 
     // Relaciones
     public function proyecto() { return $this->belongsTo(Proyecto::class); }

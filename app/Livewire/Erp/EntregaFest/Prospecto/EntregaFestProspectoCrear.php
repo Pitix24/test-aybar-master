@@ -117,13 +117,9 @@ class EntregaFestProspectoCrear extends Component
                     'email'      => trim($this->email),
                     'celular'    => trim($this->celular),
                     'user_id'    => Auth::id(),
-                    'updated_by' => Auth::id(),
+                    // 'updated_by' y 'created_by' ya se manejan solos en el Modelo
                 ]
             );
-
-            if ($historico->wasRecentlyCreated) {
-                $historico->update(['created_by' => Auth::id()]);
-            }
 
             // Validar si el cliente ya está en el evento (Extra seguridad por DNI)
             $existeEnEvento = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)

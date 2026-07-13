@@ -527,7 +527,9 @@
                         </td>
                         <td class="g_celda_centro">
                             @if ($p->observacion_legal)
-                                <span class="g_badge warning" title="Restricción de Titularidad"><i class="fa-solid fa-scale-unbalanced"></i> SÍ</span>
+                                <span class="g_badge" style="background-color: #ff0f0f; color: #ffffff;" title="Restricción de Titularidad">
+                                    <i class="fa-solid fa-scale-unbalanced"></i> Obs - Legal
+                                </span>
                             @else
                                 <span class="g_badge success">NO</span>
                             @endif
