@@ -21,6 +21,7 @@ class EntregaFest extends Model implements HasMedia
         'descripcion',
         'codigo',
         'fecha_entrega',
+        'limite_invitados',
         'activo',
     ];
 
@@ -33,6 +34,7 @@ class EntregaFest extends Model implements HasMedia
 
     protected $casts = [
         'fecha_entrega' => 'date',
+        'limite_invitados' => 'integer',
         'activo' => 'boolean',
     ];
 
