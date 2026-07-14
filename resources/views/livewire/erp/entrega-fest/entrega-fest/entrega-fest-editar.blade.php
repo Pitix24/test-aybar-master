@@ -93,11 +93,15 @@
                         </div>
 
                         <div class="g_fila">
-                            <div class="g_margin_bottom_10 g_columna_6">
+                            <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Nombre del Evento</label>
                                 <input type="text" wire:model="nombre" {{ !$activo ? 'disabled' : '' }}>
                             </div>
-                            <div class="g_margin_bottom_10 g_columna_6">
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label>Límite de Invitados</label>
+                                <input type="number" wire:model="limite_invitados" {{ !$activo ? 'disabled' : '' }} min="1">
+                            </div>
+                            <div class="g_margin_bottom_10 g_columna_4">
                                 <label>Código único</label>
                                 <input type="text" wire:model="codigo" {{ !$activo ? 'disabled' : '' }}>
                             </div>

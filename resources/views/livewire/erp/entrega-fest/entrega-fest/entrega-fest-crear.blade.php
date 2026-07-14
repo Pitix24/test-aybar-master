@@ -44,7 +44,7 @@
                 </div>
 
                 <div class="g_fila">
-                    <div class="g_margin_bottom_10 g_columna_6">
+                    <div class="g_margin_bottom_10 g_columna_4">
                         <label>Nombre del Evento <span class="obligatorio"><i
                                     class="fa-solid fa-asterisk"></i></span></label>
                         <input type="text" wire:model="nombre" class="@error('nombre') input-error @enderror">
@@ -52,7 +52,15 @@
                         <p class="leyenda">Ej: Entrega Fest Verano 2026</p>
                     </div>
 
-                    <div class="g_margin_bottom_10 g_columna_6">
+                    <div class="g_margin_bottom_10 g_columna_4">
+                        <label>Límite de Invitados <span class="obligatorio"><i
+                                    class="fa-solid fa-asterisk"></i></span></label>
+                        <input type="number" id="limite_invitados" wire:model="limite_invitados" class="g_input" style="flex: 1;" min="1" placeholder="Ej: 250">
+                        @error('limite_invitados') <p class="mensaje_error" style="margin-top: 5px;">{{ $message }}</p>@enderror
+                        <p class="leyenda">Ej: 250</p>
+                    </div>
+
+                    <div class="g_margin_bottom_10 g_columna_4">
                         <label>Código único <span class="obligatorio"><i
                                     class="fa-solid fa-asterisk"></i></span></label>
                         <input type="text" wire:model="codigo" class="@error('codigo') input-error @enderror">
