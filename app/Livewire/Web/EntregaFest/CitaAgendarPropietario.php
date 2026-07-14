@@ -23,7 +23,7 @@ class CitaAgendarPropietario extends Component
     public const HORA_INICIO       = '10:00';
     public const HORA_FIN          = '17:00';
     public const INTERVALO_MIN     = 30;
-    public const DIAS_ANTICIPACION = 3;
+    public const DIAS_ANTICIPACION = 4;
     public const CUPO_POR_HORARIO  = 2;
     // ====================================================
 

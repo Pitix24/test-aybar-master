@@ -10,7 +10,7 @@
             <img src="https://aybarcorp.com/public/assets/entregafest/logo-entrega-fest-blanco.png"
                  alt="Entrega Fest"
                  class="ef_logo_main">
-            <div class="ef_badge_type" style="background-color: #f59e0b; color: white;">Aforo Completo</div>
+            <div class="ef_badge_type" style="background-color: #004d55; color: white;">Aforo Completo</div>
         </div>
 
         {{-- ============== BODY ============== --}}
@@ -28,11 +28,19 @@
                 </h2>
 
                 {{-- Mensaje principal --}}
+
                 <p class="ef_success_text"
                    style="font-size: 1.1rem; line-height: 1.6; color: #4b5563; margin-bottom: 25px;">
                     Lamentablemente, el evento
                     <strong style="color: #004d55;">"{{ $nombreEvento }}"</strong>
-                    ha llegado a su límite de participantes. Agradecemos mucho tu interés en querer asistir.
+                    ha alcanzado el aforo máximo permitido.
+                </p>
+                <p class="ef_success_text"
+                   style="font-size: 1.1rem; line-height: 1.6; color: #4b5563; margin-bottom: 25px;">
+                    ¡No te preocupes! La asistencia al evento no es obligatoria.
+                    Si ya cancelaste tus pagos, podrás solicitar la documentación correspondiente comunicándote con
+                    nuestro Call Center al
+                    <strong style="color: #004d55;">(01) 904-9838</strong> .
                 </p>
 
                 {{-- Mensaje de invitación a WhatsApp --}}

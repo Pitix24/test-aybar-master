@@ -28,7 +28,6 @@ class EntregaFestProspecto extends Component
         'filtro_manzana',
         'filtro_activo',
         'filtro_observacion_legal',
-        'filtro_observacion_legal',
         'con_historico',
         'filtro_lote_entregado',
         'filtroGestorBackoffice',
@@ -53,8 +52,7 @@ class EntregaFestProspecto extends Component
     public array $selectedProspectos = [];
     public bool $selectAll = false;
 
-    // NUEVAS VARIABLES DINÁMICAS
-    public $tipoAsignacionMasiva = 'backoffice'; // Por defecto iniciará en BackOffice
+    public $tipoAsignacionMasiva = 'backoffice';
     public $gestorIdSeleccionado = '';
 
     #[Url(as: 'q')]
@@ -68,9 +66,6 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $filtro_activo = '1';
-
-    #[Url(keep: true)]
-    public $filtro_observacion_legal = '';
 
     #[Url(keep: true)]
     public $filtro_observacion_legal = '';
@@ -136,8 +131,9 @@ class EntregaFestProspecto extends Component
     public $usuarios = [];
     public $estados_cliente = [];
     public $gestoresLegales = [];
-    public $gestoresBackofficeList = []; // <-- NUEVO CATÁLOGO
+    public $gestoresBackofficeList = [];
     public $accionObservacionLegal = '';
+
     // ============================================================
     //                          LIFECYCLE
     // ============================================================
@@ -156,8 +152,6 @@ class EntregaFestProspecto extends Component
 
     public function updated($property): void
     {
-        // Al cambiar de página o filtro, solo desmarcamos visualmente el "Seleccionar Todo"
-        // pero MANTENEMOS los prospectos que el usuario ya había seleccionado en memoria.
         if ($property === 'paginators.page' || in_array($property, $this->propiedadesFiltro)) {
             $this->selectAll = false;
         }
@@ -184,7 +178,6 @@ class EntregaFestProspecto extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
-            // Selecciona solo los prospectos de la página actual
             $this->selectedProspectos = ProspectoEntregaFest::query()
                 ->filtrado($this->filtrosActivos())
                 ->orderBy('nombres', 'asc')
@@ -199,14 +192,13 @@ class EntregaFestProspecto extends Component
 
     public function updatedTipoAsignacionMasiva()
     {
-        $this->gestorIdSeleccionado = ''; // Limpiamos el gestor cuando cambian de área
+        $this->gestorIdSeleccionado = '';
     }
 
     public function toggleModoAsignacionMasiva()
     {
         $this->modoAsignacionMasiva = !$this->modoAsignacionMasiva;
 
-        // Si el usuario apaga el modo, limpiamos todo
         if (!$this->modoAsignacionMasiva) {
             $this->reset(['selectedProspectos', 'selectAll', 'gestorIdSeleccionado', 'tipoAsignacionMasiva']);
         }
@@ -214,7 +206,6 @@ class EntregaFestProspecto extends Component
 
     public function seleccionarTodosLosFiltrados()
     {
-        // Selecciona TODOS los prospectos del filtro activo ignorando la paginación
         $this->selectedProspectos = ProspectoEntregaFest::query()
             ->filtrado($this->filtrosActivos())
             ->pluck('id')
@@ -340,6 +331,10 @@ class EntregaFestProspecto extends Component
     //                       FILTROS / HELPERS
     // ============================================================
 
+    /**
+     * 🎯 ÚNICA fuente de verdad de los filtros activos.
+     * Se usa en render(), cargarStats() y los exports.
+     */
     protected function filtrosActivos(): array
     {
         return [
@@ -347,6 +342,7 @@ class EntregaFestProspecto extends Component
             'buscar'                               => $this->buscar,
             'proyecto_id'                          => $this->proyecto_id,
             'filtro_manzana'                       => $this->filtro_manzana,
+            'filtro_activo'                        => $this->filtro_activo,
             'filtro_observacion_legal'             => $this->filtro_observacion_legal,
             'con_historico'                        => $this->con_historico,
             'filtro_lote_entregado'                => $this->filtro_lote_entregado,
@@ -443,6 +439,7 @@ class EntregaFestProspecto extends Component
     {
         $this->authorize('prospecto.exportar-todo');
 
+        // "Todo" = solo respeta el evento, ignora demás filtros
         return Excel::download(
             new EntregaFestProspectoExport(['evento_id' => $this->evento->id]),
             'prospectos_todo_' . $this->evento->codigo . '.xlsx'
