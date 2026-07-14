@@ -3,6 +3,7 @@
 namespace App\Livewire\Web\EntregaFest;
 
 use App\Support\RedirigeSiEventoConcluido;
+use App\Support\RedirigeSiAforoLleno;
 use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
 use App\Models\InvitadoEntregaFest;
 use App\Models\ProspectoEntregaFest;
@@ -35,7 +36,7 @@ class AsistenciaInvitacionPropietario extends Component
     public $codigo_invitado = '';
 
     // Para mostrar info adicional en el view
-    use RedirigeSiEventoConcluido;
+    use RedirigeSiEventoConcluido, RedirigeSiAforoLleno;
 
     public function mount($slug, $propietarioId)
     {
@@ -49,6 +50,13 @@ class AsistenciaInvitacionPropietario extends Component
 
         // 🛑 Si el evento ya se realizó → redirigir
         if ($redir = $this->redirigirSiConcluido($this->evento)) return $redir;
+
+        // 🛑 NUEVA CONDICIÓN: Verificar aforo (Solo validamos aforo si el cliente AÚN NO HA RESPONDIDO)
+        // Si el cliente ya había confirmado, debe poder entrar a ver su respuesta normal.
+        if (is_null($this->prospecto->invitacion_confirmada)) {
+            // Mandamos a validar. Le pasamos 250 como límite.
+            if ($redirLleno = $this->redirigirSiLleno($this->evento)) return $redirLleno;
+        }
 
         // Validar slug
         if ($this->evento->slug !== $slug) {
