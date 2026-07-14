@@ -7,6 +7,7 @@ use App\Livewire\Web\EntregaFest\AsistenciaInvitacionCopropietario;
 use App\Livewire\Web\EntregaFest\CitaAgendarPropietario;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Web\EntregaFest\EventoConcluido;
+use App\Livewire\Web\EntregaFest\EventoLleno;
 
 Route::get('/pre-invitacion-propietario/{slug}/{propietarioId}', PreInvitacionPropietario::class)
     ->name('entrega-fest.pre-invitacion.propietario');
@@ -25,3 +26,6 @@ Route::get('/cita-agendar-propietario/{slug}/{propietarioId}', CitaAgendarPropie
 
 Route::get('/entrega-fest/{slug}/concluido', EventoConcluido::class)
     ->name('entrega-fest.concluido');
+
+Route::get('/entrega-fest/{slug}/aforo-lleno', EventoLleno::class)
+    ->name('entrega-fest.aforo-lleno');
