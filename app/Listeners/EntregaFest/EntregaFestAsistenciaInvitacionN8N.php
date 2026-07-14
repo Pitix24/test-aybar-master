@@ -30,7 +30,7 @@ class EntregaFestAsistenciaInvitacionN8N
             Log::channel('entrega-fest')->warning("[ASISTENCIA-INVITACION-N8N] Envío abortado: Prospecto #{$prospecto->id} tiene restricción/observación legal.");
             return;
         }
-        
+
         // 1. Buscamos la plantilla oficial de "confirmacion"
         $plantilla = $evento->plantillas()->where('tipo', 'asistencia-invitacion')->first();
         $etapa = $plantilla->tipo ?? 'asistencia-invitacion';

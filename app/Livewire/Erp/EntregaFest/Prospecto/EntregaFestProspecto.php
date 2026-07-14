@@ -28,6 +28,7 @@ class EntregaFestProspecto extends Component
         'filtro_manzana',
         'filtro_activo',
         'filtro_observacion_legal',
+        'filtro_observacion_legal',
         'con_historico',
         'filtro_lote_entregado',
         'filtroGestorBackoffice',
@@ -67,6 +68,9 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $filtro_activo = '1';
+
+    #[Url(keep: true)]
+    public $filtro_observacion_legal = '';
 
     #[Url(keep: true)]
     public $filtro_observacion_legal = '';

@@ -280,6 +280,15 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Observación Legal</label>
+                    <select wire:model.live="filtro_observacion_legal">
+                        <option value="">Todos</option>
+                        <option value="1">Sí (Observados)</option>
+                        <option value="0">No (Saneados)</option>
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Estado del Registro</label>
                     <select wire:model.live="filtro_activo">
                         <option value="1">Solo Activos (Evento actual)</option>
@@ -412,6 +421,7 @@
                         <th>Proyecto Reubicado</th>
                         <th>Mz-Lt</th>
                         <th>Mz-Lt Reubicado</th>
+                        <th class="g_celda_centro">Obs. Legal</th>
                         <th class="g_celda_centro">Obs. Legal</th>
                         <th class="g_celda_centro">Pre-invitación</th>
                         <th class="g_celda_centro">Invitación</th>
