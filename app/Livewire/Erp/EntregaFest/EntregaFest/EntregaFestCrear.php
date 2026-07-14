@@ -24,6 +24,7 @@ class EntregaFestCrear extends Component
     public $unidad_negocio_id, $gestor_id;
     public $proyecto_id = ""; // Para el select
     public $proyectos_agregados = []; // Para la tabla
+    public $limite_invitados = 250;
     public $activo = true;
 
     // Catálogos
@@ -41,6 +42,7 @@ class EntregaFestCrear extends Component
             'proyectos_agregados' => 'required|array|min:1',
             'proyectos_agregados.*.id' => 'exists:proyectos,id',
             'gestor_id' => 'required|exists:users,id',
+            'limite_invitados' => 'required|integer|min:1',
             'activo' => 'boolean',
         ];
     }

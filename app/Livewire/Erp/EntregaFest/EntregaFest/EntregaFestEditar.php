@@ -32,6 +32,7 @@ class EntregaFestEditar extends Component
     public $unidad_negocio_id = ""; // Para el select
     public $proyecto_id = ""; // Para el select
     public $proyectos_agregados = []; // Para la tabla
+    public $limite_invitados; // 👈 1. Declarar propiedad
     public $activo;
 
     // Catálogos
@@ -48,6 +49,7 @@ class EntregaFestEditar extends Component
         $this->codigo = $this->evento->codigo;
         $this->fecha_entrega = $this->evento->fecha_entrega ? $this->evento->fecha_entrega->format('Y-m-d') : null;
         $this->gestor_id = $this->evento->gestor_id;
+        $this->limite_invitados = $this->evento->limite_invitados;
         $this->activo = $this->evento->activo;
 
         $this->proyectos_agregados = $this->evento->proyectos->map(fn($p) => [
@@ -106,6 +108,7 @@ class EntregaFestEditar extends Component
             'nombre' => 'required|string|max:255',
             'gestor_id' => 'required',
             'fecha_entrega' => 'required|date',
+            'limite_invitados' => 'required|integer|min:1',
         ]);
 
         try {
@@ -117,6 +120,7 @@ class EntregaFestEditar extends Component
                 'descripcion' => $this->descripcion,
                 'codigo' => $this->codigo,
                 'fecha_entrega' => $this->fecha_entrega,
+                'limite_invitados' => $this->limite_invitados,
                 'activo' => $this->activo,
             ]);
 
