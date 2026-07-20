@@ -83,19 +83,22 @@ class ReglamentoCrear extends Component
             ]);
 
             if ($this->archivo) {
-                $path = $this->archivo->store('marketing/reglamentos', 'public');
-                $url = Storage::url($path);
+                // 1. CAMBIO: Guardamos en el disco 'local' (completamente privado)
+                $path = $this->archivo->store('marketing/reglamentos', 'local');
+
+                // 2. CAMBIO: La URL guardada apuntará a nuestra ruta segura pasándole el ID del reglamento
+                $url = route('cliente.reglamento.stream', ['id' => $reglamento->id]);
 
                 MarketingArchivo::create([
-                    'archivable_id' => $reglamento->id,
+                    'archivable_id'   => $reglamento->id,
                     'archivable_type' => Reglamento::class,
-                    'user_id' => auth()->id(),
+                    'user_id'         => auth()->id(),
                     'nombre_original' => $this->archivo->getClientOriginalName(),
-                    'path' => $path,
-                    'url' => $url,
-                    'extension' => $this->archivo->getClientOriginalExtension(),
-                    'size' => $this->archivo->getSize(),
-                    'mime_type' => $this->archivo->getMimeType(),
+                    'path'            => $path, // Se guarda el path relativo del disco local
+                    'url'             => $url,  // Se guarda la URL interna segura
+                    'extension'       => $this->archivo->getClientOriginalExtension(),
+                    'size'            => $this->archivo->getSize(),
+                    'mime_type'       => $this->archivo->getMimeType(),
                 ]);
             }
 

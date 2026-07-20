@@ -84,7 +84,7 @@ class ReglamentoTodo extends Component
                     foreach ($lotes as $lote) {
                         if (isset($lote['id_servicio']) && $lote['id_servicio'] === '02') {
                             if (isset($lote['id_proyecto'])) {
-                                $slinProyectoIds[] = $lote['id_proyecto'];
+                                $slinProyectoIds[] = (string) $lote['id_proyecto'];
                             }
                         }
                     }
@@ -95,14 +95,35 @@ class ReglamentoTodo extends Component
                 }
             }
 
+            // LOG DE DIAGNÓSTICO — puedes eliminarlo cuando el problema esté resuelto
+            Log::channel('reglamento')->info('[ReglamentoTodo] IDs de proyecto recibidos de SLIN', [
+                'usuario_id'       => auth()->id(),
+                'slin_proyecto_ids' => $slinProyectoIds,
+                'proyectos_en_bd'  => \App\Models\Proyecto::where('activo', true)
+                    ->whereNotNull('slin_id')
+                    ->pluck('slin_id', 'id')
+                    ->toArray(),
+            ]);
+
             if (empty($slinProyectoIds)) {
                 return [];
             }
 
-            return Proyecto::whereIn('slin_id', array_unique($slinProyectoIds))
+            // Normalizamos a string para evitar mismatch "001" vs 1
+            $slinProyectoIds = array_unique(array_map('strval', $slinProyectoIds));
+
+            $proyectosEncontrados = Proyecto::whereIn('slin_id', $slinProyectoIds)
                 ->where('activo', true)
                 ->pluck('id')
                 ->toArray();
+
+            // LOG DE DIAGNÓSTICO — puedes eliminarlo cuando el problema esté resuelto
+            Log::channel('reglamento')->info('[ReglamentoTodo] Proyectos locales encontrados', [
+                'usuario_id'          => auth()->id(),
+                'proyectos_ids_local' => $proyectosEncontrados,
+            ]);
+
+            return $proyectosEncontrados;
 
         } catch (\Exception $e) {
             Log::channel('reglamento')->error('Error en obtenerProyectosDelCliente: ' . $e->getMessage());
