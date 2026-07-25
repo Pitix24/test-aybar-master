@@ -59,7 +59,7 @@ class TicketArchivo extends Component
 
             $filename = $this->archivo->getClientOriginalName();
             $extension = $this->archivo->getClientOriginalExtension();
-            $path = $this->archivo->store('tickets/' . $this->ticket->id, 'public');
+            $path = $this->archivo->store('tickets/' . $this->ticket->id, 's3');
 
             TicketArchivoModel::create([
                 'archivable_type' => Ticket::class,
@@ -115,8 +115,8 @@ class TicketArchivo extends Component
             DB::beginTransaction();
             $archivo = TicketArchivoModel::findOrFail($archivoId);
 
-            if (Storage::disk('public')->exists($archivo->path)) {
-                Storage::disk('public')->delete($archivo->path);
+            if (Storage::disk('s3')->exists($archivo->path)) {
+                Storage::disk('s3')->delete($archivo->path);
             }
 
             $desc = $archivo->descripcion;

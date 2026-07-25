@@ -58,8 +58,8 @@ class TicketComunicacionMail extends Mailable
             $nombre = is_object($archivo) ? $archivo->nombre_original : $archivo['nombre_original'];
             $mime = is_object($archivo) ? $archivo->mime_type : $archivo['mime_type'];
 
-            if (Storage::disk('public')->exists($path)) {
-                $attachments[] = Attachment::fromPath(Storage::disk('public')->path($path))
+            if (Storage::disk('s3')->exists($path)) {
+                $attachments[] = Attachment::fromPath(Storage::disk('s3')->path($path))
                     ->as($nombre)
                     ->withMime($mime);
             }

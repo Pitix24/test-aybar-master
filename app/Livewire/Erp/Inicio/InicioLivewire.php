@@ -137,7 +137,7 @@ class InicioLivewire extends Component
         $this->usuario->name = $this->name;
 
         if ($this->photo) {
-            $path = $this->photo->store('profile-photos', 'public');
+            $path = $this->photo->store('profile-photos', 's3');
             $this->usuario->profile_photo_path = $path;
         }
 

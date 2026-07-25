@@ -238,7 +238,7 @@ NO agregues explicación ni texto adicional. Solo JSON.",
                 ]
             );
 
-            $ruta = $this->imagen->store('evidencias', 'public');
+            $ruta = $this->imagen->store('evidencias', 's3');
 
             $monto = null;
             if (!empty($this->datos['monto'])) {

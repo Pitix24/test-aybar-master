@@ -78,7 +78,7 @@ class TicketEmail extends Component
             // Procesar nuevos archivos cargados (se guardan en el ticket también)
             if (!empty($this->nuevosArchivos)) {
                 foreach ($this->nuevosArchivos as $file) {
-                    $path = $file->store('tickets/' . $this->ticket->id . '/emails', 'public');
+                    $path = $file->store('tickets/' . $this->ticket->id . '/emails', 's3');
 
                     $nuevoArchivo = TicketArchivo::create([
                         'archivable_type' => Ticket::class,

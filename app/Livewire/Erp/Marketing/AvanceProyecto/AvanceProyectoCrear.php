@@ -107,7 +107,7 @@ class AvanceProyectoCrear extends Component
             ]);
 
             if ($this->imagen) {
-                $path = $this->imagen->store('marketing/avance-proyectos', 'public');
+                $path = $this->imagen->store('marketing/avance-proyectos', 's3');
                 $url = Storage::url($path);
 
                 MarketingArchivo::create([

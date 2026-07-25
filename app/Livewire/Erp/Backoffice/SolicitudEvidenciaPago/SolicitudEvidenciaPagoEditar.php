@@ -174,7 +174,7 @@ class SolicitudEvidenciaPagoEditar extends Component
             return;
         }
 
-        if (!Storage::disk('public')->exists($this->evidenciaSeleccionada->path)) {
+        if (!Storage::disk('s3')->exists($this->evidenciaSeleccionada->path)) {
             $this->dispatch('alertaLivewire', ['title' => 'Error', 'text' => 'No se encontró el archivo físico de la evidencia.']);
             return;
         }
@@ -182,7 +182,7 @@ class SolicitudEvidenciaPagoEditar extends Component
         try {
             DB::beginTransaction();
 
-            $imageContent = Storage::disk('public')->get($this->evidenciaSeleccionada->path);
+            $imageContent = Storage::disk('s3')->get($this->evidenciaSeleccionada->path);
             $fechaOperacion = Carbon::parse($this->evidenciaSeleccionada->fecha)->format('m/d/Y');
 
             $params = [

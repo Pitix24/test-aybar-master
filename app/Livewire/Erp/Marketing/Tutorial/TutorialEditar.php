@@ -104,11 +104,11 @@ class TutorialEditar extends Component
 
             if ($this->imagen) {
                 if ($this->tutorial_model->miniatura) {
-                    Storage::disk('public')->delete($this->tutorial_model->miniatura->path);
+                    Storage::disk('s3')->delete($this->tutorial_model->miniatura->path);
                     $this->tutorial_model->miniatura->delete();
                 }
 
-                $path = $this->imagen->store('marketing/tutoriales', 'public');
+                $path = $this->imagen->store('marketing/tutoriales', 's3');
                 $url = Storage::url($path);
 
                 MarketingArchivo::create([
@@ -162,7 +162,7 @@ class TutorialEditar extends Component
             DB::beginTransaction();
 
             if ($this->tutorial_model->miniatura) {
-                Storage::disk('public')->delete($this->tutorial_model->miniatura->path);
+                Storage::disk('s3')->delete($this->tutorial_model->miniatura->path);
                 $this->tutorial_model->miniatura->delete();
             }
 

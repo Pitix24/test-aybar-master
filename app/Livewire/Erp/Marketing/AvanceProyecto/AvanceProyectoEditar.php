@@ -127,11 +127,11 @@ class AvanceProyectoEditar extends Component
 
             if ($this->imagen) {
                 if ($this->avance_model->miniatura) {
-                    Storage::disk('public')->delete($this->avance_model->miniatura->path);
+                    Storage::disk('s3')->delete($this->avance_model->miniatura->path);
                     $this->avance_model->miniatura->delete();
                 }
 
-                $path = $this->imagen->store('marketing/avance-proyectos', 'public');
+                $path = $this->imagen->store('marketing/avance-proyectos', 's3');
                 $url = Storage::url($path);
 
                 MarketingArchivo::create([

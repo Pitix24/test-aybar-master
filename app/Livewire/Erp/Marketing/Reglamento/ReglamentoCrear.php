@@ -83,7 +83,7 @@ class ReglamentoCrear extends Component
             ]);
 
             if ($this->archivo) {
-                $path = $this->archivo->store('marketing/reglamentos', 'public');
+                $path = $this->archivo->store('marketing/reglamentos', 's3');
                 $url = Storage::url($path);
 
                 MarketingArchivo::create([

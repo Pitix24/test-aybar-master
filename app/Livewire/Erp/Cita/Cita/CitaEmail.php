@@ -72,7 +72,7 @@ class CitaEmail extends Component
             // Procesar nuevos archivos cargados
             if (!empty($this->nuevosArchivos)) {
                 foreach ($this->nuevosArchivos as $file) {
-                    $path = $file->store('citas/' . $this->cita->id . '/emails', 'public');
+                    $path = $file->store('citas/' . $this->cita->id . '/emails', 's3');
 
                     $nuevoArchivo = CitaArchivo::create([
                         'cita_id' => $this->cita->id,

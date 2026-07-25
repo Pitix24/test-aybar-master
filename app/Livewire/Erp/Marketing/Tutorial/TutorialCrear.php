@@ -82,7 +82,7 @@ class TutorialCrear extends Component
             ]);
 
             if ($this->imagen) {
-                $path = $this->imagen->store('marketing/tutoriales', 'public');
+                $path = $this->imagen->store('marketing/tutoriales', 's3');
                 $url = Storage::url($path);
 
                 MarketingArchivo::create([

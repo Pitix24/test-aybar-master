@@ -92,7 +92,7 @@ class SoporteCrear extends Component
             foreach ($this->archivos as $archivo) {
                 $filename = $archivo->getClientOriginalName();
                 $extension = $archivo->getClientOriginalExtension();
-                $path = $archivo->store('soportes/' . $soporte->id, 'public');
+                $path = $archivo->store('soportes/' . $soporte->id, 's3');
 
                 SoporteArchivo::create([
                     'archivable_type' => Soporte::class,

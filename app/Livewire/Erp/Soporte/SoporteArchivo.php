@@ -58,7 +58,7 @@ class SoporteArchivo extends Component
 
             $filename = $this->archivo->getClientOriginalName();
             $extension = $this->archivo->getClientOriginalExtension();
-            $path = $this->archivo->store('soportes/' . $this->soporte->id, 'public');
+            $path = $this->archivo->store('soportes/' . $this->soporte->id, 's3');
 
             SoporteArchivoModel::create([
                 'archivable_type' => Soporte::class,
@@ -108,8 +108,8 @@ class SoporteArchivo extends Component
             }
 
             // Eliminar del almacenamiento
-            if (Storage::disk('public')->exists($archivo->path)) {
-                Storage::disk('public')->delete($archivo->path);
+            if (Storage::disk('s3')->exists($archivo->path)) {
+                Storage::disk('s3')->delete($archivo->path);
             }
 
             // Soft delete del registro

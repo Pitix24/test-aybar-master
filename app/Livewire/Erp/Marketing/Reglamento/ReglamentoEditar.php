@@ -105,11 +105,11 @@ class ReglamentoEditar extends Component
 
             if ($this->archivo) {
                 if ($this->reglamento_model->archivoPdf) {
-                    Storage::disk('public')->delete($this->reglamento_model->archivoPdf->path);
+                    Storage::disk('s3')->delete($this->reglamento_model->archivoPdf->path);
                     $this->reglamento_model->archivoPdf->delete();
                 }
 
-                $path = $this->archivo->store('marketing/reglamentos', 'public');
+                $path = $this->archivo->store('marketing/reglamentos', 's3');
                 $url = Storage::url($path);
 
                 MarketingArchivo::create([
@@ -162,7 +162,7 @@ class ReglamentoEditar extends Component
             DB::beginTransaction();
 
             if ($this->reglamento_model->archivoPdf) {
-                Storage::disk('public')->delete($this->reglamento_model->archivoPdf->path);
+                Storage::disk('s3')->delete($this->reglamento_model->archivoPdf->path);
                 $this->reglamento_model->archivoPdf->delete();
             }
 
