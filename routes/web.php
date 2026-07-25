@@ -8,6 +8,9 @@ use App\Http\Controllers\Web\VerificationController;
 use App\Http\Controllers\Web\ConsultaCodigoClienteController;
 use Illuminate\Support\Facades\Route;
 
+Route::view('/mantenimiento', 'livewire.web.mantenimiento.mantenimiento')
+    ->name('mantenimiento');
+
 Route::get('/', function () {
     return redirect()->route('login');
 })->middleware(['web', 'redirect.by.role'])->name('home');

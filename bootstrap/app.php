@@ -3,6 +3,7 @@
 use App\Http\Middleware\RedirectIfAuthenticatedByRole;
 use App\Http\Middleware\CheckAdmin;
 use App\Http\Middleware\CheckCliente;
+use App\Http\Middleware\MaintenanceMode;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -54,6 +55,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'permissions' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
+
+        $middleware->append(MaintenanceMode::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
