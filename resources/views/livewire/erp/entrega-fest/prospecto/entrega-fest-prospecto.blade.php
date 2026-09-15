@@ -27,6 +27,26 @@
                 Enviar invitación <i class="fa-solid fa-envelope"></i> <i class="fa-brands fa-whatsapp"></i>
             </button>
 
+            <button type="button" class="g_boton success"
+                onclick="Livewire.dispatch('alertaConfirmar', {
+                    event: 'recuperarContratoPendientes',
+                    titulo: '¿Reintentar envíos de Contrato y Cita?',
+                    texto: 'Se reintentarán a n8n todos los envíos pendientes detectados, espaciados 1 por minuto.',
+                    confirmText: 'Sí, reintentar'
+                })">
+                Recuperar Contrato/Cita <i class="fa-solid fa-rotate"></i>
+            </button>
+
+            <button type="button" class="g_boton success"
+                onclick="Livewire.dispatch('alertaConfirmar', {
+                    event: 'recuperarAsistenciaPendientes',
+                    titulo: '¿Reintentar envíos de Asistencia e Instrucciones?',
+                    texto: 'Se reintentarán a n8n todos los envíos pendientes detectados, espaciados 1 por minuto.',
+                    confirmText: 'Sí, reintentar'
+                })">
+                Recuperar Asistencia <i class="fa-solid fa-rotate"></i>
+            </button>
+
             <a href="{{ route('erp.entrega-fest.prospecto.bancarizacion', $evento->id) }}" class="g_boton light">
                 Bancarización <i class="fa-solid fa-list"></i>
             </a>
@@ -59,7 +79,7 @@
                     <i class="fa-solid fa-envelope-circle-check" style="color: #3B82F6;"></i>
                 </div>
             </div>
-
+            
             <div class="g_panel" title="Clientes que aceptaron la invitación definitiva">
                 <div class="g_panel_dashboard">
                     <div class="g_panel_dashboard_1">
@@ -120,7 +140,7 @@
                     </select>
                 </div>
 
-                <div class="g_columna_2">
+                <div class="g_margin_bottom_10 g_columna_2">
                     <label>Manzana</label>
                     <select wire:model.live="filtro_manzana" class="g_input">
                         <option value="">Todas</option>
@@ -133,50 +153,7 @@
                         @endif
                     </select>
                 </div>
-
-                <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Estado Gestor BO</label>
-                    <select wire:model.live="estado_gestor_backoffice">
-                        <option value="">Todos</option>
-                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_GESTOR_BACKOFFICE as $valor => $info)
-                        <option value="{{ $valor }}">{{ $info['label'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Estado Supervisor BO</label>
-                    <select wire:model.live="estado_backoffice">
-                        <option value="">Todos</option>
-                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE as $valor => $info)
-                        <option value="{{ $valor }}">{{ $info['label'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Contrato Preliminar</label>
-                    <select wire:model.live="estado_contrato_preeliminar_emitido">
-                        <option value="">Todos</option>
-                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_CONTRATO_PRELIMINAR as $valor => $info)
-                        <option value="{{ $valor }}">{{ $info['label'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-
-            <div class="g_fila">
-                <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Grupo</label>
-                    <select wire:model.live="grupo">
-                        <option value="">Todos</option>
-                        <option value="A">Grupo A</option>
-                        <option value="B">Grupo B</option>
-                        <option value="C">Grupo C</option>
-                        <option value="D">Grupo D</option>
-                    </select>
-                </div>
-
+                
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Pre-invitación</label>
                     <select wire:model.live="filtro_confirmacion">
@@ -196,14 +173,47 @@
                         <option value="pendiente">Pendiente</option>
                     </select>
                 </div>
-
+            </div>
+            
+            <div class="g_fila">
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Filtro Gestor BO</label>
+                    <label>Grupo</label>
+                    <select wire:model.live="grupo">
+                        <option value="">Todos</option>
+                        <option value="A">Grupo A</option>
+                        <option value="B">Grupo B</option>
+                        <option value="C">Grupo C</option>
+                        <option value="D">Grupo D</option>
+                    </select>
+                </div>
+                
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado Gestor BO</label>
+                    <select wire:model.live="estado_gestor_backoffice">
+                        <option value="">Todos</option>
+                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_GESTOR_BACKOFFICE as $valor => $info)
+                        <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Gestor BO</label>
                     <select wire:model.live="filtroGestorBackoffice">
                         <option value="">Todos los Gestores</option>
                         <option value="sin_asignar">⚠ Sin Asignar</option>
                         @foreach ($gestoresBackofficeList as $gbo)
                         <option value="{{ $gbo->id }}">{{ $gbo->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Estado Supervisor BO</label>
+                    <select wire:model.live="estado_backoffice">
+                        <option value="">Todos</option>
+                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE as $valor => $info)
+                        <option value="{{ $valor }}">{{ $info['label'] }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -224,6 +234,7 @@
                     <label>Abogado (Gestor Legal)</label>
                     <select wire:model.live="gestor_legal_id">
                         <option value="">Todos</option>
+                        {{-- Opción especial para filtrar prospectos sin gestor asignado --}}
                         <option value="sin_asignar">⚠ Sin Asignar</option>
                         @foreach ($gestoresLegales as $g)
                             <option value="{{ $g->id }}">{{ $g->name }}</option>
@@ -232,15 +243,15 @@
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Fecha Cita Firma Desde</label>
+                    <label>Fecha Firma Desde</label>
                     <input type="date" wire:model.live="fechaFirmaDesde">
                 </div>
 
                 <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Fecha Cita Firma Hasta</label>
+                    <label>Fecha Firma Hasta</label>
                     <input type="date" wire:model.live="fechaFirmaHasta">
                 </div>
-
+                
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Fecha Generación C. Desde</label>
                     <input type="date" wire:model.live="fechaGeneracionDesde">
@@ -253,6 +264,16 @@
             </div>
 
             <div class="g_fila">
+                <div class="g_margin_bottom_10 g_columna_2">
+                    <label>Contrato Preliminar</label>
+                    <select wire:model.live="estado_contrato_preeliminar_emitido">
+                        <option value="">Todos</option>
+                        @foreach (\App\Models\ProspectoEntregaFest::ESTADO_CONTRATO_PRELIMINAR as $valor => $info)
+                        <option value="{{ $valor }}">{{ $info['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Vínculo con Histórico</label>
                     <select wire:model.live="con_historico">
@@ -269,16 +290,7 @@
                         <option value="no">Lote Pendiente</option>
                     </select>
                 </div>
-
-                <div class="g_margin_bottom_10 g_columna_2">
-                    <label>Observación Legal</label>
-                    <select wire:model.live="filtro_observacion_legal">
-                        <option value="">Todos</option>
-                        <option value="1">Sí (Observados)</option>
-                        <option value="0">No (Saneados)</option>
-                    </select>
-                </div>
-
+                
                 <div class="g_margin_bottom_10 g_columna_2">
                     <label>Observación Legal</label>
                     <select wire:model.live="filtro_observacion_legal">
@@ -299,7 +311,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- PANEL DINÁMICO DE ASIGNACIÓN MASIVA (Aparece solo si hay seleccionados) -->
     @if($modoAsignacionMasiva)
     <div class="g_panel" style="background-color: #f0f9ff; border: 1px solid #bae6fd; margin-bottom: 20px;">
@@ -382,7 +394,7 @@
                 <button wire:click="resetFiltros" class="g_boton danger">
                     Limpiar <i class="fa-solid fa-rotate-left"></i>
                 </button>
-
+                
                 <button wire:click="toggleModoAsignacionMasiva" class="g_boton {{ $modoAsignacionMasiva ? 'danger' : 'warning' }}">
                 @if($modoAsignacionMasiva)
                     <i class="fa-solid fa-times"></i> Cancelar Asignación
@@ -421,7 +433,6 @@
                         <th>Proyecto Reubicado</th>
                         <th>Mz-Lt</th>
                         <th>Mz-Lt Reubicado</th>
-                        <th class="g_celda_centro">Obs. Legal</th>
                         <th class="g_celda_centro">Obs. Legal</th>
                         <th class="g_celda_centro">Pre-invitación</th>
                         <th class="g_celda_centro">Invitación</th>

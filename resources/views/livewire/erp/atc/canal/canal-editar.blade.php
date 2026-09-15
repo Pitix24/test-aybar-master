@@ -5,17 +5,17 @@
         <h2>Editar Canal de Atención</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('canal.vista-lista')
+            @can('canal.lista')
                 <a href="{{ route('erp.canal.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i></a>
             @endcan
 
-            @can('canal.vista-crear')
+            @can('canal.crear')
                 <a href="{{ route('erp.canal.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
 
-            @can('canal.accion-eliminar')
+            @can('canal.eliminar')
                 <button type="button" class="g_boton danger" onclick="confirmarEliminarCanal()">
                     Eliminar <i class="fa-solid fa-trash-can"></i>
                 </button>
@@ -65,7 +65,7 @@
                     </div>
 
                     <div class="formulario_botones">
-                        @can('canal.accion-editar')
+                        @can('canal.editar')
                             <button type="submit" class="g_boton guardar" wire:loading.attr="disabled" wire:target="update">
                                 <span wire:loading.remove wire:target="update">
                                     <i class="fa-solid fa-save"></i> Actualizar

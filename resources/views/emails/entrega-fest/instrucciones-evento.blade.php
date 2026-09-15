@@ -16,7 +16,7 @@
             <td align="center">
                 <table width="100%" border="0" cellspacing="0" cellpadding="0"
                     style="max-width: 600px; background-color: #ffffff; border-radius: 40px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                    
+
                     <!-- HEADER GRADIENTE -->
                     <tr>
                         <td align="center"
@@ -49,9 +49,9 @@
 
                             <p
                                 style="margin: 0 0 30px 0; color: #555555; font-size: 16px; line-height: 1.6; text-align: center;">
-                                Queremos compartirte detalles importantes para que disfrutes al máximo el evento 
+                                Queremos compartir contigo información importante para que disfrutes al máximo del
                                 <strong style="color: #004d55;">{{ $evento->nombre }}</strong>.
-                                Por favor, lee con atención estas indicaciones:
+                                Por favor, lee atentamente las siguientes indicaciones:
                             </p>
 
                             <!-- TARJETA DE RECOMENDACIONES -->
@@ -69,15 +69,19 @@
                                             </li>
                                             <li style="margin-bottom: 12px; font-size: 15px; display: table;">
                                                 <span style="display: table-cell; padding-right: 10px;">✅</span>
-                                                <span style="display: table-cell;">Llevar tu <strong>DNI original</strong> físico (indispensable).</span>
+                                                <span style="display: table-cell;">Llevar tu <strong>DNI físico y vigente</strong> (Indispensable).</span>
                                             </li>
                                             <li style="margin-bottom: 12px; font-size: 15px; display: table;">
                                                 <span style="display: table-cell; padding-right: 10px;">✅</span>
-                                                <span style="display: table-cell;">Llegar con <strong>puntualidad</strong> a la hora indicada.</span>
+                                                <span style="display: table-cell;">Llegar <strong>puntualmente a la hora indicada.</strong></span>
                                             </li>
                                             <li style="margin-bottom: 0; font-size: 15px; display: table;">
                                                 <span style="display: table-cell; padding-right: 10px;">✅</span>
-                                                <span style="display: table-cell;">Respetar las indicaciones de nuestro personal de staff.</span>
+                                                <span style="display: table-cell;">Respetar las indicaciones de nuestro staff.</span>
+                                            </li>
+                                            <li style="margin-bottom: 0; font-size: 15px; display: table;">
+                                                <span style="display: table-cell; padding-right: 10px;">✅</span>
+                                                <span style="display: table-cell;">Recuerda que los detalles específicos del evento serán enviados al número de WhatsApp registrado.</span>
                                             </li>
                                         </ul>
                                     </td>

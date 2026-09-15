@@ -11,9 +11,9 @@
 
     <div class="header_menu" x-data="{ menuAbierto: null }" @keydown.escape.window="menuAbierto = null">
         <!-- Dropdown Tema -->
-        <div class="header_dropdown_wrapper" x-data="{
-            get open() { return menuAbierto === 'tema' },
-            set open(val) { menuAbierto = val ? 'tema' : null }
+        <div class="header_dropdown_wrapper" x-data="{ 
+            get open() { return menuAbierto === 'tema' }, 
+            set open(val) { menuAbierto = val ? 'tema' : null } 
         }">
             <button type="button" class="header_dropdown_trigger" @click="open = !open" title="Cambiar tema">
                 <i x-show="theme === 'light'" class="fa-solid fa-sun" x-cloak></i>
@@ -24,9 +24,9 @@
         </div>
 
         <!-- Dropdown Perfil -->
-        <div class="header_dropdown_wrapper" x-data="{
-            get open() { return menuAbierto === 'perfil' },
-            set open(val) { menuAbierto = val ? 'perfil' : null }
+        <div class="header_dropdown_wrapper" x-data="{ 
+            get open() { return menuAbierto === 'perfil' }, 
+            set open(val) { menuAbierto = val ? 'perfil' : null } 
         }">
             <button type="button" class="header_dropdown_trigger" @click="open = !open">
                 <img src="{{ auth()->user()->profile_photo_path ? asset('storage/' . auth()->user()->profile_photo_path) : asset('assets/imagen/default.jpg') }}"

@@ -49,6 +49,23 @@
     transform: scale(1.02);
 }
 
+/* Resaltado del primer campo con error al fallar la validación (scroll-to-error) */
+.campo_error_resaltado {
+    animation: destacarError 0.6s ease-in-out 2;
+}
+
+@keyframes destacarError {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 102, 146, 0);
+    }
+
+    20% {
+        box-shadow: 0 0 0 4px rgba(255, 102, 146, 0.35);
+    }
+}
+
 /* Skeleton Loading Animation */
 .skeleton {
     background: linear-gradient(90deg, var(--color-light-border) 25%, var(--color-gris) 50%, var(--color-light-border) 75%);

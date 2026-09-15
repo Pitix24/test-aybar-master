@@ -1,5 +1,5 @@
 <div class="g_centrar_pagina">
-    <x-loading-overlay wire:loading wire:target="registrar,confirmarEnvioNoProcede,enviar"
+    <x-loading-overlay wire:loading wire:target="enviar"
         message="Registrando su reclamo..." />
 
     <div class="g_pading_pagina g_gap_pagina">
@@ -13,8 +13,8 @@
             @if ($reclamo_registrado)
             <div class="g_panel" style="margin-top: 20px;">
                 <div class="g_panel_titulo">
-                    <h2 style="color: var(--color-light-exito);"><i class="fa-solid fa-file-circle-check"></i> Detalles
-                        de su registro</h2>
+                    <h2 style="color: var(--color-light-exito);"><i class="fa-solid fa-file-circle-check"></i> HOJA DE
+                        RECLAMACIÓN N° {{ $reclamo_registrado->codigo_ticket }}</h2>
                 </div>
 
                 <div class="informacion_resumen_grid">
@@ -130,7 +130,7 @@
                 <div class="g_margin_top_20">
                     <div class="formulario_botones">
                         <button onclick="window.print()" class="g_boton dark">
-                            <i class="fa-solid fa-print"></i> Imprimir Constancia
+                            <i class="fa-solid fa-print"></i> Imprimir Hoja de Reclamación
                         </button>
                         <a href="{{ route('home') }}" class="g_boton light">
                             <i class="fa-solid fa-house"></i> Ir al inicio
@@ -149,15 +149,15 @@
                 </div>
             </div>
 
-            <form wire:submit.prevent="registrar" class="g_gap_pagina formulario">
+            <form wire:submit.prevent="enviar" class="g_gap_pagina formulario" novalidate>
 
                 <div class="g_resaltado_caja info">
                     <span class="g_resaltado_caja_titulo">Información importante</span>
                     <div class="g_margin_top_10" style="font-size: 0.9em; opacity: 0.95; line-height: 1.5;">
-                        <p><i class="fa-solid fa-circle-info"></i> Ningún campo es obligatorio para registrar su
-                            reclamo.</p>
-                        <p><i class="fa-solid fa-address-card"></i> Si completa sus datos de contacto, podremos realizar
-                            un mejor seguimiento.</p>
+                        <p><i class="fa-solid fa-envelope"></i> El correo electrónico es obligatorio: es el medio por el
+                            que le enviaremos automáticamente su Hoja de Reclamación.</p>
+                        <p><i class="fa-solid fa-circle-info"></i> Los demás campos son opcionales, aunque completar sus
+                            datos de contacto nos permite realizar un mejor seguimiento.</p>
                     </div>
                 </div>
 
@@ -270,7 +270,7 @@
 
                     <div class="g_fila">
                         <div class="g_margin_bottom_10 g_columna_4">
-                            <label>Correo electrónico</label>
+                            <label>Correo electrónico <span class="obligatorio obligatorio_destacado">*</span></label>
                             <input type="email" wire:model="email" class="@error('email') input-error @enderror">
                             @error('email') <p class="mensaje_error">{{ $message }}</p> @enderror
                         </div>
@@ -467,35 +467,13 @@
                     </div>
                 </div>
 
-                @if ($mostrar_advertencia_no_procede)
-                <div class="g_alerta info">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    <div>
-                        Su envío tiene información mínima y podría dificultar el escalamiento de su caso.
-                        Puede continuar de todas formas, pero si completa sus datos de contacto y referencia del caso,
-                        podremos atenderlo mejor.
-                    </div>
-                </div>
-
-                <div class="formulario_botones centrar" style="margin-top: 8px;">
-                    <button type="button" class="g_boton light" wire:click="cancelarAdvertenciaNoProcede"
-                        wire:loading.attr="disabled">
-                        <i class="fa-solid fa-pen"></i> Completar datos
-                    </button>
-                    <button type="button" class="g_boton warning" wire:click="confirmarEnvioNoProcede"
-                        wire:loading.attr="disabled">
-                        <i class="fa-solid fa-paper-plane"></i> Registrar de todas formas
-                    </button>
-                </div>
-                @endif
-
                 <div class="g_margin_top_20">
                     <div class="formulario_botones centrar">
                         <button type="submit" class="g_boton guardar" wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="registrar,confirmarEnvioNoProcede,enviar">
+                            <span wire:loading.remove wire:target="enviar">
                                 <i class="fa-solid fa-paper-plane"></i> ENVIAR MI RECLAMO
                             </span>
-                            <span wire:loading wire:target="registrar,confirmarEnvioNoProcede,enviar">
+                            <span wire:loading wire:target="enviar">
                                 <i class="fa-solid fa-spinner fa-spin"></i> PROCESANDO...
                             </span>
                         </button>
@@ -506,3 +484,20 @@
         </div>
     </div>
 </div>
+
+@script
+<script>
+    $wire.on('scroll-a-error', () => {
+        const campoConError = document.querySelector('.input-error, .mensaje_error');
+
+        if (!campoConError) {
+            return;
+        }
+
+        campoConError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        campoConError.classList.add('campo_error_resaltado');
+
+        setTimeout(() => campoConError.classList.remove('campo_error_resaltado'), 1300);
+    });
+</script>
+@endscript

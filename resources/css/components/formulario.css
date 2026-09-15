@@ -88,6 +88,15 @@
     font-size: 8px;
 }
 
+/* Variante para campos obligatorios que deben ser evidentes a simple vista
+   (ej. correo electronico en el Libro de Reclamaciones): el asterisco base
+   de 8px queda casi invisible junto al texto del label. */
+.formulario .obligatorio.obligatorio_destacado {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-left: 2px;
+}
+
 .formulario .leyenda {
     color: #98a4ae;
     font-size: 12px;

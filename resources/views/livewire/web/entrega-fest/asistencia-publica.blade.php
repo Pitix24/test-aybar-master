@@ -75,7 +75,7 @@
                         </div>
 
                         @if ($cantidad_acompanantes > 0)
-                            <div style="margin-top: 25px; padding: 15px; background: #f0fdfa; border: 1px dashed #99f6e4; border-radius: 12px;">
+                            <div style="margin-top: 25px; margin-bottom: 20px; padding: 15px; background: #f0fdfa; border: 1px dashed #99f6e4; border-radius: 12px;">
                                 <p style="margin: 0 0 8px 0; color: #004d55; font-size: 0.95rem; font-weight: 700;">
                                     <i class="fa-solid fa-circle-info"></i> Información Importante
                                 </p>

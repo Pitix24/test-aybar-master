@@ -106,21 +106,21 @@
                 </div>
 
                 <div x-show="activeTab === 'cliente'" x-transition class="g_tab_content">
-                    <div class="formulario">
+                    <div class="formulario">  
                          <div class="g_margin_bottom_10">
                             @can('cliente.consultar')
                                 <a href="{{ route('erp.cliente.vista.consultar', $solicitud->userCliente->perfilCliente->dni) }}" class="g_boton primary">
                                     <i class="fa-solid fa-border-all"></i> Portal cliente
                                 </a>
                             @endcan
-
+    
                             @can('cliente.ver')
                                 <a href="{{ route('erp.cliente.vista.ver', $solicitud->userCliente->id) }}" class="g_boton info">
                                     <i class="fa-solid fa-circle-user"></i> Perfil
                                 </a>
                             @endcan
-                        </div>
-                        <div class="g_fila">
+                        </div>               
+                        <div class="g_fila">                           
                             <div class="g_margin_bottom_10 g_columna_6">
                                 <label>Nombre del Cliente</label>
                                 <input type="text" disabled value="{{ $solicitud->userCliente->name ?? '—' }}">
@@ -251,7 +251,7 @@
                                     </span>
                                 </td>
                                 <td class="g_celda_centro">
-
+                                    
                                 </td>
                             </tr>
                         </tbody>
@@ -359,7 +359,7 @@
                             </span>
 
                             <span class="g_badge {{ $solicitud->slin_evidencia ? 'primary' : 'light' }}">
-                                <i class="fa-solid {{ $solicitud->slin_evidencia ? 'fa-check-double' : 'fa-hourglass-half' }}"></i>
+                                <i class="fa-solid {{ $solicitud->slin_evidencia ? 'fa-check-double' : 'fa-hourglass-half' }}"></i> 
                                 Validado: {{ $solicitud->slin_evidencia ? 'SÍ' : 'NO' }}
                             </span>
                         </div>

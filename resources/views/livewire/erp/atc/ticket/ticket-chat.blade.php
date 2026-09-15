@@ -62,12 +62,10 @@
                         </div>
                     </div>
 
-                    @can('ticket.accion-enviar-chat')
-                        <button class="g_chat_send_btn" wire:click="enviar" wire:loading.attr="disabled">
-                            <i class="fa-solid fa-paper-plane" wire:loading.remove wire:target="enviar"></i>
-                            <i class="fa-solid fa-spinner fa-spin" wire:loading wire:target="enviar"></i>
-                        </button>
-                    @endcan
+                    <button class="g_chat_send_btn" wire:click="enviar" wire:loading.attr="disabled">
+                        <i class="fa-solid fa-paper-plane" wire:loading.remove wire:target="enviar"></i>
+                        <i class="fa-solid fa-spinner fa-spin" wire:loading wire:target="enviar"></i>
+                    </button>
                 </div>
             </div>
         @endif

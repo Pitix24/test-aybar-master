@@ -277,14 +277,14 @@
                             </span>
                         </td>
                         <td class="g_celda_acciones g_celda_centro centro">
-                            @can('ticket.vista-ver')
+                            @can('ticket.ver')
                             <a href="{{ route('erp.ticket.vista.ver', $item->id) }}" class="g_accion ver"
                                 title="Ver detalle">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
                             @endcan
 
-                            @can('ticket.vista-editar')
+                            @can('ticket.editar')
                             <a href="{{ route('erp.ticket.vista.editar', $item->id) }}" class="g_accion editar"
                                 title="Editar">
                                 <i class="fa-solid fa-pencil"></i>

@@ -74,10 +74,10 @@
 }
 
 .g_contenedor_columna {
-    margin-top: 20px;
+    margin-top: 70px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 70px;
 }
 
 @media (max-width: 768px) {

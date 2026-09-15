@@ -1,24 +1,11 @@
-<h2>Hemos recibido su reclamo</h2>
-
-@php
-	$clienteNombre = trim((string) ($reclamo->cliente_nombre ?? ''));
-	$formatearValor = static function (?string $valor): string {
-		$texto = trim((string) $valor);
-
-		if ($texto === '') {
-			return 'N/D';
-		}
-
-		return ucwords(strtolower(str_replace('_', ' ', $texto)));
-	};
-@endphp
-
-<p>Estimado(a) {{ $clienteNombre !== '' ? $clienteNombre : 'cliente' }},</p>
-
-<p>Su registro fue creado correctamente.</p>
-
-<p><strong>Ticket:</strong> {{ $reclamo->codigo_ticket }}</p>
-<p><strong>Fecha:</strong> {{ optional($reclamo->created_at)->format('d/m/Y H:i') }}</p>
-<p><strong>Tipo:</strong> {{ $formatearValor($reclamo->tipo_pedido) }}</p>
-
-<p>Conserve este correo para seguimiento.</p>
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Hoja de Reclamación</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f2f5f9;font-family:Verdana,Arial,sans-serif;color:#1e293b;">
+@include('emails.libro-reclamacion._hoja-reclamacion', ['reclamo' => $reclamo, 'mostrarTicketInterno' => false])
+</body>
+</html>

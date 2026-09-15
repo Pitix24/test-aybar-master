@@ -58,20 +58,12 @@
                                     TUTORIALES
                                 </a>
                             </li>
-
+                            
                             <li class="menu_item menu_cliente">
                                 <a href="{{ route('cliente.avance-proyecto') }}"
                                     class="boton_personalizado boton_personalizado_amarillo_v2">
                                     <i class="fa-solid fa-person-digging"></i>
                                     AVANCES DE PROYECTO
-                                </a>
-                            </li>
-
-                            <li class="menu_item menu_cliente">
-                                <a href="{{ route('cliente.reglamento') }}"
-                                    class="boton_personalizado boton_personalizado_amarillo_v2">
-                                    <i class="fa-solid fa-balance-scale"></i>
-                                    REGLAMENTOS
                                 </a>
                             </li>
 

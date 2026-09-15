@@ -129,7 +129,8 @@
                             <tr>
                                 <th>Cód.</th>
                                 <th>Invitado / DNI</th>
-                                <th>Estado Bacckoffice</th>
+                                                                <th>Estado Bacckoffice</th>
+
                                 <th>Proyecto</th>
                                 <th class="g_celda_centro">Fecha / Hora</th>
                                 <th>Responsable</th>
@@ -171,7 +172,7 @@
                                                                 </div>
                                                             @endif
                                                         </td>
-                                                        <td>
+                                                              <td>
                                                             @php
                                                                 $estadoKey = $a->invitado->estado_backoffice;
                                                                 $estadoInfo = \App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE[$estadoKey] ?? null;
@@ -181,7 +182,7 @@
                                                                     style="background-color: {{ $estadoInfo['color'] }}; color: white; font-size: 0.70rem;">
                                                                     {{ $estadoInfo['label'] }}
                                                                 </span>
-                                                                <br/>
+                                                                 <br/>
                                                                 <br/>
                                                                 @php
                                                                     $colorCondicion = ($estadoInfo['condicion'] ?? '') === 'ENTREGA' ? '#10B981' : '#EF4444';
@@ -190,7 +191,8 @@
                                                                     style="background-color: {{ $colorCondicion }}; color: white; font-size: 0.70rem;">
                                                                     {{ $estadoInfo['condicion'] }}
                                                                 </span>
-                                                                <x-tooltip text="{{ $estadoInfo['mensaje'] }}" />
+                                                                                                                                <x-tooltip text="{{ $estadoInfo['mensaje'] }}" />
+
                                                             @else
                                                                 <span class="g_badge light" style="font-size: 0.70rem;">N/D</span>
                                                             @endif

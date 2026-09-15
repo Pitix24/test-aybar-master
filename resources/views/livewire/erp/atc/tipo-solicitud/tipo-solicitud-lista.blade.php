@@ -7,7 +7,7 @@
         <h2>Tipos de Solicitud</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('tipo-solicitud.vista-crear')
+            @can('tipo-solicitud.crear')
                 <a href="{{ route('erp.tipo-solicitud.vista.crear') }}" class="g_boton primary">
                     Crear <i class="fa-solid fa-square-plus"></i></a>
             @endcan
@@ -47,7 +47,7 @@
     <div class="g_panel">
         <div class="g_tabla_cabecera">
             <div class="g_tabla_cabecera_botones">
-                @can('tipo-solicitud.accion-exportar-filtro')
+                @can('tipo-solicitud.exportar-filtro')
                     <button wire:click="exportExcelFiltro" class="g_boton excel" wire:loading.attr="disabled"
                         wire:target="exportExcelFiltro">
                         <span wire:loading.remove wire:target="exportExcelFiltro">Excel Filtrados <i
@@ -57,7 +57,7 @@
                     </button>
                 @endcan
 
-                @can('tipo-solicitud.accion-exportar-todo')
+                @can('tipo-solicitud.exportar-todo')
                     <button wire:click="exportExcelTodo" class="g_boton dark" wire:loading.attr="disabled"
                         wire:target="exportExcelTodo">
                         <span wire:loading.remove wire:target="exportExcelTodo">Excel Todo <i
@@ -111,24 +111,17 @@
                             </td>
 
                             <td class="g_celda_acciones g_celda_centro centro">
-                                @can('tipo-solicitud.vista-ver')
+                                @can('tipo-solicitud.ver')
                                     <a href="{{ route('erp.tipo-solicitud.vista.ver', $item->id) }}" class="g_accion ver"
                                         title="Ver detalle">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
                                 @endcan
 
-                                @can('tipo-solicitud.vista-editar')
+                                @can('tipo-solicitud.editar')
                                     <a href="{{ route('erp.tipo-solicitud.vista.editar', $item->id) }}" class="g_accion editar"
                                         title="Editar">
                                         <i class="fa-solid fa-pencil"></i>
-                                    </a>
-                                @endcan
-
-                                @can('tipo-solicitud.vista-flujo')
-                                    <a href="{{ route('erp.tipo-solicitud.vista.flujo', $item->id) }}" class="g_accion info"
-                                        title="Configurar Flujo">
-                                        <i class="fa-solid fa-diagram-project"></i>
                                     </a>
                                 @endcan
                             </td>

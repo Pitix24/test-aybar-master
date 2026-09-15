@@ -90,7 +90,8 @@
                     <tr>
                         <th>Cód. Invitado</th>
                         <th>Tipo</th>
-                        <th>Estado Bacckoffice</th>
+                                                <th>Estado Bacckoffice</th>
+
                         <th>Invitado / DNI</th>
                         <th>Lote / Proyecto</th>
                         <th class="g_celda_centro">Acompañantes</th>
@@ -111,7 +112,7 @@
                                                 <span class="g_badge info">COPROP.</span>
                                             @endif
                                         </td>
-                                        <td>
+                                            <td>
                                             @php
                                                 $estadoKey = $i->estado_backoffice;
                                                 $estadoInfo = \App\Models\ProspectoEntregaFest::ESTADO_BACKOFFICE[$estadoKey] ?? null;
@@ -121,7 +122,7 @@
                                                     style="background-color: {{ $estadoInfo['color'] }}; color: white; font-size: 0.75rem;">
                                                     {{ $estadoInfo['label'] }}
                                                 </span>
-                                                <br />
+                                                 <br />
                                                 <br />
                                                 @php
                                                     $colorCondicion = ($estadoInfo['condicion'] ?? '') === 'ENTREGA' ? '#10B981' : '#EF4444';
@@ -130,7 +131,8 @@
                                                     style="background-color: {{ $colorCondicion }}; color: white; font-size: 0.70rem;">
                                                     {{ $estadoInfo['condicion'] }}
                                                 </span>
-                                                <x-tooltip text="{{ $estadoInfo['mensaje'] }}" />
+                                                                                                <x-tooltip text="{{ $estadoInfo['mensaje'] }}" />
+
                                             @else
                                                 <span class="g_badge light" style="font-size: 0.75rem;">N/D</span>
                                             @endif
@@ -163,27 +165,24 @@
                                                 $registrados = $i->acompanantes->count();
                                                 $restantes = $totalPermitido - $registrados;
                                             @endphp
-                                            <div
-                                                style="font-weight: bold; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 5px;">
+                                            <div style="font-weight: bold; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 5px;">
                                                 {{ $registrados }} / {{ $totalPermitido }}
                                             </div>
 
                                             @if($registrados > 0)
-                                                <div
-                                                    style="font-size: 0.75rem; text-align: left; background: #f9f9f9; padding: 6px; border-radius: 6px; border: 1px solid #eee; display: inline-block;">
+                                                <div style="font-size: 0.75rem; text-align: left; background: #f9f9f9; padding: 6px; border-radius: 6px; border: 1px solid #eee; display: inline-block;">
                                                     @foreach($i->acompanantes as $ac)
                                                         <div style="margin-bottom: 2px;">
-                                                            <i class="fa-solid fa-user-check" style="color: #10B981; font-size: 0.65rem;"></i>
-                                                            {{ Str::limit($ac->nombres, 15) }}
+                                                            <i class="fa-solid fa-user-check" style="color: #10B981; font-size: 0.65rem;"></i> {{ Str::limit($ac->nombres, 15) }} 
                                                         </div>
                                                     @endforeach
                                                 </div>
                                             @endif
-
+                                            
                                             @if($restantes > 0 && $totalPermitido > 0)
-                                                <div style="font-size: 0.70rem; color: #f59e0b; margin-top: 5px;">
-                                                    Faltan {{ $restantes }}
-                                                </div>
+                                                 <div style="font-size: 0.70rem; color: #f59e0b; margin-top: 5px;">
+                                                     Faltan {{ $restantes }}
+                                                 </div>
                                             @endif
                                         </td>
                                         <td class="g_celda_centro">

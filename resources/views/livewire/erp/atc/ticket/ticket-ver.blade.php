@@ -4,13 +4,13 @@
         <h2>Detalle del ticket #{{ $ticket->id }}</h2>
 
         <div class="cabecera_titulo_botones">
-            @can('ticket.vista-lista')
+            @can('ticket.lista')
                 <a href="{{ route('erp.ticket.vista.todo') }}" class="g_boton light">
                     Lista <i class="fa-solid fa-list"></i>
                 </a>
             @endcan
 
-            @can('ticket.vista-editar')
+            @can('ticket.editar')
                 <a href="{{ route('erp.ticket.vista.editar', $ticket->id) }}" class="g_boton primary">
                     Editar <i class="fa-solid fa-pencil"></i>
                 </a>
@@ -192,7 +192,7 @@
 
         <div class="g_columna_4 g_gap_pagina">
             @livewire('erp.atc.ticket.ticket-archivo', ['ticket' => $ticket, 'soloLectura' => true])
-
+            
             @if ($ticket->libroReclamacion)
                 @php
                     $libro = $ticket->libroReclamacion;
@@ -342,6 +342,7 @@
                 </div>
             @endif
 
+
             @if ($ticket->padre)
                 <div class="g_panel">
                     <h4 class="g_panel_titulo">Ticket Principal (Padre)</h4>
@@ -359,7 +360,7 @@
                                     <td class="g_negrita">#{{ $ticket->padre->id }}</td>
                                     <td>{{ $ticket->padre->gestor->name ?? 'N/A' }}</td>
                                     <td class="g_celda_centro">
-                                        @can('ticket.vista-ver')
+                                        @can('ticket.ver')
                                             <a href="{{ route('erp.ticket.vista.ver', $ticket->padre->id) }}"
                                                 class="g_accion ver" title="Ver Ticket Padre">
                                                 <i class="fa-solid fa-eye"></i>
@@ -391,7 +392,7 @@
                                         <td class="g_negrita">#{{ $hijo->id }}</td>
                                         <td>{{ $hijo->gestor->name ?? 'N/A' }}</td>
                                         <td class="g_celda_centro">
-                                            @can('ticket.vista-ver')
+                                            @can('ticket.ver')
                                                 <a href="{{ route('erp.ticket.vista.ver', $hijo->id) }}" class="g_accion ver"
                                                     title="Ver Ticket Hijo">
                                                     <i class="fa-solid fa-eye"></i>
