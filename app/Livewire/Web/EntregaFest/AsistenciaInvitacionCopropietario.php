@@ -5,6 +5,7 @@ namespace App\Livewire\Web\EntregaFest;
 use App\Support\RedirigeSiEventoConcluido;
 use App\Support\RedirigeSiAforoLleno;
 use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
+use App\Models\EntregaFest;
 use App\Models\InvitadoEntregaFest;
 use App\Models\CopropietarioEntregaFest;
 use Illuminate\Support\Facades\DB;
@@ -145,6 +146,12 @@ class AsistenciaInvitacionCopropietario extends Component
 
     public function save()
     {
+        // Releemos el límite de acompañantes de la BD antes de validar: es una
+        // propiedad pública de Livewire, cacheada desde mount(), y si el admin lo
+        // bajó mientras el visitante tenía el formulario abierto, rules() no debe
+        // seguir validando contra el valor viejo.
+        $this->limite_acompanantes = $this->evento->fresh()->limiteAcompanantes();
+
         $this->validate();
 
         // Doble check: ya respondió
@@ -157,20 +164,42 @@ class AsistenciaInvitacionCopropietario extends Component
 
             $confirmado = ($this->asistira === 'si');
 
+            if ($confirmado) {
+                // Bloqueamos la fila del evento: mientras esta transacción esté abierta,
+                // ninguna otra confirmación del mismo evento puede leer el aforo general
+                // ni el cupo de bus hasta que esta termine (commit o rollback). Sin este
+                // candado, dos confirmaciones simultáneas sobre el último lugar podían
+                // leer el mismo cupo disponible y entrar las dos.
+                $eventoBloqueado = EntregaFest::whereKey($this->evento->id)->lockForUpdate()->first();
+
+                if ($redirLleno = $this->redirigirSiLleno($eventoBloqueado)) {
+                    DB::rollBack();
+
+                    return $redirLleno;
+                }
+
+                if ($this->transporte === 'bus') {
+                    $cupoBus = $eventoBloqueado->cupoBusDisponible();
+
+                    if ($cupoBus !== null && (1 + (int) $this->cantidad_acompanantes) > $cupoBus) {
+                        $this->transporte = 'propio';
+
+                        $this->dispatch('alertaLivewire', [
+                            'type' => 'warning',
+                            'title' => 'Cupos Completos',
+                            'text' => 'Justo se agotaron los cupos de la modalidad BUS AYBAR mientras completabas el formulario. Te registramos con Movilidad Propia.',
+                            'showConfirmButton' => true,
+                        ]);
+                    }
+                }
+            }
+
             // Actualizamos el copropietario con su respuesta
             $this->copropietario->update([
                 'invitacion_confirmada' => $confirmado
             ]);
 
             if ($confirmado) {
-                if ($this->transporte === 'bus') {
-                    $cupoBus = $this->evento->fresh()->cupoBusDisponible();
-
-                    if ($cupoBus !== null && (1 + (int) $this->cantidad_acompanantes) > $cupoBus) {
-                        $this->transporte = 'propio';
-                    }
-                }
-
                 $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . strtoupper(bin2hex(random_bytes(3)));
 
                 $invitado = InvitadoEntregaFest::create([

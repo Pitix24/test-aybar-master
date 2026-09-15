@@ -5,6 +5,7 @@ namespace App\Livewire\Web\EntregaFest;
 use App\Support\RedirigeSiEventoConcluido;
 use App\Support\RedirigeSiAforoLleno;
 use App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion;
+use App\Models\EntregaFest;
 use App\Models\InvitadoEntregaFest;
 use App\Models\ProspectoEntregaFest;
 use Illuminate\Support\Facades\DB;
@@ -152,6 +153,12 @@ class AsistenciaInvitacionPropietario extends Component
 
     public function save()
     {
+        // Releemos el límite de acompañantes de la BD antes de validar: es una
+        // propiedad pública de Livewire, cacheada desde mount(), y si el admin lo
+        // bajó mientras el visitante tenía el formulario abierto, rules() no debe
+        // seguir validando contra el valor viejo.
+        $this->limite_acompanantes = $this->evento->fresh()->limiteAcompanantes();
+
         $this->validate();
 
         // Doble check
@@ -164,6 +171,39 @@ class AsistenciaInvitacionPropietario extends Component
 
             $confirmado = ($this->asistira === 'si');
 
+            if ($confirmado) {
+                // Bloqueamos la fila del evento: mientras esta transacción esté abierta,
+                // ninguna otra confirmación del mismo evento puede leer el aforo general
+                // ni el cupo de bus hasta que esta termine (commit o rollback). Sin este
+                // candado, dos confirmaciones simultáneas sobre el último lugar podían
+                // leer el mismo cupo disponible y entrar las dos.
+                $eventoBloqueado = EntregaFest::whereKey($this->evento->id)->lockForUpdate()->first();
+
+                if ($redirLleno = $this->redirigirSiLleno($eventoBloqueado)) {
+                    DB::rollBack();
+
+                    return $redirLleno;
+                }
+
+                // Defensa en profundidad: el <option> "bus" ya viene deshabilitado en el
+                // formulario cuando no hay cupo, pero un tamper del campo oculto o una carrera
+                // con otra confirmación no debe poder reservar un asiento de bus que ya no existe.
+                if ($this->transporte === 'bus') {
+                    $cupoBus = $eventoBloqueado->cupoBusDisponible();
+
+                    if ($cupoBus !== null && (1 + (int) $this->cantidad_acompanantes) > $cupoBus) {
+                        $this->transporte = 'propio';
+
+                        $this->dispatch('alertaLivewire', [
+                            'type' => 'warning',
+                            'title' => 'Cupos Completos',
+                            'text' => 'Justo se agotaron los cupos de la modalidad BUS AYBAR mientras completabas el formulario. Te registramos con Movilidad Propia.',
+                            'showConfirmButton' => true,
+                        ]);
+                    }
+                }
+            }
+
             // Actualizamos el prospecto con su respuesta
             $this->prospecto->update([
                 'invitacion_confirmada' => $confirmado
@@ -172,17 +212,6 @@ class AsistenciaInvitacionPropietario extends Component
             if ($confirmado) {
                 // Generar código único solo si asiste
                 $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
-
-                // Defensa en profundidad: el <option> "bus" ya viene deshabilitado en el
-                // formulario cuando no hay cupo, pero un tamper del campo oculto o una carrera
-                // con otra confirmación no debe poder reservar un asiento de bus que ya no existe.
-                if ($this->transporte === 'bus') {
-                    $cupoBus = $this->evento->fresh()->cupoBusDisponible();
-
-                    if ($cupoBus !== null && (1 + (int) $this->cantidad_acompanantes) > $cupoBus) {
-                        $this->transporte = 'propio';
-                    }
-                }
 
                 $invitado = InvitadoEntregaFest::create([
                     'entrega_fest_id' => $this->evento->id,
