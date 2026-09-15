@@ -255,3 +255,65 @@ it('cuando el bus alcanza para el titular pero no para su acompañante declarado
 
     expect($prospecto->fresh()->invitado->transporte)->toBe(InvitadoEntregaFest::TRANSPORTE_PROPIO);
 });
+
+// ---------------------------------------------------------------
+// Concurrencia: save() revalida contra la BD, no confía en lo que
+// mount() leyó cuando el visitante abrió el formulario.
+// ---------------------------------------------------------------
+
+it('si el aforo general se llena mientras el segundo formulario seguía abierto, ese segundo no entra y no queda a medias', function () {
+    $evento = eventoConLimites(['limite_invitados' => 1]);
+    $primero = prospectoLimiteSinResponder($evento);
+    $segundo = prospectoLimiteSinResponder($evento);
+
+    // Los dos abren el formulario cuando todavía queda 1 lugar libre: el mount()
+    // de ninguno los redirige a aforo-lleno.
+    $formularioPrimero = formularioLimiteTitular($evento, $primero)->set('asistira', 'si');
+    $formularioSegundo = formularioLimiteTitular($evento, $segundo)->set('asistira', 'si');
+
+    // El primero guarda y ocupa el único lugar disponible.
+    $formularioPrimero->call('save');
+
+    // El segundo, con el formulario ya abierto desde antes, intenta guardar después.
+    $formularioSegundo->call('save');
+
+    expect($primero->fresh()->invitacion_confirmada)->toBeTrue()
+        ->and($segundo->fresh()->invitacion_confirmada)->toBeNull()
+        ->and(InvitadoEntregaFest::where('prospecto_entrega_fest_id', $segundo->id)->exists())->toBeFalse()
+        ->and(InvitadoEntregaFest::where('entrega_fest_id', $evento->id)->where('confirmado', true)->count())->toBe(1);
+});
+
+it('el copropietario tampoco entra si el aforo general se llena mientras su formulario seguía abierto', function () {
+    $evento = eventoConLimites(['limite_invitados' => 1]);
+    $prospecto = prospectoLimiteSinResponder($evento);
+    $copropietario = copropietarioLimiteSinResponder($evento);
+
+    $formularioCopropietario = formularioLimiteCopropietario($evento, $copropietario)->set('asistira', 'si');
+
+    // Otra confirmación (el titular) ocupa el único lugar antes de que el
+    // copropietario, que ya tenía el formulario abierto, llegue a guardar.
+    formularioLimiteTitular($evento, $prospecto)->set('asistira', 'si')->call('save');
+
+    $formularioCopropietario->call('save');
+
+    expect($copropietario->fresh()->invitacion_confirmada)->toBeNull()
+        ->and(InvitadoEntregaFest::where('copropietario_entrega_fest_id', $copropietario->id)->exists())->toBeFalse()
+        ->and(InvitadoEntregaFest::where('entrega_fest_id', $evento->id)->where('confirmado', true)->count())->toBe(1);
+});
+
+it('si el limite de acompanantes baja en la BD mientras el formulario ya estaba abierto, save() valida contra el valor nuevo', function () {
+    $evento = eventoConLimites(['limite_acompanantes' => 2]);
+    $prospecto = prospectoLimiteSinResponder($evento);
+
+    // El formulario abre cuando el limite todavia era 2, y el visitante llena
+    // 2 acompanantes -validos en ese momento segun rules()-.
+    $componente = formularioLimiteTitular($evento, $prospecto)->set('asistira', 'si');
+    llenarAcompanantesLimite($componente, 2);
+
+    // El admin baja el limite a 1 desde el editor ERP mientras el formulario sigue abierto.
+    $evento->update(['limite_acompanantes' => 1]);
+
+    $componente->call('save')->assertHasErrors(['cantidad_acompanantes']);
+
+    expect(InvitadoEntregaFest::where('prospecto_entrega_fest_id', $prospecto->id)->exists())->toBeFalse();
+});
