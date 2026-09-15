@@ -51,7 +51,7 @@ class AsistenciaInvitacionCopropietario extends Component
 
         // 🛑 NUEVA CONDICIÓN: Verificar aforo (Solo validamos aforo si el cliente AÚN NO HA RESPONDIDO)
         // Si el cliente ya había confirmado, debe poder entrar a ver su respuesta normal.
-        if (is_null($this->prospecto->invitacion_confirmada)) {
+        if (is_null($this->copropietario->invitacion_confirmada)) {
             // Mandamos a validar. Le pasamos 250 como límite.
             if ($redirLleno = $this->redirigirSiLleno($this->evento)) return $redirLleno;
         }

@@ -6,11 +6,11 @@ services:
     ports:
       - "5678:5678"
     environment:
-      - N8N_HOST=darcie-semitropical-todd.ngrok-free.dev
+      - N8N_HOST=vacate-verbose-spiritual.ngrok-free.dev
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - NODE_ENV=production
-      - WEBHOOK_URL=https://darcie-semitropical-todd.ngrok-free.dev/
+      - WEBHOOK_URL=https://vacate-verbose-spiritual.ngrok-free.dev/
       - GENERIC_TIMEZONE=America/Lima
     volumes:
       - n8n_data:/home/node/.n8n
