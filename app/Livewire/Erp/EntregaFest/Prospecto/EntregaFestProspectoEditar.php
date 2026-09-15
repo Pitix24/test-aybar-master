@@ -71,8 +71,10 @@ class EntregaFestProspectoEditar extends Component
     // Modo: null = lista, 'crear' = formulario nuevo, 'editar' = editando fila
     public $cop_modo = null;
     public $cop_editando_id = null;
+    
     // Propiedad para bloquear la edición de historiales
     public $es_solo_lectura = false;
+    // Propiedad para bloquear el Envio de Comunicaciones segun Legal
     public $observacion_legal = false;
 
     // Campos del formulario copropietario
@@ -148,7 +150,6 @@ class EntregaFestProspectoEditar extends Component
     {
         $this->evento = EntregaFest::with('proyectos')->findOrFail($id);
         $this->prospecto = ProspectoEntregaFest::where('entrega_fest_id', $this->evento->id)->findOrFail($prospectoId);
-        // 🆕 Definimos si el formulario debe bloquearse
         $this->es_solo_lectura = !$this->prospecto->activo;
         $this->observacion_legal = $this->prospecto->observacion_legal;
 
@@ -218,12 +219,11 @@ class EntregaFestProspectoEditar extends Component
             'propietarioId' => $this->prospecto->id,
         ]);
 
-        // 🆕 Link de Cita de Contrato
         $this->link_cita_contrato = route('entrega-fest.cita-agendar.propietario', [
             'slug' => $this->evento->slug,
             'propietarioId' => $this->prospecto->id,
         ]);
-
+        
         $this->proyectos = $this->evento->proyectos;
         $this->estados_cliente = EntregaFestEstadoCliente::where('activo', true)
             ->orderBy('nombre')
@@ -433,7 +433,7 @@ class EntregaFestProspectoEditar extends Component
             return;
         }
 
-        $this->authorize('prospecto-entrega-fest.editar');
+        $this->authorize('prospecto.editar');
 
         $antes = [];
         foreach ($data as $campo => $valorNuevo) {
@@ -531,7 +531,7 @@ class EntregaFestProspectoEditar extends Component
             'observacion_legal' => $value
         ], 'TOGGLE OBSERVACION LEGAL');
     }
-
+    
     public function updateReubicacion()
     {
         $this->authorize('prospecto.editar');
@@ -639,7 +639,6 @@ class EntregaFestProspectoEditar extends Component
 
     public function updateLegal()
     {
-        // 1. PDF requerido cuando estado = CONFORME
         $isConforme = ($this->estado_contrato_preeliminar_emitido === 'CONFORME');
         $hasFile    = $this->prospecto->hasMedia('contrato-preliminar');
 
@@ -652,7 +651,6 @@ class EntregaFestProspectoEditar extends Component
             return;
         }
 
-        // 2. Validación
         $rules = [
             'gestor_legal_id'                     => 'nullable|exists:users,id',
             'observacion_gestor_legal'            => 'nullable|string',
@@ -661,15 +659,12 @@ class EntregaFestProspectoEditar extends Component
         ];
         $this->validate($rules);
 
-        // 🆕 3. Detectar PRIMERA transición a CONFORME (criterio: aún no hay fecha registrada)
         $primeraVezConforme = ($isConforme && !$this->prospecto->fecha_generacion_contrato);
 
-        // 4. legal_fecha_asignacion: actualizar si cambió el gestor
         if ($this->gestor_legal_id && $this->prospecto->gestor_legal_id != $this->gestor_legal_id) {
             $this->legal_fecha_asignacion = now()->format('Y-m-d\TH:i');
         }
 
-        // 5. Subir PDF (lógica existente, sin cambios)
         if ($this->archivo_contrato_preeliminar) {
             try {
                 $mediaAnterior     = $this->prospecto->getFirstMedia('contrato-preliminar');
@@ -712,7 +707,6 @@ class EntregaFestProspectoEditar extends Component
             }
         }
 
-        // 6. Construir payload
         $payload = [
             'gestor_legal_id'                     => $this->gestor_legal_id ?: null,
             'legal_fecha_asignacion'              => $this->legal_fecha_asignacion,
@@ -720,7 +714,6 @@ class EntregaFestProspectoEditar extends Component
             'estado_contrato_preeliminar_emitido' => $this->estado_contrato_preeliminar_emitido,
         ];
 
-        // 🆕 7. Si es la PRIMERA vez en CONFORME, registramos fecha automáticamente
         if ($primeraVezConforme) {
             $ahora = now();
             $payload['fecha_generacion_contrato'] = $ahora;
@@ -733,13 +726,10 @@ class EntregaFestProspectoEditar extends Component
             ]);
         }
 
-        // 8. Persistir
         $this->handleUpdate($payload, 'PROSPECTO EDITAR - LEGAL');
 
-        // 🆕 9a. DISPARAR EVENTO → N8N listener (solo en la primera transición CONFORME)
         EntregaFestContratoPreliminar::dispatch($this->prospecto->fresh());
 
-        // 9b. Mensaje informativo al usuario
         if ($primeraVezConforme) {
             $this->dispatch('alertaLivewire', [
                 'type'  => 'success',

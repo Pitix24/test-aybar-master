@@ -127,7 +127,7 @@ class EntregaFestAsistencia extends Component
             'asistencia_todo_' . $this->evento->codigo . '.xlsx'
         );
     }
-
+    
     public function toggleSegundaAsistencia($id)
     {
         $asistencia = AsistenciaEntregaFest::findOrFail($id);

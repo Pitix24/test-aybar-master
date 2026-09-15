@@ -45,8 +45,7 @@ class ReglamentoEditar extends Component
 
         $pdf = $this->reglamento_model->archivoPdf;
         if ($pdf) {
-            // Usamos la URL de stream guardada en BD, o la generamos si falta (compatibilidad hacia atrás)
-            $this->archivoActual = $pdf->url ?? route('cliente.reglamento.stream', ['id' => $this->reglamento_model->id]);
+            $this->archivoActual = $pdf->url ?? asset($pdf->path);
         }
     }
 
@@ -106,14 +105,12 @@ class ReglamentoEditar extends Component
 
             if ($this->archivo) {
                 if ($this->reglamento_model->archivoPdf) {
-                    // CAMBIO: Eliminar del disco privado 'local'
-                    Storage::disk('local')->delete($this->reglamento_model->archivoPdf->path);
+                    Storage::disk('public')->delete($this->reglamento_model->archivoPdf->path);
                     $this->reglamento_model->archivoPdf->delete();
                 }
 
-                // Y al guardar el nuevo archivo dentro de ReglamentoEditar, repites la misma lógica del Paso 1:
-                $path = $this->archivo->store('marketing/reglamentos', 'local');
-                $url = route('cliente.reglamento.stream', ['id' => $this->reglamento_model->id]);
+                $path = $this->archivo->store('marketing/reglamentos', 'public');
+                $url = Storage::url($path);
 
                 MarketingArchivo::create([
                     'archivable_id' => $this->reglamento_model->id,
@@ -137,7 +134,7 @@ class ReglamentoEditar extends Component
             ]);
 
             $this->reglamento_model->load('archivoPdf');
-            $this->archivoActual = $this->reglamento_model->archivoPdf->url ?? route('cliente.reglamento.stream', ['id' => $this->reglamento_model->id]);
+            $this->archivoActual = $this->reglamento_model->archivoPdf->url ?? asset($this->reglamento_model->archivoPdf->path);
             $this->archivo = null;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -165,8 +162,7 @@ class ReglamentoEditar extends Component
             DB::beginTransaction();
 
             if ($this->reglamento_model->archivoPdf) {
-                // CORRECCIÓN: Eliminar del disco 'local' (privado), no del 'public'
-                Storage::disk('local')->delete($this->reglamento_model->archivoPdf->path);
+                Storage::disk('public')->delete($this->reglamento_model->archivoPdf->path);
                 $this->reglamento_model->archivoPdf->delete();
             }
 

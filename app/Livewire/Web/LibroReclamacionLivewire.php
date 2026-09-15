@@ -57,6 +57,7 @@ class LibroReclamacionLivewire extends Component
     public $lista_proyectos = [];
     public $success = false;
     public $reclamo_registrado;
+    public $mostrar_advertencia_no_procede = false;
     public $mensaje_resultado = 'Tu reclamo ha sido enviado con éxito.';
     public $estilo_resultado = 'success';
     public $icono_resultado = 'fa-circle-check';
@@ -72,7 +73,7 @@ class LibroReclamacionLivewire extends Component
             'apellido_materno' => 'nullable|string|max:255',
             'domicilio' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:20',
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
             'tipo_documento' => 'nullable|in:dni,ruc,ce,no_definido',
             'numero_documento' => 'nullable|string|max:20',
             'tipo_bien_contratado' => 'nullable|in:producto,servicio,no_definido',
@@ -99,7 +100,6 @@ class LibroReclamacionLivewire extends Component
             'apellido_paterno' => 'apellido paterno',
             'apellido_materno' => 'apellido materno',
             'domicilio' => 'domicilio',
-            'email' => 'correo electrónico',
             'tipo_documento' => 'tipo de documento',
             'numero_documento' => 'número de documento',
             'tipo_bien_contratado' => 'tipo de bien',
@@ -114,38 +114,16 @@ class LibroReclamacionLivewire extends Component
         ];
     }
 
-    /**
-     * Planicie de Huaral se vende por etapas bajo dos empresas distintas del grupo
-     * (1ra Etapa: Aybar Corp S.A.C.; 2da y 3ra Etapa: Vivanorte S.A.C.). Legal
-     * confirmo (Expediente 0064) que el Libro de Reclamaciones debe permitir elegir
-     * la etapa especifica en vez del proyecto generico, para que el Detalle
-     * Proveedor muestre siempre la razon social correcta. Estos proyectos por etapa
-     * ya existen en el catalogo pero estan marcados como `activo = false` porque el
-     * area de negocio los reemplazo por el proyecto generico en otros modulos; se
-     * incluyen aqui por nombre exacto, sin activarlos globalmente, para no afectar
-     * ningun otro selector de proyectos del sistema (tickets, avances, citas, etc.).
-     */
-    private const PROYECTOS_ETAPA_HUARAL = [
-        'PLANICIE DE HUARAL 1RA ETAPA',
-        'PLANICIE DE HUARAL 2DA ETAPA',
-        'PLANICIE DE HUARAL 3RA ETAPA',
-    ];
-
-    private const PROYECTO_GENERICO_HUARAL = 'PLANICIE DE HUARAL';
-
     public function mount()
     {
         $this->lista_proyectos = Proyecto::with('unidadNegocio')
-            ->where(function ($query) {
-                $query->where('activo', true)
-                    ->orWhereIn('nombre', self::PROYECTOS_ETAPA_HUARAL);
-            })
-            ->where('nombre', '!=', self::PROYECTO_GENERICO_HUARAL)
+            ->where('activo', true)
             ->where('nombre', 'NOT LIKE', 'HU%')
             ->where('nombre', 'NOT LIKE', 'Terra Galicia%')
             ->orderBy('nombre')
             ->get();
     }
+
 
     public function updatedProyectoId($id)
     {
@@ -175,8 +153,41 @@ class LibroReclamacionLivewire extends Component
         $this->monto_reclamado = $this->normalizarMontoReclamado($value);
     }
 
+    public function updated($propertyName): void
+    {
+        if ($propertyName !== 'mostrar_advertencia_no_procede' && $this->mostrar_advertencia_no_procede) {
+            $this->mostrar_advertencia_no_procede = false;
+        }
+    }
+
+    public function registrar(): void
+    {
+        $clasificacion = $this->resolverClasificacionWeb();
+
+        if ($clasificacion === 'NO_PROCEDE' && !$this->mostrar_advertencia_no_procede) {
+            $this->mostrar_advertencia_no_procede = true;
+
+            return;
+        }
+
+        $this->enviar();
+    }
+
+    public function confirmarEnvioNoProcede(): void
+    {
+        $this->mostrar_advertencia_no_procede = false;
+        $this->enviar();
+    }
+
+    public function cancelarAdvertenciaNoProcede(): void
+    {
+        $this->mostrar_advertencia_no_procede = false;
+    }
+
     public function enviar()
     {
+        $this->mostrar_advertencia_no_procede = false;
+
         try {
             $this->validate();
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -185,7 +196,6 @@ class LibroReclamacionLivewire extends Component
                 'title' => 'Revise los datos',
                 'text' => 'Se detectaron formatos invalidos. Corrija los campos resaltados para continuar.'
             ]);
-            $this->dispatch('scroll-a-error');
             throw $e;
         }
 

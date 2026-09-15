@@ -110,7 +110,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
             ->when(($f['filtro_manzana'] ?? '') !== '', function($q) use ($f) {
                 $q->where('manzana', $f['filtro_manzana']);
             })
-
+            
             ->when(isset($f['filtro_activo']) && $f['filtro_activo'] !== '', function ($q) use ($f) {
                 $q->where('activo', $f['filtro_activo'] === '1');
             })
@@ -118,10 +118,11 @@ class ProspectoEntregaFest extends Model implements HasMedia
             ->when(isset($f['filtro_observacion_legal']) && $f['filtro_observacion_legal'] !== '', function ($q) use ($f) {
                 $q->where('observacion_legal', $f['filtro_observacion_legal'] === '1');
             })
-
+            
             ->when($f['con_historico'] ?? null, function($q) {
                 $q->whereNotNull('prospecto_historico_id');
             })
+            
             ->when(($f['filtro_lote_entregado'] ?? '') !== '', function($q) use ($f) {
                 if ($f['filtro_lote_entregado'] === 'si') {
                     $q->whereHas('prospectoHistorico', fn($h) => $h->where('lote_entregado', true));
@@ -129,7 +130,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
                     $q->whereHas('prospectoHistorico', fn($h) => $h->where('lote_entregado', false));
                 }
             })
-
+            
             ->when($f['gestor_legal_id'] ?? null, function ($q) use ($f) {
                 if ($f['gestor_legal_id'] === 'sin_asignar') {
                     $q->whereNull('gestor_legal_id');
@@ -137,8 +138,7 @@ class ProspectoEntregaFest extends Model implements HasMedia
                     $q->where('gestor_legal_id', $f['gestor_legal_id']);
                 }
             })
-
-            // NUEVO FILTRO GESTOR BACKOFFICE
+            
             ->when($f['filtro_gestor_backoffice'] ?? null, function ($q) use ($f) {
                 if ($f['filtro_gestor_backoffice'] === 'sin_asignar') {
                     $q->whereNull('gestor_backoffice_id');
@@ -166,14 +166,13 @@ class ProspectoEntregaFest extends Model implements HasMedia
                     ? $q->whereNull('invitacion_confirmada')
                     : $q->where('invitacion_confirmada', $f['filtro_invitacion']);
             })
-
-            // Rango de fechas (campo: fecha_firma)
+            
             ->when($f['fecha_firma_desde'] ?? null, fn($q) => $q->whereDate('fecha_firma', '>=', $f['fecha_firma_desde']))
             ->when($f['fecha_firma_hasta'] ?? null, fn($q) => $q->whereDate('fecha_firma', '<=', $f['fecha_firma_hasta']))
-            // Rango de fechas (campo: fecha_generacion_contrato)
             ->when($f['fecha_generacion_desde'] ?? null, fn($q) => $q->whereDate('fecha_generacion_contrato', '>=', $f['fecha_generacion_desde']))
             ->when($f['fecha_generacion_hasta'] ?? null, fn($q) => $q->whereDate('fecha_generacion_contrato', '<=', $f['fecha_generacion_hasta']));
     }
+    
     // ---------------------------------------------------------------
     // Fillable
     // ---------------------------------------------------------------
@@ -268,13 +267,12 @@ class ProspectoEntregaFest extends Model implements HasMedia
         });
 
         static::updated(function (self $prospecto): void {
-            // Si cambió el campo 'observacion_legal' y tiene un histórico vinculado
             if ($prospecto->isDirty('observacion_legal') && $prospecto->prospecto_historico_id) {
                 $prospecto->prospectoHistorico()->update([
                     'observacion_legal' => $prospecto->observacion_legal
                 ]);
             }
-        });
+        });        
     }
 
     public function proyecto()

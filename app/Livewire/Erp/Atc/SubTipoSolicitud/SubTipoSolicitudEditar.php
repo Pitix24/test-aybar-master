@@ -66,7 +66,7 @@ class SubTipoSolicitudEditar extends Component
 
     public function update()
     {
-        $this->authorize('sub-tipo-solicitud.accion-editar');
+        $this->authorize('sub-tipo-solicitud.editar');
 
         try {
             $this->validate();
@@ -117,7 +117,7 @@ class SubTipoSolicitudEditar extends Component
     #[On('eliminarSubTipoSolicitudOn')]
     public function eliminarSubTipoSolicitudOn()
     {
-        $this->authorize('sub-tipo-solicitud.accion-eliminar');
+        $this->authorize('sub-tipo-solicitud.eliminar');
 
         try {
             DB::beginTransaction();

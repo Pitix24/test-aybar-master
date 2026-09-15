@@ -41,7 +41,7 @@ class ProspectoHistorico extends Model
         'fecha_firma_presencial' => 'datetime',
         'fecha_validacion_firma' => 'datetime',
     ];
-
+    
     protected static function booted(): void
     {
         static::creating(function (self $prospecto): void {

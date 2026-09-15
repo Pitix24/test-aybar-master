@@ -42,7 +42,7 @@ class CanalCrear extends Component
 
     public function store()
     {
-        $this->authorize('canal.accion-crear');
+        $this->authorize('canal.crear');
 
         try {
             $this->validate();

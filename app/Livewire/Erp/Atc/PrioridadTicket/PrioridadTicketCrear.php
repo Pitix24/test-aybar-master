@@ -51,7 +51,7 @@ class PrioridadTicketCrear extends Component
 
     public function store()
     {
-        $this->authorize('prioridad-ticket.accion-crear');
+        $this->authorize('prioridad-ticket.crear');
 
         try {
             $this->validate();

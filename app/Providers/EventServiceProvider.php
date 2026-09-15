@@ -6,11 +6,14 @@ use Illuminate\Auth\Events\Login;
 use App\Listeners\ClienteLoginListener;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Listeners\PasswordResetListener;
-
 use App\Events\TicketCreado;
 use App\Listeners\EnviarCorreoTicketCreado;
 use App\Events\UsuarioRegistrado;
 use App\Listeners\EnviarCorreoVerificacionUsuario;
+use App\Events\ProspectoBackofficeConforme;
+use App\Listeners\EnviarInvitacionesAsistencia;
+use App\Events\ProspectoLegalConforme;
+use App\Listeners\EnviarLinkFirma;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -26,6 +29,15 @@ class EventServiceProvider extends ServiceProvider
 
         UsuarioRegistrado::class => [
             EnviarCorreoVerificacionUsuario::class,
+        ],
+
+            // ── EntregaFest ──────────────────────────────────────────────────
+        ProspectoBackofficeConforme::class => [
+            EnviarInvitacionesAsistencia::class,
+        ],
+
+        ProspectoLegalConforme::class => [
+            EnviarLinkFirma::class,
         ],
 
         \App\Events\EntregaFest\EntregaFestAsistenciaConfirmacion::class => [

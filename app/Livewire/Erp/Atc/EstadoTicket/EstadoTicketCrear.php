@@ -48,7 +48,7 @@ class EstadoTicketCrear extends Component
 
     public function store()
     {
-        $this->authorize('estado-ticket.accion-crear');
+        $this->authorize('estado-ticket.crear');
 
         try {
             $this->validate();

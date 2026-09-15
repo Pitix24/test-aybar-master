@@ -55,7 +55,7 @@ class AsistenciaInvitacionPropietario extends Component
         // Si el cliente ya había confirmado, debe poder entrar a ver su respuesta normal.
         if (is_null($this->prospecto->invitacion_confirmada)) {
             // Mandamos a validar. Le pasamos 250 como límite.
-            if ($redirLleno = $this->redirigirSiLleno($this->evento)) return $redirLleno;
+            if ($redirLleno = $this->redirigirSiLleno($this->evento, 1)) return $redirLleno;
         }
 
         // Validar slug

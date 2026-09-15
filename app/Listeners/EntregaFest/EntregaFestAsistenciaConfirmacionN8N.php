@@ -33,7 +33,7 @@ class EntregaFestAsistenciaConfirmacionN8N
             Log::channel('entrega-fest')->warning("[ASISTENCIA-CONFIRMACION] Envío abortado: Invitado #{$invitado->id} tiene restricción/observación legal.");
             return;
         }
-
+        
         // Definimos la persona (Titular o Copropietario)
         $persona = $invitado->prospecto ?? $invitado->copropietario;
 

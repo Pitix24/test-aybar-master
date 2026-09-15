@@ -65,7 +65,7 @@ class PrioridadTicketEditar extends Component
 
     public function update()
     {
-        $this->authorize('prioridad-ticket.accion-editar');
+        $this->authorize('prioridad-ticket.editar');
 
         try {
             $this->validate();
@@ -117,7 +117,7 @@ class PrioridadTicketEditar extends Component
     #[On('eliminarPrioridadTicketOn')]
     public function eliminarPrioridadTicketOn()
     {
-        $this->authorize('prioridad-ticket.accion-eliminar');
+        $this->authorize('prioridad-ticket.eliminar');
 
         try {
             DB::beginTransaction();

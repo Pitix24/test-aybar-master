@@ -140,7 +140,7 @@ class EntregaFestEditar extends Component
             $this->dispatch('alertaLivewire', ['type' => 'error', 'title' => 'Error', 'text' => $e->getMessage()]);
         }
     }
-
+    
     public function cancelarEvento()
     {
         // Actualizamos en BD

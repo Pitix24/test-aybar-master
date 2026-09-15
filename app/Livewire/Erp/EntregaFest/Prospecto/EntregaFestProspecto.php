@@ -5,9 +5,12 @@ namespace App\Livewire\Erp\EntregaFest\Prospecto;
 use App\Events\EntregaFest\EntregaFestPreInvitacion;
 use App\Events\EntregaFest\EntregaFestAsistenciaInvitacionMasivo;
 use App\Exports\EntregaFest\EntregaFestProspectoExport;
+use App\Jobs\EntregaFest\RecoverEntregaFestAsistenciaJob;
+use App\Jobs\EntregaFest\RecoverEntregaFestContratoJob;
 use App\Models\EntregaFest;
 use App\Models\ProspectoEntregaFest;
-use Livewire\Attributes\{Layout, Lazy, Title, Url};
+use App\Services\EntregaFest\Recovery\EntregaFestN8NRecoveryService;
+use Livewire\Attributes\{Layout, Lazy, On, Title, Url};
 use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
@@ -54,7 +57,7 @@ class EntregaFestProspecto extends Component
 
     public $tipoAsignacionMasiva = 'backoffice';
     public $gestorIdSeleccionado = '';
-
+    
     #[Url(as: 'q')]
     public $buscar = '';
 
@@ -63,7 +66,7 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $filtro_manzana = '';
-
+    
     #[Url(keep: true)]
     public $filtro_activo = '1';
 
@@ -75,7 +78,7 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $filtro_lote_entregado = '';
-
+    
     #[Url(keep: true)]
     public $filtroGestorBackoffice = '';
 
@@ -108,7 +111,7 @@ class EntregaFestProspecto extends Component
 
     #[Url(keep: true)]
     public $estado_cliente_id = '';
-
+    
     #[Url(keep: true)]
     public $gestor_legal_id = '';
 
@@ -133,7 +136,7 @@ class EntregaFestProspecto extends Component
     public $gestoresLegales = [];
     public $gestoresBackofficeList = [];
     public $accionObservacionLegal = '';
-
+    
     // ============================================================
     //                          LIFECYCLE
     // ============================================================
@@ -164,13 +167,13 @@ class EntregaFestProspecto extends Component
         $this->validarRangoFechas();
         $this->cargarStats();
     }
-
+    
     public function updatedProyectoId($value)
     {
         $this->filtro_manzana = ''; // Limpiamos la manzana elegida al cambiar de proyecto
         $this->resetPage();         // Regresamos a la primera página de la tabla
     }
-
+    
     // ============================================================
     //            MÉTODOS DE SELECCIÓN Y ASIGNACIÓN MASIVA
     // ============================================================
@@ -380,7 +383,7 @@ class EntregaFestProspecto extends Component
                 'La fecha "Hasta" no puede ser menor que "Desde". Se ajustó automáticamente.'
             );
         }
-
+        
         if (
             $this->fechaGeneracionDesde && $this->fechaGeneracionHasta &&
             $this->fechaGeneracionDesde > $this->fechaGeneracionHasta
@@ -467,6 +470,56 @@ class EntregaFestProspecto extends Component
             'type'  => 'success',
             'title' => '¡Solicitud de envío procesada!',
             'text'  => 'Se ha enviado la orden de envío masivo de "Invitación" a n8n',
+        ]);
+    }
+    
+    #[On('recuperarContratoPendientes')]
+    public function recuperarContratoPendientes(EntregaFestN8NRecoveryService $recoveryService): void
+    {
+        $ids = array_values($recoveryService->getPendingContratoIds());
+
+        if (empty($ids)) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'info',
+                'title' => 'Sin pendientes',
+                'text'  => 'No hay prospectos pendientes de recuperación en el flujo de Contrato/Cita.',
+            ]);
+            return;
+        }
+
+        foreach ($ids as $index => $prospectoId) {
+            RecoverEntregaFestContratoJob::dispatch($prospectoId)->delay(now()->addMinutes($index));
+        }
+
+        $this->dispatch('alertaLivewire', [
+            'type'  => 'success',
+            'title' => '¡Recuperación encolada!',
+            'text'  => 'Se encolaron ' . count($ids) . ' prospecto(s) para reintento de Contrato/Cita, espaciados 1 por minuto.',
+        ]);
+    }
+
+    #[On('recuperarAsistenciaPendientes')]
+    public function recuperarAsistenciaPendientes(EntregaFestN8NRecoveryService $recoveryService): void
+    {
+        $ids = array_values($recoveryService->getPendingAsistenciaIds());
+
+        if (empty($ids)) {
+            $this->dispatch('alertaLivewire', [
+                'type'  => 'info',
+                'title' => 'Sin pendientes',
+                'text'  => 'No hay invitados pendientes de recuperación en el flujo de Asistencia/Instrucciones.',
+            ]);
+            return;
+        }
+
+        foreach ($ids as $index => $invitadoId) {
+            RecoverEntregaFestAsistenciaJob::dispatch($invitadoId)->delay(now()->addMinutes($index));
+        }
+
+        $this->dispatch('alertaLivewire', [
+            'type'  => 'success',
+            'title' => '¡Recuperación encolada!',
+            'text'  => 'Se encolaron ' . count($ids) . ' invitado(s) para reintento de Asistencia/Instrucciones, espaciados 1 por minuto.',
         ]);
     }
 

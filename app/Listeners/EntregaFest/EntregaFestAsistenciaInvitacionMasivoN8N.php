@@ -149,24 +149,35 @@ class EntregaFestAsistenciaInvitacionMasivoN8N
             return;
         }
 
-        // 2. Enviamos todo el paquete a n8n
-        try {
-            Http::post(config('services.n8n.entregafest.asistencia_invitacion_masivo'), [
-                'contactos' => $contactos,
-                'evento' => $evento->nombre,
-                'plantilla' => [
-                    'titulo' => $plantilla?->titulo ?? 'Invitación: ' . $evento->nombre,
-                    'subtitulo' => $plantilla?->subtitulo ?? 'Confirma tu asistencia',
-                    'descripcion' => $plantilla?->descripcion ?? '',
-                    'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
-                    'link_boton' => $plantilla?->link_boton ?? '',
-                ],
-                'etapa' => 'asistencia-invitacion'
-            ]);
+        // 2. Enviamos el paquete a n8n en LOTES para no superar el límite de payload de n8n (16MB)
+        $url   = config('services.n8n.entregafest.asistencia_invitacion_masivo');
+        $lotes = array_chunk($contactos, 100);
+        $total = count($contactos);
+        $numeroLote = 0;
 
-            Log::channel('entrega-fest')->info("[ASISTENCIA-INVITACION-MASIVO-N8N] Enviada exitosamente para " . count($contactos) . " prospectos del evento #{$evento->id}");
+        try {
+            foreach ($lotes as $i => $lote) {
+                $numeroLote = $i + 1;
+
+                Http::post($url, [
+                    'contactos' => $lote,
+                    'evento' => $evento->nombre,
+                    'plantilla' => [
+                        'titulo' => $plantilla?->titulo ?? 'Invitación: ' . $evento->nombre,
+                        'subtitulo' => $plantilla?->subtitulo ?? 'Confirma tu asistencia',
+                        'descripcion' => $plantilla?->descripcion ?? '',
+                        'imagen_url' => $plantilla?->getFirstMediaUrl('imagen') ?: $evento->getFirstMediaUrl('imagen_invitacion'),
+                        'link_boton' => $plantilla?->link_boton ?? '',
+                    ],
+                    'etapa' => 'asistencia-invitacion'
+                ])->throw();
+
+                Log::channel('entrega-fest')->info("[ASISTENCIA-INVITACION-MASIVO-N8N] Lote {$numeroLote}/" . count($lotes) . " enviado (" . count($lote) . " contactos) del evento #{$evento->id}");
+            }
+
+            Log::channel('entrega-fest')->info("[ASISTENCIA-INVITACION-MASIVO-N8N] Enviada exitosamente para " . $total . " prospectos del evento #{$evento->id} en " . count($lotes) . " lotes");
         } catch (\Exception $e) {
-            Log::channel('entrega-fest')->error("[ASISTENCIA-INVITACION-MASIVO-N8N] Error enviando a n8n: " . $e->getMessage());
+            Log::channel('entrega-fest')->error("[ASISTENCIA-INVITACION-MASIVO-N8N] Error enviando a n8n (lote {$numeroLote} de " . count($lotes) . "): " . $e->getMessage());
         }
     }
 }

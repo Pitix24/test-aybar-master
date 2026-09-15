@@ -73,19 +73,28 @@ class ReglamentoTodo extends Component
     {
         try {
             $slinProyectoIds = [];
+            $debugInfo = []; // ← debug temporal
 
             foreach ($cliente['empresas'] ?? [] as $empresa) {
                 try {
-                    $lotes = $slinService->getLotes(
-                        $empresa['codigo'],
-                        $empresa['id_empresa']
-                    );
+                    $lotes = $slinService->getLotes($empresa['codigo'], $empresa['id_empresa']);
 
                     foreach ($lotes as $lote) {
-                        if (isset($lote['id_servicio']) && $lote['id_servicio'] === '02') {
-                            if (isset($lote['id_proyecto'])) {
-                                $slinProyectoIds[] = (string) $lote['id_proyecto'];
-                            }
+                        $debugInfo[] = [
+                            'empresa'     => $empresa['id_empresa'],
+                            'id_servicio' => $lote['id_servicio'] ?? null,
+                            'id_proyecto' => $lote['id_proyecto'] ?? null,
+                            'estado'      => $lote['estado'] ?? null, // ajustar nombre real
+                            'id_estado'    => $lote['id_estado'] ?? null,   // ajustar nombre real
+                            'vigente'      => $lote['vigente'] ?? null, // ejemplo de lógica vigente
+                        ];
+
+                        if (
+                            ($lote['id_servicio'] ?? null) === '02'
+                            && isset($lote['id_proyecto'])
+                            // && ($lote['estado'] ?? null) === 'VIGENTE'  ← descomentar tras confirmar
+                        ) {
+                            $slinProyectoIds[] = $lote['id_proyecto'];
                         }
                     }
                 } catch (\Exception $e) {
@@ -95,35 +104,19 @@ class ReglamentoTodo extends Component
                 }
             }
 
-            // LOG DE DIAGNÓSTICO — puedes eliminarlo cuando el problema esté resuelto
-            Log::channel('reglamento')->info('[ReglamentoTodo] IDs de proyecto recibidos de SLIN', [
-                'usuario_id'       => auth()->id(),
-                'slin_proyecto_ids' => $slinProyectoIds,
-                'proyectos_en_bd'  => \App\Models\Proyecto::where('activo', true)
-                    ->whereNotNull('slin_id')
-                    ->pluck('slin_id', 'id')
-                    ->toArray(),
+            Log::channel('reglamento')->info('Diagnóstico cliente DNI ' . ($cliente['dni'] ?? 'N/A'), [
+                'slin_proyecto_ids_crudos' => $slinProyectoIds,
+                'lotes_detalle'            => $debugInfo,
             ]);
 
             if (empty($slinProyectoIds)) {
                 return [];
             }
 
-            // Normalizamos a string para evitar mismatch "001" vs 1
-            $slinProyectoIds = array_unique(array_map('strval', $slinProyectoIds));
-
-            $proyectosEncontrados = Proyecto::whereIn('slin_id', $slinProyectoIds)
+            return Proyecto::whereIn('slin_id', array_unique($slinProyectoIds))
                 ->where('activo', true)
                 ->pluck('id')
                 ->toArray();
-
-            // LOG DE DIAGNÓSTICO — puedes eliminarlo cuando el problema esté resuelto
-            Log::channel('reglamento')->info('[ReglamentoTodo] Proyectos locales encontrados', [
-                'usuario_id'          => auth()->id(),
-                'proyectos_ids_local' => $proyectosEncontrados,
-            ]);
-
-            return $proyectosEncontrados;
 
         } catch (\Exception $e) {
             Log::channel('reglamento')->error('Error en obtenerProyectosDelCliente: ' . $e->getMessage());

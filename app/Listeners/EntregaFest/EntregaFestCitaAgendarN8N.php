@@ -20,7 +20,7 @@ class EntregaFestCitaAgendarN8N
             Log::channel('entrega-fest')->info("[CITA-AGENDAR] Saltado para #{$prospecto->id} (Ya tiene fecha de firma)");
             return;
         }
-
+        
         // 🛑 FILTRO: Si el prospecto tiene observación legal, cancelamos el envío
         if ($prospecto->observacion_legal) {
             Log::channel('entrega-fest')->warning("[CITA-AGENDAR] Envío abortado: Prospecto #{$prospecto->id} tiene restricción/observación legal.");

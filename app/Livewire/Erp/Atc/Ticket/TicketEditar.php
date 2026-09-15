@@ -225,9 +225,7 @@ class TicketEditar extends Component
     public function update()
     {
         $this->authorize('ticket.accion-editar');
-        // Añade esta línea para limpiar espacios accidentales antes de la validación
         $this->email = $this->email ? trim($this->email) : null;
-
         // Validar y, si hay errores, notificar pero NO relanzar la excepción
         // para que Livewire pueda pintar los errores por campo en la vista.
         try {

@@ -181,6 +181,7 @@ class AdminEditar extends Component
             ]);
 
             return redirect()->route('erp.admin.vista.todo');
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('admins')->error("[USUARIO] Error al eliminar usuario admin: " . $e->getMessage(), [
