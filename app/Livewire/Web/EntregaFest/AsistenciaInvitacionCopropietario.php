@@ -26,6 +26,8 @@ class AsistenciaInvitacionCopropietario extends Component
     public $cantidad_acompanantes = 0;
     public $transporte = 'bus';
     public $observaciones = '';
+    public $limite_acompanantes = 2;
+    public $cupo_bus_disponible = null; // null = sin límite configurado
 
     // Datos del acompañante
     public $acompanantes = [];
@@ -46,6 +48,9 @@ class AsistenciaInvitacionCopropietario extends Component
 
         $this->evento = $this->copropietario->prospecto->entregaFest;
 
+        $this->limite_acompanantes = $this->evento->limiteAcompanantes();
+        $this->cupo_bus_disponible = $this->evento->cupoBusDisponible();
+
         // 🛑 Si el evento ya se realizó → redirigir
         if ($redir = $this->redirigirSiConcluido($this->evento)) return $redir;
 
@@ -54,6 +59,8 @@ class AsistenciaInvitacionCopropietario extends Component
         if (is_null($this->copropietario->invitacion_confirmada)) {
             // Mandamos a validar. Le pasamos 250 como límite.
             if ($redirLleno = $this->redirigirSiLleno($this->evento)) return $redirLleno;
+
+            $this->avisarSiBusNoAlcanza();
         }
 
         // Validar slug
@@ -79,15 +86,16 @@ class AsistenciaInvitacionCopropietario extends Component
 
     protected function rules()
     {
+        $valoresConAcompanantes = implode(',', range(1, max($this->limite_acompanantes, 1)));
+
         return [
             'asistira' => 'required|in:si,no',
-            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:2', // <-- Cambiado a max:2
+            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:'.$this->limite_acompanantes,
             'transporte' => 'required_if:asistira,si|in:bus,propio',
             'observaciones' => 'nullable|string|max:500',
 
-            // Validación dinámica para el array
-            'acompanantes.*.dni' => 'required_if:cantidad_acompanantes,1,2|nullable|string|max:15',
-            'acompanantes.*.nombres' => 'required_if:cantidad_acompanantes,1,2|nullable|string|max:255',
+            'acompanantes.*.dni' => "required_if:cantidad_acompanantes,{$valoresConAcompanantes}|nullable|string|max:15",
+            'acompanantes.*.nombres' => "required_if:cantidad_acompanantes,{$valoresConAcompanantes}|nullable|string|max:255",
             'acompanantes.*.email' => 'nullable|email|max:255',
             'acompanantes.*.celular' => 'nullable|string|max:20',
         ];
@@ -105,6 +113,33 @@ class AsistenciaInvitacionCopropietario extends Component
                 'email' => '',
                 'celular' => ''
             ];
+        }
+
+        $this->avisarSiBusNoAlcanza();
+    }
+
+    public function updatedTransporte($value)
+    {
+        $this->avisarSiBusNoAlcanza();
+    }
+
+    protected function avisarSiBusNoAlcanza(): void
+    {
+        if ($this->transporte !== 'bus' || $this->cupo_bus_disponible === null) {
+            return;
+        }
+
+        $personasEnBus = 1 + (int) $this->cantidad_acompanantes;
+
+        if ($personasEnBus > $this->cupo_bus_disponible) {
+            $this->transporte = 'propio';
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Cupos Completos',
+                'text' => 'Se ha alcanzado el límite de Cupos disponibles para la modalidad BUS AYBAR. Para continuar con tu registro, por favor, selecciona Movilidad Propia como modalidad de traslado.',
+                'showConfirmButton' => true,
+            ]);
         }
     }
 
@@ -128,6 +163,14 @@ class AsistenciaInvitacionCopropietario extends Component
             ]);
 
             if ($confirmado) {
+                if ($this->transporte === 'bus') {
+                    $cupoBus = $this->evento->fresh()->cupoBusDisponible();
+
+                    if ($cupoBus !== null && (1 + (int) $this->cantidad_acompanantes) > $cupoBus) {
+                        $this->transporte = 'propio';
+                    }
+                }
+
                 $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . strtoupper(bin2hex(random_bytes(3)));
 
                 $invitado = InvitadoEntregaFest::create([

@@ -27,6 +27,8 @@ class AsistenciaInvitacionPropietario extends Component
     public $cantidad_acompanantes = 0;
     public $transporte = 'bus';
     public $observaciones = '';
+    public $limite_acompanantes = 2;
+    public $cupo_bus_disponible = null; // null = sin límite configurado
 
     // Datos del acompañante
     public $acompanantes = [];
@@ -48,6 +50,9 @@ class AsistenciaInvitacionPropietario extends Component
 
         $this->evento = $this->prospecto->entregaFest;
 
+        $this->limite_acompanantes = $this->evento->limiteAcompanantes();
+        $this->cupo_bus_disponible = $this->evento->cupoBusDisponible();
+
         // 🛑 Si el evento ya se realizó → redirigir
         if ($redir = $this->redirigirSiConcluido($this->evento)) return $redir;
 
@@ -56,6 +61,8 @@ class AsistenciaInvitacionPropietario extends Component
         if (is_null($this->prospecto->invitacion_confirmada)) {
             // Mandamos a validar. Le pasamos 250 como límite.
             if ($redirLleno = $this->redirigirSiLleno($this->evento, 1)) return $redirLleno;
+
+            $this->avisarSiBusNoAlcanza();
         }
 
         // Validar slug
@@ -81,15 +88,16 @@ class AsistenciaInvitacionPropietario extends Component
 
     protected function rules()
     {
+        $valoresConAcompanantes = implode(',', range(1, max($this->limite_acompanantes, 1)));
+
         return [
             'asistira' => 'required|in:si,no',
-            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:2', // <-- Cambiado a max:2
+            'cantidad_acompanantes' => 'required_if:asistira,si|integer|min:0|max:'.$this->limite_acompanantes,
             'transporte' => 'required_if:asistira,si|in:bus,propio',
             'observaciones' => 'nullable|string|max:500',
 
-            // Validación dinámica para el array
-            'acompanantes.*.dni' => 'required_if:cantidad_acompanantes,1,2|nullable|string|max:15',
-            'acompanantes.*.nombres' => 'required_if:cantidad_acompanantes,1,2|nullable|string|max:255',
+            'acompanantes.*.dni' => "required_if:cantidad_acompanantes,{$valoresConAcompanantes}|nullable|string|max:15",
+            'acompanantes.*.nombres' => "required_if:cantidad_acompanantes,{$valoresConAcompanantes}|nullable|string|max:255",
             'acompanantes.*.email' => 'nullable|email|max:255',
             'acompanantes.*.celular' => 'nullable|string|max:20',
         ];
@@ -107,6 +115,38 @@ class AsistenciaInvitacionPropietario extends Component
                 'email' => '',
                 'celular' => ''
             ];
+        }
+
+        $this->avisarSiBusNoAlcanza();
+    }
+
+    public function updatedTransporte($value)
+    {
+        $this->avisarSiBusNoAlcanza();
+    }
+
+    /**
+     * La opción "bus" ya viene deshabilitada en el <select> cuando no hay cupo, pero esto
+     * corrige el estado igual (carga inicial, o si el navegador no respeta el disabled) y
+     * explica por qué con una notificación.
+     */
+    protected function avisarSiBusNoAlcanza(): void
+    {
+        if ($this->transporte !== 'bus' || $this->cupo_bus_disponible === null) {
+            return;
+        }
+
+        $personasEnBus = 1 + (int) $this->cantidad_acompanantes;
+
+        if ($personasEnBus > $this->cupo_bus_disponible) {
+            $this->transporte = 'propio';
+
+            $this->dispatch('alertaLivewire', [
+                'type' => 'warning',
+                'title' => 'Cupos Completos',
+                'text' => 'Se ha alcanzado el límite de Cupos disponibles para la modalidad BUS AYBAR. Para continuar con tu registro, por favor, selecciona Movilidad Propia como modalidad de traslado.',
+                'showConfirmButton' => true,
+            ]);
         }
     }
 
@@ -132,6 +172,17 @@ class AsistenciaInvitacionPropietario extends Component
             if ($confirmado) {
                 // Generar código único solo si asiste
                 $codigo = 'INV-' . str_pad($this->evento->id, 3, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
+
+                // Defensa en profundidad: el <option> "bus" ya viene deshabilitado en el
+                // formulario cuando no hay cupo, pero un tamper del campo oculto o una carrera
+                // con otra confirmación no debe poder reservar un asiento de bus que ya no existe.
+                if ($this->transporte === 'bus') {
+                    $cupoBus = $this->evento->fresh()->cupoBusDisponible();
+
+                    if ($cupoBus !== null && (1 + (int) $this->cantidad_acompanantes) > $cupoBus) {
+                        $this->transporte = 'propio';
+                    }
+                }
 
                 $invitado = InvitadoEntregaFest::create([
                     'entrega_fest_id' => $this->evento->id,

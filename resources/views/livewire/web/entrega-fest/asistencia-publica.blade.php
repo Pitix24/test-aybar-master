@@ -57,18 +57,27 @@
                     @if ($asistira === 'si')
                         <div class="ef_form_grid">
                             <div class="ef_input_group">
-                                <label>Nº de acompañantes (máx. 2)</label>
+                                <label>Nº de acompañantes (máx. {{ $limite_acompanantes }})</label>
                                 <select wire:model.live="cantidad_acompanantes" class="ef_input">
                                     <option value="0">Sin acompañantes</option>
-                                    <option value="1">1 acompañante</option>
-                                    <option value="2">2 acompañantes</option>
+                                    @for ($n = 1; $n <= $limite_acompanantes; $n++)
+                                        @php
+                                            $superaCupoBus = $transporte === 'bus'
+                                                && $cupo_bus_disponible !== null
+                                                && (1 + $n) > $cupo_bus_disponible;
+                                        @endphp
+                                        <option value="{{ $n }}" @disabled($superaCupoBus)>
+                                            {{ $n }} acompañante{{ $n > 1 ? 's' : '' }}{{ $superaCupoBus ? ' (sin cupo de bus)' : '' }}
+                                        </option>
+                                    @endfor
                                 </select>
                             </div>
 
                             <div class="ef_input_group">
                                 <label>Tipo de Transporte</label>
-                                <select wire:model="transporte" class="ef_input">
-                                    <option value="bus">Bus</option>
+                                <select wire:model.live="transporte" class="ef_input">
+                                    @php $busSinCupo = $cupo_bus_disponible !== null && $cupo_bus_disponible < 1; @endphp
+                                    <option value="bus" @disabled($busSinCupo)>Bus{{ $busSinCupo ? ' (Sin cupos)' : '' }}</option>
                                     <option value="propio">Movilidad Propia</option>
                                 </select>
                             </div>
