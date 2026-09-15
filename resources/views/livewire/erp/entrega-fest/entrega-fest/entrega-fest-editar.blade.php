@@ -107,6 +107,18 @@
                             </div>
                         </div>
 
+                        <div class="g_fila">
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label>Límite de Acompañantes</label>
+                                <input type="number" wire:model="limite_acompanantes" {{ !$activo ? 'disabled' : '' }} min="0" max="10">
+                            </div>
+                            <div class="g_margin_bottom_10 g_columna_4">
+                                <label>Límite de Asientos de Bus</label>
+                                <input type="number" wire:model="limite_asientos_bus" {{ !$activo ? 'disabled' : '' }} min="0">
+                                <small class="leyenda">0 = sin límite (todos pueden ir en bus).</small>
+                            </div>
+                        </div>
+
                         <div class="g_margin_bottom_10">
                             <label>Descripción General</label>
                             <textarea wire:model="descripcion" rows="3" {{ !$activo ? 'disabled' : '' }}></textarea>

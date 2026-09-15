@@ -33,6 +33,8 @@ class EntregaFestEditar extends Component
     public $proyecto_id = ""; // Para el select
     public $proyectos_agregados = []; // Para la tabla
     public $limite_invitados; // 👈 1. Declarar propiedad
+    public $limite_acompanantes;
+    public $limite_asientos_bus;
     public $activo;
 
     // Catálogos
@@ -50,6 +52,8 @@ class EntregaFestEditar extends Component
         $this->fecha_entrega = $this->evento->fecha_entrega ? $this->evento->fecha_entrega->format('Y-m-d') : null;
         $this->gestor_id = $this->evento->gestor_id;
         $this->limite_invitados = $this->evento->limite_invitados;
+        $this->limite_acompanantes = $this->evento->limite_acompanantes;
+        $this->limite_asientos_bus = $this->evento->limite_asientos_bus;
         $this->activo = $this->evento->activo;
 
         $this->proyectos_agregados = $this->evento->proyectos->map(fn($p) => [
@@ -109,6 +113,10 @@ class EntregaFestEditar extends Component
             'gestor_id' => 'required',
             'fecha_entrega' => 'required|date',
             'limite_invitados' => 'required|integer|min:1',
+            'limite_acompanantes' => 'required|integer|min:0|max:10',
+            // 0 = sin límite ("para todos"), por eso min:0 y no nullable. lte (no lt): un evento
+            // 100% bus, con el mismo tope que limite_invitados, es válido.
+            'limite_asientos_bus' => 'required|integer|min:0|lte:limite_invitados',
         ]);
 
         try {
@@ -121,6 +129,8 @@ class EntregaFestEditar extends Component
                 'codigo' => $this->codigo,
                 'fecha_entrega' => $this->fecha_entrega,
                 'limite_invitados' => $this->limite_invitados,
+                'limite_acompanantes' => $this->limite_acompanantes,
+                'limite_asientos_bus' => $this->limite_asientos_bus,
                 'activo' => $this->activo,
             ]);
 
