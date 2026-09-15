@@ -67,7 +67,7 @@
                                                 && (1 + $n) > $cupo_bus_disponible;
                                         @endphp
                                         <option value="{{ $n }}" @disabled($superaCupoBus)>
-                                            {{ $n }} acompañante{{ $n > 1 ? 's' : '' }}{{ $superaCupoBus ? ' (sin cupo de bus)' : '' }}
+                                            {{ $n }} acompañante{{ $n > 1 ? 's' : '' }}{{ $superaCupoBus ? ' (Bus Lleno)' : '' }}
                                         </option>
                                     @endfor
                                 </select>
