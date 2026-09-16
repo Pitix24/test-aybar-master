@@ -197,7 +197,7 @@ class AsistenciaInvitacionPropietario extends Component
                         $this->dispatch('alertaLivewire', [
                             'type' => 'warning',
                             'title' => 'Cupos Completos',
-                            'text' => 'Justo se agotaron los cupos de la modalidad BUS AYBAR mientras completabas el formulario. Te registramos con Movilidad Propia.',
+                            'text' => 'Se agotaron los cupos de la modalidad BUS AYBAR mientras completabas el formulario. Te registramos con Movilidad Propia.',
                             'showConfirmButton' => true,
                         ]);
                     }
