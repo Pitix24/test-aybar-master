@@ -14,6 +14,10 @@ Route::get('/', function () {
 
 Route::get('/registrar', ClienteRegistrarLivewire::class)->name('registrar.cliente');
 
+Route::get('/mantenimiento', function () {
+    return view('livewire.web.mantenimiento.mantenimiento');
+})->name('mantenimiento');
+
 Route::post('/email/verification-notification', [VerificationController::class, 'send'])
     ->middleware(['auth', 'throttle:6,1'])
     ->name('verification.send');
