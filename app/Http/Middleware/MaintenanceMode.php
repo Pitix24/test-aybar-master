@@ -11,8 +11,14 @@ class MaintenanceMode
     public function handle(Request $request, Closure $next): Response
     {
         if (config('app.maintenance.active', false)) {
-            if ($request->path() === 'mantenimiento' || $request->path() === 'up') {
+            $routeName = $request->route()?->getName();
+
+            if (in_array($routeName, ['mantenimiento', 'entrega-fest.mantenimiento'], true) || $request->path() === 'up') {
                 return $next($request);
+            }
+
+            if (str_starts_with((string) $routeName, 'entrega-fest.')) {
+                return redirect()->route('entrega-fest.mantenimiento');
             }
 
             return redirect()->route('mantenimiento');

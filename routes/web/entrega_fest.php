@@ -8,6 +8,10 @@ use App\Livewire\Web\EntregaFest\CitaAgendarPropietario;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Web\EntregaFest\EventoConcluido;
 use App\Livewire\Web\EntregaFest\EventoLleno;
+use App\Livewire\Web\EntregaFest\Mantenimiento;
+
+Route::get('/entrega-fest/mantenimiento', Mantenimiento::class)
+    ->name('entrega-fest.mantenimiento');
 
 Route::get('/pre-invitacion-propietario/{slug}/{propietarioId}', PreInvitacionPropietario::class)
     ->name('entrega-fest.pre-invitacion.propietario');
